@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Administrador
+class Visualizador
+class Contribuyente
+
+class Hecho
+class SolicitudEliminacion
+class Fuente
+class Coleccion
+class Categoria
+class CriterioPertenencia
+
+Hecho --> Fuente
+Hecho --> Categoria
+Hecho --> Coleccion
+Hecho --> Contribuyente
+
+Coleccion --> Fuente
+Coleccion --> Hecho
+Coleccion --> CriterioPertenencia
+
+Coleccion --> Administrador
+Contribuyente --|> Visualizador
+
+SolicitudEliminacion --> Hecho
+
+@enduml
