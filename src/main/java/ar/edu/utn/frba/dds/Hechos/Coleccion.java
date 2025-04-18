@@ -1,10 +1,14 @@
 package ar.edu.utn.frba.dds.Hechos;
 
 import ar.edu.utn.frba.dds.Criterio.Criterio;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class Coleccion {
     private HashSet<Hecho> listaHechos;
     private String titulo;

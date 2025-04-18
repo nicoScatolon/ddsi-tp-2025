@@ -8,3 +8,5 @@ import java.util.HashSet;
 public class Fuente {
     private HashSet<Hecho> hechos;
 }
+
+//ToDO filtrar hechos eliminados antes de devolver la lista

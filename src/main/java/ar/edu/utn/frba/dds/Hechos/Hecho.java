@@ -16,9 +16,11 @@ public class Hecho {
     private Integer longitud;
     private LocalDateTime fechaDeOcurrencia;
 
+
     private LocalDateTime fechaDeCarga;
     private OrigenHecho origen;
+    private Boolean fueEliminado = false;
 }
 
-// podriamos hacer el que tenga multimedia o no como 2 clases abstractas pero todavia no sabemos
 
+// podriamos hacer el que tenga multimedia o no como 2 clases abstractas pero todavia no sabemos

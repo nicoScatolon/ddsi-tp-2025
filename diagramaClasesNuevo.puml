@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class Hecho {
+    - String titulo
+    - String descripcion
+    - Categoria categoria
+    - localDateTime fecha
+    - SoporteMultimedia soporteMultimedia
+    - Double latitud
+    - Double longitud
+}
+
+class SolicitudEliminacion{
+    - Hecho hecho
+}
+
+class Fuente{
+    - Set<Hecho> listaHechos
+    }
+
+class Coleccion{
+    - String titulo
+    - String descripcion
+    - CriterioPertenencia criterio
+    - Fuente fuenteOrigen
+    - Set<Hecho> listaHechos
+}
+
+class Categoria{}
+class CriterioPertenencia{}
+
+
+
+Hecho --> Categoria
+
+Fuente --> Hecho
+Coleccion --> Fuente
+Coleccion --> Hecho
+Coleccion --> CriterioPertenencia
+
+
+SolicitudEliminacion --> Hecho
+
+
+@enduml
