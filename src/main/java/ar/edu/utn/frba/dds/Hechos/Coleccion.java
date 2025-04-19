@@ -4,33 +4,49 @@ import ar.edu.utn.frba.dds.Criterio.Criterio;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+
 @Getter
-@Setter
 public class Coleccion {
-    private HashSet<Hecho> listaHechos;
-    private String titulo;
-    private String descripcion;
+    private Set<Hecho> listaHechos;
+    @Setter private String titulo;
+    @Setter private String descripcion;
     private Fuente fuente;
-    private Criterio criterio;
+    //private List<Criterio> listaCriterios; //es una forma de saber que criterios tiene establecidos
 
-    public Coleccion(Fuente fuente,Criterio criterio) {
+    public Coleccion(String titulo) {
         this.listaHechos = new HashSet();
+        this.titulo = titulo;
+    }
+
+    public void setFuente(Fuente fuente){
         this.fuente = fuente;
-        this.criterio = criterio;
-        this.filtrarHechos();
-    }
-
-    public void cambiarCriterio(Criterio criterio) {
-        this.criterio = criterio;
-        this.filtrarHechos();
-    }
-
-    public void filtrarHechos() {
         this.listaHechos = fuente.getHechos().stream()
-                .filter(n -> criterio.pertenece(n))
+                .filter(n -> !n.getFueEliminado())
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public void agregarCriterio(Criterio criterio) {
+        this.listaHechos.removeIf(n -> !criterio.pertenece(n));
+        this.filtrarEliminados(); //puede no ser necesario ya que no se navega en este instante
+    }
+
+    public void filtrarEliminados(){
+        //this.listaHechos.stream().filter(n -> !n.getFueEliminado());
+        this.listaHechos.removeIf(n -> n.getFueEliminado());
+    }
+
+    public Set<Hecho> navegar() {
+        this.filtrarEliminados();
+        return this.getListaHechos();
+    }
+
+    public Set<Hecho> navegarConFiltro(Criterio criterio) {
+        this.filtrarEliminados();
+        Set<Hecho> hechosADevolver = this.getListaHechos();
+        return hechosADevolver.stream().filter(e -> criterio.pertenece(e)).collect(Collectors.toCollection(HashSet::new));
     }
 }
