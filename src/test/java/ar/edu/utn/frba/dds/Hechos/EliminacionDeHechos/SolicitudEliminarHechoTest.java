@@ -1,13 +1,15 @@
 package ar.edu.utn.frba.dds.Hechos.EliminacionDeHechos;
 
 import ar.edu.utn.frba.dds.Hechos.Categoria;
+import ar.edu.utn.frba.dds.Hechos.Coleccion;
+import ar.edu.utn.frba.dds.Hechos.Fuente;
 import ar.edu.utn.frba.dds.Hechos.Hecho;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class SolicitudEliminarHechoTest {
 
@@ -98,23 +100,33 @@ class SolicitudEliminarHechoTest {
 
 */
     @Test
-    @DisplayName("Generar otra solicitud para el mismo hecho.")
-    public void GenerarSolicitudMismoHecho(){
+    @DisplayName("Administrador revisa una solicitud y la acepta. Quedando la solicitud fuera de cualquier colección.")
+    public void AceptarSolicitud() {
+
+        // - Generar otra solicitud para el mismo hecho.
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion.constructorSolicitud(elHecho,this.motivoValido());
+
+        Assertions.assertNotNull(solicitud);
+        Assertions.assertEquals(EstadoDeSolicitud.PENDIENTE, solicitud.getEstado());
+
+        // - Ahora esta solicitud es aceptada a las 2 horas.
 
         solicitud.serAceptada();
 
+        Assertions.assertEquals(EstadoDeSolicitud.ACEPTADA, solicitud.getEstado());
+        // - Verificar que la solicitud haya quedado en estado aceptada.
+        Assertions.assertTrue(elHecho.getFueEliminado());
+
+        Fuente fuente = new Fuente();
+        fuente.getHechos().add(elHecho);
+
+        Coleccion coleccion = new Coleccion("Colección de Prueba");
+        coleccion.setFuente(fuente);
+
+        // - Esta vez el hecho no debería poder agregarse a una colección, puesto que este fue eliminado.
+        Assertions.assertFalse(coleccion.getListaHechos().contains(elHecho));
+
     }
-
-    @Test
-    @DisplayName("Ahora esta solicitud es aceptada a las 2 horas. " +
-            "Esta vez el hecho no debería poder agregarse a una colección, puesto que este fue eliminado.")
-    public void AceptarSolicitud(){}
-
-    @Test
-    @DisplayName("Verificar que la solicitud haya quedado en estado aceptada.")
-    public void VerificarSolicitudAceptada(){}
-
 
 }
 
