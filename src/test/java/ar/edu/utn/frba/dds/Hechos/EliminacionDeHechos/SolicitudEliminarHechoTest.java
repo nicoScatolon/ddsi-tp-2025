@@ -39,68 +39,46 @@ class SolicitudEliminarHechoTest {
         return "a".repeat(500);
     }
 
-/*
     @Test
-    @DisplayName("Crear una solicitud de eliminación asociada a este hecho. Quedará en estado pendiente.")
-    public void test01_crearSolicitudPendiente(){
+    @DisplayName("Crear una solicitud, revisarla y rechazarla, el hecho puede sumarse a cualquier colección.")
+    public void RechazarSolicitud() {
+        // - Crear una solicitud de eliminación asociada a este hecho.
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion.constructorSolicitud(elHecho,this.motivoValido());
 
-        assertNotNull(solicitud);
-        assertEquals(elHecho,solicitud.getHecho());
-        assertEquals(motivoValido(),solicitud.getRazonDeEliminacion());
-        assertEquals(EstadoDeSolicitud.PENDIENTE, solicitud.getEstado());
-    }
+        Assertions.assertNotNull(solicitud);
+        Assertions.assertEquals(elHecho,solicitud.getHecho());
 
 
-    @Test
-    @DisplayName("El motivo de esta solicitud deberá tener al menos 500 caracteres.")
+        // - Quedará en estado pendiente.
+        Assertions.assertEquals(EstadoDeSolicitud.PENDIENTE, solicitud.getEstado());
 
-    public void test02_motivoMuyCorto_lanzaExcepcion(){
+        // - El motivo de esta solicitud deberá tener al menos 500 caracteres.
         String motivoInvalido = "motivo corto";
-        SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion.constructorSolicitud(elHecho,motivoInvalido);
 
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ConstructorSolicitudesEliminacion.constructorSolicitud(elHecho, motivoInvalido));
 
-        assertThrows(IllegalArgumentException.class);
-
-    }
-
-    @Test
-    @DisplayName("Rechazar esta solicitud un día después de su creación. Dado que fue rechazada, " +
-            "el hecho puede ser agregado a cualquier colección. ")
-    public void test03_rechazoDeSolicitud_unDiaDespues(){
-        SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion.constructorSolicitud(elHecho,this.motivoValido());
-
+        // - Rechazar esta solicitud un día después de su creación.
         solicitud.serRechazada();
 
-        assertEquals(EstadoDeSolicitud.RECHAZADA, solicitud.getEstado());
-    }
 
-    @Test
-    @DisplayName("Verificar que la solicitud haya quedado en estado rechazada.")
-    public void test04_segundaSolicitudAceptada_yEliminaHecho() {
-        // Primera solicitud rechazada
-        SolicitudEliminarHecho solicitud1 = new ConstructorSolicitudesEliminacion()
-                .sumarHecho(elHecho)
-                .sumarRazonDeEliminacion(motivoValido())
-                .constructor();
-        solicitud1.serRechazada();
+        Fuente fuente = new Fuente();
+        fuente.getHechos().add(elHecho);
 
-        // Segunda solicitud aceptada
-        SolicitudEliminarHecho solicitud2 = new ConstructorSolicitudesEliminacion()
-                .sumarHecho(elHecho)
-                .sumarRazonDeEliminacion(motivoValido())
-                .constructor();
-        solicitud2.setFechaCreacion(LocalDateTime.now().minusHours(2));
-        solicitud2.aceptar();
+        Coleccion coleccion = new Coleccion("Colección de Prueba");
+        coleccion.setFuente(fuente);
 
-        assertEquals(EstadoDeSolicitud.ACEPTADA, solicitud2.getEstado());
-        assertFalse(elHecho.puedeSerAgregadoAColeccion());
+        // - Dado que fue rechazada, el hecho puede ser agregado a cualquier colección.
+        Assertions.assertTrue(coleccion.getListaHechos().contains(elHecho));
+
+        // - Verificar que la solicitud haya quedado en estado rechazada.
+        Assertions.assertEquals(EstadoDeSolicitud.RECHAZADA, solicitud.getEstado());
     }
 
 
-*/
+
     @Test
-    @DisplayName("Administrador revisa una solicitud y la acepta. Quedando la solicitud fuera de cualquier colección.")
+    @DisplayName("Revisar una solicitud y aceptarla, queda el hecho fuera de cualquier colección.")
     public void AceptarSolicitud() {
 
         // - Generar otra solicitud para el mismo hecho.
