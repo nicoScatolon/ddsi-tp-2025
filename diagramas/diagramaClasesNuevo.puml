@@ -1,0 +1,126 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+interface Criterio {
+    +pertenece(hecho: Hecho): boolean
+}
+
+
+abstract class CriterioEntreFechas {
+    -primeraFecha: LocalDate
+    -segundaFecha: LocalDate
+    +getFechaNecesaria(hecho: Hecho): LocalDate
+    +pertenece(hecho: Hecho): boolean
+}
+
+class CriterioCargaEntreFechas {
+
+}
+
+class CriterioOcurrenciaEntreFechas {
+
+}
+
+class CriterioContenidoMultimedia {
+    +pertenece(hecho: Hecho): boolean
+}
+
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -latitud: Double
+    -longitud: Double
+    -fechaDeOcurrencia: LocalDate
+    -fechaDeCarga: LocalDate
+    -origen: OrigenHecho
+    -fueEliminado: Boolean
+}
+
+class Categoria {
+    -nombre: String
+}
+
+class Coleccion {
+    -listaHechos: Set<Hecho>
+    -titulo: String
+    -descripcion: String
+    -fuente: Fuente
+    +agregarCriterio(criterio: Criterio)
+    +filtrarEliminados()
+    +navegar(): Set<Hecho>
+    +navegarConFiltro(criterio: Criterio): Set<Hecho>
+}
+
+class Fuente {
+    -hechos: Set<Hecho>
+}
+
+enum OrigenHecho {
+    MANUAL
+    DATASET
+    CONTRIBUYENTE
+}
+
+
+class ConstructorSolicitudesEliminacion {
+    -CARACTERES_MINIMOS_RAZON_ELIMINACION: Integer
+    +constructorSolicitud(hecho: Hecho, razon: String): SolicitudEliminarHecho
+}
+
+class SolicitudEliminarHecho {
+    -razonDeEliminacion: String
+    -hecho: Hecho
+    -estado: EstadoDeSolicitud
+    +serAceptada()
+    +serRechazada()
+}
+
+enum EstadoDeSolicitud {
+    ACEPTADA
+    RECHAZADA
+    PENDIENTE
+}
+
+
+class ImportadorCSV {
+    +importarArchivo(path: String): Set<Hecho>
+    +crearHechoFila(fila: String[], fechaDeCarga: LocalDate, formatoFecha: DateTimeFormatter): Hecho
+    +verificarRepetido(hecho: Hecho, lista: Set<Hecho>): Boolean
+}
+
+
+'==================== RELACIONES ====================
+
+
+CriterioEntreFechas ..|> Criterio
+CriterioCargaEntreFechas --|> CriterioEntreFechas
+CriterioOcurrenciaEntreFechas --|> CriterioEntreFechas
+CriterioContenidoMultimedia ..|> Criterio
+
+
+Hecho *-- Categoria
+
+
+Coleccion --> Fuente
+Coleccion --> "0..*" Hecho
+
+Fuente --> "0..*" Hecho
+
+SolicitudEliminarHecho --> Hecho
+SolicitudEliminarHecho --> EstadoDeSolicitud
+
+Hecho --> OrigenHecho
+
+CriterioEntreFechas ..> Hecho
+CriterioContenidoMultimedia ..> Hecho
+ImportadorCSV ..> Hecho
+
+
+ConstructorSolicitudesEliminacion ..> SolicitudEliminarHecho
+ConstructorSolicitudesEliminacion ..> Hecho
+
+@enduml
