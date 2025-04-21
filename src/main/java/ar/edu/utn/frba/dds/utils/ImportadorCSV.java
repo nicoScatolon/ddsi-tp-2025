@@ -63,10 +63,6 @@ public class ImportadorCSV {
     }
 
     public Boolean verificarRepetido(Hecho hecho, Set<Hecho> listaHechos) {
-        //Boolean repetido = listaHechos.stream().anyMatch( h -> h.getTitulo().equals( hecho.getTitulo() ) );
-
-        // se puede optimizar
+        return listaHechos.stream().anyMatch(h -> h.getTitulo().equals(hecho.getTitulo()));
     }
-
 }
-
