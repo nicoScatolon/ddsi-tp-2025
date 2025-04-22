@@ -14,7 +14,7 @@ class ImportadorCSVTest {
 
     @Test
     public void verificarImportacionCreaArchivos(){
-        String path = "C:\\Proyectos\\UTN\\DDS\\2025-tpa-ma-ma-grupo-11\\basesDeDatos\\desastres_naturales_argentina.csv";
+        String path = "C:\\Users\\Lucio.DESKTOP-6SBRF0T\\Desktop\\UTN\\tercer_anio\\DSI\\2025-tpa-ma-ma-grupo-11\\desastres_naturales_argentina.csv";
         ImportadorCSV importadorCSV = new ImportadorCSV();
         Set<Hecho> listaHechos;
         listaHechos = importadorCSV.importarArchivo(path);

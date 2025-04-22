@@ -2,7 +2,7 @@ package ar.edu.utn.frba.dds.Criterio;
 
 import ar.edu.utn.frba.dds.Hechos.Hecho;
 
-public class CriterioContenidoMultimedia implements Criterio {
+public class CriterioContenidoMultimedia implements CriterioInterfaz {
 
     @Override
     public Boolean pertenece(Hecho hecho) {

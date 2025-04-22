@@ -23,6 +23,12 @@ class CriterioOcurrenciaEntreFechas {
 
 }
 
+class CriterioTitulo{
+}
+class CriterioCategoria{
+}
+
+
 class CriterioContenidoMultimedia {
     +pertenece(hecho: Hecho): boolean
 }
@@ -99,7 +105,8 @@ class ImportadorCSV {
 
 '==================== RELACIONES ====================
 
-
+CriterioCategoria ..|> Criterio
+CriterioTitulo ..|> Criterio
 CriterioEntreFechas ..|> Criterio
 CriterioCargaEntreFechas --|> CriterioEntreFechas
 CriterioOcurrenciaEntreFechas --|> CriterioEntreFechas
@@ -122,6 +129,8 @@ Hecho --> OrigenHecho
 
 CriterioEntreFechas ..> Hecho
 CriterioContenidoMultimedia ..> Hecho
+CriterioCategoria ..> Hecho
+CriterioTitulo ..> Hecho
 ImportadorCSV ..> Hecho
 
 

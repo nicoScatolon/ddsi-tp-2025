@@ -2,9 +2,10 @@
 
 package ar.edu.utn.frba.dds.Criterio;
 
+import ar.edu.utn.frba.dds.Criterio.CriterioInterfaz;
 import ar.edu.utn.frba.dds.Hechos.Hecho;
 
-public class CriterioTitulo implements Criterio {
+public class CriterioTitulo implements CriterioInterfaz {
     private String titulo;
 
     public CriterioTitulo(String titulo) {

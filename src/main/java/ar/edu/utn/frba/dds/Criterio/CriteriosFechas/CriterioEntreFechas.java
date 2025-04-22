@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.dds.Criterio.CriteriosFechas;
 
-import ar.edu.utn.frba.dds.Criterio.Criterio;
+import ar.edu.utn.frba.dds.Criterio.CriterioInterfaz;
 import ar.edu.utn.frba.dds.Hechos.Hecho;
 import java.time.LocalDate;
 
-public abstract class CriterioEntreFechas implements Criterio {
+public abstract class CriterioEntreFechas implements CriterioInterfaz {
     private LocalDate primeraFecha;
     private LocalDate segundaFecha;
 

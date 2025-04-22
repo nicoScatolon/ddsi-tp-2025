@@ -29,7 +29,7 @@ public class Coleccion {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public void agregarCriterio(Criterio criterio) {
+    public void agregarCriterio(CriterioInterfaz criterio) {
         this.listaHechos.removeIf(n -> !criterio.pertenece(n));
         this.filtrarEliminados(); //puede no ser necesario ya que no se navega en este instante
     }
@@ -44,7 +44,7 @@ public class Coleccion {
         return this.getListaHechos();
     }
 
-    public Set<Hecho> navegarConFiltro(Criterio criterio) {
+    public Set<Hecho> navegarConFiltro(CriterioInterfaz criterio) {
         this.filtrarEliminados();
         Set<Hecho> hechosADevolver = this.getListaHechos();
         return hechosADevolver.stream()
@@ -52,7 +52,7 @@ public class Coleccion {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public Set<Hecho> navegarConFiltro(Set<Criterio> criterio) {
+    public Set<Hecho> navegarConFiltro(Set<CriterioInterfaz> criterio) {
         this.filtrarEliminados();
         Set<Hecho> hechosADevolver = this.getListaHechos();
         return hechosADevolver.stream()
