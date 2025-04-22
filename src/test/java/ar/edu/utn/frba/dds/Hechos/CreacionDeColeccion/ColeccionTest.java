@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.Hechos.CreacionDeColeccion;
 
-import ar.edu.utn.frba.dds.Criterio.Criterio;
+import ar.edu.utn.frba.dds.Criterio.CriterioInterfaz;
 import ar.edu.utn.frba.dds.Criterio.CriterioTitulo;
 import ar.edu.utn.frba.dds.Criterio.CriterioCategoria;
 import ar.edu.utn.frba.dds.Criterio.CriteriosFechas.*;
@@ -126,9 +126,9 @@ class ColeccionTest {
 
     @Test
     void testNavegarConFiltroDirecto() {
-        Criterio criterioCategoria = new CriterioCategoria(categoria1);
-        Criterio criterioTitulo = new CriterioTitulo("un título");
-        Set<Criterio> listaCriterios = new HashSet<>();
+        CriterioInterfaz criterioCategoria = new CriterioCategoria(categoria1);
+        CriterioInterfaz criterioTitulo = new CriterioTitulo("un título");
+        Set<CriterioInterfaz> listaCriterios = new HashSet<>();
         listaCriterios.add(criterioCategoria);
         listaCriterios.add(criterioTitulo);
       Assertions.assertEquals(0, coleccion.navegarConFiltro(listaCriterios).size());
