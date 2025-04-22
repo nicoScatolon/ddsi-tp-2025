@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-
 @Setter
 @Getter
 public class SolicitudEliminarHecho {
@@ -27,6 +26,3 @@ public class SolicitudEliminarHecho {
         //ToDo: Se eliminará por completo la solicitud.
     }
 }
-
-
-

@@ -9,6 +9,7 @@ public class ConstructorSolicitudesEliminacion {
         if(razonDeEliminacion.length() < CARACTERES_MINIMOS_RAZON_ELIMINACION){
             throw new IllegalArgumentException("La razón de eliminación debe tener al menos " + CARACTERES_MINIMOS_RAZON_ELIMINACION + "caracteres.");
         }
+
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho();
         solicitud.setHecho(hecho);
         solicitud.setRazonDeEliminacion(razonDeEliminacion);
@@ -17,6 +18,4 @@ public class ConstructorSolicitudesEliminacion {
         return solicitud;
     }
 }
-
-//ToDo: Duda, se podría usar el Pattern State?? Ya que cambia
 

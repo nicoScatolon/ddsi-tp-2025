@@ -76,7 +76,6 @@ class SolicitudEliminarHechoTest {
     }
 
 
-
     @Test
     @DisplayName("Revisar una solicitud y aceptarla, queda el hecho fuera de cualquier colección.")
     public void AceptarSolicitud() {
@@ -103,9 +102,7 @@ class SolicitudEliminarHechoTest {
 
         // - Esta vez el hecho no debería poder agregarse a una colección, puesto que este fue eliminado.
         Assertions.assertFalse(coleccion.getListaHechos().contains(elHecho));
-
     }
-
 }
 
 
