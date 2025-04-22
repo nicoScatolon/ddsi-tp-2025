@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.Hechos.Hecho;
 public class CriterioContenidoMultimedia implements Criterio {
 
     @Override
-    public boolean pertenece(Hecho hecho) {
+    public Boolean pertenece(Hecho hecho) {
         return false;
     }
 }

@@ -16,7 +16,7 @@ public abstract class CriterioEntreFechas implements Criterio {
     public abstract LocalDate getFechaNecesaria(Hecho hecho);
 
     @Override
-    public boolean pertenece(Hecho hecho) {
+    public Boolean pertenece(Hecho hecho) {
         LocalDate fecha = this.getFechaNecesaria(hecho);
         return fecha.isAfter(primeraFecha) && fecha.isBefore(segundaFecha);
     }

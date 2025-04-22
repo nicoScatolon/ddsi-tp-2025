@@ -44,6 +44,10 @@ class Categoria {
     -nombre: String
 }
 
+class Etiqueta {
+    -nombre: String
+}
+
 class Coleccion {
     -listaHechos: Set<Hecho>
     -titulo: String
@@ -103,6 +107,7 @@ CriterioContenidoMultimedia ..|> Criterio
 
 
 Hecho *-- Categoria
+Hecho *-- Etiqueta
 
 
 Coleccion --> Fuente

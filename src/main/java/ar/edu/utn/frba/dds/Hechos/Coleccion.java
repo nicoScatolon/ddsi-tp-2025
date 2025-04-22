@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.Hechos;
 
-import ar.edu.utn.frba.dds.Criterio.Criterio;
+import ar.edu.utn.frba.dds.Criterio.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,6 +47,16 @@ public class Coleccion {
     public Set<Hecho> navegarConFiltro(Criterio criterio) {
         this.filtrarEliminados();
         Set<Hecho> hechosADevolver = this.getListaHechos();
-        return hechosADevolver.stream().filter(e -> criterio.pertenece(e)).collect(Collectors.toCollection(HashSet::new));
+        return hechosADevolver.stream()
+                .filter(e -> criterio.pertenece(e))
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public Set<Hecho> navegarConFiltro(Set<Criterio> criterio) {
+        this.filtrarEliminados();
+        Set<Hecho> hechosADevolver = this.getListaHechos();
+        return hechosADevolver.stream()
+                .filter(h -> criterio.stream().allMatch( c -> c.pertenece(h)))
+                .collect(Collectors.toCollection(HashSet::new));
     }
 }

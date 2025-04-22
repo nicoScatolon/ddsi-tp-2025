@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.Hechos.OrigenHecho;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -31,6 +32,8 @@ public class ImportadorCSV {
             while ((fila = reader.readNext()) != null) {
 
                 Hecho hecho = crearHechoFila(fila, fechaDeCarga, formatoFecha);
+
+                verificarRepetido(hecho, listaHechos);
 
                 listaHechos.add(hecho);
 
@@ -62,10 +65,12 @@ public class ImportadorCSV {
         return hecho;
     }
 
-    public Boolean verificarRepetido(Hecho hecho, Set<Hecho> listaHechos) {
-        //Boolean repetido = listaHechos.stream().anyMatch( h -> h.getTitulo().equals( hecho.getTitulo() ) );
+    public void verificarRepetido(Hecho hecho, Set<Hecho> listaHechos) {
+        Optional<Hecho> hechoRepetido = listaHechos.stream()
+                .filter(h -> h.getTitulo().equals( hecho.getTitulo() ) )
+                .findFirst();
 
-        // se puede optimizar
+        if (hechoRepetido.isPresent()) { listaHechos.remove(hechoRepetido.get()); }
     }
 
 }

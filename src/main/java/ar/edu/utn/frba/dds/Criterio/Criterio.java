@@ -4,5 +4,5 @@ import ar.edu.utn.frba.dds.Hechos.Hecho;
 
 
 public interface Criterio {
-    public boolean pertenece(Hecho hecho);
+    Boolean pertenece(Hecho hecho);
 }
