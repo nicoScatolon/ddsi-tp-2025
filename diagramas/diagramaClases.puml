@@ -1,0 +1,161 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+interface Criterio {
+    +pertenece(hecho: Hecho): boolean
+}
+
+
+abstract class CriterioEntreFechas {
+    -primeraFecha: LocalDate
+    -segundaFecha: LocalDate
+    +getFechaNecesaria(hecho: Hecho): LocalDate
+    +pertenece(hecho: Hecho): boolean
+}
+
+class CriterioCargaEntreFechas {
+
+}
+
+class CriterioOcurrenciaEntreFechas {
+
+}
+
+class CriterioTitulo{
+}
+class CriterioCategoria{
+}
+
+
+class CriterioContenidoMultimedia {
+    +pertenece(hecho: Hecho): boolean
+}
+
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -latitud: Double
+    -longitud: Double
+    -fechaDeOcurrencia: LocalDate
+    -fechaDeCarga: LocalDate
+    -origen: OrigenHecho
+    -fueEliminado: Boolean
+}
+
+class Categoria {
+    -nombre: String
+}
+
+class Etiqueta {
+    -nombre: String
+}
+
+class Coleccion {
+    -listaHechos: Set<Hecho>
+    -listaCriterios: Set<CriterioInterfaz>
+    -titulo: String
+    -descripcion: String
+    -fuente: Fuente
+    +agregarCriterio(criterio: Criterio)
+    +eliminarCriterio((criterio: Criterio)
+    +getHechos(): Set<Hecho>
+    +getHechosConFiltro(criterio: Criterio): Set<Hecho>
+}
+
+class Fuente {
+    -hechos: Set<Hecho>
+}
+
+enum OrigenHecho {
+    MANUAL
+    DATASET
+    CONTRIBUYENTE
+}
+
+
+class ConstructorSolicitudesEliminacion {
+    -CARACTERES_MINIMOS_RAZON_ELIMINACION: Integer
+    +constructorSolicitud(hecho: Hecho, razon: String): SolicitudEliminarHecho
+}
+
+class SolicitudEliminarHecho {
+    -razonDeEliminacion: String
+    -hecho: Hecho
+    -estado: EstadoDeSolicitud
+    -nombreAdmin: String
+    -nombreContribuyente: String
+    -fechaCreacion: LocalDate
+    -fechaAceptacion: LocalDate
+
+
+    +serAceptada()
+    +serRechazada()
+}
+
+enum EstadoDeSolicitud {
+    ACEPTADA
+    RECHAZADA
+    PENDIENTE
+}
+
+interface ImportadorHechosArchivo{
+    +importarArchivo(path: String): Set<Hecho>
+}
+
+class ImportadorHechosCSV {
+    +importarArchivo(path: String): Set<Hecho>
+    +crearHechoFila(fila: String[], fechaDeCarga: LocalDate, formatoFecha: DateTimeFormatter): Hecho
+    +verificarRepetido(hecho: Hecho, lista: Set<Hecho>): Boolean
+}
+
+class Admin{
+    - nombre: String
+}
+
+class Contributor{
+    - nombre: String
+}
+
+
+'==================== RELACIONES ====================
+
+CriterioCategoria ..|> Criterio
+CriterioTitulo ..|> Criterio
+CriterioEntreFechas ..|> Criterio
+CriterioCargaEntreFechas --|> CriterioEntreFechas
+CriterioOcurrenciaEntreFechas --|> CriterioEntreFechas
+CriterioContenidoMultimedia ..|> Criterio
+
+
+Hecho *-- Categoria
+Hecho *-- Etiqueta
+
+
+Coleccion --> Fuente
+Coleccion --> "0..*" Hecho
+
+Fuente --> "0..*" Hecho
+
+SolicitudEliminarHecho --> Hecho
+SolicitudEliminarHecho --> EstadoDeSolicitud
+ImportadorHechosCSV ..|> ImportadorHechosArchivo
+Hecho --> OrigenHecho
+
+CriterioEntreFechas ..> Hecho
+CriterioContenidoMultimedia ..> Hecho
+CriterioCategoria ..> Hecho
+CriterioTitulo ..> Hecho
+ImportadorHechosArchivo ..> Hecho
+
+
+
+ConstructorSolicitudesEliminacion ..> SolicitudEliminarHecho
+ConstructorSolicitudesEliminacion ..> Hecho
+ConstructorSolicitudesEliminacion ..> Admin
+ConstructorSolicitudesEliminacion ..> Contributor
+
+@enduml
