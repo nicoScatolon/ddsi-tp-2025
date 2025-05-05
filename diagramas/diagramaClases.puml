@@ -56,13 +56,14 @@ class Etiqueta {
 
 class Coleccion {
     -listaHechos: Set<Hecho>
+    -listaCriterios: Set<CriterioInterfaz>
     -titulo: String
     -descripcion: String
     -fuente: Fuente
     +agregarCriterio(criterio: Criterio)
-    +filtrarEliminados()
-    +navegar(): Set<Hecho>
-    +navegarConFiltro(criterio: Criterio): Set<Hecho>
+    +eliminarCriterio((criterio: Criterio)
+    +getHechos(): Set<Hecho>
+    +getHechosConFiltro(criterio: Criterio): Set<Hecho>
 }
 
 class Fuente {
@@ -85,6 +86,12 @@ class SolicitudEliminarHecho {
     -razonDeEliminacion: String
     -hecho: Hecho
     -estado: EstadoDeSolicitud
+    -nombreAdmin: String
+    -nombreContribuyente: String
+    -fechaCreacion: LocalDate
+    -fechaAceptacion: LocalDate
+
+
     +serAceptada()
     +serRechazada()
 }
@@ -95,11 +102,22 @@ enum EstadoDeSolicitud {
     PENDIENTE
 }
 
+interface ImportadorHechosArchivo{
+    +importarArchivo(path: String): Set<Hecho>
+}
 
-class ImportadorCSV {
+class ImportadorHechosCSV {
     +importarArchivo(path: String): Set<Hecho>
     +crearHechoFila(fila: String[], fechaDeCarga: LocalDate, formatoFecha: DateTimeFormatter): Hecho
     +verificarRepetido(hecho: Hecho, lista: Set<Hecho>): Boolean
+}
+
+class Admin{
+    - nombre: String
+}
+
+class Contributor{
+    - nombre: String
 }
 
 
@@ -124,17 +142,20 @@ Fuente --> "0..*" Hecho
 
 SolicitudEliminarHecho --> Hecho
 SolicitudEliminarHecho --> EstadoDeSolicitud
-
+ImportadorHechosCSV ..|> ImportadorHechosArchivo
 Hecho --> OrigenHecho
 
 CriterioEntreFechas ..> Hecho
 CriterioContenidoMultimedia ..> Hecho
 CriterioCategoria ..> Hecho
 CriterioTitulo ..> Hecho
-ImportadorCSV ..> Hecho
+ImportadorHechosArchivo ..> Hecho
+
 
 
 ConstructorSolicitudesEliminacion ..> SolicitudEliminarHecho
 ConstructorSolicitudesEliminacion ..> Hecho
+ConstructorSolicitudesEliminacion ..> Admin
+ConstructorSolicitudesEliminacion ..> Contributor
 
 @enduml

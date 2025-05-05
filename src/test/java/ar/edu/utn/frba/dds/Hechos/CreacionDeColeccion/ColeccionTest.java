@@ -91,15 +91,20 @@ class ColeccionTest {
         hecho.setTitulo(titulo);
         hecho.setDescripcion(descripcion);
         hecho.setCategoria(categoria);
-        hecho.setLatitud(latitud);
-        hecho.setLongitud(longitud);
+        Ubicacion ubicacionHecho = new Ubicacion();
+
+        ubicacionHecho.setLatitud(latitud);
+        ubicacionHecho.setLongitud(longitud);
+        hecho.setUbicacion(ubicacionHecho);
+
         hecho.setFechaDeOcurrencia(fechaHecho);
         return hecho;
     }
 
     @Test
     public void testeoCrearColecciones() {
-        assertEquals(listaHechosFuente, coleccion.navegar());
+        assertTrue(coleccion.getHechos().isEmpty());
+        assertEquals(listaHechosFuente, coleccion.getFuente().getHechos());
     }
 
     @Test
@@ -112,7 +117,7 @@ class ColeccionTest {
         esperadosFechas.add(hecho1);
         esperadosFechas.add(hecho2);
         esperadosFechas.add(hecho3);
-        assertEquals(esperadosFechas, coleccion.navegar());
+        assertEquals(esperadosFechas, coleccion.getHechos());
 
         // Ahora agrego, además, filtro por categoría = "Caída de aeronave"
         CriterioCategoria criterioCat = new CriterioCategoria(categoria1);
@@ -121,7 +126,7 @@ class ColeccionTest {
         Set<Hecho> esperadosCat = new HashSet<>();
         esperadosCat.add(hecho1);
         esperadosCat.add(hecho3);
-        assertEquals(esperadosCat, coleccion.navegar());
+        assertEquals(esperadosCat, coleccion.getHechos());
     }
 
     @Test
@@ -131,7 +136,7 @@ class ColeccionTest {
         Set<CriterioInterfaz> listaCriterios = new HashSet<>();
         listaCriterios.add(criterioCategoria);
         listaCriterios.add(criterioTitulo);
-      Assertions.assertEquals(0, coleccion.navegarConFiltro(listaCriterios).size());
+      Assertions.assertEquals(0, coleccion.getHechosConFiltro(listaCriterios).size());
 
 }
     @Test

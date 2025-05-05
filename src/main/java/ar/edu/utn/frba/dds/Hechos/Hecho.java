@@ -18,11 +18,10 @@ public class Hecho {
     private String titulo;
     private String descripcion;
     private Categoria categoria;
-    private Double latitud;
-    private Double longitud;
+    private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
     private HashSet<Etiqueta> etiquetas;
-
+    private ContenidoMultimedia contenidoMultimedia;
 
     private LocalDate fechaDeCarga;
     private OrigenHecho origen;

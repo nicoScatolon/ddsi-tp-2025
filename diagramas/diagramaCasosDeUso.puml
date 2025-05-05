@@ -9,9 +9,8 @@ actor "Contribuyente" as Contributor
 
 rectangle "Sistema de Gestión de Mapeos Colaborativos" {
     usecase "Crear colección" as CU1
-    usecase "Importar hechos desde CSV" as CU2
+    usecase "Importar hechos" as CU2
     usecase "Navegar hechos de una colección" as CU3
-    usecase "Navegar hechos con filtros" as CU4
     usecase "Solicitar eliminación de hecho" as CU5
     usecase "Aceptar o rechazar solicitud de eliminación" as CU6
     usecase "Crear un hecho" as CU7
@@ -22,7 +21,6 @@ Admin --> CU2
 Admin --> CU6
 Admin --> CU7
 Viewer --> CU3
-Viewer --> CU4
 Contributor --> CU5
 Contributor --> CU7
 
@@ -32,3 +30,4 @@ Contributor --> CU7
  Contributor--|> Viewer
 
 @enduml
+
