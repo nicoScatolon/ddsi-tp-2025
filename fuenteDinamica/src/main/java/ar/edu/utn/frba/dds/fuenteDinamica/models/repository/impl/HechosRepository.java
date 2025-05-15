@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.models.repository.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Repository
 public class HechosRepository implements IHechosRepository {
     private final Map<Long, Hecho> hechos = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();

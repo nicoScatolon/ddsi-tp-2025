@@ -22,5 +22,6 @@ public class Hecho {
     private LocalDate fechaDeModificacion; // para verificar los 7 dias
 
     private Usuario contribuyente; // el ususario que lo carga
+    //para no tener que actualizar los datos de hecho, considero que la anonimidad del usuario se puede cambiar, y por ende se debe verificar al usuario y no al hecho para ver si se muestra o no
 
 }
