@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.repository.impl;
 
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.SolicitudEliminacion;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.ISolicitudesRepository;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.ISolicitudesEliminacionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class SolicitudesRepository implements ISolicitudesRepository {
+public class SolicitudesEliminacionRepository implements ISolicitudesEliminacionRepository {
     private final Map<Long, SolicitudEliminacion> solicitudes = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
 
@@ -30,5 +30,10 @@ public class SolicitudesRepository implements ISolicitudesRepository {
     @Override
     public List<SolicitudEliminacion> findAll() {
         return new ArrayList<>(solicitudes.values());
+    }
+
+    @Override
+    public SolicitudEliminacion remove(SolicitudEliminacion solicitud) {
+        return solicitudes.remove(solicitud.getId());
     }
 }
