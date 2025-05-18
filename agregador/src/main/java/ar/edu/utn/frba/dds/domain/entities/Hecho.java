@@ -8,11 +8,12 @@ import java.time.LocalDate;
 @Setter
 @Getter
 public class Hecho {
-    private long id;
+    private Long id;
 
     private String titulo;
     private String descripcion;
     private Ubicacion ubicacion;
+    private Categoria categoria;
     private LocalDate fechaDeOcurrencia;
 
     private LocalDate fechaDeCarga;
