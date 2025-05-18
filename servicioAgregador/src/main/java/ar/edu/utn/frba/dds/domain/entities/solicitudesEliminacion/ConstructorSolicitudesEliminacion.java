@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.Hecho;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ConstructorSolicitudesEliminacion {
     private static final Integer CARACTERES_MINIMOS_RAZON_ELIMINACION = 500;
@@ -19,7 +20,7 @@ public class ConstructorSolicitudesEliminacion {
         solicitud.setEstado(EstadoDeSolicitud.PENDIENTE);
         solicitud.setNombreCreador(nombreContribuyente);
         solicitud.setApellidoCreador(apellidoContribuyente);
-        solicitud.setFechaCreacion(LocalDate.now());
+        solicitud.setFechaCreacion(LocalDateTime.now());
 
 
         return solicitud;

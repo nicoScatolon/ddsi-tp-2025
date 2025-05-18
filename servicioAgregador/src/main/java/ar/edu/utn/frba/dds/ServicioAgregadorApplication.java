@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServicioAgregadorAplicattion {
+public class ServicioAgregadorApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServicioAgregadorAplicattion.class, args);
+        SpringApplication.run(ServicioAgregadorApplication.class, args);
     }
 }

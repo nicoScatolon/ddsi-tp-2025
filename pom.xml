@@ -31,7 +31,7 @@
 	</properties>
 
 	<modules>
-		<module>agregador</module>
+		<module>servicioAgregador</module>
 		<module>fuenteEstatica</module>
 		<module>fuenteDinamica</module>
 		<module>fuenteProxy</module>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ar.utn.ba.ddsi</groupId>
-    <artifactId>agregador</artifactId>
+    <artifactId>servicioAgregador</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
