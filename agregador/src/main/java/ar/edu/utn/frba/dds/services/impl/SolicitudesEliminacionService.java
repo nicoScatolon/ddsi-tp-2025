@@ -11,11 +11,12 @@ import java.util.List;
 
 @Service
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
-    @Autowired
+    @Autowired //ToDO Se puede reemplazar (Es lo mas recomendable)
     private ISolicitudesEliminacionRepository repository;
 
     @Override
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
+        //ToDO, si es Admin, aquí se debería verificar
         return this.repository
                 .findAll()
                 .stream()

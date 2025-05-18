@@ -6,8 +6,8 @@ import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudElimi
 import java.util.List;
 
 public interface ISolicitudesEliminacionRepository {
-    public List<SolicitudEliminarHecho> findAll();
-    public SolicitudEliminarHecho findById(Long id);
-    public void save(SolicitudEliminarHecho solicitudEliminarHecho);
-    public void delete(SolicitudEliminarHecho solicitudEliminarHecho);
+    List<SolicitudEliminarHecho> findAll();
+    SolicitudEliminarHecho findById(Long id);
+    void save(SolicitudEliminarHecho solicitudEliminarHecho);
+    void delete(SolicitudEliminarHecho solicitudEliminarHecho);
 }

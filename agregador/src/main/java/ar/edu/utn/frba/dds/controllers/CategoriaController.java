@@ -12,8 +12,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaController {
-    @Autowired
     private ICategoriasService categoriaService;
+
+    public CategoriaController(ICategoriasService categoriaService) {
+        this.categoriaService = categoriaService;
+    }
 
     @GetMapping
     public List<CategoriaOutputDTO> buscarTodasLasCategorias() {

@@ -27,6 +27,11 @@ public class CategoriaRepository implements ICategoriaRepository {
     }
 
     @Override
+    public void delete(Categoria categoria) {
+        this.categorias.remove(categoria);
+    }
+
+    @Override
     public Categoria findByHash(Integer hash) {
         return this.categorias
                 .stream()

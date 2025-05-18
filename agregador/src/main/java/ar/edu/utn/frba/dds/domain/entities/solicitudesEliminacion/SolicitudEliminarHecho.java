@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Setter
@@ -18,13 +19,13 @@ public class SolicitudEliminarHecho {
     private String apellidoCreador;
     private String nombreAdministrador;
     private String apellidoAdministrador;
-    private LocalDate fechaCreacion;
-    private LocalDate fechaAceptacion = null;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaAceptacion = null;
 
 
     public void serAceptada(String nombreAdministrador, String apellidoAdministrador) {
         estado = EstadoDeSolicitud.ACEPTADA;
-        fechaAceptacion = LocalDate.now();
+        fechaAceptacion = LocalDateTime.now();
         this.nombreAdministrador = nombreAdministrador;
         hecho.setFueEliminado(true);
     }

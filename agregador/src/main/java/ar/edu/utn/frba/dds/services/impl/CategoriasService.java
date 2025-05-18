@@ -11,11 +11,12 @@ import java.util.List;
 
 @Service
 public class CategoriasService implements ICategoriasService {
-    @Autowired
+    @Autowired //ToDO Se puede reemplazar (Es lo mas recomendable)
     private ICategoriaRepository repository;
 
     @Override
     public List<CategoriaOutputDTO> buscarTodasLasCategorias() {
+        //ToDO, si es Admin, aquí se debería verificar
         return this.repository
                 .findAll()
                 .stream()

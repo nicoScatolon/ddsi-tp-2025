@@ -7,8 +7,8 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-@Builder
 @Data
+@Builder
 public class HechoOutputDTO {
     private Long id;
     private String titulo;
@@ -17,3 +17,4 @@ public class HechoOutputDTO {
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
 }
+

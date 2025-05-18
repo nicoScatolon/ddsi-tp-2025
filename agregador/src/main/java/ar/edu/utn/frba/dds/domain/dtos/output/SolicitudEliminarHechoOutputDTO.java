@@ -16,3 +16,8 @@ public class SolicitudEliminarHechoOutputDTO {
     private String nombreCreador;
     private String apellidoCreador;
 }
+
+
+
+
+

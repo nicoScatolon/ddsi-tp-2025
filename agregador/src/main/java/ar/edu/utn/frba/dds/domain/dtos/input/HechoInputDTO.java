@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 public class HechoInputDTO {
+    private Long id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;

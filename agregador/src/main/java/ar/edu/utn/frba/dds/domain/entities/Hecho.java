@@ -1,12 +1,15 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Hecho {
     private Long id;
 
@@ -16,7 +19,7 @@ public class Hecho {
     private Categoria categoria;
     private LocalDate fechaDeOcurrencia;
 
-    private LocalDate fechaDeCarga;
+    private LocalDateTime fechaDeCarga;
     private Boolean fueEliminado = false;
 
     private Usuario contribuyente;
