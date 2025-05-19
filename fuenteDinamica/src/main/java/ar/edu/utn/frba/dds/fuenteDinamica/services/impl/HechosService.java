@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
@@ -14,19 +15,27 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public Hecho cargarHecho(Hecho hecho) {
-        //TODO verificar como es la conexion que nos trae el hecho, para saber si viene de una API
-        // posiblemente reciba un input DTO por la interfaz que se debe transformar en la entidad serie
+    public Hecho cargarHecho(HechoInputDTO hechoDTO) {
+        // TODO posible verificacion de usuario
+        Hecho hecho = hechoInputDTO(hechoDTO);
+        hecho.setActualizar(true);
         return this.hechosRepository.save(hecho);
     }
 
     @Override
-    public Hecho modificarHecho(Hecho hecho) {
+    public Hecho modificarHecho(HechoInputDTO hecho) {
         return null; //TODO
     }
 
     @Override
-    public Hecho revisarHecho(Hecho hecho) {
+    public Hecho revisarHecho(HechoInputDTO hecho) {
         return null; //TODO
+    }
+
+    private Hecho hechoInputDTO(HechoInputDTO dto) {
+        Hecho hecho = new Hecho();
+        hecho.setTitulo(dto.getTitulo());
+        //
+        return hecho;
     }
 }

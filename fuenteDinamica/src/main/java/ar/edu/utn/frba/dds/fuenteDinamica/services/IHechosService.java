@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.services;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 
 public interface IHechosService {
-    Hecho cargarHecho(Hecho hecho);
-    Hecho modificarHecho(Hecho hecho);
-    Hecho revisarHecho(Hecho hecho);
+    Hecho cargarHecho(HechoInputDTO hecho);
+    Hecho modificarHecho(HechoInputDTO hecho);
+    Hecho revisarHecho(HechoInputDTO hecho);
 }
