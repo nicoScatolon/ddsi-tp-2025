@@ -1,49 +1,42 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputResponse;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Fuentes.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriaRepository;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
+import ar.edu.utn.frba.dds.services.IAgregadorDeHechosService;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Service
 public class HechosService implements IHechosService {
     private IHechosRepository hechosRepository;
-    private ICategoriaRepository categoriaRepository;  //Necesario únicamente en el caso de que no nos envíen una categoria.
-    private WebClient webClient;
-
-    @Value("${app.base-url}") //ToDO: todavia no entiendo como es la comunicacion entre modulos
-    private String baseUrl;
+    //private ICategoriaRepository categoriaRepository;
+    private IAgregadorDeHechosService agregadorDeHechosService;
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaRepository categoriaRepository,
-                         WebClient.Builder webClientBuilder) {
+                         IAgregadorDeHechosService agregadorDeHechosService
+                         ) {
         this.hechosRepository = hechosRepository;
-        this.categoriaRepository = categoriaRepository;
-        this.webClient = webClientBuilder
-                .baseUrl(baseUrl)
-                .build();
+        //this.categoriaRepository = categoriaRepository;
+        this.agregadorDeHechosService = agregadorDeHechosService;
     }
 
-    public List<Hecho> obtenerTodosLasHechos() {
-        return webClient
-                .get()
-                .uri("/hechos")
-                .retrieve()
-                .bodyToMono(HechoInputResponse.class)
-                .map(resp -> resp.getHechoInputDTOs().stream()
-                        .map(this::hecho)
-                        .toList())
-                .block();
+
+    public List<Hecho> obtenerTodosLasHechos(List<Fuente> fuentes) {
+        List<HechoInputDTO> hechosInput = agregadorDeHechosService.recolectarHechos(fuentes);
+
+        List<Hecho> hechos = hechosInput.stream()
+                .map(this::hechoInputDTO)
+                .toList();
+
+        hechos.forEach(hechosRepository::save);
+        return hechos;
     }
 
     public List<HechoOutputDTO> buscarTodosLosHechos(){
@@ -77,6 +70,8 @@ public class HechosService implements IHechosService {
         return this.hechoOutputDTO(hecho);
     }
 
+
+    //---CONVERTIDORES DE HECHOS Y DTOS---
     private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
@@ -88,9 +83,8 @@ public class HechosService implements IHechosService {
                 .build();
     }
 
-    private Hecho hecho(HechoInputDTO hechoInputDTO) {
+    private Hecho hechoInputDTO(HechoInputDTO hechoInputDTO) {
         return Hecho.builder()
-                .id(hechoInputDTO.getId())
                 .titulo(hechoInputDTO.getTitulo())
                 .descripcion(hechoInputDTO.getDescripcion())
                 .categoria(hechoInputDTO.getCategoria())

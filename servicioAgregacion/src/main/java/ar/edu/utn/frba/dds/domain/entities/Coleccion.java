@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Getter
 public class Coleccion {
     private Set<CriterioInterfaz> listaCriterios;
+    @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
 

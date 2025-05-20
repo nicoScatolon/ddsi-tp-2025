@@ -6,10 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
     private List<Hecho> hechos;
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     //ToDO: Hay que implementarlo para las bases de datos, esto simplemente lo guarda en memoria
     public HechosRepository() {
@@ -28,7 +30,7 @@ public class HechosRepository implements IHechosRepository {
 
     @Override
     public void save(Hecho hecho) {
-        hecho.setId((long) this.hechos.size()); //ToDO: Modificar, pueden haber hechos con mismo id
+        Long id = idGenerator.getAndIncrement();
         this.hechos.add(hecho);
     }
 

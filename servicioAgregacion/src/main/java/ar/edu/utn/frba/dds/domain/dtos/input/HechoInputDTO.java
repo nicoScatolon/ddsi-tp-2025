@@ -2,15 +2,16 @@ package ar.edu.utn.frba.dds.domain.dtos.input;
 
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class HechoInputDTO {
-    private Long id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;

@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Fuentes.Fuente;
+import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import org.springframework.beans.factory.annotation.Autowired;
+import ar.edu.utn.frba.dds.services.ISchedulerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,17 +15,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/hechos")
 public class HechosController {
-    @Autowired //ToDO Se puede reemplazar (Es lo mas recomendable)
     private IHechosService hechosService;
+    private IFuentesRepository fuentesRepository;
+    private List<Fuente> fuentes;
 
-//    @GetMapping
-//    public List<HechoOutputDTO> buscarTodosLosHechos(){
-//        return this.hechosService.buscarTodosLosHechos();
-//    }
+    public HechosController(IHechosService hechosService, IFuentesRepository fuentesRepository) {
+        this.hechosService = hechosService;
+        this.fuentesRepository = fuentesRepository;
+    }
 
     @GetMapping
-    public List<Hecho> getHechos() { //Debería ser lista de Hechos o de otro tipo?
-        return hechosService.obtenerTodosLasHechos();
+    public List<HechoOutputDTO> getHechos() {
+        return hechosService.buscarTodosLosHechos();
+    }
+
+    @GetMapping("/actualizar")
+    public void actualizarHechosManualmente() {
+        List<Fuente> fuentes = fuentesRepository.obtenerFuentes();
+        hechosService.obtenerTodosLasHechos(fuentes);
     }
 
     @GetMapping("/{id}")
@@ -33,8 +41,7 @@ public class HechosController {
     }
 
     @GetMapping("/inicializar")
-    public Boolean inicializarHechos(){
-        //ToDo Se debe inicializar
-        return false;
+    public Boolean inicializarFuentes(){
+        return true;
     }
 }
