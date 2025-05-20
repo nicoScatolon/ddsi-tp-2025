@@ -42,6 +42,7 @@ public class HechosController {
 
     @GetMapping("/inicializar")
     public Boolean inicializarFuentes(){
+        //ToDO: Hay que inicializar las fuentes y no tenerlas hardcodeadas?
         return true;
     }
 }

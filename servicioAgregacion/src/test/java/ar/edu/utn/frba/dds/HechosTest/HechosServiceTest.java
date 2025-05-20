@@ -7,7 +7,9 @@ import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriaRepository;
+import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
+import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.services.impl.HechosService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class HechosServiceTest {
-
+    private IFuentesRepository fuentesRepository;
     private IHechosRepository hechosRepository;
     private ICategoriaRepository categoriaRepository;
     private MockWebServer server;
@@ -33,6 +35,7 @@ public class HechosServiceTest {
     void setUp() throws IOException {
         hechosRepository = Mockito.mock(IHechosRepository.class);
         categoriaRepository = Mockito.mock(ICategoriaRepository.class);
+        fuentesRepository = Mockito.mock(IFuentesRepository.class);
 
         server = new MockWebServer();
         server.start();
@@ -45,8 +48,8 @@ public class HechosServiceTest {
         mapper.registerModule(new JavaTimeModule());
 
         WebClient.Builder dummyBuilder = WebClient.builder().baseUrl("http://localhost:8081");
-        hechosService = new HechosService(hechosRepository, categoriaRepository, server.url("/").toString());
-
+        //hechosService = new HechosService(hechosRepository, categoriaRepository, server.url("/").toString());
+        //ToDo: Da error
     }
 
     @AfterEach
@@ -116,10 +119,9 @@ public class HechosServiceTest {
                 .setBody(json)
                 .addHeader("Content-Type", "application/json"));
 
-        List<Hecho> hechos = hechosService.obtenerTodosLasHechos();
+        List<Hecho> hechos = hechosService.obtenerTodosLasHechos(fuentesRepository.obtenerFuentes());
 
         Assertions.assertEquals(1, hechos.size());
         Assertions.assertEquals("Título", hechos.get(0).getTitulo());
     }
-
 }
