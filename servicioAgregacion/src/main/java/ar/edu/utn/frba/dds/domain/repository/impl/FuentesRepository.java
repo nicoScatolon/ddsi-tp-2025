@@ -10,22 +10,15 @@ import java.util.List;
 
 @Repository
 public class FuentesRepository implements IFuentesRepository {
-    @Value("${puertoFuenteEstatica}")
-    private int puertoEstatica;
 
-    @Value("${puertoFuenteDinamica}")
-    private int puertoDinamica;
-
-    @Value("${puertoFuenteProxy}")
-    private int puertoProxy;
 
     @Override
     public List<Fuente> obtenerFuentes() { //ToDO está hardCodeado, se puede mejorar
         String baseURL = "http://localhost:";
         return List.of(
-                new Fuente("Fuente Estática", TipoFuente.ESTATICA, baseURL + puertoEstatica),
-                new Fuente("Fuente Dinámica", TipoFuente.DINAMICA, baseURL + puertoDinamica),
-                new Fuente("Fuente Proxy", TipoFuente.PROXY, baseURL + puertoProxy)
+                new Fuente("Fuente Estática", TipoFuente.ESTATICA),
+                new Fuente("Fuente Dinámica", TipoFuente.DINAMICA),
+                new Fuente("Fuente Proxy", TipoFuente.PROXY)
         );
     }
 }

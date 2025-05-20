@@ -2,20 +2,38 @@ package ar.edu.utn.frba.dds.domain.entities.Fuentes;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 
 @Getter
 @Setter
 public class Fuente {
     private String nombre;
     private TipoFuente tipo;
-    private String baseURL;
+    private String url;
 
-    public Fuente() {
-    }
+    @Value("${puertoFuenteEstatica}")
+    private int puertoEstatica;
 
-    public Fuente(String nombre, TipoFuente tipo, String baseURL) {
+    @Value("${puertoFuenteDinamica}")
+    private int puertoDinamica;
+
+    @Value("${puertoFuenteProxy}")
+    private int puertoProxy;
+
+    public Fuente() {}
+
+    public Fuente(String nombre, TipoFuente tipo) {
         this.nombre = nombre;
         this.tipo = tipo;
-        this.baseURL = baseURL;
+        this.url = construirBaseURL(tipo);
+    }
+
+    private String construirBaseURL(TipoFuente tipo) {
+    String baseURL = "http://localhost:";
+        return switch (tipo) {
+            case ESTATICA -> baseURL + puertoEstatica;
+            case DINAMICA -> baseURL + puertoDinamica;
+            case PROXY    -> baseURL + puertoProxy;
+        };
     }
 }

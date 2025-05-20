@@ -13,17 +13,12 @@ import java.util.List;
 
 @Service
 public class AgregadorDeHechosService implements IAgregadorDeHechosService {
-    private final HechosService hechosService;
-
-    public AgregadorDeHechosService(HechosService hechosService) {
-        this.hechosService = hechosService;
-    }
 
     public List<HechoInputDTO> recolectarHechos(List<Fuente> fuentes) {
         List<HechoInputDTO> todosLosHechos = new ArrayList<>();
 
         for (Fuente fuente : fuentes) {
-            WebClient webClient = WebClient.builder().baseUrl(fuente.getBaseURL()).build();
+            WebClient webClient = WebClient.builder().baseUrl(fuente.getUrl()).build();
 
             List<HechoInputDTO> hechosInputDTOs = webClient.get()
                     .uri("/hechos")
