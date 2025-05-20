@@ -8,6 +8,12 @@ import lombok.Setter;
 public class Categoria {
     private Long id;
     private String nombre;
+
+    public Categoria(Object o, String categoria) {
+        this.nombre = categoria;
+    }
+
+
 }
 
 

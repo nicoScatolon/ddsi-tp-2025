@@ -11,6 +11,10 @@ public class Ubicacion {
     private Double longitud;
 
 
+    public Ubicacion(String formatted, Double latitud, Double longitud) {
+        this.latitud = latitud;
+        this.longitud = longitud;
+    }
 }
 
 
