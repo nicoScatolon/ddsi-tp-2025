@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Hecho {
     private Long id;
-
+    private Boolean actualizar = true;
     private String titulo;
     private String descripcion;
     private Ubicacion ubicacion;
@@ -21,6 +21,4 @@ public class Hecho {
 
     private LocalDateTime fechaDeCarga;
     private Boolean fueEliminado = false;
-
-    private Usuario contribuyente;
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Data
 
 public class HechoInputDTO {
-    private Long id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;
