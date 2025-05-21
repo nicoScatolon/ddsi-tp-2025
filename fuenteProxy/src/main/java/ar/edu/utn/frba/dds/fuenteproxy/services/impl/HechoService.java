@@ -1,107 +1,94 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
-
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Hecho;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Ubicacion;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionDTO;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
-
-@Service
-public class HechoService{
-    private final RestTemplate restTemplate;
-    private String token;
-
-    public HechoService(){
-        this.restTemplate = new RestTemplate();
-    }
+public class HechoService {
+    private final WebClient webClient;
 
     @Value("${api.ddsi.base-url}")
     private String baseUrl;
 
+    @Value("${api.ddsi.auth.email}")
+    private String email;
 
-    /*AUTENTICACIÓN*/
-    private void autenticar(){
-        String url = baseUrl + "/api/login";
+    @Value("${api.ddsi.auth.password}")
+    private String password;
+
+    public HechoService(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+    }
+
+    private Mono<String> autenticar(){
         String body = """
-                {
-                  "email": "ddsi@gmail.com",
-                  "password": "ddsi2025*"
-                }
-                """;
+            {
+                "email": "%s",
+                "password": "%s"
+            }
+            """.formatted(email, password);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<String>(body, headers);
+        return webClient
+                .post()
+                .uri("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> json.get("token").asText());
+    }
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-
-        this.token = extraerToken(Objects.requireNonNull(response.getBody()));
+    private Mono<List<HechoDTO>> buscarTodos(){
+        return autenticar()
+                .flatMap(token -> webClient.get()
+                .uri("/api/desastres?page=1")
+                .retrieve()
+                .bodyToFlux(HechoExternoDTO.class)
+                .map(this::mapToHechoDTO)
+                .collectList()
+        );
 
     }
 
-    private String extraerToken(String json){
-        return json.replaceAll(".*\"token\"\\s*:\\s*\"([^\"]+)\".*", "$1");
-    }
-
-
-
-    /* CONSUMO EL ENDPOINT DE DESASTRES*/
-    public List<Hecho> obtenerHechos(){
-        if(token == null){
-            autenticar();
-        }
-
-        String url = baseUrl + "/api/desastres?page=1";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-
-        ResponseEntity<HechoExternoDTO[]> respuesta =
-                restTemplate.exchange(url,HttpMethod.GET,new HttpEntity<>(headers),HechoExternoDTO[].class);
-
-        HechoExternoDTO[] dtoArray = respuesta.getBody();
-        if(dtoArray == null) return List.of();
-
-        return Arrays.stream(dtoArray)
-                .map(this::mapearAHecho)
-                .toList();
-
+    public Mono<HechoDTO> buscarPorId(Long id) {
+        return autenticar()
+                .flatMap(token -> webClient.get()
+                        .uri("/api/desastres/{id}", id)
+                        .retrieve()
+                        .bodyToMono(HechoExternoDTO.class)
+                        .map(this::mapToHechoDTO)
+        );
     }
 
 
 
-    /* PASAR DE DTO A ENTIDAD*/
 
-    private Hecho mapearAHecho(HechoExternoDTO dto){
-        DateTimeFormatter formatter = DateTimeFormatter. ISO_OFFSET_DATE_TIME;
+    private HechoDTO mapToHechoDTO(HechoExternoDTO dto) {
+    DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-        return Hecho.builder()
-                .id(dto.getId())
-                .titulo(dto.getTitulo())
-                .descripcion(dto.getDescripcion())
-                .categoria(new Categoria(null, dto.getCategoria()))
-                .ubicacion(new Ubicacion(
-                        null,
-                        dto.getLatitud(),
-                        dto.getLongitud()))
-                .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), formatter))
-                .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), formatter))
-                .fueEliminado(false)
-                .build();
-    }
-
-
+    return HechoDTO.builder()
+            .id(dto.getId())
+            .titulo(dto.getTitulo())
+            .descripcion(dto.getDescripcion())
+            .categoria(new CategoriaDTO(null, dto.getCategoria()))
+            .ubicacion(new UbicacionDTO(dto.getLatitud(), dto.getLongitud()))
+            .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
+            .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
+            .build();
 }
+}
+
+
+
