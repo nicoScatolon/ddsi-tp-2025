@@ -5,16 +5,16 @@ import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Getter
-@Setter
+@Data
 public class HechoInputDTO {
+    private Long id;
+
     private String titulo;
     private String descripcion;
-    private Categoria categoria;
-    private Ubicacion ubicacion;
+    private CategoriaInputDTO categoria;
+    private UbicacionInputDTO ubicacion;
     private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeModificacion;
 }

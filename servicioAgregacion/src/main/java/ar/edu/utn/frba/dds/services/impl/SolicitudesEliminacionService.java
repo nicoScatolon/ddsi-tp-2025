@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
-    private ISolicitudesEliminacionRepository repository;
+    private final ISolicitudesEliminacionRepository repository;
 
     public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository) {
         this.repository = repository;

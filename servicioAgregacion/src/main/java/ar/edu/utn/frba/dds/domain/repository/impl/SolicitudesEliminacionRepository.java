@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public class SolicitudesEliminacionRepository implements ISolicitudesEliminacionRepository {
-    private List<SolicitudEliminarHecho> solicitudesEliminacion;
+    private final List<SolicitudEliminarHecho> solicitudesEliminacion;
     public SolicitudesEliminacionRepository() {
         solicitudesEliminacion = new ArrayList<SolicitudEliminarHecho>(); //ToDo: se debería reemplazar por DB(?
     }

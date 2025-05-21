@@ -1,38 +1,40 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Fuentes.Fuente;
-import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import ar.edu.utn.frba.dds.services.ISchedulerService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/hechos")
 public class HechosController {
-    private IHechosService hechosService;
-    private IFuentesRepository fuentesRepository;
-    private List<Fuente> fuentes;
+    private final IHechosService hechosService;
+    private final List<String> fuentesManuales;
 
-    public HechosController(IHechosService hechosService, IFuentesRepository fuentesRepository) {
+    public HechosController(
+            IHechosService hechosService,
+            @Value("#{'${fuentes.manuales}'.split(',')}") List<String> fuentesManuales
+    ) {
         this.hechosService = hechosService;
-        this.fuentesRepository = fuentesRepository;
-    }
-
-    @GetMapping
-    public List<HechoOutputDTO> getHechos() {
-        return hechosService.buscarTodosLosHechos();
+        this.fuentesManuales = fuentesManuales;
     }
 
     @GetMapping("/actualizar")
     public void actualizarHechosManualmente() {
-        List<Fuente> fuentes = fuentesRepository.obtenerFuentes();
-        hechosService.obtenerTodosLasHechos(fuentes);
+        for (String url : fuentesManuales) {
+            hechosService.actualizarHechosFuente(url);
+        }
+    }
+
+    @GetMapping
+    public List<HechoOutputDTO> getHechos() {
+        return hechosService.findAll();
     }
 
     @GetMapping("/{id}")

@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/solicitudeseliminacion")
 public class SolicitudesEliminacionController {
-    private ISolicitudesEliminacionService solicitudesEliminacionService;
+    private final ISolicitudesEliminacionService solicitudesEliminacionService;
 
     public SolicitudesEliminacionController(ISolicitudesEliminacionService solicitudesEliminacionService) {
         this.solicitudesEliminacionService = solicitudesEliminacionService;
@@ -21,5 +21,4 @@ public class SolicitudesEliminacionController {
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.buscarTodasLasSolicitudes();
     }
-
 }

@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Hecho {
     private Long id;
+    private String fuenteNombre;
+    private Long fuenteId;
 
     private String titulo;
     private String descripcion;
@@ -19,7 +21,7 @@ public class Hecho {
     private Categoria categoria;
     private LocalDate fechaDeOcurrencia;
 
-    private LocalDateTime fechaDeCarga;
+    private LocalDateTime fechaDeModificacion;
     private Boolean fueEliminado = false;
 
     private Usuario contribuyente;

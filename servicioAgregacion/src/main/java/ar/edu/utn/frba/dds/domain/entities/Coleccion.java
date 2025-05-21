@@ -1,10 +1,12 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.*;
+import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,11 +17,14 @@ public class Coleccion {
     @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
+    @Setter private HechosRepository hechosRepository;
 
 
-    public Coleccion(String titulo) {
+    public Coleccion(String titulo, String descripcion, HechosRepository hechosRepository) {
         this.listaCriterios = new HashSet<CriterioInterfaz>();
         this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.hechosRepository = hechosRepository;
     }
 
     public void agregarCriterio(CriterioInterfaz criterio) {
@@ -31,18 +36,15 @@ public class Coleccion {
     }
 
     public Set<Hecho> getHechos() {
-        // seria NAVEGAR, devuelve la coleccion sin filtros
         
         if(this.listaCriterios.isEmpty()){
             return new HashSet<>();
         }
-//        Set<Hecho> listaHechos = fuente.getHechos();
-//
-//        return listaHechos.stream()
-//                .filter(h->this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
-//                .collect(Collectors.toCollection(HashSet::new));
-        //ToDO: Cambiar, no existe una fuente, sino que una misma coleccion puede tener hechos de distintas fuentes
-        return null;
+
+        List<Hecho> listaHechos = hechosRepository.findAll();
+        return listaHechos.stream()
+                .filter(h->this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     public Set<Hecho> getHechosConFiltro(CriterioInterfaz filtro) {

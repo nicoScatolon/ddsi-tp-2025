@@ -1,7 +1,8 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
+
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.repository.ICategoriaRepository;
+import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,9 +10,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class CategoriaRepository implements ICategoriaRepository {
+public class CategoriasRepository implements ICategoriasRepository {
     private List<Categoria> categorias;
-    public CategoriaRepository() {
+    public CategoriasRepository() {
         categorias = new ArrayList<Categoria>(); //ToDo: se debería reemplazar por DB(?
     }
 
@@ -22,8 +23,8 @@ public class CategoriaRepository implements ICategoriaRepository {
 
     @Override
     public void save(Categoria categoria) {
+        categoria.setId(categoria.getId());
         this.categorias.add(categoria);
-        categoria.setHash(categoria.getHash());
     }
 
     @Override
@@ -32,10 +33,10 @@ public class CategoriaRepository implements ICategoriaRepository {
     }
 
     @Override
-    public Categoria findByHash(Integer hash) {
+    public Categoria findByID(Long id) {
         return this.categorias
                 .stream()
-                .filter(categoria -> Objects.equals(categoria.getHash(),hash))
+                .filter(categoria -> Objects.equals(categoria.getId(),id))
                 .findFirst()
                 .orElse(null);
     }

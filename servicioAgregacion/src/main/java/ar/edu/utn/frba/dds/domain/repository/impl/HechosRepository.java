@@ -4,38 +4,56 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
-    private List<Hecho> hechos;
+    private final Map<Long, Hecho> hechos = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
-
-    //ToDO: Hay que implementarlo para las bases de datos, esto simplemente lo guarda en memoria
-    public HechosRepository() {
-        hechos = new ArrayList<Hecho>();
-    } //ToDo: se debería reemplazar por DB(?
 
     @Override
     public List<Hecho> findAll() {
-        return this.hechos;
+        return new ArrayList<>(hechos.values());
     }
 
     @Override
     public Hecho findById(Long id) {
-        return this.hechos.stream().filter(h -> h.getId() == id).findFirst().orElse(null);
+        return hechos.get(id);
     }
 
     @Override
-    public void save(Hecho hecho) {
-        Long id = idGenerator.getAndIncrement();
-        this.hechos.add(hecho);
+    public void saveAll(List<Hecho> nuevosHechos) {
+        for (Hecho hecho : nuevosHechos) {
+            Hecho hechoVerificado = verificarExistenteYAsignarId(hecho);
+            hechos.put(hechoVerificado.getId(), hechoVerificado);
+        }
     }
 
     @Override
     public void delete(Hecho hecho) {
-        this.hechos.remove(hecho);
+        hechos.remove(hecho.getId());
+    }
+
+    @Override
+    public Optional<Hecho> findByFuente(Long fuenteID, String fuenteNombre) {
+        return hechos.values().stream()
+                .filter(h -> Objects.equals(h.getFuenteId(), fuenteID) &&
+                        Objects.equals(h.getFuenteNombre(), fuenteNombre))
+                .findFirst();
+    }
+
+    private Hecho verificarExistenteYAsignarId(Hecho hecho) {
+        Optional<Hecho> existente = this.findByFuente(hecho.getFuenteId(), hecho.getFuenteNombre());
+
+        existente.ifPresent(hechoExistente -> hechos.remove(hechoExistente.getId()));
+
+        if (hecho.getId() == null) {
+            hecho.setId(idGenerator.getAndIncrement());
+        }
+
+        return hecho;
     }
 }

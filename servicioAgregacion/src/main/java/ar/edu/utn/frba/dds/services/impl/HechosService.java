@@ -1,78 +1,91 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Fuentes.Fuente;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho;
-import ar.edu.utn.frba.dds.domain.repository.ICategoriaRepository;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
-import ar.edu.utn.frba.dds.services.IAgregadorDeHechosService;
+import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
 @Service
 public class HechosService implements IHechosService {
-    private IHechosRepository hechosRepository;
-    //private ICategoriaRepository categoriaRepository;
-    private IAgregadorDeHechosService agregadorDeHechosService;
+    private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
+    private final IHechosRepository hechosRepository;
+    private final WebClient.Builder webClientBuilder;
 
-    public HechosService(IHechosRepository hechosRepository,
-                         ICategoriaRepository categoriaRepository,
-                         IAgregadorDeHechosService agregadorDeHechosService
-                         ) {
+    public HechosService(IHechosRepository hechosRepository, WebClient.Builder webClientBuilder) {
         this.hechosRepository = hechosRepository;
-        //this.categoriaRepository = categoriaRepository;
-        this.agregadorDeHechosService = agregadorDeHechosService;
+        this.webClientBuilder = webClientBuilder;
     }
 
-
-    public List<Hecho> obtenerTodosLasHechos(List<Fuente> fuentes) {
-        List<HechoInputDTO> hechosInput = agregadorDeHechosService.recolectarHechos(fuentes);
-
-        List<Hecho> hechos = hechosInput.stream()
-                .map(this::hechoInputDTO)
-                .toList();
-
-        hechos.forEach(hechosRepository::save);
-        return hechos;
+    public List<HechoInputDTO> recolectarHechos(String fuenteURL) {
+        try {
+            WebClient webClient = webClientBuilder.baseUrl(fuenteURL).build();
+            return webClient.get()
+                    .uri("/hechos")
+                    .retrieve()
+                    .bodyToFlux(HechoInputDTO.class)
+                    .collectList()
+                    .block();
+        } catch (Exception e) {
+            logger.error("Error al recolectar hechos desde la fuente: {}", fuenteURL, e);
+            return List.of();
+        }
     }
 
-    public List<HechoOutputDTO> buscarTodosLosHechos(){
+    @Override
+    public void actualizarHechosFuente(String fuenteURL) {
+        List<Hecho> hechosConFuente =
+                this.recolectarHechos(fuenteURL)
+                        .stream()
+                        .map(this::convertirHechoInputDTO)
+                        .toList();
+
+        if (hechosConFuente.isEmpty()) {
+            logger.warn("No se encontraron hechos desde la fuente: {}", fuenteURL);
+        } else {
+            this.actualizarRepositoryHecho(hechosConFuente);
+            this.logearHechosCargados(hechosConFuente, fuenteURL);
+        }
+    }
+
+    @Override
+    public List<HechoOutputDTO> findAll(){
         //ToDO, si es Admin, aquí se debería verificar
         return this.hechosRepository
                 .findAll()
                 .stream()
-                .map(this::hechoOutputDTO)
+                .map(this::convertirHechoOutputDTO)
                 .toList();
-    }
-
-    @Override
-    public HechoOutputDTO crearHecho(HechoInputDTO hechoInputDTO) {
-        //ToDO, si es Admin, aquí se debería verificar
-        Hecho hecho = Hecho.builder()
-                .titulo(hechoInputDTO.getTitulo())
-                .descripcion(hechoInputDTO.getDescripcion())
-                .ubicacion(hechoInputDTO.getUbicacion())
-                .fechaDeOcurrencia(hechoInputDTO.getFechaDeOcurrencia())
-                .categoria(hechoInputDTO.getCategoria())
-                //ToDO: hay q revisar las fuentes que nos envian. Porq si nos envian una categoria está bien, si nos envian un hash y string nombre hay q modificarlo.
-                .build();
-
-        this.hechosRepository.save(hecho);
-        return this.hechoOutputDTO(hecho);
     }
 
     @Override
     public HechoOutputDTO buscarHechoPorId(Long id) {
         Hecho hecho = this.hechosRepository.findById(id);
-        return this.hechoOutputDTO(hecho);
+        return this.convertirHechoOutputDTO(hecho);
     }
 
-
+    // LOGGER
+    @Override
+    public void logearHechosCargados(List<Hecho> hechos, String urlFuente){
+        logger.info("Hechos cargados - Cantidad: {} - Fuente: {}", hechos.size(), urlFuente);
+        hechos.forEach(hecho ->
+                logger.info
+                        ("Hecho cargado - ID: {} - Titulo: {} -  Descripción: {} -  Categoria: {} -  Fecha De Ocurrencia: {}"
+                        , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
+    }
     //---CONVERTIDORES DE HECHOS Y DTOS---
-    private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+    private HechoOutputDTO convertirHechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
                 .titulo(hecho.getTitulo())
@@ -83,13 +96,32 @@ public class HechosService implements IHechosService {
                 .build();
     }
 
-    private Hecho hechoInputDTO(HechoInputDTO hechoInputDTO) {
+    private Hecho convertirHechoInputDTO(HechoInputDTO dto) {
         return Hecho.builder()
-                .titulo(hechoInputDTO.getTitulo())
-                .descripcion(hechoInputDTO.getDescripcion())
-                .categoria(hechoInputDTO.getCategoria())
-                .ubicacion(hechoInputDTO.getUbicacion())
-                .fechaDeOcurrencia(hechoInputDTO.getFechaDeOcurrencia())
+                .fuenteId(dto.getId())
+                .titulo(dto.getTitulo())
+                .descripcion(dto.getDescripcion())
+                .categoria(convertirCategoria(dto.getCategoria()))
+                .ubicacion(convertirUbicacion(dto.getUbicacion()))
+                .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .build();
+    }
+
+    private Categoria convertirCategoria(CategoriaInputDTO dto) {
+        return Categoria.builder()
+                .id(dto.getId())
+                .nombre(dto.getNombre())
+                .build();
+    }
+
+    private Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
+        return Ubicacion.builder()
+                .latitud(dto.getLatitud())
+                .longitud(dto.getLongitud())
+                .build();
+    }
+
+    private void actualizarRepositoryHecho(List<Hecho> hechos) {
+        hechosRepository.saveAll(hechos);
     }
 }

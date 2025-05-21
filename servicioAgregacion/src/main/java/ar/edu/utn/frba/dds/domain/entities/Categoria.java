@@ -1,13 +1,15 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
+@Builder
 public class Categoria {
+    private Long id;
     private String nombre;
-    private Integer hash;
 
     public Categoria(String nombre) {
         this.nombre = nombre;

@@ -4,9 +4,9 @@ import ar.edu.utn.frba.dds.domain.entities.Categoria;
 
 import java.util.List;
 
-public interface ICategoriaRepository {
+public interface ICategoriasRepository {
     List<Categoria> findAll();
-    Categoria findByHash(Integer hash);
+    Categoria findByID(Long id);
     void save(Categoria categoria);
     void delete(Categoria categoria);
 }
