@@ -11,14 +11,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Hecho {
-    private Long id;
-    private Boolean actualizar = true;
+    //Datos
     private String titulo;
     private String descripcion;
     private Ubicacion ubicacion;
-    private Categoria categoria;
+    private String categoria;
     private LocalDate fechaDeOcurrencia;
 
+    //Metadata
+    private Long id;
     private LocalDateTime fechaDeCarga;
-    private Boolean fueEliminado = false;
+    private Boolean actualizar = true; //le dice al service cuando si debe enviar o no el hecho
+    //private Boolean fueEliminado = false; -> No sabemos si se modifica el hecho solamente en el agregador o aca tambien
 }

@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output;
 
-import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Ubicacion;
 import lombok.Builder;
 import lombok.Data;
