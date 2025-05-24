@@ -17,7 +17,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
-public class Mapper {
+public class MapperHechos {
     public static HechoOutputDTO convertirHechoOutputDTO(IHecho hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())

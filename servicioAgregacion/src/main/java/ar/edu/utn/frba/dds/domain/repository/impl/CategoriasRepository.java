@@ -11,9 +11,9 @@ import java.util.Objects;
 
 @Repository
 public class CategoriasRepository implements ICategoriasRepository {
-    private List<Categoria> categorias;
+    private final List<Categoria> categorias;
     public CategoriasRepository() {
-        categorias = new ArrayList<Categoria>(); //ToDo: se debería reemplazar por DB(?
+        categorias = new ArrayList<Categoria>();
     }
 
     @Override

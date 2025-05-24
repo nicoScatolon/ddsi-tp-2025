@@ -21,7 +21,7 @@ public class SolicitudesEliminacionController {
 
     @GetMapping
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
-        return this.solicitudesEliminacionService.buscarTodasLasSolicitudes();
+        return this.solicitudesEliminacionService.findAll();
     }
 
     @GetMapping("{id}")

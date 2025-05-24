@@ -38,7 +38,7 @@ public class HechosController {
 
     @GetMapping("/{id}")
     public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
-        return hechosService.buscarHechoPorId(id);
+        return hechosService.findByID(id);
     }
 
     @GetMapping("/inicializar")

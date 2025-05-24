@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +21,6 @@ public class ConstructorSolicitudesEliminacion {
         solicitud.setNombreCreador(nombreContribuyente);
         solicitud.setApellidoCreador(apellidoContribuyente);
         solicitud.setFechaCreacion(LocalDateTime.now());
-
 
         return solicitud;
     }

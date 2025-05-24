@@ -43,7 +43,7 @@ public class HechosService implements IHechosService {
         List<IHecho> hechosConFuente =
                 this.recolectarHechos(fuenteURL)
                         .stream()
-                        .map(Mapper::convertirHechoInputDTO)
+                        .map(MapperHechos::convertirHechoInputDTO)
                         .toList();
 
         if (hechosConFuente.isEmpty()) {
@@ -60,14 +60,14 @@ public class HechosService implements IHechosService {
         return this.hechosRepository
                 .findAll()
                 .stream()
-                .map(Mapper::convertirHechoOutputDTO)
+                .map(MapperHechos::convertirHechoOutputDTO)
                 .toList();
     }
 
     @Override
-    public HechoOutputDTO buscarHechoPorId(Long id) {
+    public HechoOutputDTO findByID(Long id) {
         IHecho hecho = this.hechosRepository.findById(id);
-        return Mapper.convertirHechoOutputDTO(hecho);
+        return MapperHechos.convertirHechoOutputDTO(hecho);
     }
 
     // LOGGER

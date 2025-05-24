@@ -10,6 +10,6 @@ public interface IHechosService {
     List<HechoOutputDTO> findAll();
     List<IHechoInputDTO> recolectarHechos(String fuenteURL);
     void actualizarHechosFuente(String fuenteURL); //ToDO revisar como el profe implementa la conexion entre servidores
-    HechoOutputDTO buscarHechoPorId(Long id);
+    HechoOutputDTO findByID(Long id);
     void logearHechosCargados(List<IHecho> hechos, String urlFuente);
 }
