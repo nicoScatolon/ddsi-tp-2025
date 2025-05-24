@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.*;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public class Coleccion {
-    private Set<CriterioInterfaz> listaCriterios;
+    private final Set<CriterioInterfaz> listaCriterios;
     @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
@@ -35,20 +36,20 @@ public class Coleccion {
         this.listaCriterios.remove(criterio);
     }
 
-    public Set<Hecho> getHechos() {
+    public Set<IHecho> getHechos() {
         
         if(this.listaCriterios.isEmpty()){
             return new HashSet<>();
         }
 
-        List<Hecho> listaHechos = hechosRepository.findAll();
+        List<IHecho> listaHechos = hechosRepository.findAll();
         return listaHechos.stream()
                 .filter(h->this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public Set<Hecho> getHechosConFiltro(CriterioInterfaz filtro) {
-        Set<Hecho> hechosADevolver = this.getHechos();
+    public Set<IHecho> getHechosConFiltro(CriterioInterfaz filtro) {
+        Set<IHecho> hechosADevolver = this.getHechos();
 
         if(hechosADevolver.isEmpty()){
             return new HashSet<>();
@@ -59,8 +60,8 @@ public class Coleccion {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public Set<Hecho> getHechosConFiltro(Set<CriterioInterfaz> filtros) {
-        Set<Hecho> hechosADevolver = this.getHechos();
+    public Set<IHecho> getHechosConFiltro(Set<CriterioInterfaz> filtros) {
+        Set<IHecho> hechosADevolver = this.getHechos();
 
         if(hechosADevolver.isEmpty()){
             return new HashSet<>();

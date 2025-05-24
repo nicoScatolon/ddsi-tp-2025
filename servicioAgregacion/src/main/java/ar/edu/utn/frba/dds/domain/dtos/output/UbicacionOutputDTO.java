@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CategoriaOutputDTO {
-    private String nombre;
-    private Long id;
+public class UbicacionOutputDTO {
+    Double latitud;
+    Double longitud;
 }

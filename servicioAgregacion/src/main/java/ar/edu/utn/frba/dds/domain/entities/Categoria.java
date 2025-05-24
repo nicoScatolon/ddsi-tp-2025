@@ -1,12 +1,12 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Categoria {
     private Long id;
     private String nombre;

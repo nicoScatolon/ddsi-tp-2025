@@ -26,6 +26,11 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .toList();
     }
 
+    @Override
+    public SolicitudEliminarHecho findByID(Long id) {
+       return repository.findById(id);
+    }
+
     private SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
         return SolicitudEliminarHechoOutputDTO
                 .builder()
@@ -36,4 +41,5 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .fechaCreacion(solicitud.getFechaCreacion())
                 .build();
     }
+
 }

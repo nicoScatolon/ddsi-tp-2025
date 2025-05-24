@@ -4,7 +4,7 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
-import ar.edu.utn.frba.dds.domain.entities.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 
 public class CriterioTitulo implements CriterioInterfaz {
     private String titulo;
@@ -14,7 +14,7 @@ public class CriterioTitulo implements CriterioInterfaz {
     }
 
     @Override
-    public Boolean pertenece(Hecho hecho){
+    public Boolean pertenece(IHecho hecho){
         return hecho.getTitulo().equals(this.titulo);
     }
 

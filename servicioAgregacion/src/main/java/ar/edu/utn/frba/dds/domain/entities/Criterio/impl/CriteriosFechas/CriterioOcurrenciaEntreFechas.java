@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas;
 
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 
 import java.time.LocalDate;
 
@@ -13,7 +13,7 @@ public class CriterioOcurrenciaEntreFechas extends CriterioEntreFechas {
     }
 
     @Override
-    public LocalDate getFechaNecesaria(Hecho hecho) {
+    public LocalDate getFechaNecesaria(IHecho hecho) {
         return hecho.getFechaDeOcurrencia();
     }
 }
