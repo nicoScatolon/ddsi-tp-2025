@@ -1,15 +1,17 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Hecho {
-    private Long id;
-
+    //Contenido del Hecho
     private String titulo;
     private String descripcion;
     private Ubicacion ubicacion;
@@ -17,15 +19,15 @@ public class Hecho {
     private IContenidoMultimedia contenidoMultimedia;
     private LocalDateTime fechaDeCarga;
 
-    private Boolean fueEliminado = false; // para las solicitudes
+    //Metadata
+    private Long id;
 
-    private Boolean puedeModificar;
-    private LocalDateTime fechaDeModificacion; // para verificar los 7 dias
-    private Usuario contribuyente; // el ususario que lo carga
+    private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
+    private Contribuyente contribuyente; // el ususario que lo carga
 
-    private EstadoHecho estado; // para la respuesta del administrador
+    private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
+    private Long idAdmin; //el administrador que gestiono el hecho subido
+    // private String sugerencia = null;
 
-    private Boolean actualizar;
-    //para no tener que actualizar los datos de hecho, considero que la anonimidad del usuario se puede cambiar, y por ende se debe verificar al usuario y no al hecho para ver si se muestra o no
-
+    private Boolean actualizar = true;
 }

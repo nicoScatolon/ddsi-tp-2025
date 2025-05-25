@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
 public interface IContenidoMultimedia {
-    //TODO
+    public String getContenido();
 }
 // Strategy por posibles distintos tipos de contenido

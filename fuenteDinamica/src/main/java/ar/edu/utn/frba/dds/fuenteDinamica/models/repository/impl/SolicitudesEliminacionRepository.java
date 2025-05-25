@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.repository.impl;
 
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.SolicitudEliminacion;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.ISolicitudesEliminacionRepository;
 import org.springframework.stereotype.Repository;
 

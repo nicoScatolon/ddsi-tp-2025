@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteDinamica.models.entities.solicitudEliminacion;
+package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
 public enum EstadoSolicitudEliminacion {
     ACEPTADA,
