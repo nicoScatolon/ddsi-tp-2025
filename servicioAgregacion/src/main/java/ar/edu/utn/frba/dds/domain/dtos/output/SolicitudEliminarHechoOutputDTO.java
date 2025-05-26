@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.dtos.output;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import lombok.Builder;
 import lombok.Data;
 
