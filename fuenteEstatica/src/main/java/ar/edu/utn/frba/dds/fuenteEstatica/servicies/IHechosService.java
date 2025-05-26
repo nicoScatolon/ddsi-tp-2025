@@ -7,7 +7,8 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
 import java.util.List;
 
 public interface IHechosService {
-    public List<Hecho> importarArchivoHechos(String path, ImportadorHechos importador);
-    public List<HechoOutputDTO> getAllHechosParaActualizar();
+    List <HechoOutputDTO> getAllHechosParaActualizar();
+    List<Hecho> importarArchivoHechos(String path, ImportadorHechos importador);
+
 
 }

@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = lombok.AccessLevel.PUBLIC)
 
 public class HechoOutputDTO {
     private Long id;
