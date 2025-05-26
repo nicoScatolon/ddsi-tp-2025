@@ -45,7 +45,6 @@ public class HechosRepository implements IHechosRepository {
                 .findFirst();
     }
 
-
     private IHecho verificarExistenteYAsignarId(IHecho hecho) {
         Optional<IHecho> existente = this.findByFuenteID(hecho.getFuenteId(), hecho.getClass());
 

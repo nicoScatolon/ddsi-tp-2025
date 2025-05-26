@@ -9,7 +9,7 @@ import java.util.List;
 public interface IHechosService {
     List<HechoOutputDTO> findAll();
     List<IHechoInputDTO> recolectarHechos(String fuenteURL);
-    void actualizarHechosFuente(String fuenteURL); //ToDO revisar como el profe implementa la conexion entre servidores
+    void actualizarHechosFuente(String fuenteURL);
     HechoOutputDTO findByID(Long id);
     void logearHechosCargados(List<IHecho> hechos, String urlFuente);
 }

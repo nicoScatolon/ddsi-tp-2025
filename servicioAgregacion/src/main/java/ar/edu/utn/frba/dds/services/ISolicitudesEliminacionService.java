@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.services;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;

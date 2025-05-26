@@ -7,6 +7,6 @@ import java.util.List;
 public interface ICategoriasRepository {
     List<Categoria> findAll();
     Categoria findByID(Long id);
-    void save(Categoria categoria);
+    Categoria save(Categoria categoria);
     void delete(Categoria categoria);
 }

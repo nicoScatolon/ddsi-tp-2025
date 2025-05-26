@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class SolicitudesEliminacionRepository implements ISolicitudesEliminacionRepository {
     private final List<SolicitudEliminarHecho> solicitudesEliminacion;
     public SolicitudesEliminacionRepository() {
-        solicitudesEliminacion = new ArrayList<SolicitudEliminarHecho>(); //ToDo: se debería reemplazar por DB(?
+        solicitudesEliminacion = new ArrayList<>();
     }
 
     @Override
@@ -21,7 +22,7 @@ public class SolicitudesEliminacionRepository implements ISolicitudesEliminacion
 
     @Override
     public SolicitudEliminarHecho findById(Long id) {
-        return this.solicitudesEliminacion.stream().filter(s -> s.getId() == id).findFirst().orElse(null);
+        return this.solicitudesEliminacion.stream().filter(s -> Objects.equals(s.getId(), id)).findFirst().orElse(null);
     }
 
     @Override

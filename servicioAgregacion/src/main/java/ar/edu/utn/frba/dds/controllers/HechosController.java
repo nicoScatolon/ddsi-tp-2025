@@ -40,10 +40,4 @@ public class HechosController {
     public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
         return hechosService.findByID(id);
     }
-
-    @GetMapping("/inicializar")
-    public Boolean inicializarFuentes(){
-        //ToDO: Hay que inicializar las fuentes y no tenerlas hardcodeadas?
-        return true;
-    }
 }

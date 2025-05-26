@@ -62,6 +62,17 @@ public class MapperHechos {
                 .build();
     }
 
+    public static IHecho convertirHechoInputDTO(IHechoInputDTO dto) {
+        if (dto instanceof HechoInputProxyDTO proxy) {
+            return convertirHechoInputDTO(proxy);
+        } else if (dto instanceof HechoInputEstaticaDTO estatica) {
+            return convertirHechoInputDTO(estatica);
+        } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
+            return convertirHechoInputDTO(dinamica);
+        } else {
+            throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
+        }
+    }
 
     public static Categoria convertirCategoria(CategoriaInputDTO dto) {
         return Categoria.builder()
@@ -89,17 +100,5 @@ public class MapperHechos {
                 .latitud(ubicacion.getLatitud())
                 .longitud(ubicacion.getLongitud())
                 .build();
-    }
-
-    public static IHecho convertirHechoInputDTO(IHechoInputDTO dto) {
-        if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy);
-        } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica);
-        } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica);
-        } else {
-            throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
-        }
     }
 }

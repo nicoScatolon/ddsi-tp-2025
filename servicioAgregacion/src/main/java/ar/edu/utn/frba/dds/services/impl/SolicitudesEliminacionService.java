@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +24,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public List<SolicitudEliminarHechoOutputDTO> findAll() {
-        //ToDO, si es Admin, aquí se debería verificar
+        //ToDO, Deberiamos hacer todas las validaciones de permisos? Si es asi, se deben hacer en el service.
         return this.repository
                 .findAll()
                 .stream()
@@ -42,8 +43,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public List<SolicitudEliminarHechoOutputDTO> recolectarSolicitudes(String fuenteURL) {
+        List<SolicitudEliminarHecho> solicitudesEliminacion = new ArrayList<>();
         //ToDo
-        return List.of();
+
+        this.logearSolicitudesEliminacionCargadas(solicitudesEliminacion);
+        return solicitudesEliminacion
+                .stream()
+                .map(this::solicitudEliminarHechoOutputDTO)
+                .toList();
     }
 
     @Override
@@ -67,7 +74,6 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         );
     }
 
-
     //CONSTRUCTORES
     private SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
         return SolicitudEliminarHechoOutputDTO
@@ -80,7 +86,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .build();
     }
 
-    // Método auxiliar para acortar texto en logs
+    //Metodo para acortar strings y entren en consola.
     private String acortarTexto(String texto) {
         if (texto == null) return "";
         return texto.length() <= 60 ? texto : texto.substring(0, 60) + "...";

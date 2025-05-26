@@ -2,7 +2,9 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
@@ -16,11 +18,13 @@ import java.util.List;
 public class HechosService implements IHechosService {
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
     private final IHechosRepository hechosRepository;
+    private final ICategoriasRepository categoriasRepository;
     private final WebClient.Builder webClientBuilder;
 
-    public HechosService(IHechosRepository hechosRepository, WebClient.Builder webClientBuilder) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriasRepository categoriasRepository, WebClient.Builder webClientBuilder) {
         this.hechosRepository = hechosRepository;
         this.webClientBuilder = webClientBuilder;
+        this.categoriasRepository = categoriasRepository;
     }
 
     public List<IHechoInputDTO> recolectarHechos(String fuenteURL) {
@@ -56,7 +60,6 @@ public class HechosService implements IHechosService {
 
     @Override
     public List<HechoOutputDTO> findAll(){
-        //ToDO, si es Admin, aquí se debería verificar
         return this.hechosRepository
                 .findAll()
                 .stream()
@@ -81,6 +84,10 @@ public class HechosService implements IHechosService {
     }
 
     private void actualizarRepositoryHecho(List<IHecho> hechos) {
+        for (IHecho hecho : hechos) {
+            Categoria categoriaPersistida = categoriasRepository.save(hecho.getCategoria());
+            hecho.setCategoria(categoriaPersistida);
+        }
         hechosRepository.saveAll(hechos);
     }
 }
