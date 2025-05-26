@@ -14,5 +14,5 @@ public class HechoInputDTO {
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
 
-    private IContenidoMultimedia contenidoMultimedia; //todavia no se como es, va como null
+    private IContenidoMultimedia contenidoMultimedia;
 }
