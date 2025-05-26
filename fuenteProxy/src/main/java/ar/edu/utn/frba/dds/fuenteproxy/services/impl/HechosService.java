@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
@@ -44,7 +43,7 @@ public class HechosService implements IHechosService {
             .id(dto.getId())
             .titulo(dto.getTitulo())
             .descripcion(dto.getDescripcion())
-            .categoria(new CategoriaOutputDTO(null, dto.getCategoria()))
+            .categoria(dto.getCategoria())
             .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
             .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
             .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
