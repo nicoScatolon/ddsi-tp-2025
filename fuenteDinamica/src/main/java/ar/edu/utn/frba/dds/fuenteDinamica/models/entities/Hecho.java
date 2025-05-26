@@ -14,6 +14,7 @@ public class Hecho {
     //Contenido del Hecho
     private String titulo;
     private String descripcion;
+    private String categoria;
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
     private IContenidoMultimedia contenidoMultimedia;

@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
@@ -49,7 +50,7 @@ public class HechosService implements IHechosService {
             {throw new IllegalArgumentException("Pasaron los 7 dias, no se puede modificar");}
 
         //TODO mejorar los Exception tirados haciendo una clase propia
-
+        //TODO modificarHehco
         hechoNuevo.setEstado(EstadoHecho.PENDIENTE);
         hechoNuevo.setFechaDeModificacion(fechaModificacion);
         this.hechosRepository.save(hechoNuevo);
@@ -67,9 +68,10 @@ public class HechosService implements IHechosService {
         return hecho;
     }
 
-    public List<Hecho> getHechosActualizar() {
+    public List<HechoOutputDTO> getHechosActualizar() {
         return this.hechosRepository.findAll().stream()
                 .filter(h -> h.getActualizar() && h.getEstado().equals(EstadoHecho.ACEPTADO))
+                .map(this::hechoOutputDTO)
                 .collect(Collectors.toList());
     }
 
@@ -79,6 +81,7 @@ public class HechosService implements IHechosService {
         return Hecho.builder()
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
+                .categoria(hechoDTO.getCategoria())
                 .ubicacion(hechoDTO.getUbicacion())
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
@@ -93,6 +96,20 @@ public class HechosService implements IHechosService {
                 .apellido(contribuyenteDTO.getApellido())
                 .fechaNacimiento(contribuyenteDTO.getFechaNacimiento())
                 .esAnonimo(contribuyenteDTO.getEsAnonimo())
+                .build();
+    }
+
+    private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+        return HechoOutputDTO.builder()
+                .idLocal(hecho.getId())
+                .titulo(hecho.getTitulo())
+                .descripcion(hecho.getDescripcion())
+                .nombreCategoria(hecho.getCategoria())
+                .ubicacion(hecho.getUbicacion())
+                .fechaOcurrencia(hecho.getFechaDeOcurrencia())
+                .fechaCarga(hecho.getFechaDeCarga())
+                .contenidoMultimedia(hecho.getContenidoMultimedia())
+                .contribuyente(hecho.getContribuyente())
                 .build();
     }
 }
