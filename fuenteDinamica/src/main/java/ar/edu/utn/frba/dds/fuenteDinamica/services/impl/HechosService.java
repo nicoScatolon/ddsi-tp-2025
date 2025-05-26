@@ -37,7 +37,6 @@ public class HechosService implements IHechosService {
     public Hecho modificarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
         Hecho hechoGuardado = this.hechosRepository.findById(hechoDTO.getId());
         Hecho hechoNuevo = hechoInputDTO(hechoDTO, contribuyenteDTO);
-        var fechaModificacion = LocalDateTime.now();
 
         if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
         if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
