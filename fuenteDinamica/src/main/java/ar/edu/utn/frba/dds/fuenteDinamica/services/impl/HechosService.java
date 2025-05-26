@@ -39,31 +39,21 @@ public class HechosService implements IHechosService {
         Hecho hechoNuevo = hechoInputDTO(hechoDTO, contribuyenteDTO);
         var fechaModificacion = LocalDateTime.now();
 
-        if (hechoGuardado.getContribuyente().getId() == null) {throw new IllegalArgumentException("El hecho no es modificable"); }
         if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
         if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-        //if (hechoNuevo.getContribuyente().getEsAnonimo()) { throw new IllegalArgumentException("Un usuario anonimo no puede modificar hechos");}
         if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
             { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
-        if (hechoGuardado.getFechaDeCarga().plusDays(diasValidosModificacion).isBefore(fechaModificacion))
-            {throw new IllegalArgumentException("Pasaron los 7 dias, no se puede modificar");}
 
-        //TODO mejorar los Exception tirados haciendo una clase propia
-        //TODO modificarHehco
-        hechoNuevo.setEstado(EstadoHecho.PENDIENTE);
-        hechoNuevo.setFechaDeModificacion(fechaModificacion);
-        this.hechosRepository.save(hechoNuevo);
+        hechoGuardado.modificar(hechoNuevo, diasValidosModificacion);
+        this.hechosRepository.save(hechoGuardado);
         return hechoNuevo;
     }
 
     @Override
-    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado) {
+    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
         Hecho hecho = this.hechosRepository.findById(idHecho);
-        hecho.setIdAdmin(idAdmin);
-        hecho.setEstado(nuevoEstado);
-        hecho.setActualizar(true);
-        //posible sugerencia agregada y/o razon de rechazo
+        hecho.revisar(idAdmin, nuevoEstado, sugerencia);
         this.hechosRepository.save(hecho);
         return hecho;
     }

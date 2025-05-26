@@ -8,5 +8,5 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 public interface IHechosService {
     Hecho cargarHecho(HechoInputDTO hecho, ContribuyenteInputDTO contribuyenteDTO);
     Hecho modificarHecho(HechoInputDTO hecho, ContribuyenteInputDTO contribuyenteDTO);
-    Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho estado);
+    Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia);
 }
