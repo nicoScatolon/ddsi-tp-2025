@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
 @Data
+@Service
 public class HechosService implements IHechosService {
     private IFuenteHechosExterna fuenteHechosExterna;
 

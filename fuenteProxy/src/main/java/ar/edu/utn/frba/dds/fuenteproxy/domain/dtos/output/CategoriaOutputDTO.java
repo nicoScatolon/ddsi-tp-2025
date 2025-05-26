@@ -2,8 +2,8 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoriaOutputDTO {

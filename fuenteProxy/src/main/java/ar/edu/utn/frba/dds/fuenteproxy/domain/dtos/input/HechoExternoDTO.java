@@ -1,9 +1,15 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HechoExternoDTO {
     private Long id;
     private String titulo;

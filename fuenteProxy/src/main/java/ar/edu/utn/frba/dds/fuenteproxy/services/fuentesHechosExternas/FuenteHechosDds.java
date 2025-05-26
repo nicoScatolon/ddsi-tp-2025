@@ -33,9 +33,10 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
     private String password;
 
     private Mono<String> autenticar(){
-        AuthRequestDTO authRequestDTO = new AuthRequestDTO();
-        authRequestDTO.setEmail(email);
-        authRequestDTO.setPassword(password);
+        AuthRequestDTO authRequestDTO = AuthRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .build();
 
         return webClient
                 .post()
@@ -108,10 +109,6 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
         );
 
     }
-
-
-
-
 
 
 
