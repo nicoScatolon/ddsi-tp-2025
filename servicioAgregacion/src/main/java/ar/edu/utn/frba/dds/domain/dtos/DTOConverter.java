@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
@@ -14,6 +15,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import ar.edu.utn.frba.dds.domain.entities.Usuario;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -36,6 +38,7 @@ public class DTOConverter {
                 .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
+                .fechaDeCarga(dto.getFechaDeCarga())
                 .build();
     }
 
@@ -47,6 +50,7 @@ public class DTOConverter {
                 .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
+                .fechaDeCarga(dto.getFechaDeCarga())
                 .build();
     }
 
@@ -58,6 +62,9 @@ public class DTOConverter {
                 .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
+                .fechaDeCarga(dto.getFechaDeCarga())
+                .contenidoMultimedia(dto.getContenidoMultimedia())
+                .contribuyente(convertirUsuario(dto.getContribuyente()))
                 .build();
     }
 
@@ -97,6 +104,14 @@ public class DTOConverter {
         return UbicacionOutputDTO.builder()
                 .latitud(ubicacion.getLatitud())
                 .longitud(ubicacion.getLongitud())
+                .build();
+    }
+
+    public static Usuario convertirUsuario(UsuarioInputDTO dto) {
+        return Usuario.builder()
+                .nombre(dto.getNombre())
+                .apellido(dto.getApellido())
+                .fechaNacimiento(dto.getFechaNacimiento())
                 .build();
     }
 }

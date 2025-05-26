@@ -59,6 +59,8 @@ public class HechosRepository implements IHechosRepository {
     }
 
     private List<IHecho> filtrarEliminados(List<IHecho> hechos) {
-        return hechos.stream().filter(IHecho::getFueEliminado).collect(Collectors.toList());
+        return hechos.stream()
+                .filter(h -> h != null && Boolean.FALSE.equals(h.getFueEliminado()))
+                .collect(Collectors.toList());
     }
 }

@@ -80,7 +80,7 @@ public class HechosService implements IHechosService {
     }
 
     // MÉTODOS PRIVADOS
-    private void actualizarRepositoryHecho(List<IHecho> hechos) {
+    public void actualizarRepositoryHecho(List<IHecho> hechos) {
         for (IHecho hecho : hechos) {
             Categoria categoriaPersistida = categoriasRepository.save(this.StringToHandle(hecho.getCategoria().getNombre()));
             hecho.setCategoria(categoriaPersistida);

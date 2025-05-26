@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
+@Builder
 public class Coleccion {
     private final Set<CriterioInterfaz> listaCriterios = new HashSet<>();
     @Setter private String handle;

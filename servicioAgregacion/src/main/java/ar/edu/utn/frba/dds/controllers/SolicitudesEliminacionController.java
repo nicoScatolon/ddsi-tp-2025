@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/solicitudes-eliminacion")
+@RequestMapping("/api/agregador/solicitudes-eliminacion")
 public class SolicitudesEliminacionController {
     private final ISolicitudesEliminacionService solicitudesEliminacionService;
 

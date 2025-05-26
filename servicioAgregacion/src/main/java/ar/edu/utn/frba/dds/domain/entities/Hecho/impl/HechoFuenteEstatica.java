@@ -3,9 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Hecho.impl;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 public class HechoFuenteEstatica implements IHecho {
     private Long id;
     private Long fuenteId;
@@ -22,8 +22,9 @@ public class HechoFuenteEstatica implements IHecho {
     private Categoria categoria;
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeCarga;
 
     private LocalDateTime fechaDeModificacion;
 
-    private Boolean fueEliminado;
+    private Boolean fueEliminado = false;
 }

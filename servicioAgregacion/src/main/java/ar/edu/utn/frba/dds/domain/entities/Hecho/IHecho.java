@@ -16,6 +16,7 @@ public interface IHecho {
     LocalDate getFechaDeOcurrencia();
     LocalDateTime getFechaDeModificacion();
     Boolean getFueEliminado();
+    LocalDateTime getFechaDeCarga();
 
 
     void setId(Long id);
@@ -27,4 +28,5 @@ public interface IHecho {
     void setFechaDeOcurrencia(LocalDate fechaDeOcurrencia);
     void setFechaDeModificacion(LocalDateTime fechaDeModificacion);
     void setFueEliminado(Boolean fueEliminado);
+    void setFechaDeCarga(LocalDateTime fechaDeCarga);
 }
