@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl;
 
+
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
@@ -41,7 +42,7 @@ public class HechosService implements IHechosService {
     }
 
     private HechoOutputDTO hechoToDTO(Hecho hecho){
-        HechoOutputDTO dto = new HechoOutputDTO();
+        var dto = new HechoOutputDTO();
         dto.setId(hecho.getId());
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
