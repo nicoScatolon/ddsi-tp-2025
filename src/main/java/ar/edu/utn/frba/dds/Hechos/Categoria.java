@@ -7,5 +7,4 @@ public class Categoria {
         this.nombre = nombre;
     }
 
-    //TODO ver como verificar si una categoria ya existe para no duplicarlas
 }

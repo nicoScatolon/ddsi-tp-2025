@@ -1,7 +1,5 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho.impl;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;

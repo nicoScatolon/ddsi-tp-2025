@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
@@ -7,13 +8,12 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
-import ar.edu.utn.frba.dds.services.IDetectorDeSpam;
+import ar.edu.utn.frba.dds.domain.entities.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,8 +29,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public List<SolicitudEliminarHechoOutputDTO> findAll() {
-        //ToDO, Deberiamos hacer todas las validaciones de permisos? Si es asi, se deben hacer en el service.
-        return this.repository
+       return this.repository
                 .findAll()
                 .stream()
                 .map(this::solicitudEliminarHechoOutputDTO)
@@ -42,27 +41,11 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 
-        if (detectorDeSpam.esSpam(solicitud.getRazonDeEliminacion())){
+        if (detectorDeSpam.esSpam(razon)){ //ToDO: Si se rechaza antes de construir, no se puede guardar (soft-delete)
             solicitud.rechazarAutomaticamente();
-            repository.save(solicitud);
-            repository.delete(solicitud);
-            return;
         }
 
         repository.save(solicitud);
-    }
-
-
-    @Override
-    public List<SolicitudEliminarHechoOutputDTO> recolectarSolicitudes(String fuenteURL) {
-        List<SolicitudEliminarHecho> solicitudesEliminacion = new ArrayList<>();
-        //ToDo
-
-        this.logearSolicitudesEliminacionCargadas(solicitudesEliminacion);
-        return solicitudesEliminacion
-                .stream()
-                .map(this::solicitudEliminarHechoOutputDTO)
-                .toList();
     }
 
     @Override
@@ -104,7 +87,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     private SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
         return SolicitudEliminarHechoOutputDTO
                 .builder()
-                .hecho(solicitud.getHecho())
+                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
                 .nombreCreador(solicitud.getNombreCreador())
                 .apellidoCreador(solicitud.getApellidoCreador())

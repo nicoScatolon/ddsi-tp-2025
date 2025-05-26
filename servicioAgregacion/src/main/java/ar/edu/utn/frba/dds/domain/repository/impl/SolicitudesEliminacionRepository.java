@@ -24,7 +24,7 @@ public class SolicitudesEliminacionRepository implements ISolicitudesEliminacion
     public List<SolicitudEliminarHecho> findActives() {
         return this.solicitudesEliminacion
                 .stream()
-                .filter(s->!s.isEliminada())
+                .filter(s->!s.isEliminada()) //ToDO: Esta bien que el repository tenga esta responsabilidad?
                 .collect(Collectors.toList());
     }
 
@@ -54,6 +54,7 @@ public class SolicitudesEliminacionRepository implements ISolicitudesEliminacion
 
     @Override
     public void delete(SolicitudEliminarHecho solicitudEliminarHecho) {
+        //ToDO: Se debe eliminar definitivamete, esta mal el soft-delete?
         solicitudEliminarHecho.setEliminada(true);
     }
 }

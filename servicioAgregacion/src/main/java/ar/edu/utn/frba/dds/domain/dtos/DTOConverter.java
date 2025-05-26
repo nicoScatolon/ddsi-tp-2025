@@ -1,6 +1,5 @@
-package ar.edu.utn.frba.dds.services.impl;
+package ar.edu.utn.frba.dds.domain.dtos;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
@@ -17,7 +16,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
-public class MapperHechos {
+public class DTOConverter {
     public static HechoOutputDTO convertirHechoOutputDTO(IHecho hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
@@ -34,7 +33,7 @@ public class MapperHechos {
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getCategoria()))
+                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .build();
@@ -45,7 +44,7 @@ public class MapperHechos {
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getCategoria()))
+                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .build();
@@ -56,7 +55,7 @@ public class MapperHechos {
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getCategoria()))
+                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .build();
@@ -74,10 +73,9 @@ public class MapperHechos {
         }
     }
 
-    public static Categoria convertirCategoria(CategoriaInputDTO dto) {
+    public static Categoria convertirCategoria(String nombreCategoria) {
         return Categoria.builder()
-                .id(dto.getId())
-                .nombre(dto.getNombre())
+                .nombre(nombreCategoria)
                 .build();
     }
 

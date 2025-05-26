@@ -14,22 +14,15 @@ import java.util.List;
 @RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
-    private final List<String> fuentesManuales;
 
-    public HechosController(
-            IHechosService hechosService,
-            @Value("#{'${fuentes.manuales}'.split(',')}") List<String> fuentesManuales
-    ) {
+    public HechosController(IHechosService hechosService) {
         this.hechosService = hechosService;
-        this.fuentesManuales = fuentesManuales;
     }
 
     @GetMapping("/actualizar")
     public void actualizarHechosManualmente() {
-        for (String url : fuentesManuales) {
-            hechosService.actualizarHechosFuente(url);
+        hechosService.actualizarHechosManualmente();
         }
-    }
 
     @GetMapping
     public List<HechoOutputDTO> getHechos() {

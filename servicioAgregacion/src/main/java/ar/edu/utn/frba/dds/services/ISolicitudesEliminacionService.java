@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ISolicitudesEliminacionService {
     List<SolicitudEliminarHechoOutputDTO> findAll();
-    List<SolicitudEliminarHechoOutputDTO> recolectarSolicitudes(String fuenteURL);
     void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO);
     void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO);
     void crearSolicitud(IHecho hecho, String razon, String nombre, String apellido);

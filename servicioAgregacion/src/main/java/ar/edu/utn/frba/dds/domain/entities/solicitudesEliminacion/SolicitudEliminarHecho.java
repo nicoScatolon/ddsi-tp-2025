@@ -45,5 +45,6 @@ public class SolicitudEliminarHecho {
 
     public void rechazarAutomaticamente(){
         this.serRechazada("Rechazada","Automaticamente");
+        this.eliminada = true;
     }
 }

@@ -25,26 +25,22 @@ public class CategoriasRepository implements ICategoriasRepository {
     }
 
     @Override
-    public Categoria save(Categoria categoria) {
-        String handle = StringToHandle(categoria.getNombre());
-
+    public Categoria save(String categoriaNombre) {
         //En caso de que una categoria exista, se devolvera la instancia para no guardar duplicados
         Categoria existente = categorias.stream()
-                .filter(c -> StringToHandle(c.getNombre()).equals(handle))
+                .filter(c -> c.getNombre().equals(categoriaNombre))
                 .findFirst()
                 .orElse(null);
-                //ToDO: Esta mal comparar handles de categorias para saber si existe?
 
         if (existente != null) {
             return existente;
         }
+        Categoria newCategoria = new Categoria(categoriaNombre);
 
-        categoria.setId(idGenerator.getAndIncrement());
-        categorias.add(categoria);
-        return categoria;
+        newCategoria.setId(idGenerator.getAndIncrement());
+        categorias.add(newCategoria);
+        return newCategoria;
     }
-
-
 
     @Override
     public void delete(Categoria categoria) {
@@ -58,18 +54,6 @@ public class CategoriasRepository implements ICategoriasRepository {
                 .filter(categoria -> Objects.equals(categoria.getId(),id))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private String StringToHandle(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
-        }
-
-        return string
-                .trim()
-                .toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
-                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
     }
 
 }

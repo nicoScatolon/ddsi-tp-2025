@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
@@ -37,7 +38,6 @@ public class ColeccionesService implements IColeccionesService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
@@ -53,7 +53,7 @@ public class ColeccionesService implements IColeccionesService {
     @Override
     public List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle) {
         return coleccionesRepository.hechosByHandle(handle,hechosRepository.findAll()).stream()
-                .map(MapperHechos::convertirHechoOutputDTO)
+                .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
     }
 
@@ -68,7 +68,7 @@ public class ColeccionesService implements IColeccionesService {
 
     private List<HechoOutputDTO> hechoOutputDTO(Set<IHecho> hechos) {
         return hechos.stream()
-                .map(MapperHechos::convertirHechoOutputDTO)
+                .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
     }
 }

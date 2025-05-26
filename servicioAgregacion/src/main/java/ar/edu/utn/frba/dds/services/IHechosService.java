@@ -8,8 +8,7 @@ import java.util.List;
 
 public interface IHechosService {
     List<HechoOutputDTO> findAll();
-    List<IHechoInputDTO> recolectarHechos(String fuenteURL);
-    void actualizarHechosFuente(String fuenteURL);
+    void actualizarHechosScheduler();
+    void actualizarHechosManualmente();
     HechoOutputDTO findByID(Long id);
-    void logearHechosCargados(List<IHecho> hechos, String urlFuente);
 }

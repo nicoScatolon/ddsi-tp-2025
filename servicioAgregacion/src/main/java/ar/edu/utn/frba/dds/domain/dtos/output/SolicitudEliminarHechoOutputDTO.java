@@ -11,13 +11,8 @@ import java.time.LocalDateTime;
 public class SolicitudEliminarHechoOutputDTO {
     private Long id;
     private String razonDeEliminacion;
-    private IHecho hecho; //ToDo: deberia importar el hecho?? O deberia apuntar a un hecho existente, si es asi como??
+    private HechoOutputDTO hecho;
     private LocalDateTime fechaCreacion;
     private String nombreCreador;
     private String apellidoCreador;
 }
-
-
-
-
-

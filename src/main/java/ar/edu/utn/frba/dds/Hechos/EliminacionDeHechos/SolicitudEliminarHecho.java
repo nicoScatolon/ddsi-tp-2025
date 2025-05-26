@@ -34,6 +34,5 @@ public class SolicitudEliminarHecho {
     public void serRechazada(String nombreAdministrador, String apellidoAdministrador){
         estado = EstadoDeSolicitud.RECHAZADA;
         this.nombreAdministrador = nombreAdministrador;
-        //ToDo: Se eliminará por completo la solicitud.
     }
 }
