@@ -1,10 +1,13 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
+import ar.edu.utn.frba.dds.services.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +20,11 @@ import java.util.List;
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
     private final ISolicitudesEliminacionRepository repository;
+    private final IDetectorDeSpam detectorDeSpam;
 
-    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository) {
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam) {
         this.repository = repository;
+        this.detectorDeSpam = detectorDeSpam;
     }
 
     @Override
@@ -37,6 +42,13 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 
+        if (detectorDeSpam.esSpam(solicitud.getRazonDeEliminacion())){
+            solicitud.rechazarAutomaticamente();
+            repository.save(solicitud);
+            repository.delete(solicitud);
+            return;
+        }
+
         repository.save(solicitud);
     }
 
@@ -51,6 +63,20 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .stream()
                 .map(this::solicitudEliminarHechoOutputDTO)
                 .toList();
+    }
+
+    @Override
+    public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
+        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
+        repository.delete(solicitudEliminarHecho);
+    }
+
+    @Override
+    public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
+        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
+        repository.save(solicitudEliminarHecho);
     }
 
     @Override
@@ -84,6 +110,15 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .apellidoCreador(solicitud.getApellidoCreador())
                 .fechaCreacion(solicitud.getFechaCreacion())
                 .build();
+    }
+
+    private SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto) {
+        return ConstructorSolicitudesEliminacion
+                .constructorSolicitud(
+                        dto.getHecho(),
+                        dto.getRazonDeEliminacion(),
+                        dto.getNombreCreador(),
+                        dto.getApellidoCreador());
     }
 
     //Metodo para acortar strings y entren en consola.

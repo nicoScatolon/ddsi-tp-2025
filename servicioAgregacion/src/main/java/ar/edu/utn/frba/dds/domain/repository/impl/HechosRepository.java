@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
@@ -16,7 +17,7 @@ public class HechosRepository implements IHechosRepository {
 
     @Override
     public List<IHecho> findAll() {
-        return new ArrayList<>(hechos.values());
+        return this.filtrarEliminados(new ArrayList<>(hechos.values()));
     }
 
     @Override
@@ -55,5 +56,9 @@ public class HechosRepository implements IHechosRepository {
         }
 
         return hecho;
+    }
+
+    private List<IHecho> filtrarEliminados(List<IHecho> hechos) {
+        return hechos.stream().filter(IHecho::getFueEliminado).collect(Collectors.toList());
     }
 }

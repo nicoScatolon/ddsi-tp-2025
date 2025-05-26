@@ -48,7 +48,7 @@ public class HechosService implements IHechosService {
                 this.recolectarHechos(fuenteURL)
                         .stream()
                         .map(MapperHechos::convertirHechoInputDTO)
-                        .toList();
+                        .toList(); //ToDO revisar
 
         if (hechosConFuente.isEmpty()) {
             logger.warn("No se encontraron hechos desde la fuente: {}", fuenteURL);
@@ -89,5 +89,9 @@ public class HechosService implements IHechosService {
             hecho.setCategoria(categoriaPersistida);
         }
         hechosRepository.saveAll(hechos);
+    }
+
+    public IHechoInputDTO actuarSegunFuente(String fuenteURL) {
+
     }
 }

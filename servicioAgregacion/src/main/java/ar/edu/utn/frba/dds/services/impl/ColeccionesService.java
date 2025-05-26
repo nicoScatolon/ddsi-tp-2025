@@ -38,8 +38,6 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-
-
     @Override
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(

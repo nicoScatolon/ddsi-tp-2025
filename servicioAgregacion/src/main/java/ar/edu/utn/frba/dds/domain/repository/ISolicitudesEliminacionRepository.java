@@ -10,4 +10,5 @@ public interface ISolicitudesEliminacionRepository {
     SolicitudEliminarHecho findById(Long id);
     void save(SolicitudEliminarHecho solicitudEliminarHecho);
     void delete(SolicitudEliminarHecho solicitudEliminarHecho);
+    List<SolicitudEliminarHecho> findActives();
 }
