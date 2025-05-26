@@ -5,8 +5,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,8 +20,5 @@ public class Hecho {
 
     private LocalDateTime fechaDeCarga;
     private Boolean fueEliminado = false;
-
-    //No se si va. NO HAY USUARIOS
-    /*private Usuario contribuyente;*/
 
 }

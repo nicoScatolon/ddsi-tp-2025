@@ -1,20 +1,17 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ubicacion {
     private Double latitud;
     private Double longitud;
 
 
-    public Ubicacion(Double latitud, Double longitud) {
-        this.latitud = latitud;
-        this.longitud = longitud;
-    }
 }
 
 
