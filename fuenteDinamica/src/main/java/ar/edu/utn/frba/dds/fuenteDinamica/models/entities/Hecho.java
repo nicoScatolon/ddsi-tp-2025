@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,14 +32,14 @@ public class Hecho {
 
     public void verificarModificacionValida(Long diasMaximos, LocalDateTime fechaModificacion) {
         if ( getFechaDeCarga().plusDays(diasMaximos).isBefore(fechaModificacion) ) {
-            throw new ModificacionNoPermitidaException( String.format("Pasaron los %d dias permitidos para modificar el hecho", diasMaximos) );
+            throw new ModificacionNoPermitidaException( String.format("Pasaron los %d dias permitidos para serModificado el hecho", diasMaximos) );
         }
         if ( contribuyente.getId() == null ) { // si no tiene id no esta registrado
             throw new ModificacionNoPermitidaException( "El contribuyente no esta registrado, modificacion no permitida" );
         }
     }
 
-    public void modificar(Hecho nuevosDatosHecho, Long diasValidosModificacion){
+    public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion){
         verificarModificacionValida(diasValidosModificacion, LocalDateTime.now());
 
         this.setTitulo(nuevosDatosHecho.getTitulo());
@@ -51,7 +50,7 @@ public class Hecho {
         this.setFechaDeOcurrencia(nuevosDatosHecho.getFechaDeOcurrencia());
     }
 
-    public void revisar(Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
+    public void serRevisado(Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}

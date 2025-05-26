@@ -45,7 +45,7 @@ public class HechosService implements IHechosService {
             { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
 
-        hechoGuardado.modificar(hechoNuevo, diasValidosModificacion);
+        hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
         this.hechosRepository.save(hechoGuardado);
         return hechoNuevo;
     }
@@ -53,7 +53,7 @@ public class HechosService implements IHechosService {
     @Override
     public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
         Hecho hecho = this.hechosRepository.findById(idHecho);
-        hecho.revisar(idAdmin, nuevoEstado, sugerencia);
+        hecho.serRevisado(idAdmin, nuevoEstado, sugerencia);
         this.hechosRepository.save(hecho);
         return hecho;
     }
