@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: String
+    -latitud: Double
+    -longitud: Double
+    -fechaDeOcurrencia: LocalDate
+    -fechaDeCarga: LocalDate
+    -origen: OrigenHecho
+    -fueEliminado: Boolean
+    -id: Long
+    -actualizar: Boolean
+}
+
+interface ImportadorHechos{
+    +importarArchivo(path: String): Set<Hecho>
+}
+
+class ImportadorHechosCSV {
+    +importarArchivo(path: String): Set<Hecho>
+    +crearHechoFila(fila: String[], fechaDeCarga: LocalDate, formatoFecha: DateTimeFormatter): Hecho
+    +verificarRepetido(hecho: Hecho, lista: Set<Hecho>): Boolean
+}
+
+
+
+
+'==================== RELACIONES ====================
+
+ImportadorHechosCSV ..|> ImportadorHechos
+
+ImportadorHechos ..> Hecho
+
+
+
+
+
+@enduml

@@ -3,21 +3,14 @@ package ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.*;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechosCSV;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
-import ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl.HechosService;
-import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -26,7 +19,7 @@ import java.util.List;
 public class HechosServiceTest {
 
     @Test
-    void integraciónImportadorYServicio_leeCSVCompleto() throws URISyntaxException {
+    void integraciónImportador() throws URISyntaxException {
         // 1) Ruta al CSV en test/resources
         String csvPath = Paths.get(
                 getClass().getClassLoader()
