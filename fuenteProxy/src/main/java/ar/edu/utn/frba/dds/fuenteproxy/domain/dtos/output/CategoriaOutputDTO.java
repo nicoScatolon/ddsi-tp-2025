@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UbicacionDTO {
-    private Double latitud;
-    private Double longitud;
+public class CategoriaOutputDTO {
+    private Long   id;
+    private String nombre;
 }

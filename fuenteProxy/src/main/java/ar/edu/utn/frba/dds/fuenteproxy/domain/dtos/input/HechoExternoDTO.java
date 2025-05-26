@@ -1,12 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input;
 
-
-import lombok.Getter;
-import lombok.Setter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import lombok.Data;
 
-@Getter
-@Setter
 @Data
 public class HechoExternoDTO {
     private Long id;
@@ -17,6 +13,7 @@ public class HechoExternoDTO {
     private Double longitud;
     private String fechaDeOcurrencia;
     private String fechaDeCarga;
+
 
 
 }

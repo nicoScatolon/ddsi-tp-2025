@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HechoDTO {
+public class HechoOutputDTO {
     private Long           id;
     private String         titulo;
     private String         descripcion;
-    private CategoriaDTO   categoria;
-    private UbicacionDTO   ubicacion;
+    private CategoriaOutputDTO categoria;
+    private UbicacionOutputDTO ubicacion;
     private LocalDate      fechaDeOcurrencia;
     private LocalDateTime  fechaDeCarga;
 }
