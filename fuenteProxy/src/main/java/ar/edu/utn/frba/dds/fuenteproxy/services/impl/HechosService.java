@@ -6,7 +6,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IHechoService;
+import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
-public class HechoService implements IHechoService{
+public class HechosService implements IHechosService {
     private IFuenteHechosExterna fuenteHechosExterna;
 
     @Override

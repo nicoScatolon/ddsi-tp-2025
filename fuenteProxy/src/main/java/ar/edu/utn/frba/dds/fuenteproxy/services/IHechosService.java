@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface IHechoService {
+public interface IHechosService {
     Mono<List<HechoOutputDTO>> buscarTodos();
     Mono<HechoOutputDTO> buscarPorId(Long id);
 }
