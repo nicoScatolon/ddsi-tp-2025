@@ -90,8 +90,4 @@ public class HechosService implements IHechosService {
         }
         hechosRepository.saveAll(hechos);
     }
-
-    public IHechoInputDTO actuarSegunFuente(String fuenteURL) {
-
-    }
 }
