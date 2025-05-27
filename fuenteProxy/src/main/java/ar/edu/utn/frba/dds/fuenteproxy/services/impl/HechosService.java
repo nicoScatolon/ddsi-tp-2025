@@ -21,6 +21,8 @@ import java.util.List;
 public class HechosService implements IHechosService {
     private IFuenteHechosExterna fuenteHechosExterna;
 
+
+
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
         return fuenteHechosExterna.buscarTodos()
@@ -29,11 +31,20 @@ public class HechosService implements IHechosService {
                         .toList());
     }
 
+
+
+
+
     @Override
     public Mono<HechoOutputDTO> buscarPorId(Long id){
         return fuenteHechosExterna.buscarPorId(id)
                 .map(this::mapToHechoDTO);
     }
+
+
+
+
+
 
 
     private HechoOutputDTO mapToHechoDTO(HechoExternoDTO dto) {
@@ -49,6 +60,12 @@ public class HechosService implements IHechosService {
             .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
             .build();
 }
+
+
+
+
+
+
 }
 
 
