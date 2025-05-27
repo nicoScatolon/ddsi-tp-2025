@@ -15,28 +15,32 @@ import java.util.List;
 public class FuenteHechosDds implements IFuenteHechosExterna {
 
     private final WebClient webClient;
-
     private final Mono<String> token;
+
+    @Value("${api.ddsi.base-url}")
+    protected String baseUrl;
+
+    @Value("${api.ddsi.auth.email}")
+    protected String email;
+
+    @Value("${api.ddsi.auth.password}")
+    protected String password;
+
+
 
     public FuenteHechosDds(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
         this.token = this.autenticar().cache();
     }
 
-    @Value("${api.ddsi.base-url}")
-    private String baseUrl;
 
-    @Value("${api.ddsi.auth.email}")
-    private String email;
 
-    @Value("${api.ddsi.auth.password}")
-    private String password;
-
-    private Mono<String> autenticar(){
+   public Mono<String> autenticar(){
         AuthRequestDTO authRequestDTO = AuthRequestDTO.builder()
                 .email(email)
                 .password(password)
                 .build();
+
 
         return webClient
                 .post()
@@ -45,7 +49,7 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(json -> {
-                    boolean hayError = json.get("hayError").asBoolean();
+                    boolean hayError = json.get("error").asBoolean();
                     if (hayError) {
                         throw new RuntimeException("Error en login: " + json.get("message").asText());
                     }
@@ -53,6 +57,9 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
                 });
 
     }
+
+
+
 
 
     public Mono<List<HechoExternoDTO>> buscarTodos() {
@@ -95,6 +102,9 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
 
 
 
+
+
+
     public Mono<HechoExternoDTO> buscarPorId(Long id) {
         return token.flatMap(token ->
                 webClient.get()
@@ -104,13 +114,10 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
                         .onStatus(status -> status.value() == 401,
                                 response -> Mono.error(new RuntimeException("No autenticado: el token es inválido")))
                         .onStatus(status -> status.value() == 404,
-                                response-> Mono.error(new RuntimeException("Desastre no encontrado con ID" + id)))
+                                response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
                         .bodyToMono(HechoExternoDTO.class)
         );
 
     }
-
-
-
 
 }
