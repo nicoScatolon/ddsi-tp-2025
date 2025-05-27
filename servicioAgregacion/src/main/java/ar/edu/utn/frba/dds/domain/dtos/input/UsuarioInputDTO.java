@@ -10,5 +10,5 @@ public class UsuarioInputDTO {
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
-    private Boolean anonimo;
+    private Boolean esAnonimo;
 }

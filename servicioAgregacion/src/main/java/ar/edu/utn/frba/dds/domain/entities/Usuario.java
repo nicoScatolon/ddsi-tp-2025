@@ -14,4 +14,5 @@ public class Usuario {
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
+    private Boolean esAnonimo;
 }

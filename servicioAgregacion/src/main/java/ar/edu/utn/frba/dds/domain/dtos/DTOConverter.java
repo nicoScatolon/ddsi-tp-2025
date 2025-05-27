@@ -10,16 +10,16 @@ import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteDinamica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteEstatica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Usuario;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
-    public static HechoOutputDTO convertirHechoOutputDTO(IHecho hecho) {
+    public static HechoOutputDTO convertirHechoOutputDTO(HechoBase hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
                 .titulo(hecho.getTitulo())
@@ -30,8 +30,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IHecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
-        return HechoFuenteProxy.builder()
+    public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto) {
+        return HechoBaseFuenteProxy.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
@@ -42,8 +42,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IHecho convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
-        return HechoFuenteEstatica.builder()
+    public static HechoBase convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
+        return HechoBaseFuenteEstatica.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
@@ -54,8 +54,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IHecho convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
-        return HechoFuenteDinamica.builder()
+    public static HechoBase convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
+        return HechoBaseFuenteDinamica.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
@@ -68,7 +68,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IHecho convertirHechoInputDTO(IHechoInputDTO dto) {
+    public static HechoBase convertirHechoInputDTO(IHechoInputDTO dto) {
         if (dto instanceof HechoInputProxyDTO proxy) {
             return convertirHechoInputDTO(proxy);
         } else if (dto instanceof HechoInputEstaticaDTO estatica) {
@@ -112,6 +112,7 @@ public class DTOConverter {
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .fechaNacimiento(dto.getFechaNacimiento())
+                .esAnonimo(dto.getEsAnonimo())
                 .build();
     }
 }

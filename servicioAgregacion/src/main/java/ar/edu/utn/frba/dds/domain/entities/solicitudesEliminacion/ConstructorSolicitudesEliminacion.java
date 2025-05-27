@@ -1,14 +1,13 @@
 package ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
-import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 import java.time.LocalDateTime;
 
 public class ConstructorSolicitudesEliminacion {
     private static final Integer CARACTERES_MINIMOS_RAZON_ELIMINACION = 500;
 
-    public static SolicitudEliminarHecho constructorSolicitud(IHecho hecho
+    public static SolicitudEliminarHecho constructorSolicitud(HechoBase hecho
                                                             , String razonDeEliminacion, String nombreContribuyente, String apellidoContribuyente) {
         if(razonDeEliminacion.length() < CARACTERES_MINIMOS_RAZON_ELIMINACION){
             throw new IllegalArgumentException("La razón de eliminación debe tener al menos " + CARACTERES_MINIMOS_RAZON_ELIMINACION + "caracteres.");

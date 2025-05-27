@@ -4,12 +4,11 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas.CriterioCargaEntreFechas;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas.CriterioOcurrenciaEntreFechas;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteDinamica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteEstatica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Usuario;
 import ar.edu.utn.frba.dds.domain.repository.impl.CategoriasRepository;
@@ -73,9 +72,11 @@ public class ColeccionesTest {
         Usuario usuarioEjemplo = new Usuario();
         usuarioEjemplo.setNombre("Jose");
         usuarioEjemplo.setApellido("Perez");
+        usuarioEjemplo.setFechaNacimiento(LocalDate.of(2020, 1, 1));
+        usuarioEjemplo.setEsAnonimo(false);
 
 // Hechos variados:
-        HechoFuenteEstatica hecho1 = crearHechoEstatica(
+        HechoBaseFuenteEstatica hecho1 = crearHechoEstatica(
                 1L,
                 "Robo en el barrio",
                 "Se reportó un robo en la calle 123",
@@ -85,7 +86,7 @@ public class ColeccionesTest {
                 LocalDate.of(2024, 5, 25)
         );
 
-        HechoFuenteProxy hecho2 = crearHechoProxy(
+        HechoBaseFuenteProxy hecho2 = crearHechoProxy(
                 2L,
                 "Contaminación del río",
                 "Elevados niveles de contaminación en el río local",
@@ -95,7 +96,7 @@ public class ColeccionesTest {
                 LocalDate.of(2025, 5, 20)
         );
 
-        HechoFuenteDinamica hecho3 = crearHechoDinamica(
+        HechoBaseFuenteDinamica hecho3 = crearHechoDinamica(
                 3L,
                 "Accidente de tránsito",
                 "Choque múltiple en la avenida principal",
@@ -106,7 +107,7 @@ public class ColeccionesTest {
                 usuarioEjemplo
         );
 
-        HechoFuenteEstatica hecho4 = crearHechoEstatica(
+        HechoBaseFuenteEstatica hecho4 = crearHechoEstatica(
                 4L,
                 "Corte de luz",
                 "Corte de luz programado para mantenimiento",
@@ -116,7 +117,7 @@ public class ColeccionesTest {
                 LocalDate.of(2025, 5, 24)
         );
 
-        HechoFuenteProxy hecho5 = crearHechoProxy(
+        HechoBaseFuenteProxy hecho5 = crearHechoProxy(
                 5L,
                 "Incendio forestal",
                 "Incendio en zona protegida",
@@ -126,7 +127,7 @@ public class ColeccionesTest {
                 LocalDate.of(2024, 5, 23)
         );
 
-        List<IHecho> listaHechos = new ArrayList<>();
+        List<HechoBase> listaHechos = new ArrayList<>();
         listaHechos.add(hecho1);
         listaHechos.add(hecho2);
         listaHechos.add(hecho3);
@@ -136,7 +137,7 @@ public class ColeccionesTest {
         assertEquals(3,hechosRepository.findAll().size());
         assertEquals(2, coleccion.filtrarHechos(hechosRepository.findAll()).size());
 
-        List<IHecho> listaHechos2 = new ArrayList<>();
+        List<HechoBase> listaHechos2 = new ArrayList<>();
         listaHechos2.add(hecho4);
         listaHechos2.add(hecho5);
 
@@ -145,8 +146,8 @@ public class ColeccionesTest {
         assertEquals(3, coleccion.filtrarHechos(hechosRepository.findAll()).size());
     }
 
-    public HechoFuenteEstatica crearHechoEstatica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
-        var hechoE = new HechoFuenteEstatica();
+    public HechoBaseFuenteEstatica crearHechoEstatica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
+        var hechoE = new HechoBaseFuenteEstatica();
         hechoE.setFuenteId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
@@ -155,13 +156,12 @@ public class ColeccionesTest {
         hechoE.setUbicacion(ubicacion);
         hechoE.setFechaDeOcurrencia(fechaDeOcurrencia);
         hechoE.setFechaDeCarga(LocalDateTime.now());
-        hechoE.setFechaDeModificacion(LocalDateTime.now());
 
         return hechoE;
     }
 
-    public HechoFuenteProxy crearHechoProxy(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
-        var hechoE = new HechoFuenteProxy();
+    public HechoBaseFuenteProxy crearHechoProxy(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
+        var hechoE = new HechoBaseFuenteProxy();
         hechoE.setFuenteId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
@@ -170,13 +170,12 @@ public class ColeccionesTest {
         hechoE.setUbicacion(ubicacion);
         hechoE.setFechaDeOcurrencia(fechaDeOcurrencia);
         hechoE.setFechaDeCarga(LocalDateTime.now());
-        hechoE.setFechaDeModificacion(LocalDateTime.now());
 
         return hechoE;
     }
 
-    public HechoFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Usuario contribuyente) {
-        var hechoE = new HechoFuenteDinamica();
+    public HechoBaseFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Usuario contribuyente) {
+        var hechoE = new HechoBaseFuenteDinamica();
         hechoE.setFuenteId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
@@ -186,7 +185,6 @@ public class ColeccionesTest {
         hechoE.setFechaDeOcurrencia(fechaDeOcurrencia);
         hechoE.setContribuyente(contribuyente);
         hechoE.setFechaDeCarga(LocalDateTime.now());
-        hechoE.setFechaDeModificacion(LocalDateTime.now());
 
         return hechoE;
     }

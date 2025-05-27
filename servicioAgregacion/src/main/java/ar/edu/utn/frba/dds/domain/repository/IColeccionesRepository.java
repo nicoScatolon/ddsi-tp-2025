@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ public interface IColeccionesRepository {
     List<Coleccion> findAll();
     void save(Coleccion coleccion);
     void delete(Coleccion coleccion);
-    List<IHecho> hechosByHandle(String handle, List<IHecho> hechosDisponibles);
+    List<HechoBase> hechosByHandle(String handle, List<HechoBase> hechosDisponibles);
 }

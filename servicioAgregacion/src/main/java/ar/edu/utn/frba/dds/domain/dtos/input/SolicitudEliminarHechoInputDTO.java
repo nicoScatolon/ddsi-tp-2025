@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos.input;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class SolicitudEliminarHechoInputDTO {
     private String razonDeEliminacion;
-    private IHecho hecho;
+    private HechoBase hecho;
     private LocalDateTime fechaCreacion;
     private String nombreCreador;
     private String apellidoCreador;

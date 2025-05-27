@@ -4,11 +4,11 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
-import ar.edu.utn.frba.dds.domain.entities.DetectorSpam.IDetectorDeSpam;
+import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitud(IHecho hecho, String razon, String nombre, String apellido) {
+    public void crearSolicitud(HechoBase hecho, String razon, String nombre, String apellido) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 
