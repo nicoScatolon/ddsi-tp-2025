@@ -2,10 +2,14 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.fuentesHechosExternas;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
+import lombok.Data;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Data
+@Service
 public class FuenteHechosMetaMapa implements IFuenteHechosExterna {
     private final List<HechoExternoDTO> hechosMockeados;
 

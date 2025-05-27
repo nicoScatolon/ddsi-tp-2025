@@ -5,30 +5,34 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.AuthRequestDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Data
+@Service
 public class FuenteHechosDds implements IFuenteHechosExterna {
 
     private final WebClient webClient;
     private final Mono<String> token;
 
-    @Value("${api.ddsi.base-url}")
-    protected String baseUrl;
+    private final String baseUrl;
+    private final String email;
+    private final String password;
 
-    @Value("${api.ddsi.auth.email}")
-    protected String email;
-
-    @Value("${api.ddsi.auth.password}")
-    protected String password;
-
-
-
-    public FuenteHechosDds(WebClient.Builder webClientBuilder) {
+    public FuenteHechosDds(WebClient.Builder webClientBuilder,
+                           @Value("${api.ddsi.base-url}") String baseUrl,
+                           @Value("${api.ddsi.auth.email}") String email,
+                           @Value("${api.ddsi.auth.password}") String password) {
+        this.baseUrl = baseUrl;
+        this.email = email;
+        this.password = password;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
         this.token = this.autenticar().cache();
     }
