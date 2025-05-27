@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
-public class HechoFuenteProxy implements IHecho {
+public class HechoBaseFuenteProxy implements HechoBase {
     private Long id;
     private Long fuenteId;
     private String titulo;
@@ -21,7 +21,6 @@ public class HechoFuenteProxy implements IHecho {
     private Categoria categoria;
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
-    private LocalDateTime fechaDeModificacion;
     private LocalDateTime fechaDeCarga;
 
     private Boolean fueEliminado = false;

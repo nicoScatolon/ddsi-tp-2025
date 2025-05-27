@@ -6,7 +6,7 @@ import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public interface IHecho {
+public interface HechoBase {
     Long getId();
     Long getFuenteId();
     String getTitulo();
@@ -14,7 +14,6 @@ public interface IHecho {
     Categoria getCategoria();
     Ubicacion getUbicacion();
     LocalDate getFechaDeOcurrencia();
-    LocalDateTime getFechaDeModificacion();
     Boolean getFueEliminado();
     LocalDateTime getFechaDeCarga();
 
@@ -26,7 +25,6 @@ public interface IHecho {
     void setCategoria(Categoria categoria);
     void setUbicacion(Ubicacion ubicacion);
     void setFechaDeOcurrencia(LocalDate fechaDeOcurrencia);
-    void setFechaDeModificacion(LocalDateTime fechaDeModificacion);
     void setFueEliminado(Boolean fueEliminado);
     void setFechaDeCarga(LocalDateTime fechaDeCarga);
 }

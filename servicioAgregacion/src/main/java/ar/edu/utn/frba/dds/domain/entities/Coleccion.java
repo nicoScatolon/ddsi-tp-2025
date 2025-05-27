@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +33,7 @@ public class Coleccion {
         this.listaCriterios.remove(criterio);
     }
 
-    public Set<IHecho> filtrarHechos(List<IHecho> hechosDisponibles) {
+    public Set<HechoBase> filtrarHechos(List<HechoBase> hechosDisponibles) {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
             return new HashSet<>();
         }
@@ -43,13 +43,13 @@ public class Coleccion {
                 .collect(Collectors.toSet());
     }
 
-    public Set<IHecho> getHechosConFiltro(List<IHecho> hechosDisponibles, CriterioInterfaz filtro) {
+    public Set<HechoBase> getHechosConFiltro(List<HechoBase> hechosDisponibles, CriterioInterfaz filtro) {
         return this.filtrarHechos(hechosDisponibles).stream()
                 .filter(filtro::pertenece)
                 .collect(Collectors.toSet());
     }
 
-    public Set<IHecho> getHechosConFiltro(List<IHecho> hechosDisponibles, Set<CriterioInterfaz> filtros) {
+    public Set<HechoBase> getHechosConFiltro(List<HechoBase> hechosDisponibles, Set<CriterioInterfaz> filtros) {
         return this.filtrarHechos(hechosDisponibles).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
                 .collect(Collectors.toSet());

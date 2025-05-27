@@ -1,14 +1,14 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IHechosRepository {
-    List<IHecho> findAll();
-    IHecho findById(Long id);
-    Optional<IHecho> findByFuenteID(Long fuenteID, Class<? extends IHecho> claseEsperada);
-    void saveAll(List<IHecho> hechos);
-    void delete(IHecho hecho);
+    List<HechoBase> findAll();
+    HechoBase findById(Long id);
+    Optional<HechoBase> findByFuenteID(Long fuenteID, Class<? extends HechoBase> claseEsperada);
+    void saveAll(List<HechoBase> hechos);
+    void delete(HechoBase hecho);
 }

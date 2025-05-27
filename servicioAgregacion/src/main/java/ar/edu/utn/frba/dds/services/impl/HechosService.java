@@ -7,7 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.IHechosService;
@@ -66,12 +66,12 @@ public class HechosService implements IHechosService {
 
     @Override
     public HechoOutputDTO findByID(Long id) {
-        IHecho hecho = this.hechosRepository.findById(id);
+        HechoBase hecho = this.hechosRepository.findById(id);
         return DTOConverter.convertirHechoOutputDTO(hecho);
     }
 
     // LOGGER
-    private void logearHechosCargados(List<IHecho> hechos, String urlFuente){
+    private void logearHechosCargados(List<HechoBase> hechos, String urlFuente){
         logger.info("Hechos cargados - Cantidad: {} - Fuente: {}", hechos.size(), urlFuente);
         hechos.forEach(hecho ->
                 logger.info
@@ -80,8 +80,8 @@ public class HechosService implements IHechosService {
     }
 
     // MÉTODOS PRIVADOS
-    public void actualizarRepositoryHecho(List<IHecho> hechos) {
-        for (IHecho hecho : hechos) {
+    public void actualizarRepositoryHecho(List<HechoBase> hechos) {
+        for (HechoBase hecho : hechos) {
             Categoria categoriaPersistida = categoriasRepository.save(this.StringToHandle(hecho.getCategoria().getNombre()));
             hecho.setCategoria(categoriaPersistida);
         }
@@ -101,7 +101,7 @@ public class HechosService implements IHechosService {
             }
         }
 
-        List<IHecho> hechos = new ArrayList<>(hechoInputDTOS.stream()
+        List<HechoBase> hechos = new ArrayList<>(hechoInputDTOS.stream()
                 .map(DTOConverter::convertirHechoInputDTO)
                 .toList());
 

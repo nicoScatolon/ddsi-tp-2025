@@ -1,8 +1,10 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.IContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import ar.edu.utn.frba.dds.domain.entities.Usuario;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
-public class HechoFuenteEstatica implements IHecho {
+public class HechoBaseFuenteDinamica implements HechoBase {
     private Long id;
     private Long fuenteId;
 
@@ -24,7 +26,8 @@ public class HechoFuenteEstatica implements IHecho {
     private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 
-    private LocalDateTime fechaDeModificacion;
+    private IContenidoMultimedia contenidoMultimedia;
+    private Usuario contribuyente;
 
     private Boolean fueEliminado = false;
 }

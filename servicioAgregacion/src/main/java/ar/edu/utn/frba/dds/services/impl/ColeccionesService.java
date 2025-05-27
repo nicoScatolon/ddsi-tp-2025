@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
@@ -66,7 +66,7 @@ public class ColeccionesService implements IColeccionesService {
                 .build();
     }
 
-    private List<HechoOutputDTO> hechoOutputDTO(Set<IHecho> hechos) {
+    private List<HechoOutputDTO> hechoOutputDTO(Set<HechoBase> hechos) {
         return hechos.stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());

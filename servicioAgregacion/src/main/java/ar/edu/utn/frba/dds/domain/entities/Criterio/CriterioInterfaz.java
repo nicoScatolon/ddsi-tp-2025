@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio;
 
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.IHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 public interface CriterioInterfaz {
-    Boolean pertenece(IHecho hecho);
+    Boolean pertenece(HechoBase hecho);
 }

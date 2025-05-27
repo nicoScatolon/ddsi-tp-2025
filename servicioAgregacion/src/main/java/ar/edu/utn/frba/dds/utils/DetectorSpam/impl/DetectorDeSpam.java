@@ -1,6 +1,6 @@
-package ar.edu.utn.frba.dds.domain.entities.DetectorSpam.impl;
+package ar.edu.utn.frba.dds.utils.DetectorSpam.impl;
 
-import ar.edu.utn.frba.dds.domain.entities.DetectorSpam.IDetectorDeSpam;
+import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import org.springframework.stereotype.Service;
 
 @Service
