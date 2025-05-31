@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
-public class HechoBaseFuenteProxy implements HechoBase {
+public class HechoFuenteEstatica implements HechoBase {
     private Long id;
     private Long fuenteId;
     private String titulo;
@@ -23,6 +23,6 @@ public class HechoBaseFuenteProxy implements HechoBase {
     private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 
+    @Builder.Default
     private Boolean fueEliminado = false;
-
 }

@@ -6,8 +6,8 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import java.time.LocalDate;
 
 public abstract class CriterioEntreFechas implements CriterioInterfaz {
-    private LocalDate primeraFecha;
-    private LocalDate segundaFecha;
+    private final LocalDate primeraFecha;
+    private final LocalDate segundaFecha;
 
     public CriterioEntreFechas(LocalDate primeraFecha, LocalDate segundaFecha) {
         this.primeraFecha = primeraFecha;

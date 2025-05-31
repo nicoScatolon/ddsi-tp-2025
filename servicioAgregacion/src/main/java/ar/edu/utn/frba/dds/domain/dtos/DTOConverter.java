@@ -1,21 +1,26 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.UbicacionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteProxy;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Usuario;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -31,11 +36,10 @@ public class DTOConverter {
     }
 
     public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto) {
-        return HechoBaseFuenteProxy.builder()
+        return HechoFuenteProxy.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
@@ -43,11 +47,10 @@ public class DTOConverter {
     }
 
     public static HechoBase convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
-        return HechoBaseFuenteEstatica.builder()
+        return HechoFuenteEstatica.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
@@ -55,7 +58,7 @@ public class DTOConverter {
     }
 
     public static HechoBase convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
-        return HechoBaseFuenteDinamica.builder()
+        return HechoFuenteDinamica.builder()
                 .fuenteId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
@@ -114,5 +117,31 @@ public class DTOConverter {
                 .fechaNacimiento(dto.getFechaNacimiento())
                 .esAnonimo(dto.getEsAnonimo())
                 .build();
+    }
+
+    public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
+        return SolicitudEliminarHechoOutputDTO
+                .builder()
+                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
+                .razonDeEliminacion(solicitud.getRazonDeEliminacion())
+                .nombreCreador(solicitud.getNombreCreador())
+                .apellidoCreador(solicitud.getApellidoCreador())
+                .fechaCreacion(solicitud.getFechaCreacion())
+                .build();
+    }
+
+    public static SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto) {
+        return ConstructorSolicitudesEliminacion
+                .constructorSolicitud(
+                        dto.getHecho(),
+                        dto.getRazonDeEliminacion(),
+                        dto.getNombreCreador(),
+                        dto.getApellidoCreador());
+    }
+
+    public static List<HechoOutputDTO> hechoOutputDTO(Set<HechoBase> hechos) {
+        return hechos.stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Categoria {
-    private Long id;
+    private String id;
     private String nombre;
 
     public Categoria(String nombre) {

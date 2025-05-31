@@ -6,7 +6,7 @@ import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 public class CriterioCategoria implements CriterioInterfaz {
-    private Categoria categoria;
+    private final Categoria categoria;
 
     public CriterioCategoria(Categoria categoria) {
         this.categoria = categoria;

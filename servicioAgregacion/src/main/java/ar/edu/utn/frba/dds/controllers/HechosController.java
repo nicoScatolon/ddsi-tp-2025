@@ -18,11 +18,6 @@ public class HechosController {
         this.hechosService = hechosService;
     }
 
-    @GetMapping("/actualizar")
-    public void actualizarHechosManualmente() {
-        hechosService.actualizarHechosManualmente();
-        }
-
     @GetMapping
     public List<HechoOutputDTO> getHechos() {
         return hechosService.findAll();

@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion;
+package ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import lombok.Getter;

@@ -65,7 +65,6 @@ public class HechosService implements IHechosService {
     }
 
     //Metodos privados
-
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
         return Hecho.builder()
                 .titulo(hechoDTO.getTitulo())

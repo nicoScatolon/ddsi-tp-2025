@@ -5,8 +5,8 @@ import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.ConstructorSolicitudesEliminacion;
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
 import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
@@ -32,7 +32,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
        return this.repository
                 .findAll()
                 .stream()
-                .map(this::solicitudEliminarHechoOutputDTO)
+                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
                 .toList();
     }
 
@@ -50,14 +50,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
         solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
-        repository.delete(solicitudEliminarHecho);
+        repository.save(solicitudEliminarHecho);
     }
 
     @Override
     public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
         solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
         repository.save(solicitudEliminarHecho);
     }
@@ -81,27 +81,6 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                         solicitud.getFechaCreacion()
                 )
         );
-    }
-
-    //CONSTRUCTORES
-    private SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
-        return SolicitudEliminarHechoOutputDTO
-                .builder()
-                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
-                .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .nombreCreador(solicitud.getNombreCreador())
-                .apellidoCreador(solicitud.getApellidoCreador())
-                .fechaCreacion(solicitud.getFechaCreacion())
-                .build();
-    }
-
-    private SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto) {
-        return ConstructorSolicitudesEliminacion
-                .constructorSolicitud(
-                        dto.getHecho(),
-                        dto.getRazonDeEliminacion(),
-                        dto.getNombreCreador(),
-                        dto.getApellidoCreador());
     }
 
     //Metodo para acortar strings y entren en consola.

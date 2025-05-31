@@ -5,7 +5,6 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,14 +60,8 @@ public class ColeccionesService implements IColeccionesService {
                 .titulo(coleccion.getTitulo())
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
-                .hechos(this.hechoOutputDTO(new HashSet<>(coleccion.filtrarHechos(hechosRepository.findAll()))))
+                .hechos(DTOConverter.hechoOutputDTO(new HashSet<>(coleccion.filtrarHechos(hechosRepository.findAll()))))
                 .build();
-    }
-
-    private List<HechoOutputDTO> hechoOutputDTO(Set<HechoBase> hechos) {
-        return hechos.stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .collect(Collectors.toList());
     }
 }
 
