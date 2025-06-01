@@ -12,24 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CategoriasRepository implements ICategoriasRepository {
     private final Map<String,Categoria> categorias = new ConcurrentHashMap<>();
 
-
     @Override
     public List<Categoria> findAll() {
         return this.categorias;
     }
 
     @Override
-    public Categoria save(String id, String categoriaNombre) { //para guardar nuevas categorias
-        Categoria categoria = new Categoria(id, categoriaNombre);
-        this.categorias.put(id, categoria);
-        return categoria;
-    }
-
-    @Override
-    public Categoria update(String id, String categoriaNombre){
-        Categoria categoria = categorias.get(id);
-        categoria.setNombre(categoriaNombre);
-        categorias.put(id, categoria);
+    public Categoria save(Categoria categoria) { //para guardar nuevas categorias
+        this.categorias.put(categoria.getId(), categoria);
         return categoria;
     }
 

@@ -13,8 +13,11 @@ import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Usuario;
 import ar.edu.utn.frba.dds.domain.repository.impl.CategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
+import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
+import ar.edu.utn.frba.dds.services.impl.CategoriaService;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
+import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import ar.edu.utn.frba.dds.services.impl.HechosService;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,8 +36,11 @@ public class ColeccionesTest {
     private final ColeccionesRepository coleccionesRepository = new ColeccionesRepository();
     private final HechosRepository hechosRepository = new HechosRepository();
     private final CategoriasRepository categoriasRepository = new CategoriasRepository();
-    private final HechosService hechosService = new HechosService(hechosRepository,categoriasRepository,mock(WebClient.Builder.class));
-    private final ColeccionesService coleccionesService = new ColeccionesService(coleccionesRepository,hechosRepository);
+    private final FuentesRepository fuentesRepository = new FuentesRepository();
+    private final CategoriaService categoriaService = new CategoriaService(categoriasRepository);
+    private final FuentesService fuentesService = new FuentesService(fuentesRepository);
+    private final HechosService hechosService = new HechosService(hechosRepository,fuentesService,categoriaService,mock(WebClient.Builder.class));
+    private final ColeccionesService coleccionesService = new ColeccionesService(coleccionesRepository,hechosService);
 
 
     @Test
@@ -132,7 +138,8 @@ public class ColeccionesTest {
         listaHechos.add(hecho2);
         listaHechos.add(hecho3);
 
-        hechosService.actualizarRepositoryHecho(listaHechos);
+        //hechosService.actualizarRepositoryHecho(listaHechos);
+        //ToDo
 
         assertEquals(3,hechosRepository.findAll().size());
         assertEquals(2, coleccion.filtrarHechos(hechosRepository.findAll()).size());
@@ -141,14 +148,15 @@ public class ColeccionesTest {
         listaHechos2.add(hecho4);
         listaHechos2.add(hecho5);
 
-        hechosService.actualizarRepositoryHecho(listaHechos2);
+        //hechosService.actualizarRepositoryHecho(listaHechos2);
+        //Todo
         assertEquals(5,hechosRepository.findAll().size());
         assertEquals(3, coleccion.filtrarHechos(hechosRepository.findAll()).size());
     }
 
     public HechoFuenteEstatica crearHechoEstatica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
         var hechoE = new HechoFuenteEstatica();
-        hechoE.setFuenteId(id);
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);
@@ -162,7 +170,7 @@ public class ColeccionesTest {
 
     public HechoFuenteProxy crearHechoProxy(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
         var hechoE = new HechoFuenteProxy();
-        hechoE.setFuenteId(id);
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);
@@ -176,7 +184,7 @@ public class ColeccionesTest {
 
     public HechoFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Usuario contribuyente) {
         var hechoE = new HechoFuenteDinamica();
-        hechoE.setFuenteId(id);
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);

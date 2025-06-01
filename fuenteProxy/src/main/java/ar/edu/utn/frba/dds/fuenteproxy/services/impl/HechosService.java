@@ -2,8 +2,10 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
@@ -20,6 +22,7 @@ import java.util.List;
 @Service
 public class HechosService implements IHechosService {
     private IFuenteHechosExterna fuenteHechosExterna;
+    private ICategoriaService categoriaService;
 
 
 
@@ -54,14 +57,19 @@ public class HechosService implements IHechosService {
             .id(dto.getId())
             .titulo(dto.getTitulo())
             .descripcion(dto.getDescripcion())
-            .categoria(dto.getCategoria())
+            .categoria(categoriatoDTO(dto.getCategoria()))
             .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
             .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
             .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
             .build();
 }
 
-
+    private CategoriaOutputDTO categoriatoDTO(String nombreCategoria){
+        return CategoriaOutputDTO.builder()
+                .id(categoriaService.obtenerIdCategoria(nombreCategoria))
+                .nombre(nombreCategoria)
+                .build();
+    }
 
 
 

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
@@ -37,29 +38,34 @@ public class DTOConverter {
 
     public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return HechoFuenteProxy.builder()
-                .fuenteId(dto.getId())
+                .origenId(dto.getId())
+                .idFuente(idFuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
+    public static HechoBase convertirHechoInputDTO(HechoInputEstaticaDTO dto, Long idFuente) {
         return HechoFuenteEstatica.builder()
-                .fuenteId(dto.getId())
+                .origenId(dto.getId())
+                .idFuente(idFuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
+    public static HechoBase convertirHechoInputDTO(HechoInputDinamicaDTO dto, Long idFuente) {
         return HechoFuenteDinamica.builder()
-                .fuenteId(dto.getId())
+                .origenId(dto.getId())
+                .idFuente(idFuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .categoria(convertirCategoria(dto.getNombreCategoria()))
@@ -68,16 +74,17 @@ public class DTOConverter {
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contenidoMultimedia(dto.getContenidoMultimedia())
                 .contribuyente(convertirUsuario(dto.getContribuyente()))
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(IHechoInputDTO dto) {
+    public static HechoBase convertirHechoInputDTO(IHechoInputDTO dto, Long idFuente) {
         if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy);
+            return convertirHechoInputDTO(proxy, idFuente);
         } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica);
+            return convertirHechoInputDTO(estatica, idFuente);
         } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica);
+            return convertirHechoInputDTO(dinamica, idFuente);
         } else {
             throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
         }
@@ -143,5 +150,18 @@ public class DTOConverter {
         return hechos.stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
+    }
+
+    public static List<HechoOutputDTO> hechoOutputDTO(List<HechoBase> hechos) {
+        return hechos.stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .collect(Collectors.toList());
+    }
+
+    public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
+        return Categoria.builder()
+                .nombre(categoriaInputDTO.getNombre())
+                .id(categoriaInputDTO.getId())
+                .build();
     }
 }

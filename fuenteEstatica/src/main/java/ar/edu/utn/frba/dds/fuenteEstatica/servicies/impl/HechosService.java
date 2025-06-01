@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl;
 
 
+import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
@@ -10,11 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
-    private IHechosRepository hechosRepository;
+    private final IHechosRepository hechosRepository;
+    private final ICategoriasService categoriasService;
 
     public HechosService(IHechosRepository hechosRepository) {
         this.hechosRepository = hechosRepository;
@@ -28,7 +29,7 @@ public class HechosService implements IHechosService {
         //  implementacion futura posible: recibir por query params el tipo de archivo o intentar leerlo y determinarlo aca en el service
         List<Hecho> hechos = new ArrayList<Hecho>();
         hechos = importador.importarHechosArchivo(path);
-        hechos.forEach(hecho -> {hechosRepository.save(hecho);});
+        hechos.forEach(hechosRepository::save);
         return hechos;
     }
 
@@ -47,10 +48,17 @@ public class HechosService implements IHechosService {
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
         dto.setUbicacion(hecho.getUbicacion());
-        dto.setCategoria(hecho.getCategoria());
+        dto.setCategoria(categoriatoDTO( hecho.getCategoria() ) );
         dto.setFechaDeCarga(hecho.getFechaDeCarga());
         dto.setFechaDeOcurrencia(hecho.getFechaDeOcurrencia());
         dto.setId(hecho.getId());
         return dto;
+    }
+
+    private CategoriaOutputDTO categoriatoDTO(String nombreCategoria){
+        return CategoriaOutputDTO.builder()
+                .id(categoriasService.obtenerIdCategoria(nombreCategoria))
+                .nombre(nombreCategoria)
+                .build();
     }
 }

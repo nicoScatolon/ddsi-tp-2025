@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class HechoFuenteDinamica implements HechoBase {
     private Long id;
-    private Long fuenteId;
+    private Long origenId;
+    private Long idFuente;
     private String titulo;
     private String descripcion;
     private Categoria categoria;

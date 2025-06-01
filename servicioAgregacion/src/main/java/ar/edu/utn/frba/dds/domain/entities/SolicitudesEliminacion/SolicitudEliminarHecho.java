@@ -32,6 +32,7 @@ public class SolicitudEliminarHecho {
         this.nombreAdministrador = nombreAdministrador;
         this.apellidoAdministrador = apellidoAdministrador;
         hecho.setFueEliminado(true);
+        this.actualizarFuenteOrigen = true;
     }
 
     public void serRechazada(String nombreAdministrador, String apellidoAdministrador){

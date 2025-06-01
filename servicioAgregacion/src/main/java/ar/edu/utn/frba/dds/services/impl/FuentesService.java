@@ -43,6 +43,7 @@ public class FuentesService implements IFuentesService {
         return this.buscarFuentes().stream().filter(fuente -> fuente.getTipo().equals(tipoFuente)).collect(Collectors.toList());
     }
 
+    @Override
     public List<Fuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
         return this.buscarFuentes().stream().filter(fuente -> tiposFuente.contains(fuente.getTipo())).collect(Collectors.toList());
     }

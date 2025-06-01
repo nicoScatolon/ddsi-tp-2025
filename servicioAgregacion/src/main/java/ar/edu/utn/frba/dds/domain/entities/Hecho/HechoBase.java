@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 
 public interface HechoBase {
     Long getId();
-    Long getFuenteId();
+    Long getOrigenId();
+    Long getIdFuente();
     String getTitulo();
     String getDescripcion();
     Categoria getCategoria();
@@ -19,7 +20,8 @@ public interface HechoBase {
 
 
     void setId(Long id);
-    void setFuenteId(Long fuenteId);
+    void setOrigenId(Long origenId);
+    void setIdFuente(Long idFuente);
     void setTitulo(String titulo);
     void setDescripcion(String descripcion);
     void setCategoria(Categoria categoria);

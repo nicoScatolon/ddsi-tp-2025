@@ -33,7 +33,7 @@ public class Coleccion {
         this.listaCriterios.remove(criterio);
     }
 
-    public Set<HechoBase> filtrarHechos(List<HechoBase> hechosDisponibles) {
+    public List<HechoBase> filtrarHechos(List<HechoBase> hechosDisponibles) {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
             return new HashSet<>();
         }

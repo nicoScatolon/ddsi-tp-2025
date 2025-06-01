@@ -42,12 +42,12 @@ public class HechosRepository implements IHechosRepository {
     public Optional<HechoBase> findByFuenteID(Long fuenteID, Class<? extends HechoBase> claseEsperada) {
         return hechos.values().stream()
                 .filter(h -> claseEsperada.equals(h.getClass()) &&
-                        Objects.equals(h.getFuenteId(), fuenteID))
+                        Objects.equals(h.getOrigenId(), fuenteID))
                 .findFirst();
     }
 
     private HechoBase verificarExistenteYAsignarId(HechoBase hecho) {
-        Optional<HechoBase> existente = this.findByFuenteID(hecho.getFuenteId(), hecho.getClass());
+        Optional<HechoBase> existente = this.findByFuenteID(hecho.getOrigenId(), hecho.getClass());
 
         existente.ifPresent(hechoExistente -> hechos.remove(hechoExistente.getId()));
 
