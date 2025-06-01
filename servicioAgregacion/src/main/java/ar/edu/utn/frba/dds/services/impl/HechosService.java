@@ -21,12 +21,19 @@ import java.util.List;
 
 @Service
 public class HechosService implements IHechosService {
+    private final IHechosRepository hechosRepository;
+
+    private final IFuentesService fuentesService;
+    private final ICategoriaService categoriaService;
+
+    private final WebClient.Builder webClientBuilder;
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
     public HechosService(IHechosRepository hechosRepository, IFuentesService fuentesService ,ICategoriaService categoriaService, WebClient.Builder webClientBuilder) {
         this.hechosRepository = hechosRepository;
         this.webClientBuilder = webClientBuilder;
-        this.categoriasRepository = categoriasRepository;
+        this.categoriaService = categoriaService;
+        this.fuentesService = fuentesService;
     }
 
     @Override
@@ -35,6 +42,12 @@ public class HechosService implements IHechosService {
         listaTipos.add(TipoFuente.ESTATICA);
         listaTipos.add(TipoFuente.DINAMICA);
         List<Fuente> fuentes = fuentesService.buscarFuentePorTipo(listaTipos);
+        for (Fuente fuente : fuentes){
+            boolean resultado = actualizarHechos(fuente);
+            if (resultado){
+                //las colecciones que tengan esa fuente deben ser actualizadas
+            }
+        }
         //TODO ver como setearlo en las properties
     }
 
@@ -45,7 +58,7 @@ public class HechosService implements IHechosService {
 
         for (Fuente fuente : fuentes){
             List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
-            List<HechoBase> hechosListos = this.convertirHechosDTO(hechoInputDTOS);
+            List<HechoBase> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente.getId());
             hechoBases.addAll(hechosListos);
         }
         return hechoBases;
@@ -68,13 +81,25 @@ public class HechosService implements IHechosService {
         return DTOConverter.convertirHechoOutputDTO(hecho);
     }
 
+    @Override
+    public List<HechoBase> findByTipoFuente(List<TipoFuente> tiposFuentes){
+        List<HechoBase> hechoBuscados = new ArrayList<>();
+        //si no tiene fuentes asociadas devolvemos una lista vacía
+        if (tiposFuentes.isEmpty()) return hechoBuscados;
+        //obtenemos id de las fuentes que sean de los tipos buscados
+        List<Long> idsFuentesBuscadas = fuentesService.buscarFuentePorTipo(tiposFuentes).stream().map(Fuente::getId).toList();
+        //filtramos los hechos que tengan algún id que matchee con los de las fuentes encontradas
+        hechoBuscados = this.hechosRepository.findAll().stream().filter(h -> idsFuentesBuscadas.contains(h.getId())).toList();
+        return hechoBuscados;
+    }
+
     private List<IHechoInputDTO> obtenerHechosFuente(Fuente fuente){
         List<IHechoInputDTO> hechoInputDTOS;
         hechoInputDTOS = fuente.getHechos(webClientBuilder);
         return hechoInputDTOS;
     }
 
-    private List<HechoBase> convertirHechosDTO (List<IHechoInputDTO> iHechoInputDTOS){
+    private List<HechoBase> convertirHechosDTO (List<IHechoInputDTO> iHechoInputDTOS, Long idFuente){
         List<HechoBase> hechosListos = new ArrayList<>();
         for (IHechoInputDTO hechoInputDTO : iHechoInputDTOS) {
             HechoBase hecho = DTOConverter.convertirHechoInputDTO(hechoInputDTO,idFuente);
@@ -85,16 +110,17 @@ public class HechosService implements IHechosService {
         return hechosListos;
     }
 
-    private void actualizarHechos(Fuente fuente) {
+    private boolean actualizarHechos(Fuente fuente) {
         List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
 
         List<HechoBase> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente.getId());
         if (hechosListos.isEmpty()) {
             logger.info("No se encontraron hechos para actualizar.");
-            return;
+            return false;
         }
         hechosRepository.saveAll(hechosListos);
         this.logearHechosCargados(hechosListos, fuente.getUrl());
+        return true;
     }
 
     // LOGGER

@@ -22,4 +22,5 @@ public class HechoInputDTO {
     private LocalDate fechaDeOcurrencia;
 
     private IContenidoMultimedia contenidoMultimedia;
+    private ContribuyenteInputDTO contribuyenteInputDTO;
 }

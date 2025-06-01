@@ -21,7 +21,7 @@ public class SolicitudEliminarHecho {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaAceptacion = null;
     private boolean eliminada = false;
-
+    private Boolean actualizarFuenteOrigen = false; //el actualizar con la fuente de origen
 
     public void serAceptada(String nombreAdministrador, String apellidoAdministrador) {
         if (estado != EstadoDeSolicitud.PENDIENTE) {

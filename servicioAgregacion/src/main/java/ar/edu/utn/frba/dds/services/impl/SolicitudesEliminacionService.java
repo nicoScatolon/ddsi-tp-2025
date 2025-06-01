@@ -6,8 +6,10 @@ import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
+import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
@@ -15,16 +17,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
     private final ISolicitudesEliminacionRepository repository;
+    private final IFuentesService fuentesService;
     private final IDetectorDeSpam detectorDeSpam;
 
-    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam) {
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService) {
         this.repository = repository;
         this.detectorDeSpam = detectorDeSpam;
+        this.fuentesService = fuentesService;
     }
 
     @Override
@@ -81,6 +86,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                         solicitud.getFechaCreacion()
                 )
         );
+    }
+
+    public void notificarEliminacionHechos(){
+        List<SolicitudEliminarHecho> solicitudesAceptadas = repository.findAll().stream()
+                .filter(SolicitudEliminarHecho::getActualizarFuenteOrigen)
+                .toList();
+        solicitudesAceptadas.forEach(s -> s.setActualizarFuenteOrigen(false));
+        fuentesService.notificarEliminaciones(solicitudesAceptadas.stream().map(SolicitudEliminarHecho::getHecho).collect(Collectors.toList()));
     }
 
     //Metodo para acortar strings y entren en consola.

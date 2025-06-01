@@ -24,7 +24,9 @@ public class HechosService implements IHechosService {
     private IFuenteHechosExterna fuenteHechosExterna;
     private ICategoriaService categoriaService;
 
-
+    public HechosService(ICategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
+    }
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {

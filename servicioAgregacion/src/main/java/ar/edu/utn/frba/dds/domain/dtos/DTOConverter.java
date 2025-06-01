@@ -36,7 +36,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto) {
+    public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto, Long idFuente) {
         return HechoFuenteProxy.builder()
                 .origenId(dto.getId())
                 .idFuente(idFuente)
@@ -68,7 +68,6 @@ public class DTOConverter {
                 .idFuente(idFuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(convertirCategoria(dto.getNombreCategoria()))
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
@@ -90,11 +89,6 @@ public class DTOConverter {
         }
     }
 
-    public static Categoria convertirCategoria(String nombreCategoria) {
-        return Categoria.builder()
-                .nombre(nombreCategoria)
-                .build();
-    }
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
         return Ubicacion.builder()

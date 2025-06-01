@@ -24,5 +24,6 @@ public class HechoFuenteProxy implements HechoBase {
     private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 
+    @Builder.Default
     private Boolean fueEliminado = false;
 }

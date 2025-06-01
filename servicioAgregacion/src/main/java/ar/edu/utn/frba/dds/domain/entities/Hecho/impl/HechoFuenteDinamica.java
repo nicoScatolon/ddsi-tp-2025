@@ -29,5 +29,6 @@ public class HechoFuenteDinamica implements HechoBase {
     private IContenidoMultimedia contenidoMultimedia;
     private Usuario contribuyente;
 
+    @Builder.Default
     private Boolean fueEliminado = false;
 }

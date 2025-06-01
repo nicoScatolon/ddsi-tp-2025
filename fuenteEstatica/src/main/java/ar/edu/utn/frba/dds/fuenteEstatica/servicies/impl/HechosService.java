@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
+import ar.edu.utn.frba.dds.fuenteEstatica.servicies.ICategoriasService;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,9 @@ public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriasService categoriasService;
 
-    public HechosService(IHechosRepository hechosRepository) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriasService categoriasService) {
         this.hechosRepository = hechosRepository;
+        this.categoriasService = categoriasService;
     }
 
     @Override

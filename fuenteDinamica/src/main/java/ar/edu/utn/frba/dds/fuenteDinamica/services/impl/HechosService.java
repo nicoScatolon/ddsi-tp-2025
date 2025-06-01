@@ -2,11 +2,13 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
+import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,26 +19,28 @@ import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
-    private IHechosRepository hechosRepository;
+    private final IHechosRepository hechosRepository;
+    private final ICategoriaService categoriaService;
 
     @Value("${hecho.diasModificacion}")
     private Long diasValidosModificacion;
 
-    public HechosService(IHechosRepository hechosRepository) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService) {
         this.hechosRepository = hechosRepository;
+        this.categoriaService = categoriaService;
     }
 
     @Override
-    public Hecho cargarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
-        Hecho hecho = hechoInputDTO(hechoDTO, contribuyenteDTO);
+    public Hecho cargarHecho(HechoInputDTO hechoDTO) {
+        Hecho hecho = hechoInputDTO(hechoDTO, hechoDTO.getContribuyenteInputDTO());
         hecho.setFechaDeCarga(LocalDateTime.now());
         return this.hechosRepository.save(hecho);
     }
 
     @Override
-    public Hecho modificarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
+    public Hecho modificarHecho(HechoInputDTO hechoDTO) {
         Hecho hechoGuardado = this.hechosRepository.findById(hechoDTO.getId());
-        Hecho hechoNuevo = hechoInputDTO(hechoDTO, contribuyenteDTO);
+        Hecho hechoNuevo = hechoInputDTO(hechoDTO, hechoDTO.getContribuyenteInputDTO());
 
         if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
         if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
@@ -73,11 +77,11 @@ public class HechosService implements IHechosService {
                 .ubicacion(hechoDTO.getUbicacion())
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(contribuyenteDTO))
+                .contribuyente(this.contribuyenteInputDTO(contribuyenteDTO))
                 .build();
     }
 
-    private Contribuyente contribuyenteDTO(ContribuyenteInputDTO contribuyenteDTO) {
+    private Contribuyente contribuyenteInputDTO(ContribuyenteInputDTO contribuyenteDTO) {
         return Contribuyente.builder()
                 .id(contribuyenteDTO.getId())
                 .nombre(contribuyenteDTO.getNombre())
@@ -92,12 +96,19 @@ public class HechosService implements IHechosService {
                 .idLocal(hecho.getId())
                 .titulo(hecho.getTitulo())
                 .descripcion(hecho.getDescripcion())
-                .nombreCategoria(hecho.getCategoria())
+                .categoriaOutputDTO(this.categoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(hecho.getUbicacion())
                 .fechaOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
                 .contribuyente(hecho.getContribuyente())
                 .build();
+    }
+
+    private CategoriaOutputDTO categoriaOutputDTO(String nombreCategoria) {
+        CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
+        categoriaOutputDTO.setId(this.categoriaService.obtenerIdCategoria(nombreCategoria));
+        categoriaOutputDTO.setNombreCategoria(nombreCategoria);
+        return categoriaOutputDTO;
     }
 }

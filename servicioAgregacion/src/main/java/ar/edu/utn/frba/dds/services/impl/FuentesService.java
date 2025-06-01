@@ -2,11 +2,13 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +49,17 @@ public class FuentesService implements IFuentesService {
     public List<Fuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
         return this.buscarFuentes().stream().filter(fuente -> tiposFuente.contains(fuente.getTipo())).collect(Collectors.toList());
     }
+
+    @Override
+    public void notificarEliminaciones (List<HechoBase> hechosAEliminar){
+        Map<Long, List<HechoBase>> hechoBasesMap = hechosAEliminar.stream().collect(Collectors.groupingBy(HechoBase::getIdFuente));
+
+        for (Long idFuente : hechoBasesMap.keySet()){
+            List <Long> idHechosAEliminar = hechoBasesMap.get(idFuente).stream().map(HechoBase::getOrigenId).toList();
+            //ToDO: fuente.notificareliminacion( idHechosAEliminar )
+        }
+    }
+
 
     private Fuente fuenteDTOToFuente(FuenteDTO fuenteDTO) {
         Fuente fuente;

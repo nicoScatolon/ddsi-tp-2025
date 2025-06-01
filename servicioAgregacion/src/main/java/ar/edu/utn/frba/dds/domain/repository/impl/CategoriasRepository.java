@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
-
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,7 @@ public class CategoriasRepository implements ICategoriasRepository {
 
     @Override
     public List<Categoria> findAll() {
-        return this.categorias;
+        return this.categorias.values().stream().toList();
     }
 
     @Override
