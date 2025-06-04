@@ -6,8 +6,10 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteExterna;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteMetaMapa;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteHechos;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -22,31 +24,37 @@ import java.util.List;
 
 @Data
 @Service
+
 public class HechosService implements IHechosService {
-    private List<IFuenteHechosExterna> fuentesHechosExternas;
+    private List<IFuenteExterna> fuentesExternas;
+    private List<IFuenteMetaMapa> instanciasMetaMapa;
     private ICategoriaService categoriaService;
 
     public HechosService(ICategoriaService categoriaService) {
         this.categoriaService = categoriaService;
     }
 
-    public Void agregarFuente(IFuenteHechosExterna fuente){
-        fuentesHechosExternas.add(fuente);
+    public Void agregarFuenteExterna(IFuenteExterna fuenteExterna){
+        fuentesExternas.add(fuenteExterna);
+        return null;
+    }
+
+    public Void agregarInstanciaMetaMapa(IFuenteMetaMapa fuenteMetaMapa){
+        instanciasMetaMapa.add(fuenteMetaMapa);
         return null;
     }
 
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
-        return Flux.fromIterable(fuentesHechosExternas)
-                .flatMap(IFuenteHechosExterna::buscarTodos)
+        return Flux.concat(
+                        Flux.fromIterable(fuentesExternas).flatMap(IFuenteHechos::buscarTodos),
+                        Flux.fromIterable(instanciasMetaMapa).flatMap(IFuenteHechos::buscarTodos)
+                )
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();
     }
-
-
-
 
 
 

@@ -1,8 +1,8 @@
-package ar.edu.utn.frba.dds.fuenteproxy.services.fuentesHechosExternas;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteExterna;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,16 +15,16 @@ import java.util.List;
 
 @Data
 @Service
-public class FuenteHechosDds implements IFuenteHechosExterna {
+public class FuenteDDS implements IFuenteExterna {
 
     private final WebClient webClient;
     private final String token;
     private final String baseUrl;
 
 
-    public FuenteHechosDds(WebClient.Builder webClientBuilder,
-                           @Value("${api.ddsi.base-url}") String baseUrl,
-                           @Value("api.ddsi.token") String token) {
+    public FuenteDDS(WebClient.Builder webClientBuilder,
+                     @Value("${api.ddsi.base-url}") String baseUrl,
+                     @Value("api.ddsi.token") String token) {
         this.baseUrl = baseUrl;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
         this.token = token;

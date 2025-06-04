@@ -1,9 +1,9 @@
-package ar.edu.utn.frba.dds.fuenteproxy.services.fuentesHechosExternas;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteMetaMapa;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.List;
 
 @Data
 @Service
-public class FuenteHechosMetaMapa implements IFuenteHechosExterna {
+public class FuenteMetaMapa implements IFuenteMetaMapa {
     private WebClient webClient;
     private final String baseUrl;
 
-    public FuenteHechosMetaMapa(WebClient.Builder webClientBuilder, @Value("${api.metamapa.base-url}") String baseUrl) {
+    public FuenteMetaMapa(WebClient.Builder webClientBuilder, @Value("${api.metamapa.base-url}") String baseUrl) {
         this.baseUrl = baseUrl;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
@@ -89,8 +89,7 @@ public class FuenteHechosMetaMapa implements IFuenteHechosExterna {
         webClient.post()
                 .uri("/api/solicitudes")
                 .bodyValue(solicitud)
-                .retrieve()
-                .bodyToMono(Void.class);
+                .retrieve();
 
         return null;
     }

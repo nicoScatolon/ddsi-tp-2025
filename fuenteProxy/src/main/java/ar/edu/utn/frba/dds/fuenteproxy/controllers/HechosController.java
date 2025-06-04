@@ -4,7 +4,6 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -26,10 +25,6 @@ public class HechosController {
         return hechosService.buscarTodos();
     }
 
-    @GetMapping("/{id}")
-    public Mono<HechoOutputDTO> obtenerHechoPorId(@PathVariable Long id) {
-        return hechosService.buscarPorId(id);
-    }
 }
 
 
