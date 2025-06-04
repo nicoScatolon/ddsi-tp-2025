@@ -5,11 +5,13 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
+
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -21,31 +23,27 @@ import java.util.List;
 @Data
 @Service
 public class HechosService implements IHechosService {
-    private IFuenteHechosExterna fuenteHechosExterna;
+    private List<IFuenteHechosExterna> fuentesHechosExternas;
     private ICategoriaService categoriaService;
 
     public HechosService(ICategoriaService categoriaService) {
         this.categoriaService = categoriaService;
     }
 
-    @Override
-    public Mono<List<HechoOutputDTO>> buscarTodos() {
-        return fuenteHechosExterna.buscarTodos()
-                .map(lista -> lista.stream()
-                        .map(this::mapToHechoDTO)
-                        .toList());
+    public Void agregarFuente(IFuenteHechosExterna fuente){
+        fuentesHechosExternas.add(fuente);
+        return null;
     }
-
-
-
 
 
     @Override
-    public Mono<HechoOutputDTO> buscarPorId(Long id){
-        return fuenteHechosExterna.buscarPorId(id)
-                .map(this::mapToHechoDTO);
+    public Mono<List<HechoOutputDTO>> buscarTodos() {
+        return Flux.fromIterable(fuentesHechosExternas)
+                .flatMap(IFuenteHechosExterna::buscarTodos)
+                .flatMapIterable(lista -> lista)
+                .map(this::mapToHechoDTO)
+                .collectList();
     }
-
 
 
 
@@ -59,20 +57,21 @@ public class HechosService implements IHechosService {
             .id(dto.getId())
             .titulo(dto.getTitulo())
             .descripcion(dto.getDescripcion())
-            .categoria(categoriatoDTO(dto.getCategoria()))
+            .categoria(categoriaToDTO(dto.getCategoria()))
             .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
             .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
             .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
             .build();
 }
 
-    private CategoriaOutputDTO categoriatoDTO(String nombreCategoria){
+
+
+private CategoriaOutputDTO categoriaToDTO(String nombreCategoria){
         return CategoriaOutputDTO.builder()
                 .id(categoriaService.obtenerIdCategoria(nombreCategoria))
                 .nombre(nombreCategoria)
                 .build();
-    }
-
+}
 
 
 

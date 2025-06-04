@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface IFuenteHechosExterna{
     Mono<List<HechoExternoDTO>> buscarTodos();
-    Mono<HechoExternoDTO> buscarPorId(Long id);
 
 }

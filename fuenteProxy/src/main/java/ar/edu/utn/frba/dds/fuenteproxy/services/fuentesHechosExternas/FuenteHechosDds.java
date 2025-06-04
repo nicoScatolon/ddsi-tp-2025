@@ -2,9 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.fuentesHechosExternas;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.AuthRequestDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteHechosExterna;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,60 +18,26 @@ import java.util.List;
 public class FuenteHechosDds implements IFuenteHechosExterna {
 
     private final WebClient webClient;
-    private final Mono<String> token;
-
+    private final String token;
     private final String baseUrl;
-    private final String email;
-    private final String password;
+
 
     public FuenteHechosDds(WebClient.Builder webClientBuilder,
                            @Value("${api.ddsi.base-url}") String baseUrl,
-                           @Value("${api.ddsi.auth.email}") String email,
-                           @Value("${api.ddsi.auth.password}") String password) {
+                           @Value("api.ddsi.token") String token) {
         this.baseUrl = baseUrl;
-        this.email = email;
-        this.password = password;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
-        this.token = this.autenticar().cache();
+        this.token = token;
     }
 
 
 
-   public Mono<String> autenticar(){
-        AuthRequestDTO authRequestDTO = AuthRequestDTO.builder()
-                .email(email)
-                .password(password)
-                .build();
-
-
-        return webClient
-                .post()
-                .uri("/api/login")
-                .bodyValue(authRequestDTO)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(json -> {
-                    boolean hayError = json.get("error").asBoolean();
-                    if (hayError) {
-                        throw new RuntimeException("Error en login: " + json.get("message").asText());
-                    }
-                    return json.get("token").asText();
-                });
-
-    }
-
-
-
-
-
+    @Override
     public Mono<List<HechoExternoDTO>> buscarTodos() {
-        return token.flatMap(token ->
-                webClient.get()
+        return webClient.get()
                         .uri("/api/desastres?page=1")
                         .headers(h -> h.setBearerAuth(token))
                         .retrieve()
-                        .onStatus(status -> status.value() == 401,
-                                response  -> Mono.error(new RuntimeException("No autenticado: el token es inválido")))
                         .bodyToMono(PaginaHechosResponseDTO.class)
                         .flatMap(primerPagina -> {
                             int lastPage = primerPagina.getLastPage();
@@ -99,28 +63,21 @@ public class FuenteHechosDds implements IFuenteHechosExterna {
                             });
 
 
-                        })
-        );
+                        });
 
     }
 
 
 
 
-
-
     public Mono<HechoExternoDTO> buscarPorId(Long id) {
-        return token.flatMap(token ->
-                webClient.get()
+        return webClient.get()
                 .uri("/api/desastres/{id}", id)
                 .headers(h-> h.setBearerAuth(token))
                         .retrieve()
-                        .onStatus(status -> status.value() == 401,
-                                response -> Mono.error(new RuntimeException("No autenticado: el token es inválido")))
                         .onStatus(status -> status.value() == 404,
                                 response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
-                        .bodyToMono(HechoExternoDTO.class)
-        );
+                        .bodyToMono(HechoExternoDTO.class);
 
     }
 

@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface IHechosService {
     Mono<List<HechoOutputDTO>> buscarTodos();
-    Mono<HechoOutputDTO> buscarPorId(Long id);
 }
