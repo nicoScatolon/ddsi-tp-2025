@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.IColeccionesRepository;
 import org.springframework.stereotype.Repository;
 

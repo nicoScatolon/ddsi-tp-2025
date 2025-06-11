@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class SolicitudEliminarHecho {
     private Long id;
     private String razonDeEliminacion;
-    private HechoBase hecho;
+    private Hecho hecho;
     private EstadoDeSolicitud estado;
     private String nombreCreador;
     private String apellidoCreador;

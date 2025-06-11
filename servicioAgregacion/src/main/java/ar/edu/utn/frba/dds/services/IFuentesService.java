@@ -1,9 +1,7 @@
 package ar.edu.utn.frba.dds.services;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteDTO;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 
 import java.util.List;
 

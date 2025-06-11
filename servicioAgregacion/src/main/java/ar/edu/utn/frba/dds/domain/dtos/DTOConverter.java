@@ -10,12 +10,8 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import ar.edu.utn.frba.dds.domain.entities.Usuario;
+import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
@@ -111,8 +107,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Usuario convertirUsuario(UsuarioInputDTO dto) {
-        return Usuario.builder()
+    public static Contribuyente convertirUsuario(UsuarioInputDTO dto) {
+        return Contribuyente.builder()
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .fechaNacimiento(dto.getFechaNacimiento())

@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,12 @@ public class FuentesService implements IFuentesService {
     @Override
     public void agregarFuente(FuenteDTO fuenteDTO) {
         Fuente nuevaFuente = this.fuenteDTOToFuente(fuenteDTO);
-        fuentesRepository.agregarFuente(nuevaFuente);
+        fuentesRepository.saveFuente(nuevaFuente);
     }
 
     @Override
     public void eliminarFuente(Long id) {
-        fuentesRepository.eliminarFuente(id);
+        fuentesRepository.deleteFuente(id);
     }
 
     @Override

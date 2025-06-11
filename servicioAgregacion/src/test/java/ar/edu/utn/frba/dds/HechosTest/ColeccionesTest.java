@@ -5,12 +5,8 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas.CriterioOcurrenciaEntreFechas;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoFuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import ar.edu.utn.frba.dds.domain.entities.Usuario;
+import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.repository.impl.CategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
@@ -75,11 +71,11 @@ public class ColeccionesTest {
         Categoria catMedioAmbiente = new Categoria("Medio Ambiente");
         Categoria catTransito = new Categoria("Tránsito");
 
-        Usuario usuarioEjemplo = new Usuario();
-        usuarioEjemplo.setNombre("Jose");
-        usuarioEjemplo.setApellido("Perez");
-        usuarioEjemplo.setFechaNacimiento(LocalDate.of(2020, 1, 1));
-        usuarioEjemplo.setEsAnonimo(false);
+        Contribuyente contribuyenteEjemplo = new Contribuyente();
+        contribuyenteEjemplo.setNombre("Jose");
+        contribuyenteEjemplo.setApellido("Perez");
+        contribuyenteEjemplo.setFechaNacimiento(LocalDate.of(2020, 1, 1));
+        contribuyenteEjemplo.setEsAnonimo(false);
 
 // Hechos variados:
         HechoFuenteEstatica hecho1 = crearHechoEstatica(
@@ -110,7 +106,7 @@ public class ColeccionesTest {
                 -34.6000,
                 -58.3800,
                 LocalDate.of(2024, 5, 26),
-                usuarioEjemplo
+                contribuyenteEjemplo
         );
 
         HechoFuenteEstatica hecho4 = crearHechoEstatica(
@@ -182,7 +178,7 @@ public class ColeccionesTest {
         return hechoE;
     }
 
-    public HechoFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Usuario contribuyente) {
+    public HechoFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Contribuyente contribuyente) {
         var hechoE = new HechoFuenteDinamica();
         hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);

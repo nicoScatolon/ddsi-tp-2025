@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 public class Coleccion {
-    private final Set<CriterioInterfaz> listaCriterios = new HashSet<>();
-    @Setter private List<HechoBase> listaHechos;
+    @Builder.Default private List<IFuente> listaFuentes = new ArrayList<>();
+    @Builder.Default  private List<Hecho> listaHechos = new ArrayList<>();
+    @Builder.Default  private final Set<ICriterio> listaCriterios = new HashSet<>();
     @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
-    @Setter private List<TipoFuente> listaTipoFuentes;
+
     @Setter private Boolean actualizarHechos;
-    //TODO posible cambiar la lista de tipoFuente por una lista de fuentes especificas
 
     public Coleccion(String handle, String titulo, String descripcion) {
         this.handle = handle;
@@ -31,17 +31,27 @@ public class Coleccion {
         this.descripcion = descripcion;
     }
 
-    public void agregarCriterio(CriterioInterfaz criterio) {
+    public void agregarCriterio(ICriterio criterio) {
         this.listaCriterios.add(criterio);
         actualizarHechos = true;
     }
 
-    public void eliminarCriterio(CriterioInterfaz criterio) {
+    public void eliminarCriterio(ICriterio criterio) {
         this.listaCriterios.remove(criterio);
         actualizarHechos = true;
     }
 
-    public List<HechoBase> filtrarHechos(List<HechoBase> hechosDisponibles) {
+    public void agregarFuente(IFuente fuente) {
+        this.listaFuentes.add(fuente);
+        actualizarHechos = true;
+    }
+
+    public void eliminarFuente(IFuente fuente) {
+        this.listaFuentes.remove(fuente);
+        actualizarHechos = true;
+    }
+
+    public List<Hecho> filtrarHechos(List<Hecho> hechosDisponibles) {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
             return new ArrayList<>();
         }
@@ -51,17 +61,17 @@ public class Coleccion {
                 .collect(Collectors.toList());
     }
 
-    public void actualizarHechos(List<HechoBase> hechos) {
+    public void actualizarHechos(List<Hecho> hechos) {
         this.listaHechos = this.filtrarHechos(hechos);
     }
 
-    public Set<HechoBase> getHechosConFiltro(List<HechoBase> hechosDisponibles, CriterioInterfaz filtro) {
+    public Set<Hecho> getHechosConFiltro(List<Hecho> hechosDisponibles, ICriterio filtro) {
         return this.filtrarHechos(hechosDisponibles).stream()
                 .filter(filtro::pertenece)
                 .collect(Collectors.toSet());
     }
 
-    public Set<HechoBase> getHechosConFiltro(List<HechoBase> hechosDisponibles, Set<CriterioInterfaz> filtros) {
+    public Set<Hecho> getHechosConFiltro(List<Hecho> hechosDisponibles, Set<ICriterio> filtros) {
         return this.filtrarHechos(hechosDisponibles).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
                 .collect(Collectors.toSet());

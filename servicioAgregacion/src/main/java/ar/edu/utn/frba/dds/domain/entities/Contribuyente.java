@@ -9,10 +9,15 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
-public class Usuario {
-    private long id;
+public class Contribuyente {
+    private Long id;
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
     private Boolean esAnonimo;
+
+    public String getNombreDisplay(){
+        if (esAnonimo) {return "Anonimo";}
+        else return String.join(nombre, " ", apellido);
+    }
 }

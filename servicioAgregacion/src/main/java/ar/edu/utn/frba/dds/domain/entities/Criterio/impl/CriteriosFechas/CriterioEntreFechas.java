@@ -1,11 +1,11 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas;
 
-import ar.edu.utn.frba.dds.domain.entities.Criterio.CriterioInterfaz;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
 import java.time.LocalDate;
 
-public abstract class CriterioEntreFechas implements CriterioInterfaz {
+public abstract class CriterioEntreFechas implements ICriterio {
     private final LocalDate primeraFecha;
     private final LocalDate segundaFecha;
 
@@ -14,10 +14,10 @@ public abstract class CriterioEntreFechas implements CriterioInterfaz {
         this.segundaFecha = segundaFecha;
     }
 
-    public abstract LocalDate getFechaNecesaria(HechoBase hecho);
+    public abstract LocalDate getFechaNecesaria(Hecho hecho);
 
     @Override
-    public Boolean pertenece(HechoBase hecho) {
+    public Boolean pertenece(Hecho hecho) {
         LocalDate fecha = this.getFechaNecesaria(hecho);
         return fecha.isAfter(primeraFecha) && fecha.isBefore(segundaFecha);
     }

@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.dtos.input;
 
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
 import lombok.Data;
 
 import java.time.LocalDateTime;
