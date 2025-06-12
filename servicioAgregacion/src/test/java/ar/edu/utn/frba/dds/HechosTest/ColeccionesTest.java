@@ -35,7 +35,7 @@ public class ColeccionesTest {
     private final FuentesRepository fuentesRepository = new FuentesRepository();
     private final CategoriaService categoriaService = new CategoriaService(categoriasRepository);
     private final FuentesService fuentesService = new FuentesService(fuentesRepository);
-    private final HechosService hechosService = new HechosService(hechosRepository,fuentesService,categoriaService,mock(WebClient.Builder.class));
+    private final HechosService hechosService = new HechosService(hechosRepository,fuentesService,categoriaService);
     private final ColeccionesService coleccionesService = new ColeccionesService(coleccionesRepository,hechosService);
 
 

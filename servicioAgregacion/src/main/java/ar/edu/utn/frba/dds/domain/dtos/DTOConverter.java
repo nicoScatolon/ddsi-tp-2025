@@ -10,6 +10,8 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
-    public static HechoOutputDTO convertirHechoOutputDTO(HechoBase hecho) {
+    public static HechoOutputDTO convertirHechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
                 .titulo(hecho.getTitulo())
@@ -32,10 +34,10 @@ public class DTOConverter {
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputProxyDTO dto, Long idFuente) {
-        return HechoFuenteProxy.builder()
+    public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto, IFuente fuente) {
+        return Hecho.builder()
                 .origenId(dto.getId())
-                .idFuente(idFuente)
+                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -45,10 +47,10 @@ public class DTOConverter {
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputEstaticaDTO dto, Long idFuente) {
-        return HechoFuenteEstatica.builder()
+    public static Hecho convertirHechoInputDTO(HechoInputEstaticaDTO dto, IFuente fuente) {
+        return Hecho.builder()
                 .origenId(dto.getId())
-                .idFuente(idFuente)
+                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -58,10 +60,10 @@ public class DTOConverter {
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(HechoInputDinamicaDTO dto, Long idFuente) {
-        return HechoFuenteDinamica.builder()
+    public static Hecho convertirHechoInputDTO(HechoInputDinamicaDTO dto, IFuente fuente) {
+        return Hecho.builder()
                 .origenId(dto.getId())
-                .idFuente(idFuente)
+                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -73,13 +75,13 @@ public class DTOConverter {
                 .build();
     }
 
-    public static HechoBase convertirHechoInputDTO(IHechoInputDTO dto, Long idFuente) {
+    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto, IFuente fuente) {
         if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy, idFuente);
+            return convertirHechoInputDTO(proxy, fuente);
         } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica, idFuente);
+            return convertirHechoInputDTO(estatica, fuente);
         } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica, idFuente);
+            return convertirHechoInputDTO(dinamica, fuente);
         } else {
             throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
         }
@@ -136,13 +138,13 @@ public class DTOConverter {
                         dto.getApellidoCreador());
     }
 
-    public static List<HechoOutputDTO> hechoOutputDTO(Set<HechoBase> hechos) {
+    public static List<HechoOutputDTO> hechoOutputDTO(Set<Hecho> hechos) {
         return hechos.stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
     }
 
-    public static List<HechoOutputDTO> hechoOutputDTO(List<HechoBase> hechos) {
+    public static List<HechoOutputDTO> hechoOutputDTO(List<Hecho> hechos) {
         return hechos.stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());

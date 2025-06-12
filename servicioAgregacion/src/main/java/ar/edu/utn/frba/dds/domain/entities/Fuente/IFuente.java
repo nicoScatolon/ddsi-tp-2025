@@ -4,4 +4,6 @@ public interface IFuente {
     TipoFuente getTipo();
     Long getId();
     void setId(Long id);
+    void setNombre(String nombre);
+    String getUrl();
 }

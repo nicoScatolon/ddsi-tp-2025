@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
@@ -62,7 +63,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     public void actualizarColeccion(Coleccion coleccion){
-        List <HechoBase> hechos = hechosService.findByTipoFuente(coleccion.getListaTipoFuentes());
+        List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
         coleccion.actualizarHechos(hechos);
     }
 
@@ -71,9 +72,9 @@ public class ColeccionesService implements IColeccionesService {
 
     public List<HechoOutputDTO> mostrarHechosColeccion(String handle){
         Coleccion coleccion = this.coleccionesRepository.findByHandle(handle); //considera hechos estaticos y dinamicos
-        List<HechoBase> hechosAMostar = coleccion.getListaHechos();
-        if (coleccion.getListaTipoFuentes().contains(TipoFuente.PROXY)){
-            List<HechoBase> hechosProxy = hechosService.obtenerHechosProxy();
+        List<Hecho> hechosAMostar = coleccion.getListaHechos();
+        if (coleccion.getListaFuentes().stream().anyMatch(f -> f.getTipo().equals(TipoFuente.PROXY))){
+            List<Hecho> hechosProxy = hechosService.obtenerHechosProxy();
             hechosAMostar.addAll(hechosProxy);
         }
         return DTOConverter.hechoOutputDTO(hechosAMostar);

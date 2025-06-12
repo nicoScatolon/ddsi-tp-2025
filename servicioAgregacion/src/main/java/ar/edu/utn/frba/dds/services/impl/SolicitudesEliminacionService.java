@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
@@ -40,7 +41,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitud(HechoBase hecho, String razon, String nombre, String apellido) {
+    public void crearSolicitud(Hecho hecho, String razon, String nombre, String apellido) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 

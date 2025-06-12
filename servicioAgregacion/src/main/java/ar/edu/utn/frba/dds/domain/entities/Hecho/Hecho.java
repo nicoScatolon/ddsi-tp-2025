@@ -5,14 +5,16 @@ import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.IContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Hecho {
     private String titulo;
     private String descripcion;

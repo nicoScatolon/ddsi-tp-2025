@@ -4,7 +4,7 @@ import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import lombok.Data;
 
 @Data
-public class FuenteDTO {
+public class FuenteInputDTO {
     private String url;
     private String nombre;
     private TipoFuente tipoFuente;

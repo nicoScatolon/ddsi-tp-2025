@@ -4,7 +4,10 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
@@ -24,12 +27,10 @@ public class HechosService implements IHechosService {
     private final IFuentesService fuentesService;
     private final ICategoriaService categoriaService;
 
-    private final WebClient.Builder webClientBuilder;
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    public HechosService(IHechosRepository hechosRepository, IFuentesService fuentesService ,ICategoriaService categoriaService, WebClient.Builder webClientBuilder) {
+    public HechosService(IHechosRepository hechosRepository, IFuentesService fuentesService ,ICategoriaService categoriaService) {
         this.hechosRepository = hechosRepository;
-        this.webClientBuilder = webClientBuilder;
         this.categoriaService = categoriaService;
         this.fuentesService = fuentesService;
     }
@@ -39,31 +40,32 @@ public class HechosService implements IHechosService {
         List <TipoFuente> listaTipos = new ArrayList<>();
         listaTipos.add(TipoFuente.ESTATICA);
         listaTipos.add(TipoFuente.DINAMICA);
-        List<Fuente> fuentes = fuentesService.buscarFuentePorTipo(listaTipos);
-        for (Fuente fuente : fuentes){
+        List<IFuente> fuentes = fuentesService.buscarFuentePorTipo(listaTipos);
+        for (IFuente fuente : fuentes){
             boolean resultado = actualizarHechos(fuente);
             if (resultado){
                 //las colecciones que tengan esa fuente deben ser actualizadas
+                //TODO setear la actualizacion de las colecciones
             }
         }
         //TODO ver como setearlo en las properties
     }
 
     @Override
-    public List<HechoBase> obtenerHechosProxy(){
-        List<Fuente> fuentes = fuentesService.buscarFuentePorTipo(TipoFuente.PROXY);
-        List<HechoBase> hechoBases = new ArrayList<>();
+    public List<Hecho> obtenerHechosProxy(){
+        List<IFuente> fuentes = fuentesService.buscarFuentePorTipo(TipoFuente.PROXY);
+        List<Hecho> hechoBases = new ArrayList<>();
 
-        for (Fuente fuente : fuentes){
+        for (IFuente fuente : fuentes){
             List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
-            List<HechoBase> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente.getId());
+            List<Hecho> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente);
             hechoBases.addAll(hechosListos);
         }
         return hechoBases;
     }
 
     @Override
-    public List<HechoBase> findAll(){ return this.hechosRepository.findAll(); }
+    public List<Hecho> findAll(){ return this.hechosRepository.findAll(); }
 
     @Override
     public List<HechoOutputDTO> findAllOutput(){
@@ -75,32 +77,32 @@ public class HechosService implements IHechosService {
 
     @Override
     public HechoOutputDTO findByID(Long id) {
-        HechoBase hecho = this.hechosRepository.findById(id);
+        Hecho hecho = this.hechosRepository.findById(id);
         return DTOConverter.convertirHechoOutputDTO(hecho);
     }
 
     @Override
-    public List<HechoBase> findByTipoFuente(List<TipoFuente> tiposFuentes){
-        List<HechoBase> hechoBuscados = new ArrayList<>();
+    public List<Hecho> findByFuente(List<IFuente> fuentes){
+        List<Hecho> hechoBuscados = new ArrayList<>();
         //si no tiene fuentes asociadas devolvemos una lista vacía
-        if (tiposFuentes.isEmpty()) return hechoBuscados;
-        //obtenemos id de las fuentes que sean de los tipos buscados
-        List<Long> idsFuentesBuscadas = fuentesService.buscarFuentePorTipo(tiposFuentes).stream().map(Fuente::getId).toList();
-        //filtramos los hechos que tengan algún id que matchee con los de las fuentes encontradas
-        hechoBuscados = this.hechosRepository.findAll().stream().filter(h -> idsFuentesBuscadas.contains(h.getId())).toList();
+        if (fuentes.isEmpty()) return hechoBuscados;
+        //filtramos los hechos que tengan alguna fuente de las pedidas
+        hechoBuscados = this.hechosRepository.findAll().stream().filter(h -> fuentes.contains(h.getFuente())).toList();
         return hechoBuscados;
     }
 
-    private List<IHechoInputDTO> obtenerHechosFuente(Fuente fuente){
+    private List<IHechoInputDTO> obtenerHechosFuente(IFuente fuente){
         List<IHechoInputDTO> hechoInputDTOS;
-        hechoInputDTOS = fuente.getHechos(webClientBuilder);
+        FuenteAdapter adapterConcreto = fuente.getTipo().crearAdapter();
+        adapterConcreto.setFuente(fuente);
+        hechoInputDTOS = adapterConcreto.obtenerHechosFuente();
         return hechoInputDTOS;
     }
 
-    private List<HechoBase> convertirHechosDTO (List<IHechoInputDTO> iHechoInputDTOS, Long idFuente){
-        List<HechoBase> hechosListos = new ArrayList<>();
+    private List<Hecho> convertirHechosDTO (List<IHechoInputDTO> iHechoInputDTOS, IFuente fuente){
+        List<Hecho> hechosListos = new ArrayList<>();
         for (IHechoInputDTO hechoInputDTO : iHechoInputDTOS) {
-            HechoBase hecho = DTOConverter.convertirHechoInputDTO(hechoInputDTO,idFuente);
+            Hecho hecho = DTOConverter.convertirHechoInputDTO(hechoInputDTO,fuente);
             Categoria categoriaPersistida = categoriaService.agregarCategoria(hechoInputDTO.getCategoria());
             hecho.setCategoria(categoriaPersistida);
             hechosListos.add(hecho);
@@ -108,10 +110,10 @@ public class HechosService implements IHechosService {
         return hechosListos;
     }
 
-    private boolean actualizarHechos(Fuente fuente) {
+    private boolean actualizarHechos(IFuente fuente) {
         List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
 
-        List<HechoBase> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente.getId());
+        List<Hecho> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente);
         if (hechosListos.isEmpty()) {
             logger.info("No se encontraron hechos para actualizar.");
             return false;
@@ -122,7 +124,7 @@ public class HechosService implements IHechosService {
     }
 
     // LOGGER
-    private void logearHechosCargados(List<HechoBase> hechos, String urlFuente){
+    private void logearHechosCargados(List<Hecho> hechos, String urlFuente){
         logger.info("Hechos cargados - Cantidad: {} - Fuente: {}", hechos.size(), urlFuente);
         hechos.forEach(hecho ->
                 logger.info

@@ -1,16 +1,18 @@
 package ar.edu.utn.frba.dds.services;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.FuenteDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
 import java.util.List;
 
 public interface IFuentesService {
-    List<Fuente> buscarFuentes();
-    void agregarFuente(FuenteDTO fuenteDTO);
+    List<IFuente> buscarFuentes();
+    void agregarFuente(FuenteInputDTO fuenteDTO);
     void eliminarFuente(Long id);
-    Fuente buscarFuentePorId(Long id);
-    List<Fuente> buscarFuentePorTipo(TipoFuente tipoFuente);
-    List<Fuente> buscarFuentePorTipo(List<TipoFuente> tipoFuente);
-    void notificarEliminaciones (List<HechoBase> hechosAEliminar);
+    IFuente buscarFuentePorId(Long id);
+    List<IFuente> buscarFuentePorTipo(TipoFuente tipoFuente);
+    List<IFuente> buscarFuentePorTipo(List<TipoFuente> tipoFuente);
+    void notificarEliminaciones (List<Hecho> hechosAEliminar);
 }

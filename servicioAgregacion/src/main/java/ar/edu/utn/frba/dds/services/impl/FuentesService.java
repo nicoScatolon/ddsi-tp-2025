@@ -1,7 +1,8 @@
 package ar.edu.utn.frba.dds.services.impl;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.FuenteDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,13 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public List<Fuente> buscarFuentes() {
+    public List<IFuente> buscarFuentes() {
         return fuentesRepository.findAll();
     }
 
     @Override
-    public void agregarFuente(FuenteDTO fuenteDTO) {
-        Fuente nuevaFuente = this.fuenteDTOToFuente(fuenteDTO);
+    public void agregarFuente(FuenteInputDTO fuenteDTO) {
+        IFuente nuevaFuente = this.fuenteDTOToFuente(fuenteDTO);
         fuentesRepository.saveFuente(nuevaFuente);
     }
 
@@ -35,41 +36,36 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public Fuente buscarFuentePorId(Long id) {
+    public IFuente buscarFuentePorId(Long id) {
         return fuentesRepository.findById(id);
     }
 
     @Override
-    public List<Fuente> buscarFuentePorTipo(TipoFuente tipoFuente){
+    public List<IFuente> buscarFuentePorTipo(TipoFuente tipoFuente){
         return this.buscarFuentes().stream().filter(fuente -> fuente.getTipo().equals(tipoFuente)).collect(Collectors.toList());
     }
 
     @Override
-    public List<Fuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
+    public List<IFuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
         return this.buscarFuentes().stream().filter(fuente -> tiposFuente.contains(fuente.getTipo())).collect(Collectors.toList());
     }
 
     @Override
-    public void notificarEliminaciones (List<HechoBase> hechosAEliminar){
-        Map<Long, List<HechoBase>> hechoBasesMap = hechosAEliminar.stream().collect(Collectors.groupingBy(HechoBase::getIdFuente));
+    public void notificarEliminaciones (List<Hecho> hechosAEliminar){
+        //TODO
+        /*
+        Map<Long, List<Hecho>> hechoBasesMap = hechosAEliminar.stream().collect(Collectors.groupingBy(Hecho::getIdFuente));
 
         for (Long idFuente : hechoBasesMap.keySet()){
-            List <Long> idHechosAEliminar = hechoBasesMap.get(idFuente).stream().map(HechoBase::getOrigenId).toList();
+            List <Long> idHechosAEliminar = hechoBasesMap.get(idFuente).stream().map(Hecho::getOrigenId).toList();
             //ToDO: fuente.notificareliminacion( idHechosAEliminar )
         }
+        */
     }
 
 
-    private Fuente fuenteDTOToFuente(FuenteDTO fuenteDTO) {
-        Fuente fuente;
-        switch (fuenteDTO.getTipoFuente()){
-            case ESTATICA -> fuente = new FuenteEstatica();
-            case PROXY -> fuente = new FuenteProxy();
-            case DINAMICA -> fuente = new FuenteDinamica();
-            default -> throw new IllegalArgumentException("Tipo de fuente no valido");
-        }
-
-        fuente.setUrl(fuenteDTO.getUrl());
+    private IFuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
+        IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
         fuente.setNombre(fuenteDTO.getNombre());
         return fuente;
     }
