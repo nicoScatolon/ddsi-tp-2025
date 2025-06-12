@@ -1,29 +1,28 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.impl;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteMetaMapa;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Data
-@Service
 public class FuenteMetaMapa implements IFuenteMetaMapa {
+    private Long Id;
+    private TipoFuenteProxy tipoFuenteProxy = TipoFuenteProxy.METAMAPA;
     private WebClient webClient;
     private final String baseUrl;
 
-    public FuenteMetaMapa(WebClient.Builder webClientBuilder, @Value("${api.metamapa.base-url}") String baseUrl) {
+    public FuenteMetaMapa(@Value("${api.metamapa.base-url}") String baseUrl) {
         this.baseUrl = baseUrl;
-        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
-    public Mono<List<HechoExternoDTO>> buscarTodos() {
+    public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
                 .uri("/api/hechos")
                 .retrieve()

@@ -6,10 +6,8 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteExterna;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.adapters.IFuenteAdapter;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteHechos;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,31 +25,21 @@ import java.util.List;
 @Service
 
 public class HechosService implements IHechosService {
-    private List<IFuenteExterna> fuentesExternas;
-    private List<IFuenteMetaMapa> instanciasMetaMapa;
-    private ICategoriaService categoriaService;
+    private final List<IFuenteAdapter> fuentesAdapters = new ArrayList<>();
+    private final ICategoriaService categoriaService;
 
     public HechosService(ICategoriaService categoriaService) {
         this.categoriaService = categoriaService;
     }
 
-    public Void agregarFuenteExterna(IFuenteExterna fuenteExterna){
-        fuentesExternas.add(fuenteExterna);
-        return null;
+    public void agregarFuente(IFuenteAdapter fuenteAdapter) {
+        fuentesAdapters.add(fuenteAdapter);
     }
-
-    public Void agregarInstanciaMetaMapa(IFuenteMetaMapa fuenteMetaMapa){
-        instanciasMetaMapa.add(fuenteMetaMapa);
-        return null;
-    }
-
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
-        return Flux.concat(
-                        Flux.fromIterable(fuentesExternas).flatMap(IFuenteHechos::buscarTodos),
-                        Flux.fromIterable(instanciasMetaMapa).flatMap(IFuenteHechos::buscarTodos)
-                )
+        return Flux.fromIterable(fuentesAdapters)
+                .flatMap(IFuenteAdapter::obtenerHechos)
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();

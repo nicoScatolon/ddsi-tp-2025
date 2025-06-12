@@ -1,11 +1,9 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.impl;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuenteExterna;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -14,26 +12,25 @@ import java.util.List;
 
 
 @Data
-@Service
 public class FuenteDDS implements IFuenteExterna {
-
+    private Long Id;
+    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;
     private final WebClient webClient;
     private final String token;
     private final String baseUrl;
 
 
-    public FuenteDDS(WebClient.Builder webClientBuilder,
-                     @Value("${api.ddsi.base-url}") String baseUrl,
+    public FuenteDDS(@Value("${api.ddsi.base-url}") String baseUrl,
                      @Value("api.ddsi.token") String token) {
         this.baseUrl = baseUrl;
-        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
         this.token = token;
     }
 
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarTodos() {
+    public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
                         .uri("/api/desastres?page=1")
                         .headers(h -> h.setBearerAuth(token))
@@ -70,7 +67,7 @@ public class FuenteDDS implements IFuenteExterna {
 
 
 
-    public Mono<HechoExternoDTO> buscarPorId(Long id) {
+    public Mono<HechoExternoDTO> getHechoPorId(Long id) {
         return webClient.get()
                 .uri("/api/desastres/{id}", id)
                 .headers(h-> h.setBearerAuth(token))

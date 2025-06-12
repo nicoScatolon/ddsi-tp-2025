@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface IFuenteMetaMapa extends IFuenteHechos {
+public interface IFuenteMetaMapa extends IFuente {
     Mono<List<HechoExternoDTO>> buscarConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta, String fechaAcontecimientoDesde, String fechaAcontecimientoHasta, String ubicacion);
     Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones();
     Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador);
