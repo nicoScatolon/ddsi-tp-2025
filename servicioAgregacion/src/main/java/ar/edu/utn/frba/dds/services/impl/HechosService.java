@@ -15,7 +15,6 @@ import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,9 +117,13 @@ public class HechosService implements IHechosService {
             logger.info("No se encontraron hechos para actualizar.");
             return false;
         }
-        hechosRepository.saveAll(hechosListos);
+        this.guardarHechosRepository(hechosListos);
         this.logearHechosCargados(hechosListos, fuente.getUrl());
         return true;
+    }
+
+    public void guardarHechosRepository(List<Hecho> hechos){ //Util para los test
+        hechosRepository.saveAll(hechos);
     }
 
     // LOGGER

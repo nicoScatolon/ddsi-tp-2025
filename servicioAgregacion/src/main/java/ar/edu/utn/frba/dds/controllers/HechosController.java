@@ -20,7 +20,7 @@ public class HechosController {
 
     @GetMapping
     public List<HechoOutputDTO> getHechos() {
-        return hechosService.findAll();
+        return hechosService.findAllOutput();
     }
 
     @GetMapping("/{id}")

@@ -14,17 +14,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-@Builder
 public class Coleccion {
-    @Builder.Default private List<IFuente> listaFuentes = new ArrayList<>();
-    @Builder.Default  private List<Hecho> listaHechos = new ArrayList<>();
-    @Builder.Default  private final Set<ICriterio> listaCriterios = new HashSet<>();
     @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
-
     @Setter private Boolean actualizarHechos;
 
+    private final List<IFuente> listaFuentes = new ArrayList<>();
+    private final Set<ICriterio> listaCriterios = new HashSet<>();
+    private List<Hecho> listaHechos = new ArrayList<>();
+
+    @Builder
     public Coleccion(String handle, String titulo, String descripcion) {
         this.handle = handle;
         this.titulo = titulo;
