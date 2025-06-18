@@ -1,18 +1,20 @@
+
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/fuenteDinamica/hechos")
 public class HechosController {
-    private HechosService hechosService;
 
+    private final HechosService hechosService;
     public HechosController(HechosService hechosService) {
         this.hechosService = hechosService;
     }
@@ -21,4 +23,16 @@ public class HechosController {
     public List<HechoOutputDTO> buscarTodos(){
         return hechosService.getHechosActualizar();
     }
+
+    @PostMapping
+    public void crearHecho(@RequestBody HechoInputDTO hechoInputDTO, @RequestBody ContribuyenteInputDTO contribuyenteInputDTO) {
+        this.hechosService.cargarHecho(hechoInputDTO, contribuyenteInputDTO);
+    }
+
+    @PutMapping("/{id}")
+    public void modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO, @RequestBody ContribuyenteInputDTO contribuyenteInputDTO) {
+        hechoInputDTO.setId(id);
+        this.hechosService.modificarHecho(hechoInputDTO, contribuyenteInputDTO);
+    }
 }
+
