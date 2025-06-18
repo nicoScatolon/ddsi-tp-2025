@@ -12,16 +12,16 @@ import java.util.List;
 
 
 @Data
-public class FuenteDDS implements IFuenteExterna {
+public class FuenteDDS implements IFuente {
     private Long Id;
-    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;
+    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNADDS;
     private final WebClient webClient;
     private final String token;
     private final String baseUrl;
 
 
     public FuenteDDS(@Value("${api.ddsi.base-url}") String baseUrl,
-                     @Value("api.ddsi.token") String token) {
+                     @Value("${api.ddsi.token}") String token) {
         this.baseUrl = baseUrl;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
         this.token = token;

@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface IFuente {
     Mono<List<HechoExternoDTO>> getHechos();
-    String getId();
+    Long getId();
     void setId(Long id);
     TipoFuenteProxy getTipoFuenteProxy();
+
 }

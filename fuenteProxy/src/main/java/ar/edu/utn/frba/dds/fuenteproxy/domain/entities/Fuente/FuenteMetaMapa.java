@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Data
-public class FuenteMetaMapa implements IFuenteMetaMapa {
+public class FuenteMetaMapa implements IFuente {
     private Long Id;
     private TipoFuenteProxy tipoFuenteProxy = TipoFuenteProxy.METAMAPA;
     private WebClient webClient;
@@ -21,6 +21,7 @@ public class FuenteMetaMapa implements IFuenteMetaMapa {
         this.baseUrl = baseUrl;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
+
 
     public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
@@ -88,7 +89,8 @@ public class FuenteMetaMapa implements IFuenteMetaMapa {
         webClient.post()
                 .uri("/api/solicitudes")
                 .bodyValue(solicitud)
-                .retrieve();
+                .retrieve()
+                .bodyToMono(Void.class);
 
         return null;
     }
