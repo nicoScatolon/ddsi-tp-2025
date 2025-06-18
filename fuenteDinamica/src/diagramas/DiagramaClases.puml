@@ -1,0 +1,73 @@
+@startuml
+'https://plantuml.com/class-diagram
+interface IContenidoMultimedia {
+    + getContenido()
+}
+class Hecho {
+    - String titulo
+    - String descripcion
+    - String categoria
+    - Ubicacion ubicacion
+    - LocalDate fechaDeOcurrencia
+    - IContenidoMultimedia contenidoMultimedia
+    - LocalDateTime fechaDeCarga
+    - Long id
+    - LocalDateTime fechaDeModificacion
+    - Contribuyente contribuyente
+    - EstadoHecho estado
+    - Long idAdmin
+    - String sugerencia
+    - Boolean actualizar
+
+    + serModificado
+    + verificarModificacionValida
+    + serRevisado
+}
+class Contribuyente {
+    - Long id
+    - String nombre
+    - String apellido
+    - LocalDate fechaDeNacimiento
+    - Boolean esAnonimo
+}
+class Ubicacion {
+    - Double latitud
+    - Double longitud
+}
+class ContenidoMultimedia {
+    - String url
+    - String descripcion
+}
+enum EstadoHecho {
+    PENDIENTE
+    ACEPTADO
+    RECHAZADO
+    SUGERENCIA
+}
+class SolicitudEliminacion {
+    - Hecho hecho
+    - String razonDeEliminacion
+    - Contribuyente creador
+    - LocalDateTime fechaCreacion
+    - Long id
+    - Long idAdmin
+    - LocalDateTime fechaGestion
+    - EstadoSolicitudEliminacion estado
+}
+enum EstadoSolicitudEliminacion {
+    PENDIENTE
+    ACEPTADA
+    RECHAZADA
+}
+
+Hecho --> EstadoHecho
+Hecho --> Contribuyente
+Hecho --> IContenidoMultimedia
+Hecho --> Ubicacion
+SolicitudEliminacion --> Contribuyente
+SolicitudEliminacion --> EstadoSolicitudEliminacion
+
+
+ContenidoMultimedia --|> IContenidoMultimedia
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+!theme plain
+
+package "Agregador" {
+  [API Agregador] --> [UI Solicitudes]
+  [API Agregador] --> [Agregación]
+  [Agregación] --> [Modelo Agregador]
+  [Modelo Agregador] --> [Fuentes Agregador]
+  [Modelo Agregador] --> [Solicitudes]
+}
+
+package "Fuente De Datos Estática" {
+  [API Estática] --> [Principal]
+  [Principal] --> [Fuentes Estática]
+  [Principal] --> [Dataset]
+}
+
+package "Fuente De Datos Dinámica" {
+  [API Dinámica] --> [UI Editor]
+  [API Dinámica] --> [Modelo Dinámico]
+  [Modelo Dinámico] --> [Fuentes Dinámicas]
+  [Modelo Dinámico] --> [Solicitudes Dinámicas]
+  [Modelo Dinámico] --> [Hechos y Solicitudes]
+  [UI Editor] --> [UI Solicitudes Dinámicas]
+}
+
+package "Fuente De Datos Proxy" {
+  [API Proxy] --> [Modelo Proxy]
+  [Modelo Proxy] --> [Fuentes Proxy]
+  [Modelo Proxy] --> [Servicio Externo]
+}
+
+' Relaciones entre sistemas
+[Modelo Agregador] --> [API Estática] : Protocolo MetaMapa
+[Modelo Agregador] --> [API Dinámica]
+[Modelo Agregador] --> [API Proxy]
+[API Dinámica] --> [OAuth / Proveedor de Identidad]
+@enduml

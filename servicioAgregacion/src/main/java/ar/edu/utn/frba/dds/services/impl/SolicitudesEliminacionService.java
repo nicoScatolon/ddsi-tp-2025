@@ -1,0 +1,103 @@
+package ar.edu.utn.frba.dds.services.impl;
+
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
+import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
+import ar.edu.utn.frba.dds.services.IFuentesService;
+import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
+import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
+    private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
+    private final ISolicitudesEliminacionRepository repository;
+    private final IFuentesService fuentesService;
+    private final IDetectorDeSpam detectorDeSpam;
+
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService) {
+        this.repository = repository;
+        this.detectorDeSpam = detectorDeSpam;
+        this.fuentesService = fuentesService;
+    }
+
+    @Override
+    public List<SolicitudEliminarHechoOutputDTO> findAll() {
+       return this.repository
+                .findAll()
+                .stream()
+                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                .toList();
+    }
+
+    @Override
+    public void crearSolicitud(Hecho hecho, String razon, String nombre, String apellido) {
+        SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
+                .constructorSolicitud(hecho, razon, nombre, apellido);
+
+        if (detectorDeSpam.esSpam(razon)){ //ToDO: Si se rechaza antes de construir, no se puede guardar (soft-delete)
+            solicitud.rechazarAutomaticamente();
+        }
+
+        repository.save(solicitud);
+    }
+
+    @Override
+    public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
+        solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
+        repository.save(solicitudEliminarHecho);
+    }
+
+    @Override
+    public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
+        solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
+        repository.save(solicitudEliminarHecho);
+    }
+
+    @Override
+    public SolicitudEliminarHecho findByID(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public void logearSolicitudesEliminacionCargadas(List<SolicitudEliminarHecho> solicitudes) {
+        logger.info("Solicitudes de eliminación cargadas - Cantidad: {}", solicitudes.size());
+        solicitudes.forEach(solicitud ->
+                logger.info(
+                        "Solicitud ID: {} - Hecho ID: {} - Nombre: {} {} - Razón: {} - Fecha: {}",
+                        solicitud.getId(),
+                        solicitud.getHecho() != null ? solicitud.getHecho().getId() : "N/A",
+                        solicitud.getNombreCreador(),
+                        solicitud.getApellidoCreador(),
+                        acortarTexto(solicitud.getRazonDeEliminacion()),
+                        solicitud.getFechaCreacion()
+                )
+        );
+    }
+
+    public void notificarEliminacionHechos(){
+        List<SolicitudEliminarHecho> solicitudesAceptadas = repository.findAll().stream()
+                .filter(SolicitudEliminarHecho::getActualizarFuenteOrigen)
+                .toList();
+        solicitudesAceptadas.forEach(s -> s.setActualizarFuenteOrigen(false));
+        fuentesService.notificarEliminaciones(solicitudesAceptadas.stream().map(SolicitudEliminarHecho::getHecho).collect(Collectors.toList()));
+    }
+
+    //Metodo para acortar strings y entren en consola.
+    private String acortarTexto(String texto) {
+        if (texto == null) return "";
+        return texto.length() <= 60 ? texto : texto.substring(0, 60) + "...";
+    }
+}

@@ -1,0 +1,132 @@
+@startuml
+' Diagrama UML para el modelo de hechos y criterios
+
+interface Criterio {
+    +pertenece(hecho: HechoBase): boolean
+}
+
+abstract class CriterioEntreFechas {
+    -primeraFecha: LocalDate
+    -segundaFecha: LocalDate
+    +getFechaNecesaria(hecho: HechoBase): LocalDate
+    +pertenece(hecho: HechoBase): boolean
+}
+
+class CriterioCargaEntreFechas
+class CriterioOcurrenciaEntreFechas
+class CriterioTitulo
+class CriterioCategoria
+class CriterioContenidoMultimedia {
+    +pertenece(hecho: HechoBase): boolean
+}
+
+
+interface HechoBase {
+    -id: Long
+    -fuenteId: Long
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -ubicacion: Ubicacion
+    -fechaDeOcurrencia: LocalDate
+    -fechaDeCarga: LocalDate
+    -origen: OrigenHecho
+    -fueEliminado: Boolean
+}
+
+class HechoFuenteEstatica
+class HechoFuenteProxy
+class HechoFuenteDinamica {
+    -contenidoMultimedia: IContenidoMultimedia
+    -contribuyente: Usuario
+}
+
+class Categoria {
+    -id: Long
+    -nombre: String
+}
+
+class Ubicacion {
+    -latitud: Double
+    -longitud: Double
+}
+
+class Coleccion {
+    -listaCriterios: Set<Criterio>
+    -titulo: String
+    -handle: String
+    -descripcion: String
+
+    +filtrarHechos(hechosDisponibles: List<HechoBase>): Set<HechoBase>
+    +agregarCriterio(criterio: Criterio)
+    +eliminarCriterio(criterio: Criterio)
+    +getHechos(): Set<HechoBase>
+    +getHechosConFiltro(criterio: Criterio): Set<HechoBase>
+}
+
+class ConstructorSolicitudesEliminacion {
+    -CARACTERES_MINIMOS_RAZON_ELIMINACION: Integer
+    +constructorSolicitud(hecho: HechoBase, razon: String): SolicitudEliminarHecho
+}
+
+class SolicitudEliminarHecho {
+    -id: Long
+    -razonDeEliminacion: String
+    -hecho: HechoBase
+    -estado: EstadoDeSolicitud
+    -nombreCreador: String
+    -apellidoCreador: String
+    -nombreAdministrador: String
+    -apellidoAdministrador: String
+    -fechaCreacion: LocalDateTime
+    -fechaAceptacion: LocalDateTime
+    -eliminada: Boolean
+
+    +serAceptada(): void
+    +serRechazada(): void
+    +rechazarAutomaticamente(): void
+}
+
+enum EstadoDeSolicitud {
+    ACEPTADA
+    RECHAZADA
+    PENDIENTE
+}
+
+class Usuario {
+    -id: Long
+    -nombre: String
+    -apellido: String
+    -esAnonimo: Boolean
+    -fechaNacimiento: LocalDate
+}
+
+'====== RELACIONES ======
+
+CriterioCategoria ..|> Criterio
+CriterioTitulo ..|> Criterio
+CriterioEntreFechas ..|> Criterio
+CriterioCargaEntreFechas --|> CriterioEntreFechas
+CriterioOcurrenciaEntreFechas --|> CriterioEntreFechas
+CriterioContenidoMultimedia ..|> Criterio
+
+HechoFuenteEstatica --|> HechoBase
+HechoFuenteProxy --|> HechoBase
+HechoFuenteDinamica --|> HechoBase
+
+HechoBase *-- Categoria
+HechoBase *-- Ubicacion
+HechoFuenteDinamica *-- Usuario
+HechoFuenteDinamica *-- IContenidoMultimedia
+
+Coleccion --> "0..*" HechoBase
+Coleccion *-- Criterio
+
+SolicitudEliminarHecho --> HechoBase
+SolicitudEliminarHecho --> EstadoDeSolicitud
+
+ConstructorSolicitudesEliminacion ..> SolicitudEliminarHecho
+ConstructorSolicitudesEliminacion ..> HechoBase
+ConstructorSolicitudesEliminacion ..> Usuario
+
+@enduml
