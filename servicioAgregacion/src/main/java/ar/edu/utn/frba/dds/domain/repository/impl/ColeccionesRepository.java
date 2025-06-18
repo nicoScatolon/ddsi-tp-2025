@@ -26,6 +26,9 @@ public class ColeccionesRepository implements IColeccionesRepository {
 
     @Override
     public void save(Coleccion coleccion) {
+        if (coleccion.getHandle() == null){
+            coleccion.setHandle(this.stringToHandle(coleccion.getTitulo()));
+        }
         colecciones.put(coleccion.getHandle(), coleccion);
     }
 
@@ -34,10 +37,17 @@ public class ColeccionesRepository implements IColeccionesRepository {
         colecciones.remove(coleccion.getHandle());
     }
 
-    @Override
-    public List<Hecho> hechosByHandle(String handle, List<Hecho> hechosDisponibles) {
-        Coleccion coleccion = colecciones.get(handle);
-        if (coleccion == null) return List.of();
-        return new ArrayList<>(coleccion.filtrarHechos(hechosDisponibles));
+
+    private String stringToHandle(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
+        }
+
+        return string
+                .trim()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
+                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
     }
+
 }

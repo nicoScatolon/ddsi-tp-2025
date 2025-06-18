@@ -10,5 +10,4 @@ public interface IColeccionesRepository {
     List<Coleccion> findAll();
     void save(Coleccion coleccion);
     void delete(Coleccion coleccion);
-    List<Hecho> hechosByHandle(String handle, List<Hecho> hechosDisponibles);
 }

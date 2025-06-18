@@ -39,22 +39,27 @@ public class ColeccionesService implements IColeccionesService {
 
     @Override
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
-        var coleccion = new Coleccion(
-                coleccionInputDTO.getHandle(),
+        Coleccion coleccion = new Coleccion(
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion());
-        //TODO al crear no viene con handle, modificar DTO y hacer que se cree el handle en el momento de la creacion
+
+        if (coleccionInputDTO.getHandle() != null) {
+            coleccion.setHandle(coleccionInputDTO.getHandle());
+        }
+
         coleccionInputDTO.getListaCriterios().forEach(coleccion::agregarCriterio);
 
+        coleccionesRepository.save(coleccion);
         return this.coleccionOutputDTO(coleccion);
     }
 
     @Override
-    public List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle) {
-        return coleccionesRepository.hechosByHandle(handle,hechosService.findAll()).stream()
+    public List<HechoOutputDTO> hechosDeLaColeccion(String handle) {
+        return coleccionesRepository.findByHandle(handle).getListaHechos().stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
     }
+
 
     public void actualizarColeccionesScheduler(){
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
@@ -63,7 +68,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     public void actualizarColeccion(Coleccion coleccion){
-        List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
+        //List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
         coleccion.actualizarHechos(hechos);
     }
 

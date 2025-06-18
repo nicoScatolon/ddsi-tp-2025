@@ -31,4 +31,6 @@ public class CategoriasRepository implements ICategoriasRepository {
     public Categoria findByID(String id) {
         return categorias.get(id);
     }
+
+    //TODO normalizar el
 }

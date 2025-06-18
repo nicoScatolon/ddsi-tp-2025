@@ -10,5 +10,5 @@ public interface IColeccionesService {
     ColeccionOutputDTO findByHandle(String handle);
     List<ColeccionOutputDTO> findAll();
     ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO);
-    List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle);
+    List<HechoOutputDTO> hechosDeLaColeccion(String handle);
 }

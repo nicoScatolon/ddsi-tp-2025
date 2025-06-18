@@ -23,9 +23,7 @@ public enum TipoFuente {
         }
     },
     PROXY {
-        public IFuente crearFuente(String url){
-            return new FuenteProxy(url);
-        }
+        public IFuente crearFuente(String url){ return new FuenteProxy(url); }
         public FuenteAdapter crearAdapter(){
             return new FuenteProxyAdapter();
         }

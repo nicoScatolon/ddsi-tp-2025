@@ -10,7 +10,6 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
@@ -34,10 +33,9 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto, IFuente fuente) {
+    public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
-                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -47,10 +45,9 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(HechoInputEstaticaDTO dto, IFuente fuente) {
+    public static Hecho convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
-                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -60,10 +57,9 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(HechoInputDinamicaDTO dto, IFuente fuente) {
+    public static Hecho convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
-                .fuente(fuente)
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
@@ -75,13 +71,13 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto, IFuente fuente) {
+    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto) {
         if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy, fuente);
+            return convertirHechoInputDTO(proxy);
         } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica, fuente);
+            return convertirHechoInputDTO(estatica);
         } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica, fuente);
+            return convertirHechoInputDTO(dinamica);
         } else {
             throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
         }

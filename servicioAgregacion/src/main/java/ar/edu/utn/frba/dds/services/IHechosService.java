@@ -12,6 +12,6 @@ public interface IHechosService {
     List<Hecho> findAll();
     void actualizarHechosScheduler();
     HechoOutputDTO findByID(Long id);
-    List<Hecho> findByFuente(List<IFuente> fuentes);
-    List<Hecho> obtenerHechosProxy();
+    List<Hecho> consumirHechos();
+
 }

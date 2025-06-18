@@ -31,6 +31,6 @@ public class ColeccionesController {
 
     @GetMapping("/{handle}/hechos")
     public List<HechoOutputDTO> mostrarHechosDeColeccion(@PathVariable String handle){
-        return coleccionesService.hechosDeLaColeccionByHandle(handle);
+        return coleccionesService.hechosDeLaColeccion(handle);
     }
 }

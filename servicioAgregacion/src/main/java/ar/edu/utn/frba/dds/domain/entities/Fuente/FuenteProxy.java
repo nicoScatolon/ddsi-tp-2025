@@ -1,11 +1,14 @@
 package ar.edu.utn.frba.dds.domain.entities.Fuente;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,12 +26,17 @@ public class FuenteProxy implements IFuente {
         this.webClient = WebClient.builder().baseUrl(url).build();
     }
 
-    public List<HechoInputProxyDTO> getHechos() {
+    public List<Hecho> getHechos() {
         return Objects.requireNonNull(this.webClient.get()
-                        .uri("/hechos")
-                        .retrieve()
-                        .bodyToFlux(HechoInputProxyDTO.class)
-                        .collectList()
-                        .block());
+                .uri("/hechos")
+                .retrieve()
+                .bodyToFlux(HechoInputProxyDTO.class)
+                .collectList()
+                .block())
+                .stream()
+                .map(DTOConverter::convertirHechoInputDTO)
+                .toList();
     }
+
+
 }

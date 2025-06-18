@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.FuenteEstatica;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.FuenteProxy;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
 import java.util.List;
 
@@ -17,7 +18,12 @@ public class FuenteProxyAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<IHechoInputDTO> obtenerHechosFuente() {
-        return fuenteProxy.getHechos().stream().map(dto -> (IHechoInputDTO) dto).toList();
+    public List<Hecho> obtenerHechosFuente() {
+        return fuenteProxy.getHechos();
+    }
+
+    @Override
+    public List<Hecho> obtenerHechosCargados() {
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.FuenteMetaMapa;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.adapters.IFuenteAdapter;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
@@ -33,6 +34,10 @@ public class FuenteService implements IFuenteService {
     @Override
     public List<IFuenteAdapter> obtenerTodas() {
         return fuentes;
+    }
+
+    public void obtenerColecciones(FuenteMetaMapa fuente) {
+
     }
 
 }

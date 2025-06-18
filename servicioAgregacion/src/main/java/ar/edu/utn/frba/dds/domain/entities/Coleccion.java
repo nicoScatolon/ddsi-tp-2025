@@ -23,10 +23,10 @@ public class Coleccion {
     private final List<IFuente> listaFuentes = new ArrayList<>();
     private final Set<ICriterio> listaCriterios = new HashSet<>();
     private List<Hecho> listaHechos = new ArrayList<>();
+    private List<Hecho> listaHechosCurados = new ArrayList<>();
 
     @Builder
-    public Coleccion(String handle, String titulo, String descripcion) {
-        this.handle = handle;
+    public Coleccion(String titulo, String descripcion) {
         this.titulo = titulo;
         this.descripcion = descripcion;
     }
@@ -62,7 +62,8 @@ public class Coleccion {
     }
 
     public void actualizarHechos(List<Hecho> hechos) {
-        this.listaHechos = this.filtrarHechos(hechos);
+
+        this.listaHechos = this.filtrarHechos(listaHechos);
     }
 
     public Set<Hecho> getHechosConFiltro(List<Hecho> hechosDisponibles, ICriterio filtro) {

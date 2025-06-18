@@ -34,4 +34,7 @@ public class AdapterFuenteDDS implements IFuenteExternaAdapter {
         return fuenteDDS.getHechoPorId(id);
     }
 
+    public Mono<List<HechoExternoDTO>> buscarConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
+        return null;
+    }
 }
