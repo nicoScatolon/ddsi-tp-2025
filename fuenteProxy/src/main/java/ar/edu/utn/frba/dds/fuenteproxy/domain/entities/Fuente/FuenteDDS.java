@@ -12,16 +12,16 @@ import java.util.List;
 
 
 @Data
-public class FuenteDDS implements IFuenteExterna {
+public class FuenteDDS implements IFuente {
     private Long Id;
-    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;
+    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNADDS;
     private final WebClient webClient;
     private final String token;
     private final String baseUrl;
 
 
     public FuenteDDS(@Value("${api.ddsi.base-url}") String baseUrl,
-                     @Value("api.ddsi.token") String token) {
+                     @Value("${api.ddsi.token}") String token) {
         this.baseUrl = baseUrl;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
         this.token = token;
@@ -32,35 +32,35 @@ public class FuenteDDS implements IFuenteExterna {
     @Override
     public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
-                        .uri("/api/desastres?page=1")
-                        .headers(h -> h.setBearerAuth(token))
-                        .retrieve()
-                        .bodyToMono(PaginaHechosResponseDTO.class)
-                        .flatMap(primerPagina -> {
-                            int lastPage = primerPagina.getLastPage();
-                            List<HechoExternoDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
+                .uri("/api/desastres?page=1")
+                .headers(h -> h.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(PaginaHechosResponseDTO.class)
+                .flatMap(primerPagina -> {
+                    int lastPage = primerPagina.getLastPage();
+                    List<HechoExternoDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
 
-                            List<Mono<PaginaHechosResponseDTO>> llamadasRestantes = new ArrayList<>();
-                            for(int page =2; page <= lastPage; page++) {
-                                Mono<PaginaHechosResponseDTO> llamada = webClient.get()
-                                        .uri("/api/desastres?page=" + page)
-                                        .headers(h->h.setBearerAuth(token))
-                                        .retrieve()
-                                        .bodyToMono(PaginaHechosResponseDTO.class);
-                                llamadasRestantes.add(llamada);
+                    List<Mono<PaginaHechosResponseDTO>> llamadasRestantes = new ArrayList<>();
+                    for(int page =2; page <= lastPage; page++) {
+                        Mono<PaginaHechosResponseDTO> llamada = webClient.get()
+                                .uri("/api/desastres?page=" + page)
+                                .headers(h->h.setBearerAuth(token))
+                                .retrieve()
+                                .bodyToMono(PaginaHechosResponseDTO.class);
+                        llamadasRestantes.add(llamada);
 
-                            }
+                    }
 
-                            return Mono.zip(llamadasRestantes,resultados->{
-                                for(Object resultado : resultados) {
-                                    PaginaHechosResponseDTO pagina = (PaginaHechosResponseDTO) resultado;
-                                    hechosTotales.addAll(pagina.getData());
-                                }
-                                return hechosTotales;
-                            });
+                    return Mono.zip(llamadasRestantes,resultados->{
+                        for(Object resultado : resultados) {
+                            PaginaHechosResponseDTO pagina = (PaginaHechosResponseDTO) resultado;
+                            hechosTotales.addAll(pagina.getData());
+                        }
+                        return hechosTotales;
+                    });
 
 
-                        });
+                });
 
     }
 
@@ -71,10 +71,10 @@ public class FuenteDDS implements IFuenteExterna {
         return webClient.get()
                 .uri("/api/desastres/{id}", id)
                 .headers(h-> h.setBearerAuth(token))
-                        .retrieve()
-                        .onStatus(status -> status.value() == 404,
-                                response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
-                        .bodyToMono(HechoExternoDTO.class);
+                .retrieve()
+                .onStatus(status -> status.value() == 404,
+                        response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
+                .bodyToMono(HechoExternoDTO.class);
 
     }
 
