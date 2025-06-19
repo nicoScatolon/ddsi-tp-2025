@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
@@ -12,6 +13,7 @@ import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,12 +66,7 @@ public class ColeccionesService implements IColeccionesService {
     public void actualizarColeccionesScheduler(){
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
         //TODO ver como actualizar el booleano de las colecciones
-        coleccionesActualizables.forEach(this::actualizarColeccion);
-    }
-
-    public void actualizarColeccion(Coleccion coleccion){
-        //List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
-        coleccion.actualizarHechos(hechos);
+        coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 
     // actualizar coleccion -> volver a calcular los hechos que le pertenece (CARO Y LENTO) -> hacerlo lo minimo posible
@@ -77,13 +74,15 @@ public class ColeccionesService implements IColeccionesService {
 
     public List<HechoOutputDTO> mostrarHechosColeccion(String handle){
         Coleccion coleccion = this.coleccionesRepository.findByHandle(handle); //considera hechos estaticos y dinamicos
-        List<Hecho> hechosAMostar = coleccion.getListaHechos();
-        if (coleccion.getListaFuentes().stream().anyMatch(f -> f.getTipo().equals(TipoFuente.PROXY))){
-            List<Hecho> hechosProxy = hechosService.obtenerHechosProxy();
-            hechosAMostar.addAll(hechosProxy);
+        List<IFuente> fuentesAConsumir = coleccion.getListaFuentes().stream()
+                .filter(f -> f.getTipo() == TipoFuente.PROXY)
+                .toList();
+        List<Hecho> hechosConsumidos = new ArrayList<>();
+        for (IFuente fuente: fuentesAConsumir){
+            //cargamos los hechos de las fuentes a consumir
+            hechosConsumidos.addAll(hechosService.consumirFuente(fuente));
         }
-        return DTOConverter.hechoOutputDTO(hechosAMostar);
-        //TODO si modificamos para que las colecciones sean a partir de fuentes especificas sera diferente
+        return DTOConverter.hechoOutputDTO(coleccion.getHechosVisualizar(hechosConsumidos))  ;
     }
 
     private ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {

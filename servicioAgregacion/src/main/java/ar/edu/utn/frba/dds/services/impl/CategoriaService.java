@@ -16,11 +16,28 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
-    public Categoria agregarCategoria(CategoriaInputDTO categoriaInputDTO) {
-        Categoria categoria = DTOConverter.categoriaInputDTO(categoriaInputDTO);
-        if (categoria == null) {
+    public Categoria agregarCategoria(Categoria categoria) {
+        if (categoria.getId() == null) {
+            // no esta y creamos una nueva
+            categoria.setId(crearIdCategoria(categoria.getNombre()));
             categoria = categoriasRepository.save(categoria);
+            return categoria;
+        } else {
+            //posible verificacion de que el id que tiene la categoria corresponda a la forma de crearlos (crear el id y verificarlo con el que tiene)
+            //ya existe
+            return categoriasRepository.findByID(categoria.getId());
         }
-        return categoria;
+    }
+
+    private String crearIdCategoria(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
+        }
+
+        return string
+                .trim()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
+                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
     }
 }

@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Builder;
 import lombok.Getter;
@@ -55,26 +56,53 @@ public class Coleccion {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
             return new ArrayList<>();
         }
-
         return hechosDisponibles.stream()
                 .filter(h -> this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
                 .collect(Collectors.toList());
     }
 
-    public void actualizarHechos(List<Hecho> hechos) {
-
-        this.listaHechos = this.filtrarHechos(listaHechos);
+    public void actualizarHechos() {
+        // solamente actualizo los hechos que vengan de fuentes ALMACENADAS, no de las consumidas
+        // por eso obtener Hechos Cargados devuelve null si es proxy
+        List<Hecho> listaAuxiliar = new ArrayList<>();
+        //cargamos todos los hechos de las fuentes
+        for (IFuente fuente : listaFuentes) {
+            FuenteAdapter adapter = fuente.getTipo().crearAdapter();
+            List<Hecho> hechosFuente = adapter.obtenerHechosCargados();
+            if (hechosFuente != null) {
+                listaAuxiliar.addAll(hechosFuente);
+            }
+        }
+        // filtramos estos hechos
+        this.listaHechos = this.filtrarHechos(listaAuxiliar);
+        //recordar que proxy no se almacena, asi que al consumir sus hechos hay que filtrarlos
     }
 
-    public Set<Hecho> getHechosConFiltro(List<Hecho> hechosDisponibles, ICriterio filtro) {
-        return this.filtrarHechos(hechosDisponibles).stream()
+    public List<Hecho> getHechosVisualizar(List<Hecho> hechosConsumidos) {
+        // devuelve los hechos listos para verlos por pantalla (filtrados)
+        List<Hecho> hechosADevolver = new ArrayList<>();
+        hechosADevolver.addAll(listaHechos); // no recalculamos los hechos ya filtrados
+        // pero si filtramos los hechos que son consumidos
+        hechosADevolver.addAll(this.filtrarHechos(hechosConsumidos));
+        return hechosADevolver;
+    }
+
+
+    public List<Hecho> getHechosConFiltro(List<Hecho> hechosConsumidos, ICriterio filtro) {
+        List<Hecho> hechosAFiltrar = new ArrayList<>();
+        hechosAFiltrar.addAll(listaHechos);
+        hechosAFiltrar.addAll(hechosConsumidos);
+        return this.filtrarHechos(hechosAFiltrar).stream()
                 .filter(filtro::pertenece)
-                .collect(Collectors.toSet());
+                .toList();
     }
 
-    public Set<Hecho> getHechosConFiltro(List<Hecho> hechosDisponibles, Set<ICriterio> filtros) {
-        return this.filtrarHechos(hechosDisponibles).stream()
+    public List<Hecho> getHechosConFiltro(List<Hecho> hechosConsumidos, Set<ICriterio> filtros) {
+        List<Hecho> hechosAFiltrar = new ArrayList<>();
+        hechosAFiltrar.addAll(listaHechos);
+        hechosAFiltrar.addAll(hechosConsumidos);
+        return this.filtrarHechos(hechosAFiltrar).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
-                .collect(Collectors.toSet());
+                .toList();
     }
 }

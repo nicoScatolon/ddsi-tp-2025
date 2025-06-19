@@ -58,11 +58,10 @@ public class ColeccionesTest {
         CriterioOcurrenciaEntreFechas criterio = new CriterioOcurrenciaEntreFechas(LocalDate.of(2020, 1, 1),LocalDate.of(2025, 1, 1));
 
         Coleccion coleccion = Coleccion.builder()
-                .handle("nueva")
                 .titulo("Nueva Colección")
                 .descripcion("Descripción")
                 .build();
-
+        coleccion.setHandle("nueva");
         coleccion.agregarCriterio(criterio);
 
         // Ejemplo de categorías y usuario para los hechos
