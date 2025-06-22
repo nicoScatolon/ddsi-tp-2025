@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl;
 
+import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.*;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
@@ -28,12 +29,14 @@ public class HechosServiceTest {
         ).toString();
 
         // 2) Instancio repo, service e importador real
+        ImportadorHechosCSV csvImportador = new ImportadorHechosCSV();
+        List<ImportadorHechos> importadores = List.of(csvImportador);
         IHechosRepository repo = new HechosRepository();
-        IHechosService service = new HechosService(repo);
+        IHechosService service = new HechosService(repo, importadores);
         ImportadorHechos importador = new ImportadorHechosCSV();
 
         // 3) Ejecuto la importación
-        List<Hecho> hechos = service.importarArchivoHechos(csvPath, importador);
+        List<HechoOutputDTO> hechos = service.importarArchivoHechos(csvPath);
 
         // 4a) No devuelve lista vacía
         assertFalse(hechos.isEmpty(), "Debe importar al menos un hecho");
@@ -43,7 +46,7 @@ public class HechosServiceTest {
                 "Repositorio y lista de retorno deben coincidir en tamaño");
 
         // 4c) (Opcional) Verifico algún campo de la primera fila
-        Hecho primero = hechos.get(0);
+        HechoOutputDTO primero = hechos.get(0);
         assertNotNull(primero.getTitulo(), "El título del primer hecho no debe ser nulo");
         // p.ej. assertEquals("Inundación en la costa", primero.getTitulo());
     }
