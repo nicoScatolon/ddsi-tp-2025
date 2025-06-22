@@ -28,7 +28,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<HechoOutputDTO> importarArchivoHechos(String path){
+    public List<Hecho> importarArchivoHechos(String path){
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         ImportadorHechos imp = importadores.get(ext);
         if (imp == null) {
@@ -36,9 +36,7 @@ public class HechosService implements IHechosService {
         }
         List<Hecho> hechos = imp.importarHechosArchivo(path);
         hechos.forEach(hechosRepository::save);
-        return hechos.stream()
-                .map(this::hechoToDTO)
-                .toList();
+        return hechos;
     }
 
     @Override

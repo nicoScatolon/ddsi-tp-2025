@@ -25,8 +25,8 @@ public class HechosController {
 
 
     @PostMapping("/importar")
-    public List<HechoOutputDTO> importarArchivo(@RequestParam String path) {
-        return hechosService.importarArchivoHechos(path);
+    public void importarArchivo(@RequestParam String path) {
+       this.hechosService.importarArchivoHechos(path);
     }
     }
 

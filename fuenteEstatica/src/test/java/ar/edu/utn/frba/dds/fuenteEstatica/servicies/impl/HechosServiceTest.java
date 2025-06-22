@@ -36,7 +36,7 @@ public class HechosServiceTest {
         ImportadorHechos importador = new ImportadorHechosCSV();
 
         // 3) Ejecuto la importación
-        List<HechoOutputDTO> hechos = service.importarArchivoHechos(csvPath);
+        List<Hecho> hechos = service.importarArchivoHechos(csvPath);
 
         // 4a) No devuelve lista vacía
         assertFalse(hechos.isEmpty(), "Debe importar al menos un hecho");
@@ -46,7 +46,7 @@ public class HechosServiceTest {
                 "Repositorio y lista de retorno deben coincidir en tamaño");
 
         // 4c) (Opcional) Verifico algún campo de la primera fila
-        HechoOutputDTO primero = hechos.get(0);
+        Hecho primero = hechos.get(0);
         assertNotNull(primero.getTitulo(), "El título del primer hecho no debe ser nulo");
         // p.ej. assertEquals("Inundación en la costa", primero.getTitulo());
     }
