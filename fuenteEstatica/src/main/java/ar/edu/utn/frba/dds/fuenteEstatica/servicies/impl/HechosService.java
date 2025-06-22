@@ -7,29 +7,38 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
 import org.springframework.stereotype.Service;
+import org.apache.commons.io.FilenameUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
     private IHechosRepository hechosRepository;
-
-    public HechosService(IHechosRepository hechosRepository) {
+    private Map<String, ImportadorHechos> importadores;
+    public HechosService(IHechosRepository hechosRepository, List <ImportadorHechos> ListaImportadores) {
         this.hechosRepository = hechosRepository;
+        this.importadores = ListaImportadores.stream()
+                .collect(Collectors.toMap(
+                        ImportadorHechos::getFormato,
+                        Function.identity()
+                ));
     }
 
     @Override
-    public List<Hecho> importarArchivoHechos(String path, ImportadorHechos importador){
-        //TODO verificar que el ususario sea adminstrador - ver como llegaria el dato del usuario, si por un DTO o como
-        //TODO preguntar como viene el path, si pelado como un string o con un DTO
-        //TODO preguntar si es necesario realizar la verificacion del tipo de archivo cargado o si viene de afuera
-        //  implementacion futura posible: recibir por query params el tipo de archivo o intentar leerlo y determinarlo aca en el service
-        List<Hecho> hechos = new ArrayList<Hecho>();
-        hechos = importador.importarHechosArchivo(path);
-        hechos.forEach(hecho -> {hechosRepository.save(hecho);});
-        return hechos;
+    public List<HechoOutputDTO> importarArchivoHechos(String path){
+        String ext = FilenameUtils.getExtension(path).toLowerCase();
+        ImportadorHechos imp = importadores.get(ext);
+        if (imp == null) {
+            throw new IllegalArgumentException("Formato no soportado: ." + ext);
+        }
+        List<Hecho> hechos = imp.importarHechosArchivo(path);
+        hechos.forEach(hechosRepository::save);
+        return hechos.stream()
+                .map(this::hechoToDTO)
+                .toList();
     }
 
     @Override
