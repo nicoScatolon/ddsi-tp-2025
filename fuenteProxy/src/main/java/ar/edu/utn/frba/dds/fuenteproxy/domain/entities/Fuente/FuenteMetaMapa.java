@@ -3,6 +3,9 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeColecciones;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeEliminaciones;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechosConFiltros;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Data
-public class FuenteMetaMapa implements IFuente {
+public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeColecciones, ServidoraDeEliminaciones{
     private Long Id;
     private TipoFuenteProxy tipoFuenteProxy = TipoFuenteProxy.METAMAPA;
     private WebClient webClient;
@@ -22,7 +25,7 @@ public class FuenteMetaMapa implements IFuente {
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
-
+    @Override
     public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
                 .uri("/api/hechos")
@@ -33,6 +36,9 @@ public class FuenteMetaMapa implements IFuente {
     }
 
 
+
+
+    @Override
     public Mono<List<HechoExternoDTO>> buscarConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
 
         return webClient.get()
@@ -64,8 +70,7 @@ public class FuenteMetaMapa implements IFuente {
     }
 
 
-
-
+    @Override
     public Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones(){
         return webClient.get()
                 .uri("api/colecciones")
@@ -74,7 +79,7 @@ public class FuenteMetaMapa implements IFuente {
                 .collectList();
     }
 
-
+    @Override
     public Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador) {
         return webClient.get()
                 .uri("/colecciones/{id}/hechos", identificador)
@@ -83,8 +88,7 @@ public class FuenteMetaMapa implements IFuente {
                 .collectList();
     }
 
-
-
+    @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){
         webClient.post()
                 .uri("/api/solicitudes")

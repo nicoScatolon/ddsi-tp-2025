@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechosPorId;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,9 +13,9 @@ import java.util.List;
 
 
 @Data
-public class FuenteDDS implements IFuente {
+public class FuenteDDS implements ServidoraDeHechosPorId {
     private Long Id;
-    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNADDS;
+    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;
     private final WebClient webClient;
     private final String token;
     private final String baseUrl;

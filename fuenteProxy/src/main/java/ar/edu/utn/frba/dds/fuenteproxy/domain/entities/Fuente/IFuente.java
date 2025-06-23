@@ -6,7 +6,6 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public interface IFuente {
-    Mono<List<HechoExternoDTO>> getHechos();
     Long getId();
     void setId(Long id);
     TipoFuenteProxy getTipoFuenteProxy();
