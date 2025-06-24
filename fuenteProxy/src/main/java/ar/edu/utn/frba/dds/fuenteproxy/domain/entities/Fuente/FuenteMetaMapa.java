@@ -8,11 +8,13 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapaci
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechosConFiltros;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Component
 @Data
 public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeColecciones, ServidoraDeEliminaciones{
     private Long Id;
@@ -90,13 +92,11 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
     @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){
-        webClient.post()
+        return webClient.post()
                 .uri("/api/solicitudes")
                 .bodyValue(solicitud)
                 .retrieve()
                 .bodyToMono(Void.class);
-
-        return null;
     }
 
 

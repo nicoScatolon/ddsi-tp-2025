@@ -8,7 +8,9 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.RegistroDeFuentes;
+
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeColecciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechos;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
@@ -21,33 +23,32 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
 @Data
 @Service
-public class HechosService  {
-    private final RegistroDeFuentes registro;
+public class HechosService implements IHechosService {
+    private final IFuentesRepository fuentesRepository;
     private final ICategoriaService categoriaService;
 
-    public HechosService(RegistroDeFuentes registro, ICategoriaService categoriaService) {
-        this.registro = registro;
+    public HechosService(IFuentesRepository fuentesRepository, ICategoriaService categoriaService) {
+        this.fuentesRepository = fuentesRepository;
         this.categoriaService = categoriaService;
     }
 
-
+    @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
-        return Flux.fromIterable(registro.todasLasFuentes())
+        return Flux.fromIterable(fuentesRepository.fuentesConHechos())
                 .flatMap(ServidoraDeHechos::getHechos)
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();
     }
 
-
+    @Override
     public Mono<HechoOutputDTO> buscarPorId(Long id) {
-        return Flux.fromIterable(registro.fuentesQuePermitenBuscarPorId())
+        return Flux.fromIterable(fuentesRepository.fuentesQuePermitenBuscarPorId())
                 .flatMap(fuente -> fuente.getHechoPorId(id)
                         .onErrorResume(e -> Mono.empty()))
                 .next()
@@ -56,10 +57,10 @@ public class HechosService  {
     }
 
 
-
+    @Override
     public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, String frDesde, String frHasta,
                                                        String faDesde, String faHasta, String ubicacion) {
-        return Flux.fromIterable(registro.fuentesConFiltros())
+        return Flux.fromIterable(fuentesRepository.fuentesConFiltros())
                 .flatMap(f -> f.buscarConFiltros(categoria, frDesde, frHasta, faDesde, faHasta, ubicacion))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
@@ -68,9 +69,9 @@ public class HechosService  {
 
 
 
-
+    @Override
     public Mono<List<ColeccionInputDTO>> traerTodasLasColecciones() {
-        return Flux.fromIterable(registro.fuentesConColecciones())
+        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
                 .flatMap(ServidoraDeColecciones::buscarTodasLasColecciones)
                 .flatMapIterable(lista -> lista)
                 .collectList();
@@ -79,9 +80,9 @@ public class HechosService  {
 
 
 
-
+    @Override
     public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String idColeccion) {
-        return Flux.fromIterable(registro.fuentesConColecciones())
+        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
                 .flatMap(f -> f.buscarPorColeccion(idColeccion))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
@@ -91,9 +92,9 @@ public class HechosService  {
 
 
 
-
+    @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud) {
-        return Flux.fromIterable(registro.fuentesQuePermitenEliminar())
+        return Flux.fromIterable(fuentesRepository.fuentesQuePermitenEliminar())
                 .next()
                 .flatMap(f -> f.crearSolicitudEliminacion(solicitud))
                 .switchIfEmpty(Mono.error(new RuntimeException("No hay fuentes que permitan crear solicitudes de eliminación")));
@@ -118,6 +119,8 @@ public class HechosService  {
                 .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
                 .build();
     }
+
+
 
     private CategoriaOutputDTO categoriaToDTO(String nombreCategoria) {
         return CategoriaOutputDTO.builder()

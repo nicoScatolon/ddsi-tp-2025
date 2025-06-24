@@ -31,4 +31,6 @@ public interface IHechosService {
 
 
     Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud);
+
+
 }

@@ -5,13 +5,14 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechosPorId;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 @Data
 public class FuenteDDS implements ServidoraDeHechosPorId {
     private Long Id;
