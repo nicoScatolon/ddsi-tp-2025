@@ -80,6 +80,10 @@ public class HechosService implements IHechosService {
         return DTOConverter.convertirHechoOutputDTO(hecho);
     }
 
+    public Hecho findEntidadPorId(Long id){
+        return this.hechosRepository.findById(id);
+    }
+
     @Override
     public List<Hecho> findByFuente(List<IFuente> fuentes){
         List<Hecho> hechoBuscados = new ArrayList<>();

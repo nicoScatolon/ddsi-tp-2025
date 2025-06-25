@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -86,17 +87,32 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
     @Override
     public Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador) {
+        List<HechoExternoDTO> acumulados = new ArrayList<>();
+        return traerPagina(identificador, 0, acumulados)
+                .then(Mono.just(acumulados));
+    }
+
+    private Mono<Void> traerPagina(String identificador, int pagina, List<HechoExternoDTO> acumulados) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/colecciones/{id}/hechos")
-                        .queryParam("page", 0)
-                        .queryParam("size", 50)
-                        .build(identificador)
-                )
+                        .queryParam("page", pagina)
+                        .build(identificador))
                 .retrieve()
                 .bodyToMono(HechosPaginadosDTO.class)
-                .map(HechosPaginadosDTO::getHechos);
+                .flatMap(respuesta -> {
+                    if (respuesta.getHechos() != null && !respuesta.getHechos().isEmpty()) {
+                        acumulados.addAll(respuesta.getHechos());
+                    }
+
+                    if (respuesta.hayMasPaginas()) {
+                        return traerPagina(identificador, pagina + 1, acumulados);
+                    } else {
+                        return Mono.empty();
+                    }
+                });
     }
+
 
 
     @Override
