@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechosPaginadosDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeColecciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeEliminaciones;
@@ -72,6 +73,7 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
     }
 
 
+
     @Override
     public Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones(){
         return webClient.get()
@@ -81,14 +83,21 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
                 .collectList();
     }
 
+
     @Override
     public Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador) {
         return webClient.get()
-                .uri("/colecciones/{id}/hechos", identificador)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/colecciones/{id}/hechos")
+                        .queryParam("page", 0)
+                        .queryParam("size", 50)
+                        .build(identificador)
+                )
                 .retrieve()
-                .bodyToFlux(HechoExternoDTO.class)
-                .collectList();
+                .bodyToMono(HechosPaginadosDTO.class)
+                .map(HechosPaginadosDTO::getHechos);
     }
+
 
     @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){

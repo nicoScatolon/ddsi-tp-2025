@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.ServidoraDeHechosPorId;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,25 +37,25 @@ public class FuenteDDS implements ServidoraDeHechosPorId {
                 .uri("/api/desastres?page=1")
                 .headers(h -> h.setBearerAuth(token))
                 .retrieve()
-                .bodyToMono(PaginaHechosResponseDTO.class)
+                .bodyToMono(PaginaHechosResponseDdsDTO.class)
                 .flatMap(primerPagina -> {
                     int lastPage = primerPagina.getLastPage();
                     List<HechoExternoDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
 
-                    List<Mono<PaginaHechosResponseDTO>> llamadasRestantes = new ArrayList<>();
+                    List<Mono<PaginaHechosResponseDdsDTO>> llamadasRestantes = new ArrayList<>();
                     for(int page =2; page <= lastPage; page++) {
-                        Mono<PaginaHechosResponseDTO> llamada = webClient.get()
+                        Mono<PaginaHechosResponseDdsDTO> llamada = webClient.get()
                                 .uri("/api/desastres?page=" + page)
                                 .headers(h->h.setBearerAuth(token))
                                 .retrieve()
-                                .bodyToMono(PaginaHechosResponseDTO.class);
+                                .bodyToMono(PaginaHechosResponseDdsDTO.class);
                         llamadasRestantes.add(llamada);
 
                     }
 
                     return Mono.zip(llamadasRestantes,resultados->{
                         for(Object resultado : resultados) {
-                            PaginaHechosResponseDTO pagina = (PaginaHechosResponseDTO) resultado;
+                            PaginaHechosResponseDdsDTO pagina = (PaginaHechosResponseDdsDTO) resultado;
                             hechosTotales.addAll(pagina.getData());
                         }
                         return hechosTotales;
