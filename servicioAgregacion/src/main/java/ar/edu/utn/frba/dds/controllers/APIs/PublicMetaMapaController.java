@@ -25,7 +25,7 @@ public class PublicMetaMapaController {
         this.solicitudesEliminacionService = solicitudesEliminacionService;
     }
 
-
+    //Consulta de hechos dentro de una colección.
     @GetMapping("/{handle}/hechos")
     public ResponseEntity<HechosPaginadosResponseDTO> obtenerHechosPorColeccion(
             @PathVariable String handle,
@@ -50,7 +50,7 @@ public class PublicMetaMapaController {
     }
 
 
-
+    //Generar una solicitud de eliminación a un hecho.
     @PostMapping("/hechos/{id}/solicitudes-eliminacion")
     public ResponseEntity<Void> crearSolicitudesEliminacion(@PathVariable Long id, @RequestBody SolicitudEliminacionInputDTO request) {
         Hecho hecho = hechosService.findEntidadPorId(id);
@@ -70,6 +70,9 @@ public class PublicMetaMapaController {
 
 
     }
+
+
+
 
 
 

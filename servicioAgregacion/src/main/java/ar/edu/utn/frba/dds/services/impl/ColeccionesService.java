@@ -37,17 +37,29 @@ public class ColeccionesService implements IColeccionesService {
                 .collect(Collectors.toList());
     }
 
+    // @Override
+    //public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
+    //    var coleccion = new Coleccion(
+    //            coleccionInputDTO.getHandle(),
+    //            coleccionInputDTO.getTitulo(),
+    //            coleccionInputDTO.getDescripcion());
+    //    //TODO al crear no viene con handle, modificar DTO y hacer que se cree el handle en el momento de la creacion
+    //    coleccionInputDTO.getListaCriterios().forEach(coleccion::agregarCriterio);
+
+    //   return this.coleccionOutputDTO(coleccion);
+    // }
+
     @Override
-    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
+    public void crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
                 coleccionInputDTO.getHandle(),
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion());
         //TODO al crear no viene con handle, modificar DTO y hacer que se cree el handle en el momento de la creacion
         coleccionInputDTO.getListaCriterios().forEach(coleccion::agregarCriterio);
-
-        return this.coleccionOutputDTO(coleccion);
     }
+
+
 
     @Override
     public List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle) {
@@ -59,10 +71,13 @@ public class ColeccionesService implements IColeccionesService {
     public void actualizarColeccionesScheduler(){
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
         //TODO ver como actualizar el booleano de las colecciones
-        coleccionesActualizables.forEach(this::actualizarColeccion);
+        coleccionesActualizables.stream()
+                .map(this::toInputDTO)
+                .forEach(this::actualizarColeccion);
     }
 
-    public void actualizarColeccion(Coleccion coleccion){
+    public void actualizarColeccion(ColeccionInputDTO coleccionInputDTO){
+        Coleccion coleccion = this.coleccionFromInputDTO(coleccionInputDTO);
         List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
         coleccion.actualizarHechos(hechos);
     }
@@ -83,6 +98,22 @@ public class ColeccionesService implements IColeccionesService {
 
     private ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
         return ColeccionOutputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .build();
+    }
+
+    private Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
+        return Coleccion.builder()
+                .titulo(input.getTitulo())
+                .descripcion(input.getDescripcion())
+                .handle(input.getHandle())
+                .build();
+    }
+
+    private ColeccionInputDTO toInputDTO(Coleccion coleccion) {
+        return ColeccionInputDTO.builder()
                 .titulo(coleccion.getTitulo())
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
