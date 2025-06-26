@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
 
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
 import java.util.List;
 

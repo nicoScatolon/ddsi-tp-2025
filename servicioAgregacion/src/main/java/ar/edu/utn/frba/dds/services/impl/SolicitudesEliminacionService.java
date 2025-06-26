@@ -4,10 +4,11 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.ConstructorSolicitudesEliminacion;
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
+import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
@@ -15,16 +16,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
     private final ISolicitudesEliminacionRepository repository;
+    private final IFuentesService fuentesService;
     private final IDetectorDeSpam detectorDeSpam;
 
-    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam) {
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService) {
         this.repository = repository;
         this.detectorDeSpam = detectorDeSpam;
+        this.fuentesService = fuentesService;
     }
 
     @Override
@@ -32,12 +36,12 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
        return this.repository
                 .findAll()
                 .stream()
-                .map(this::solicitudEliminarHechoOutputDTO)
+                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
                 .toList();
     }
 
     @Override
-    public void crearSolicitud(HechoBase hecho, String razon, String nombre, String apellido) {
+    public void crearSolicitud(Hecho hecho, String razon, String nombre, String apellido) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 
@@ -50,14 +54,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
         solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
-        repository.delete(solicitudEliminarHecho);
+        repository.save(solicitudEliminarHecho);
     }
 
     @Override
     public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = this.solicitudEliminarHecho(solicitud);
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
         solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
         repository.save(solicitudEliminarHecho);
     }
@@ -83,25 +87,12 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         );
     }
 
-    //CONSTRUCTORES
-    private SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
-        return SolicitudEliminarHechoOutputDTO
-                .builder()
-                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
-                .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .nombreCreador(solicitud.getNombreCreador())
-                .apellidoCreador(solicitud.getApellidoCreador())
-                .fechaCreacion(solicitud.getFechaCreacion())
-                .build();
-    }
-
-    private SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto) {
-        return ConstructorSolicitudesEliminacion
-                .constructorSolicitud(
-                        dto.getHecho(),
-                        dto.getRazonDeEliminacion(),
-                        dto.getNombreCreador(),
-                        dto.getApellidoCreador());
+    public void notificarEliminacionHechos(){
+        List<SolicitudEliminarHecho> solicitudesAceptadas = repository.findAll().stream()
+                .filter(SolicitudEliminarHecho::getActualizarFuenteOrigen)
+                .toList();
+        solicitudesAceptadas.forEach(s -> s.setActualizarFuenteOrigen(false));
+        fuentesService.notificarEliminaciones(solicitudesAceptadas.stream().map(SolicitudEliminarHecho::getHecho).collect(Collectors.toList()));
     }
 
     //Metodo para acortar strings y entren en consola.

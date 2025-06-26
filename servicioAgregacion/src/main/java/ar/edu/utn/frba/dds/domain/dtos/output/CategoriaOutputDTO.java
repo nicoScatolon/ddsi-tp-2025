@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class CategoriaOutputDTO {
     private String nombre;
-    private Long id;
+    private String id;
 }

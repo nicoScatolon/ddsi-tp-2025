@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,5 +27,10 @@ public class ColeccionesController {
     @GetMapping("/{handle}")
     public ColeccionOutputDTO buscarColeccionPorHandle(@PathVariable String handle){
         return coleccionesService.findByHandle(handle);
+    }
+
+    @GetMapping("/{handle}/hechos")
+    public List<HechoOutputDTO> mostrarHechosDeColeccion(@PathVariable String handle){
+        return coleccionesService.hechosDeLaColeccionByHandle(handle);
     }
 }

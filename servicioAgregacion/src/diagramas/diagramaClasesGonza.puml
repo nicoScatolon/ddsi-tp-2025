@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface FuenteAdapter{
+    + obtenerHechos()
+    + eliminarHechos()
+}
+
+class FuenteDinamicaAdapter{
+}
+
+class FuenteEstaticaAdapter{
+}
+
+class FuenteProxyAdapter{
+}
+
+class FuenteDinamicaConcreta{
+}
+
+class FuenteEstaticaConcreta{
+}
+
+class FuenteProxyConcreta{
+}
+
+class Hecho {
+    -id: Long
+    -fuente: FuenteAdapter
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -ubicacion: Ubicacion
+    -fechaDeOcurrencia: LocalDate
+    -fechaDeCarga: LocalDate
+    -origen: OrigenHecho
+    -fueEliminado: Boolean
+}
+class Categoria {
+}
+
+Hecho --> FuenteAdapter
+Hecho --> Categoria
+
+FuenteAdapter <|.. FuenteDinamicaAdapter
+FuenteAdapter <|.. FuenteEstaticaAdapter
+FuenteAdapter <|.. FuenteProxyAdapter
+FuenteDinamicaAdapter o--  FuenteDinamicaConcreta
+FuenteEstaticaAdapter o-- FuenteEstaticaConcreta
+FuenteProxyAdapter o-- FuenteProxyConcreta
+@enduml

@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IColeccionesRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,7 +35,7 @@ public class ColeccionesRepository implements IColeccionesRepository {
     }
 
     @Override
-    public List<HechoBase> hechosByHandle(String handle, List<HechoBase> hechosDisponibles) {
+    public List<Hecho> hechosByHandle(String handle, List<Hecho> hechosDisponibles) {
         Coleccion coleccion = colecciones.get(handle);
         if (coleccion == null) return List.of();
         return new ArrayList<>(coleccion.filtrarHechos(hechosDisponibles));

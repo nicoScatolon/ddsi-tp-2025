@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
-import ar.edu.utn.frba.dds.domain.entities.solicitudesEliminacion.SolicitudEliminarHecho;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
 import org.springframework.stereotype.Repository;
 

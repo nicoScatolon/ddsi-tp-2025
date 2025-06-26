@@ -5,19 +5,18 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas.CriterioOcurrenciaEntreFechas;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteDinamica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteEstatica;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.impl.HechoBaseFuenteProxy;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import ar.edu.utn.frba.dds.domain.entities.Usuario;
+import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.repository.impl.CategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
+import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
+import ar.edu.utn.frba.dds.services.impl.CategoriaService;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
+import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import ar.edu.utn.frba.dds.services.impl.HechosService;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,15 +25,17 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class ColeccionesTest {
 
     private final ColeccionesRepository coleccionesRepository = new ColeccionesRepository();
     private final HechosRepository hechosRepository = new HechosRepository();
     private final CategoriasRepository categoriasRepository = new CategoriasRepository();
-    private final HechosService hechosService = new HechosService(hechosRepository,categoriasRepository,mock(WebClient.Builder.class));
-    private final ColeccionesService coleccionesService = new ColeccionesService(coleccionesRepository,hechosRepository);
+    private final FuentesRepository fuentesRepository = new FuentesRepository();
+    private final CategoriaService categoriaService = new CategoriaService(categoriasRepository);
+    private final FuentesService fuentesService = new FuentesService(fuentesRepository);
+    private final HechosService hechosService = new HechosService(hechosRepository,fuentesService,categoriaService);
+    private final ColeccionesService coleccionesService = new ColeccionesService(coleccionesRepository,hechosService);
 
 
     @Test
@@ -69,14 +70,14 @@ public class ColeccionesTest {
         Categoria catMedioAmbiente = new Categoria("Medio Ambiente");
         Categoria catTransito = new Categoria("Tránsito");
 
-        Usuario usuarioEjemplo = new Usuario();
-        usuarioEjemplo.setNombre("Jose");
-        usuarioEjemplo.setApellido("Perez");
-        usuarioEjemplo.setFechaNacimiento(LocalDate.of(2020, 1, 1));
-        usuarioEjemplo.setEsAnonimo(false);
+        Contribuyente contribuyenteEjemplo = new Contribuyente();
+        contribuyenteEjemplo.setNombre("Jose");
+        contribuyenteEjemplo.setApellido("Perez");
+        contribuyenteEjemplo.setFechaNacimiento(LocalDate.of(2020, 1, 1));
+        contribuyenteEjemplo.setEsAnonimo(false);
 
 // Hechos variados:
-        HechoBaseFuenteEstatica hecho1 = crearHechoEstatica(
+        Hecho hecho1 = crearHechoEstatica(
                 1L,
                 "Robo en el barrio",
                 "Se reportó un robo en la calle 123",
@@ -86,7 +87,7 @@ public class ColeccionesTest {
                 LocalDate.of(2024, 5, 25)
         );
 
-        HechoBaseFuenteProxy hecho2 = crearHechoProxy(
+        Hecho hecho2 = crearHechoProxy(
                 2L,
                 "Contaminación del río",
                 "Elevados niveles de contaminación en el río local",
@@ -96,7 +97,7 @@ public class ColeccionesTest {
                 LocalDate.of(2025, 5, 20)
         );
 
-        HechoBaseFuenteDinamica hecho3 = crearHechoDinamica(
+        Hecho hecho3 = crearHechoDinamica(
                 3L,
                 "Accidente de tránsito",
                 "Choque múltiple en la avenida principal",
@@ -104,10 +105,10 @@ public class ColeccionesTest {
                 -34.6000,
                 -58.3800,
                 LocalDate.of(2024, 5, 26),
-                usuarioEjemplo
+                contribuyenteEjemplo
         );
 
-        HechoBaseFuenteEstatica hecho4 = crearHechoEstatica(
+        Hecho hecho4 = crearHechoEstatica(
                 4L,
                 "Corte de luz",
                 "Corte de luz programado para mantenimiento",
@@ -117,7 +118,7 @@ public class ColeccionesTest {
                 LocalDate.of(2025, 5, 24)
         );
 
-        HechoBaseFuenteProxy hecho5 = crearHechoProxy(
+        Hecho hecho5 = crearHechoProxy(
                 5L,
                 "Incendio forestal",
                 "Incendio en zona protegida",
@@ -127,28 +128,28 @@ public class ColeccionesTest {
                 LocalDate.of(2024, 5, 23)
         );
 
-        List<HechoBase> listaHechos = new ArrayList<>();
+        List<Hecho> listaHechos = new ArrayList<>();
         listaHechos.add(hecho1);
         listaHechos.add(hecho2);
         listaHechos.add(hecho3);
 
-        hechosService.actualizarRepositoryHecho(listaHechos);
+        hechosService.guardarHechosRepository(listaHechos);
 
         assertEquals(3,hechosRepository.findAll().size());
         assertEquals(2, coleccion.filtrarHechos(hechosRepository.findAll()).size());
 
-        List<HechoBase> listaHechos2 = new ArrayList<>();
+        List<Hecho> listaHechos2 = new ArrayList<>();
         listaHechos2.add(hecho4);
         listaHechos2.add(hecho5);
 
-        hechosService.actualizarRepositoryHecho(listaHechos2);
+        hechosService.guardarHechosRepository(listaHechos2);
         assertEquals(5,hechosRepository.findAll().size());
         assertEquals(3, coleccion.filtrarHechos(hechosRepository.findAll()).size());
     }
 
-    public HechoBaseFuenteEstatica crearHechoEstatica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
-        var hechoE = new HechoBaseFuenteEstatica();
-        hechoE.setFuenteId(id);
+    public Hecho crearHechoEstatica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
+        var hechoE = new Hecho();
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);
@@ -160,9 +161,9 @@ public class ColeccionesTest {
         return hechoE;
     }
 
-    public HechoBaseFuenteProxy crearHechoProxy(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
-        var hechoE = new HechoBaseFuenteProxy();
-        hechoE.setFuenteId(id);
+    public Hecho crearHechoProxy(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia) {
+        var hechoE = new Hecho();
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);
@@ -174,9 +175,9 @@ public class ColeccionesTest {
         return hechoE;
     }
 
-    public HechoBaseFuenteDinamica crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Usuario contribuyente) {
-        var hechoE = new HechoBaseFuenteDinamica();
-        hechoE.setFuenteId(id);
+    public Hecho crearHechoDinamica(Long id, String titulo, String descripcion, Categoria categoria, Double latitud, Double longitud, LocalDate fechaDeOcurrencia, Contribuyente contribuyente) {
+        var hechoE = new Hecho();
+        hechoE.setOrigenId(id);
         hechoE.setTitulo(titulo);
         hechoE.setDescripcion(descripcion);
         hechoE.setCategoria(categoria);

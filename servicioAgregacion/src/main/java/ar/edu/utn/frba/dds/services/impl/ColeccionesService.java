@@ -5,25 +5,24 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoBase;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
+import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ColeccionesService implements IColeccionesService {
     private final ColeccionesRepository coleccionesRepository;
-    private final HechosRepository hechosRepository;
+    private final IHechosService hechosService;
 
-    public ColeccionesService(ColeccionesRepository coleccionesRepository, HechosRepository hechosRepository) {
+    public ColeccionesService(ColeccionesRepository coleccionesRepository, IHechosService hechosService) {
         this.coleccionesRepository = coleccionesRepository;
-        this.hechosRepository = hechosRepository;
+        this.hechosService = hechosService;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class ColeccionesService implements IColeccionesService {
                 coleccionInputDTO.getHandle(),
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion());
-
+        //TODO al crear no viene con handle, modificar DTO y hacer que se cree el handle en el momento de la creacion
         coleccionInputDTO.getListaCriterios().forEach(coleccion::agregarCriterio);
 
         return this.coleccionOutputDTO(coleccion);
@@ -52,9 +51,34 @@ public class ColeccionesService implements IColeccionesService {
 
     @Override
     public List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle) {
-        return coleccionesRepository.hechosByHandle(handle,hechosRepository.findAll()).stream()
+        return coleccionesRepository.hechosByHandle(handle,hechosService.findAll()).stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void actualizarColeccionesScheduler(){
+        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+        //TODO ver como actualizar el booleano de las colecciones
+        coleccionesActualizables.forEach(this::actualizarColeccion);
+    }
+
+    public void actualizarColeccion(Coleccion coleccion){
+        List <Hecho> hechos = hechosService.findByFuente(coleccion.getListaFuentes());
+        coleccion.actualizarHechos(hechos);
+    }
+
+    // actualizar coleccion -> volver a calcular los hechos que le pertenece (CARO Y LENTO) -> hacerlo lo minimo posible
+    // cuando actualizar -> actualizamos los hechos de la fuente o actualizamos los criterios
+
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle){
+        Coleccion coleccion = this.coleccionesRepository.findByHandle(handle); //considera hechos estaticos y dinamicos
+        List<Hecho> hechosAMostar = coleccion.getListaHechos();
+        if (coleccion.getListaFuentes().stream().anyMatch(f -> f.getTipo().equals(TipoFuente.PROXY))){
+            List<Hecho> hechosProxy = hechosService.obtenerHechosProxy();
+            hechosAMostar.addAll(hechosProxy);
+        }
+        return DTOConverter.hechoOutputDTO(hechosAMostar);
+        //TODO si modificamos para que las colecciones sean a partir de fuentes especificas sera diferente
     }
 
     private ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
@@ -62,14 +86,7 @@ public class ColeccionesService implements IColeccionesService {
                 .titulo(coleccion.getTitulo())
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
-                .hechos(this.hechoOutputDTO(new HashSet<>(coleccion.filtrarHechos(hechosRepository.findAll()))))
                 .build();
-    }
-
-    private List<HechoOutputDTO> hechoOutputDTO(Set<HechoBase> hechos) {
-        return hechos.stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .collect(Collectors.toList());
     }
 }
 
