@@ -1,6 +1,5 @@
-package ar.edu.utn.frba.dds.domain.dtos.output.APIs.ApiPublica;
+package ar.edu.utn.frba.dds.domain.dtos.output;
 
-import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

@@ -129,10 +129,10 @@ public class DTOConverter {
                 .build();
     }
 
-    public static SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto) {
+    public static SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto, Hecho hecho) {
         return ConstructorSolicitudesEliminacion
                 .constructorSolicitud(
-                        dto.getHecho(),
+                        hecho,
                         dto.getRazonDeEliminacion(),
                         dto.getNombreCreador(),
                         dto.getApellidoCreador());

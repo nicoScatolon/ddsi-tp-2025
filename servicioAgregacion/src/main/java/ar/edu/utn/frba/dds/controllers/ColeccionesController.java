@@ -1,7 +1,7 @@
-package ar.edu.utn.frba.dds.controllers.APIs;
+package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.APIs.ApiPublica.HechosPaginadosResponseDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IColeccionesService;

@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSol
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
 import ar.edu.utn.frba.dds.services.IFuentesService;
+import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
@@ -22,13 +23,15 @@ import java.util.stream.Collectors;
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
     private final ISolicitudesEliminacionRepository repository;
+    private final IHechosService hechosService;
     private final IFuentesService fuentesService;
     private final IDetectorDeSpam detectorDeSpam;
 
-    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService) {
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService, IHechosService hechosService) {
         this.repository = repository;
         this.detectorDeSpam = detectorDeSpam;
         this.fuentesService = fuentesService;
+        this.hechosService =  hechosService;
     }
 
     @Override
@@ -54,14 +57,16 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
+        Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud,hecho);
         solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
         repository.save(solicitudEliminarHecho);
     }
 
     @Override
     public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud);
+        Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
+        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud, hecho);
         solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
         repository.save(solicitudEliminarHecho);
     }
