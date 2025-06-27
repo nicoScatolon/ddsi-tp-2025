@@ -7,7 +7,6 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,7 +34,7 @@ public class ColeccionesController {
     }
 
     @GetMapping("/privada")
-    public List<ColeccionOutputDTO> obtenerColecciones() {
+    public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
         return coleccionesService.findAll();
     }
 
@@ -52,7 +51,7 @@ public class ColeccionesController {
     // ------------------------------------------- API PÚBLICA -------------------------------------------
     //Consulta de hechos dentro de una colección.
     @GetMapping("/publica/{handle}/hechos")
-    public ResponseEntity<HechosPaginadosResponseDTO> obtenerHechosPorColeccion(
+    public HechosPaginadosResponseDTO obtenerHechosPorColeccion(
             @PathVariable String handle,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -70,7 +69,13 @@ public class ColeccionesController {
         int toIndex = Math.min(fromIndex + size, hechos.size());
         List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex);
 
-        HechosPaginadosResponseDTO respuesta = new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
-        return ResponseEntity.ok(respuesta);
+        return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
+    }
+
+
+
+    @GetMapping("/publica/obtener-colecciones")
+    public List<ColeccionOutputDTO> obtenerColeccionesPublica() {
+        return coleccionesService.findAll();
     }
 }

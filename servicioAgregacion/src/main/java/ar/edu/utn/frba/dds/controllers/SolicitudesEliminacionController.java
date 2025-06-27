@@ -7,7 +7,6 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudElimi
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,9 +24,9 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/publica/crear-solicitud-eliminacion")
-    public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
         Hecho hecho = hechosService.findEntidadPorId(request.getHechoId());
-
 
         if (hecho == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
@@ -39,11 +38,8 @@ public class SolicitudesEliminacionController {
                 request.getNombreCreador(),
                 request.getApellidoCreador()
         );
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-
-
     }
+
 
     @GetMapping
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
