@@ -18,13 +18,12 @@ public class FuenteEstaticaAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<Hecho> obtenerHechosFuente() {
+    public List<Hecho> actualizarHechos() {
         return fuenteEstatica.updateHechos();
     }
 
     @Override
-    public List<Hecho> obtenerHechosCargados() {
+    public List<Hecho> obtenerHechos() {
         return fuenteEstatica.getMapHechos().values().stream().toList();
-        //TODO si los tipos de fuentes consumidas/almacenadas puede modificarse por properties entonces esto tambien deberia
     }
 }

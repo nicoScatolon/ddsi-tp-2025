@@ -4,9 +4,12 @@ import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
+import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
+import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,9 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class FuentesService implements IFuentesService {
     private final IFuentesRepository fuentesRepository;
+    private final IHechosService hechosService;
+    private final IColeccionesService coleccionesService;
 
-    public FuentesService(IFuentesRepository fuentesRepository) {
+    public FuentesService(IFuentesRepository fuentesRepository, IHechosService hechosService, IColeccionesService coleccionesService) {
         this.fuentesRepository = fuentesRepository;
+        this.hechosService = hechosService;
+        this.coleccionesService = coleccionesService;
     }
 
     @Override
@@ -61,6 +68,25 @@ public class FuentesService implements IFuentesService {
             //ToDO: fuente.notificareliminacion( idHechosAEliminar )
         }
         */
+    }
+
+    @Override
+    public void actualizarHechosFuentesScheduler() {
+        List<TipoFuente> listaTipos = new ArrayList<>();
+        listaTipos.add(TipoFuente.DINAMICA);
+        listaTipos.add(TipoFuente.ESTATICA);
+        List<IFuente> fuentes = this.buscarFuentePorTipo(listaTipos);
+        //TODO ver como setearlo en las properties
+
+        List<IFuente> fuentesActualizadas = new ArrayList<>();
+        for (IFuente fuente : fuentes){
+            boolean resultado = this.hechosService.actualizarHechos(fuente);
+            if (resultado){
+                //las colecciones que tengan esa fuente deben ser actualizadas
+                fuentesActualizadas.add(fuente);
+            }
+        }
+        coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
     }
 
 

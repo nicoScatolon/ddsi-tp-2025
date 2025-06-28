@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -18,6 +19,7 @@ public class FuenteDinamica implements IFuente {
     private TipoFuente tipo = TipoFuente.DINAMICA;
     private WebClient webClient;
     private Map<Long, Hecho> mapHechos;
+    private LocalDateTime ultimaActualizacion;
 
     public FuenteDinamica(String url) {
         this.url = url;
@@ -40,7 +42,10 @@ public class FuenteDinamica implements IFuente {
                 .bodyToFlux(HechoInputDinamicaDTO.class)
                 .collectList()
                 .block());
+        //TODO resolver el tema de actualizacion por fecha (que getHechos reciba unicamente a partir de su ultima fecha de modificación)
+        // por la uri pasar como queryParam parametro la ultima fecha de actualizacion
     }
+
 
     public void actualizarHechos(List<Hecho> hechosNuevos){
         for (Hecho hechoActual : hechosNuevos){

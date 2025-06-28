@@ -1,12 +1,13 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,22 +16,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Coleccion {
     @Setter private String handle;
     @Setter private String titulo;
     @Setter private String descripcion;
-    @Setter private Boolean actualizarHechos;
 
     private final List<IFuente> listaFuentes = new ArrayList<>();
     private final Set<ICriterio> listaCriterios = new HashSet<>();
+    private IAlgoritmoConsenso algoritmoConsenso;
+
+    //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
     private List<Hecho> listaHechos = new ArrayList<>();
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
-    @Builder
-    public Coleccion(String titulo, String descripcion) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-    }
+    @Setter private Boolean actualizarHechos;
+    @Setter private Boolean curarHechos;
 
     public void agregarCriterio(ICriterio criterio) {
         this.listaCriterios.add(criterio);
@@ -68,7 +71,7 @@ public class Coleccion {
         //cargamos todos los hechos de las fuentes
         for (IFuente fuente : listaFuentes) {
             FuenteAdapter adapter = fuente.getTipo().crearAdapter();
-            List<Hecho> hechosFuente = adapter.obtenerHechosCargados();
+            List<Hecho> hechosFuente = adapter.obtenerHechos();
             if (hechosFuente != null) {
                 listaAuxiliar.addAll(hechosFuente);
             }
@@ -76,6 +79,17 @@ public class Coleccion {
         // filtramos estos hechos
         this.listaHechos = this.filtrarHechos(listaAuxiliar);
         //recordar que proxy no se almacena, asi que al consumir sus hechos hay que filtrarlos
+        this.setCurarHechos(true);
+    }
+    //TODO no sabemos que pasa si arrancamos el programa de 0, que datos de la coleccion salen del repo y cuales se obtienen en el momento
+    // porque si los proxy no se guardan asociados a la coleccion, al correr el sistema de 0, no van a haber hechos proxy almacenados en la lista local de hechos
+
+    public void curarHechos() {
+        if (algoritmoConsenso == null) {
+            this.listaHechosCurados = this.listaHechos;
+        }
+        else
+            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
     }
 
     public List<Hecho> getHechosVisualizar(List<Hecho> hechosConsumidos) {

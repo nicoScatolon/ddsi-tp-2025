@@ -7,6 +7,8 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -18,6 +20,7 @@ public class FuenteEstatica implements IFuente {
     private TipoFuente tipo = TipoFuente.ESTATICA;
     private WebClient webClient;
     private Map<Long, Hecho> mapHechos;
+    private LocalDateTime ultimaActualizacion;
 
     public FuenteEstatica(String url) {
         this.url = url;

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.schedulers;
 
+import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,17 +9,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HechoScheduler {
-    private final IHechosService hechosService;
+    private final IFuentesService fuentesService;
     private final ColeccionesService coleccionesService;
 
-    public HechoScheduler(IHechosService hechosService, ColeccionesService coleccionesService) {
-        this.hechosService = hechosService;
+    public HechoScheduler(IFuentesService fuentesService, ColeccionesService coleccionesService) {
+        this.fuentesService = fuentesService;
         this.coleccionesService = coleccionesService;
     }
 
     @Scheduled(cron = "${cron.expression.prueba}")
     public void actualizarHechos() {
-            hechosService.actualizarHechosScheduler();
+        fuentesService.actualizarHechosFuentesScheduler();
     }
     @Scheduled(cron = "${cron.expression.prueba}")
     public void actualizarColecciones() {

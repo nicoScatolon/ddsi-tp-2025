@@ -21,14 +21,13 @@ public class FuenteDinamicaAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<Hecho> obtenerHechosFuente() {
+    public List<Hecho> actualizarHechos() {
         return fuenteDinamica.updateHechos();
     }
 
     @Override
-    public List<Hecho> obtenerHechosCargados() {
+    public List<Hecho> obtenerHechos() {
         return fuenteDinamica.getMapHechos().values().stream().toList();
-        //TODO si los tipos de fuentes consumidas/almacenadas puede modificarse por properties entonces esto tambien deberia
     }
 
 }
