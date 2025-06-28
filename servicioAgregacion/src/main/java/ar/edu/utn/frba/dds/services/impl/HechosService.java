@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
@@ -125,6 +126,16 @@ public class HechosService implements IHechosService {
         this.logearHechosCargados(hechosListos, fuente.getUrl());
         return true;
     }
+
+    @Override
+    public List<HechoOutputDTO> filtrarHechos(List<HechoOutputDTO> hechosOutPut, List<ICriterio> criterios) {
+        List<Hecho> hechos = hechosOutPut.stream().map(h -> DTOConverter.convertirHechoOutputDTO(h));
+        return hechos.stream()
+                .filter(hecho -> criterios.stream().allMatch(c -> c.pertenece(hecho)))
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .toList();
+    }
+
 
     public void guardarHechosRepository(List<Hecho> hechos){ //Util para los test
         hechosRepository.saveAll(hechos);

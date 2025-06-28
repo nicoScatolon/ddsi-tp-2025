@@ -1,12 +1,13 @@
 package ar.edu.utn.frba.dds.controllers;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import ar.edu.utn.frba.dds.services.impl.CriterioFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,11 +21,13 @@ public class ColeccionesController {
 
     private final IHechosService hechosService;
     private final IColeccionesService coleccionesService;
+    private final CriterioFactory criterioFactory;
 
     public ColeccionesController(IHechosService hechosService,
-                                 IColeccionesService coleccionesService) {
+                                 IColeccionesService coleccionesService, CriterioFactory criterioFactory) {
         this.hechosService = hechosService;
         this.coleccionesService = coleccionesService;
+        this.criterioFactory = criterioFactory;
     }
 
     // Operaciones CRUD sobre las colecciones
@@ -80,7 +83,7 @@ public class ColeccionesController {
             @RequestParam String handle,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam CategoriaInputDTO categoria
+            @RequestParam List<CriterioInputDTO> criterios
             ){
 
         //Validamos la paginacion
@@ -89,17 +92,22 @@ public class ColeccionesController {
         }
 
 
-        //Obtenemos todos los hechos de la coleccion
-        List<HechoOutputDTO> hechos = coleccionesService.hechosDeLaColeccionByHandle(handle);
-        if (hechos == null || hechos.isEmpty()) {
+
+        if (coleccionesService.hechosEntidadDeLaColeccionByHandle(handle) == null || coleccionesService.hechosEntidadDeLaColeccionByHandle(handle).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada o sin hechos");
         }
 
-        int fromIndex = Math.min(page * size, hechos.size());
-        int toIndex = Math.min(fromIndex + size, hechos.size());
-        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex);
 
-        return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
+
+        //Obtenemos la lista de hechos filtrados
+        List<HechoOutputDTO> hechosFiltrados = hechosService.filtrarHechos(coleccionesService.hechosEntidadDeLaColeccionByHandle(handle), criterioFactory.crearVarios(criterios));
+
+
+        int fromIndex = Math.min(page * size, hechosFiltrados.size());
+        int toIndex = Math.min(fromIndex + size, hechosFiltrados.size());
+        List<HechoOutputDTO> hechosPaginados = hechosFiltrados.subList(fromIndex, toIndex);
+
+        return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechosFiltrados.size());
 
     }
 

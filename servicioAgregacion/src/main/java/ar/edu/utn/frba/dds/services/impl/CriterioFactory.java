@@ -11,6 +11,7 @@ import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.CriteriosFechas.Criteri
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -46,5 +47,11 @@ public class CriterioFactory {
             default:
                 throw new IllegalArgumentException("Tipo de criterio desconocido: " + tipo);
         }
+    }
+
+    public List<ICriterio> crearVarios(List<CriterioInputDTO> criterios){
+        return criterios.stream()
+                .map(this::crear)
+                .toList();
     }
 }

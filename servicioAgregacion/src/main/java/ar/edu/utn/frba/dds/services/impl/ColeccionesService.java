@@ -5,12 +5,12 @@ import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
+import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.stereotype.Service;
@@ -26,12 +26,14 @@ public class ColeccionesService implements IColeccionesService {
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
+    private final HechosRepository hechosRepository;
 
-    public ColeccionesService(ColeccionesRepository coleccionesRepository, IHechosService hechosService) {
+    public ColeccionesService(ColeccionesRepository coleccionesRepository, IHechosService hechosService, HechosRepository hechosRepository) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
         this.criterioFactory  = criterioFactory;
         this.fuentesRepository = fuentesRepository;
+        this.hechosRepository = hechosRepository;
     }
 
     @Override
@@ -95,14 +97,20 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-
-
     @Override
     public List<HechoOutputDTO> hechosDeLaColeccionByHandle(String handle) {
         return coleccionesRepository.hechosByHandle(handle,hechosService.findAll()).stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Hecho> hechosEntidadDeLaColeccionByHandle(String handle) {
+        return coleccionesRepository.hechosByHandle(handle,hechosService.findAll()).stream()
+                .collect(Collectors.toList());
+    }
+
+
 
     public void actualizarColeccionesScheduler(){
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
