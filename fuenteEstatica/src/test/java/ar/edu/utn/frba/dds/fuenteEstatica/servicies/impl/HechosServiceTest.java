@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl;
 
+import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.*;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
@@ -28,12 +29,14 @@ public class HechosServiceTest {
         ).toString();
 
         // 2) Instancio repo, service e importador real
+        ImportadorHechosCSV csvImportador = new ImportadorHechosCSV();
+        List<ImportadorHechos> importadores = List.of(csvImportador);
         IHechosRepository repo = new HechosRepository();
-        IHechosService service = new HechosService(repo);
+        IHechosService service = new HechosService(repo, importadores);
         ImportadorHechos importador = new ImportadorHechosCSV();
 
         // 3) Ejecuto la importación
-        List<Hecho> hechos = service.importarArchivoHechos(csvPath, importador);
+        List<Hecho> hechos = service.importarArchivoHechos(csvPath);
 
         // 4a) No devuelve lista vacía
         assertFalse(hechos.isEmpty(), "Debe importar al menos un hecho");

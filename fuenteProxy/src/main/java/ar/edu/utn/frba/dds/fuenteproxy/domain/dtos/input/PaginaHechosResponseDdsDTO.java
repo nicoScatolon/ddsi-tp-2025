@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaginaHechosResponseDTO {
+public class PaginaHechosResponseDdsDTO {
     private int currentPage;
     private List<HechoExternoDTO> data;
     private int lastPage;

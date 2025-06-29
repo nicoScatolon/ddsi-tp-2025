@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.TipoFuenteProxy;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.adapters.IFuenteAdapter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
 import org.springframework.stereotype.Service;
 
@@ -10,34 +10,30 @@ import java.util.List;
 
 @Service
 public class FuenteService implements IFuenteService {
-    private final List<IFuenteAdapter> fuentes;
 
-    public FuenteService(List<IFuenteAdapter> fuentes) {
-        this.fuentes = fuentes;
+    private final IFuentesRepository fuentesRepository;
+
+    public FuenteService(IFuentesRepository fuentesRepository) {
+        this.fuentesRepository = fuentesRepository;
     }
 
     @Override
-    public IFuenteAdapter buscarPorId(Long id) {
-        return fuentes.stream()
+    public IFuente buscarPorId(Long id) {
+        return fuentesRepository.todasLasFuentes().stream()
                 .filter(f -> f.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Fuente no encontrada con ID: " + id));
     }
 
     @Override
-    public List<IFuenteAdapter> obtenerPorTipo(TipoFuenteProxy tipo) {
-        return fuentes.stream()
-                .filter(f -> f.getTipo() == tipo)
+    public List<IFuente> obtenerPorTipo(TipoFuenteProxy tipo) {
+        return fuentesRepository.todasLasFuentes().stream()
+                .filter(f -> f.getTipoFuenteProxy().equals(tipo))
                 .toList();
     }
 
     @Override
-    public List<IFuenteAdapter> obtenerTodas() {
-        return fuentes;
+    public List<IFuente> obtenerTodas() {
+        return fuentesRepository.todasLasFuentes();
     }
-
-    public void obtenerColecciones(FuenteMetaMapa fuente) {
-
-    }
-
 }

@@ -11,8 +11,15 @@ import java.util.Optional;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ImportadorHechosCSV implements ImportadorHechos {
+
+    @Override
+    public String getFormato(){
+        return "csv";
+    }
 
     @Override
     public List<Hecho> importarHechosArchivo(String path) {

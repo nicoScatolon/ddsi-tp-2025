@@ -1,0 +1,13 @@
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad;
+
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.IFuente;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+public interface ServidoraDeColecciones extends IFuente {
+    Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones();
+    Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador);
+}
