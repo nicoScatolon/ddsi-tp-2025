@@ -19,7 +19,4 @@ public class HechoExternoDTO {
     private Double longitud;
     private String fechaDeOcurrencia;
     private String fechaDeCarga;
-
-
-
 }

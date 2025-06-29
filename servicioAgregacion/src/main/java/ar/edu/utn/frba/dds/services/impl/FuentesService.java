@@ -40,6 +40,7 @@ public class FuentesService implements IFuentesService {
     @Override
     public void eliminarFuente(Long id) {
         fuentesRepository.deleteFuente(id);
+        //ToDO eliminar de las colecciones las fuentes
     }
 
     @Override
@@ -77,12 +78,12 @@ public class FuentesService implements IFuentesService {
         listaTipos.add(TipoFuente.ESTATICA);
         List<IFuente> fuentes = this.buscarFuentePorTipo(listaTipos);
         //TODO ver como setearlo en las properties
-
+        //TODO REHACER
         List<IFuente> fuentesActualizadas = new ArrayList<>();
         for (IFuente fuente : fuentes){
-            boolean resultado = this.hechosService.actualizarHechos(fuente);
-            if (resultado){
-                //las colecciones que tengan esa fuente deben ser actualizadas
+            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter().actualizarHechos();
+            if (!hechosFuente.isEmpty()){
+                this.hechosService.actualizarHechos(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }
         }

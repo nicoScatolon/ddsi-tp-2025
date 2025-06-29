@@ -12,8 +12,9 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+
 @Data
+@Component
 public class FuenteDDS implements ServidoraDeHechosPorId {
     private Long Id;
     private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/agregador/hechos")
+@RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
 

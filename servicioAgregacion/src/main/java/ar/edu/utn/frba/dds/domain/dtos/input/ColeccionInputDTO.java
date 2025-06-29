@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos.input;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import lombok.Builder;
@@ -15,4 +16,5 @@ public class ColeccionInputDTO {
     private String handle;
     private String titulo;
     private String descripcion;
+    private AlgoritmoConsensoDTO algoritmoConsenso;
 }

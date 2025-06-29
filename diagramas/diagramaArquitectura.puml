@@ -2,22 +2,22 @@
 !theme plain
 
 package "Agregador" {
-  [API Agregador] --> [UI Solicitudes]
-  [API Agregador] --> [Agregación]
+  [API REST] --> [UI Solicitudes]
+  [API REST] --> [Agregación]
   [Agregación] --> [Modelo Agregador]
   [Modelo Agregador] --> [Fuentes Agregador]
   [Modelo Agregador] --> [Solicitudes]
 }
 
 package "Fuente De Datos Estática" {
-  [API Estática] --> [Principal]
+  [API REST] --> [Principal]
   [Principal] --> [Fuentes Estática]
   [Principal] --> [Dataset]
 }
 
 package "Fuente De Datos Dinámica" {
-  [API Dinámica] --> [UI Editor]
-  [API Dinámica] --> [Modelo Dinámico]
+  [API REST] --> [UI Editor]
+  [API REST] --> [Modelo Dinámico]
   [Modelo Dinámico] --> [Fuentes Dinámicas]
   [Modelo Dinámico] --> [Solicitudes Dinámicas]
   [Modelo Dinámico] --> [Hechos y Solicitudes]
@@ -25,14 +25,12 @@ package "Fuente De Datos Dinámica" {
 }
 
 package "Fuente De Datos Proxy" {
-  [API Proxy] --> [Modelo Proxy]
+  [API REST] --> [Modelo Proxy]
   [Modelo Proxy] --> [Fuentes Proxy]
   [Modelo Proxy] --> [Servicio Externo]
 }
 
 ' Relaciones entre sistemas
-[Modelo Agregador] --> [API Estática] : Protocolo MetaMapa
-[Modelo Agregador] --> [API Dinámica]
-[Modelo Agregador] --> [API Proxy]
-[API Dinámica] --> [OAuth / Proveedor de Identidad]
+[Modelo Agregador] --> [API REST] : Protocolo MetaMapa
+[API REST] --> [OAuth / Proveedor de Identidad]
 @enduml

@@ -16,9 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class Coleccion {
     @Setter private String handle;
     @Setter private String titulo;
@@ -34,6 +31,15 @@ public class Coleccion {
 
     @Setter private Boolean actualizarHechos;
     @Setter private Boolean curarHechos;
+
+    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
+        this.handle = handle;
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        if (algoritmoConsenso != null) {
+            this.algoritmoConsenso = algoritmoConsenso;
+        }
+    }
 
     public void agregarCriterio(ICriterio criterio) {
         this.listaCriterios.add(criterio);
@@ -53,6 +59,11 @@ public class Coleccion {
     public void eliminarFuente(IFuente fuente) {
         this.listaFuentes.remove(fuente);
         actualizarHechos = true;
+    }
+
+    public void setAlgoritmoConsenso(IAlgoritmoConsenso algoritmoConsenso) {
+        this.algoritmoConsenso = algoritmoConsenso;
+        this.curarHechos = true;
     }
 
     public List<Hecho> filtrarHechos(List<Hecho> hechosDisponibles) {
@@ -90,32 +101,31 @@ public class Coleccion {
         }
         else
             this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
+        setCurarHechos(false);
+        //TODO ver que pasa con proxy, que si se actualiza una proxy sola quiza no nos enteramos
     }
 
-    public List<Hecho> getHechosVisualizar(List<Hecho> hechosConsumidos) {
-        // devuelve los hechos listos para verlos por pantalla (filtrados)
-        List<Hecho> hechosADevolver = new ArrayList<>();
-        hechosADevolver.addAll(listaHechos); // no recalculamos los hechos ya filtrados
-        // pero si filtramos los hechos que son consumidos
-        hechosADevolver.addAll(this.filtrarHechos(hechosConsumidos));
-        return hechosADevolver;
+    public List<Hecho> getHechos() {
+        if (listaHechos.isEmpty()) {this.actualizarHechos();} //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
+        return listaHechos;
+        //NOTA: actualmente estamos guardando proxy dentro de la lista hechos, entonces estos se actualizan cada 1 hora (segun scheduler)
+        // si necesitamos que proxy, al ser consumidas, se actualize mas rapido, habria que hacer peticiones a proxy de sus hechos cada x tiempo / en cada peticion
+        // (solo le pedimos sus hechos cargados, no que haga un get, la fuente sabe cuando debe pedirlos nuevamente)
     }
 
+    public List<Hecho> getHechosCurados() {
+        if (listaHechosCurados.isEmpty()) { this.curarHechos(); } //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
+        return listaHechosCurados;
+    }
 
-    public List<Hecho> getHechosConFiltro(List<Hecho> hechosConsumidos, ICriterio filtro) {
-        List<Hecho> hechosAFiltrar = new ArrayList<>();
-        hechosAFiltrar.addAll(listaHechos);
-        hechosAFiltrar.addAll(hechosConsumidos);
-        return this.filtrarHechos(hechosAFiltrar).stream()
-                .filter(filtro::pertenece)
+    public List<Hecho> getHechosConFiltro(List<ICriterio> filtros) {
+        return this.filtrarHechos(listaHechos).stream()
+                .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
                 .toList();
     }
 
-    public List<Hecho> getHechosConFiltro(List<Hecho> hechosConsumidos, Set<ICriterio> filtros) {
-        List<Hecho> hechosAFiltrar = new ArrayList<>();
-        hechosAFiltrar.addAll(listaHechos);
-        hechosAFiltrar.addAll(hechosConsumidos);
-        return this.filtrarHechos(hechosAFiltrar).stream()
+    public List<Hecho> getHechosCuradosYFiltrados(List<ICriterio> filtros){
+        return this.filtrarHechos(listaHechosCurados).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
                 .toList();
     }
