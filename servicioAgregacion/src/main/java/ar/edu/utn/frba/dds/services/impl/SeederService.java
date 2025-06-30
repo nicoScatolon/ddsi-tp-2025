@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SeederService implements ISeederService {
 
-    private String baseurl;
+    private String baseurl = "http://localhost:8080";
 
-@Override
-public void init() {
+    @Override
+    public void init() {
 
-}
+    }
 }

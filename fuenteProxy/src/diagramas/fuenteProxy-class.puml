@@ -1,0 +1,65 @@
+@startuml
+
+
+enum TipoFuenteProxy {
+  EXTERNA
+  METAMAPA
+}
+
+' Interfaz principal
+interface IFuente {
+  +Long getId()
+  +void setId(Long id)
+  +TipoFuenteProxy getTipoFuenteProxy()
+}
+
+' Interfaces de capacidad (todas extienden IFuente)
+interface ServidoraDeHechos extends IFuente {
+  +Mono<List<HechoExternoDTO>> getHechos()
+}
+
+interface ServidoraDeHechosPorId extends ServidoraDeHechos {
+  +Mono<HechoExternoDTO> getHechoPorId(Long id)
+}
+
+interface ServidoraDeHechosConFiltros extends IFuente {
+  +Mono<List<HechoExternoDTO>> buscarHechos(...)
+}
+
+interface ServidoraDeEliminaciones extends IFuente {
+  +Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud)
+}
+
+interface ServidoraDeColecciones extends IFuente {
+  +Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones()
+  +Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(...)
+}
+
+' FuenteMetaMapa
+class FuenteMetaMapa {
+  -Long id
+  -TipoFuenteProxy tipoFuenteProxy = METAMAPA
+  -WebClient webClient
+  -String baseUrl
+}
+
+' FuenteDDS
+class FuenteDDS {
+  -Long id
+  -TipoFuenteProxy tipoFuenteProxy = EXTERNA
+  -WebClient webClient
+  -String baseUrl
+  -String token
+}
+
+' Relaciones
+FuenteMetaMapa ..|> ServidoraDeHechosConFiltros
+FuenteMetaMapa ..|> ServidoraDeColecciones
+FuenteMetaMapa ..|> ServidoraDeEliminaciones
+
+FuenteDDS ..|> ServidoraDeHechosPorId
+
+' Para mostrar herencia entre interfaces
+ServidoraDeHechosPorId -|> ServidoraDeHechos
+
+@enduml

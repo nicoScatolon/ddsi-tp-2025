@@ -6,6 +6,8 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import ar.edu.utn.frba.dds.services.ISeederService;
+import ar.edu.utn.frba.dds.services.impl.SeederService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,11 @@ import java.util.List;
 @RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
+    private final ISeederService seederService;
 
-    public HechosController(IHechosService hechosService) {
+    public HechosController(IHechosService hechosService, ISeederService seederService) {
         this.hechosService = hechosService;
+        this.seederService = seederService;
     }
 
     @GetMapping("/{id}")
@@ -37,5 +41,11 @@ public class HechosController {
             @RequestParam(required = false) UbicacionInputDTO ubicacion
     ) {
         return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, ubicacion);
+    }
+
+    @GetMapping("/inicializar")
+    public boolean inicializarDatos(){
+        this.seederService.init();
+        return true;
     }
 }
