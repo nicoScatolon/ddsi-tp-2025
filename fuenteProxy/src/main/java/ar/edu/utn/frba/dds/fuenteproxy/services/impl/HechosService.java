@@ -61,7 +61,7 @@ public class HechosService implements IHechosService {
     public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, String frDesde, String frHasta,
                                                        String faDesde, String faHasta, String ubicacion) {
         return Flux.fromIterable(fuentesRepository.fuentesConFiltros())
-                .flatMap(f -> f.buscarConFiltros(categoria, frDesde, frHasta, faDesde, faHasta, ubicacion))
+                .flatMap(f -> f.buscarHechosConFiltros(categoria, frDesde, frHasta, faDesde, faHasta, ubicacion))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();

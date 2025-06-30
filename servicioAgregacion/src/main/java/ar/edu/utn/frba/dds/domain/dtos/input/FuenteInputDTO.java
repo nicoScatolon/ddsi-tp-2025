@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class FuenteInputDTO {
+    private Long id;
     private String url;
     private String nombre;
     private TipoFuente tipoFuente;

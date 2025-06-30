@@ -1,12 +1,13 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.ConsensoMayoriaSimple;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
@@ -22,10 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,94 +45,73 @@ public class ColeccionesService implements IColeccionesService {
 
     @Override
     public ColeccionOutputDTO findByHandle(String handle) {
-        return this.coleccionOutputDTO(coleccionesRepository.findByHandle(handle));
+        return DTOConverter.coleccionOutputDTO(coleccionesRepository.findByHandle(handle));
     }
 
     @Override
     public List<ColeccionOutputDTO> findAll() {
         return coleccionesRepository.findAll().stream()
-                .map(this::coleccionOutputDTO)
+                .map(DTOConverter::coleccionOutputDTO)
                 .collect(Collectors.toList());
     }
 
     //-------------------------- OPERACIONES CRUD --------------------------
 
     @Override
-    public void crearColeccion(ColeccionInputDTO coleccionInputDTO) {
+    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
-                coleccionInputDTO.getHandle(),
+                null,
                 coleccionInputDTO.getTitulo(),
-                coleccionInputDTO.getDescripcion());
-        //TODO al crear no viene con handle, modificar DTO y hacer que se cree el handle en el momento de la creacion
+                coleccionInputDTO.getDescripcion(),
+                DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
         coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
+        coleccionesRepository.save(coleccion);
+        return DTOConverter.coleccionOutputDTO(coleccion);
     }
 
     @Override
-    public void modificarColeccion(ColeccionInputDTO coleccionInputDTO) {
+    public void modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO) {
         // 1) Cargo la colección existente por handle
         Coleccion coleccion = coleccionesRepository.findByHandle(coleccionInputDTO.getHandle());
 
         // 2) Actualizo campos simples
         coleccion.setTitulo(coleccionInputDTO.getTitulo());
         coleccion.setDescripcion(coleccionInputDTO.getDescripcion());
-
-        // 3) Sincronizo FUENTES
-        List<IFuente> nuevasFuentes = fuentesRepository.findAllById(coleccionInputDTO.getListaIdsFuentes());
-        // elimino las que ya no están
-        coleccion.getListaFuentes().stream()
-                .filter(f -> !nuevasFuentes.contains(f))
-                .forEach(coleccion::eliminarFuente);
-        // agrego las que faltan
-        nuevasFuentes.stream()
-                .filter(f -> !coleccion.getListaFuentes().contains(f))
-                .forEach(coleccion::agregarFuente);
-
-        // 4) Sincronizo CRITERIOS
-        // primero elimino todos los existentes
-        new HashSet<>(coleccion.getListaCriterios())
-                .forEach(coleccion::eliminarCriterio);
-        // luego creo e inserto los nuevos desde el DTO
-        coleccionInputDTO.getListaCriterios().stream()
-                .map(criterioFactory::crear)
-                .forEach(coleccion::agregarCriterio);
-
-        // 5) Recalculo y curo hechos
-        coleccion.actualizarHechos();
-
-        //TODO TERMINAR EL TEMA DE ALGORITMOS DE CONSENSO
-        // 6) Modifico el algoritmo de consenso
-        AlgoritmoConsensoDTO algDTO = coleccionInputDTO.getAlgoritmoConsenso();
-        if (algDTO != null) {
-            TipoAlgoritmoConsenso tipo = algDTO.getTipo();
-            Map<String,String> p = algDTO.getParametros();
-
-            IAlgoritmoConsenso nuevoAlg;
-            switch (tipo) {
-                case ABSOLUTO:
-
-                case MAYORIASIMPLE:
-
-                case MULTIPLEMENCION:
-
-                default:
-                    throw new IllegalArgumentException("Algoritmo desconocido: " + tipo);
-            }
-
-            coleccion.setAlgoritmoConsenso(nuevoAlg); //TODO REVISAR LUCHO
-            coleccion.setCurarHechos(false);
-
-        // 7) Persiste los cambios
         coleccionesRepository.save(coleccion);
-    }}
-
-    public void eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
-        Coleccion coleccion = this.coleccionFromInputDTO(coleccionInputDTO);
-        coleccionesRepository.delete(coleccion);
     }
 
-    public void eliminarColeccionByHandle(String handle){
+    @Override
+    public void modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
-        coleccionesRepository.delete(coleccion);
+        Set<ICriterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
+        coleccion.setListaCriterios(nuevos);
+        coleccionesRepository.save(coleccion);
+    }
+
+    @Override
+    public void modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO) {
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        coleccion.setAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
+        coleccionesRepository.save(coleccion);
+    }
+
+    @Override
+    public void modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        List<IFuente> nuevasFuentes = new ArrayList<>();
+        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById( f.getId()) ) );
+        coleccion.setListaFuentes(nuevasFuentes);
+        coleccionesRepository.save(coleccion);
+    }
+
+    public void eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
+        if(coleccionInputDTO == null){
+            return;
+        }
+        if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) != null) {
+            Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
+            coleccionesRepository.delete(coleccion);
+        }
     }
 
     //-------------------------------------------------------------------------------
@@ -197,48 +174,27 @@ public class ColeccionesService implements IColeccionesService {
 
         int fromIndex = Math.min(page * size, hechos.size());
         int toIndex = Math.min(fromIndex + size, hechos.size());
-        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex); //TODO REVISAR NACHO
+        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex).stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .toList();
 
         return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
 
     }
 
-    public HechosPaginadosResponseDTO mostrarHechosColeccion(String handle, int page, int size,List<CriterioInputDTO> criterios, Boolean curado){
+    @Override
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, List<CriterioInputDTO> criterios, Boolean curado){
         List<ICriterio> criteriosEntidades = this.criterioFactory.crearVarios(criterios);
 
-        if(criterios == null || criterios.isEmpty()){
+        if(criterios.isEmpty()){
             List<Hecho> hechos = this.getHechosColeccion(handle,curado);
-            return this.paginarHechos(hechos,page,size);
+            return DTOConverter.hechoOutputDTO(hechos);
+
         }
 
         List<Hecho> hechosFiltrados = this.getHechosColeccionFiltrados(handle,criteriosEntidades, curado);
-        return this.paginarHechos(hechosFiltrados,page,size);
+        return DTOConverter.hechoOutputDTO(hechosFiltrados);
 
-    }
-
-
-
-    private ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
-        return ColeccionOutputDTO.builder()
-                .titulo(coleccion.getTitulo())
-                .descripcion(coleccion.getDescripcion())
-                .handle(coleccion.getHandle())
-                .build();
-    }
-
-    private Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
-        return new Coleccion(
-                input.getTitulo(),
-                input.getDescripcion(),
-                input.getHandle());
-    }
-
-    private ColeccionInputDTO toInputDTO(Coleccion coleccion) {
-        return ColeccionInputDTO.builder()
-                .titulo(coleccion.getTitulo())
-                .descripcion(coleccion.getDescripcion())
-                .handle(coleccion.getHandle())
-                .build();
     }
 }
 

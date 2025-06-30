@@ -1,15 +1,12 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.*;
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Coleccion;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
@@ -151,5 +148,39 @@ public class DTOConverter {
                 .nombre(categoriaInputDTO.getNombre())
                 .id(categoriaInputDTO.getId())
                 .build();
+    }
+
+    public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
+        return dto.getTipo().obtenerConsenso();
+    }
+
+    public static ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
+        return ColeccionOutputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .build();
+    }
+
+    public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
+        return new Coleccion(
+                input.getTitulo(),
+                input.getDescripcion(),
+                input.getHandle(),
+                DTOConverter.algoritmoConsensoFromDTO(input.getAlgoritmoConsenso()));
+    }
+
+    public static ColeccionInputDTO toInputDTO(Coleccion coleccion) {
+        return ColeccionInputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .build();
+    }
+
+    public static IFuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
+        IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
+        fuente.setNombre(fuenteDTO.getNombre());
+        return fuente;
     }
 }

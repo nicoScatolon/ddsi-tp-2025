@@ -15,6 +15,14 @@ public class CategoriaService implements ICategoriaService {
         this.categoriasRepository = categoriasRepository;
     }
 
+    public Categoria findByID(String idCategoria){
+        return categoriasRepository.findByID(idCategoria);
+    }
+
+    public Categoria findByNombre(String nombreCategoria){
+        return categoriasRepository.findByID(this.crearIdCategoria(nombreCategoria));
+    }
+
     @Override
     public Categoria agregarCategoria(Categoria nuevaCategoria) {
         if (nuevaCategoria.getId() == null) {

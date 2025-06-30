@@ -23,7 +23,7 @@ public class Coleccion {
 
     private final List<IFuente> listaFuentes = new ArrayList<>();
     private final Set<ICriterio> listaCriterios = new HashSet<>();
-    private IAlgoritmoConsenso algoritmoConsenso;
+    private IAlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
     private List<Hecho> listaHechos = new ArrayList<>();
@@ -32,7 +32,7 @@ public class Coleccion {
     @Setter private Boolean actualizarHechos;
     @Setter private Boolean curarHechos;
 
-    public Coleccion(String handle, String titulo, String descripcion) {
+    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -51,6 +51,11 @@ public class Coleccion {
         actualizarHechos = true;
     }
 
+    public void setListaCriterios(Set<ICriterio> criterios){
+        this.listaCriterios.clear();
+        this.listaCriterios.addAll(criterios);
+    }
+
     public void agregarFuente(IFuente fuente) {
         this.listaFuentes.add(fuente);
         actualizarHechos = true;
@@ -64,6 +69,24 @@ public class Coleccion {
         //funciona incluso para proxy porque son el mismo objeto, ambos estan cargados en memoria.
         this.listaFuentes.remove(fuente);
         curarHechos = true;
+    }
+
+    public void setListaFuentes(List<IFuente> nuevasFuentes) {
+        //con las fuentes comunes no hago nada
+        List<IFuente> fuentesNuevas = nuevasFuentes.stream()
+                .filter(f2 -> !listaFuentes.contains(f2))
+                .toList();
+
+        List<IFuente> fuentesEliminadas = listaFuentes.stream()
+                .filter(f1 -> !nuevasFuentes.contains(f1))
+                .toList();
+        if ( !fuentesNuevas.isEmpty() ) {
+            fuentesNuevas.forEach(this::agregarFuente);
+            curarHechos = false; // quiero que primero se actualize y despues cure, para que no quede mal la lista de hechosCurados
+        }
+        if ( !fuentesEliminadas.isEmpty()) {
+            fuentesEliminadas.forEach(this::eliminarFuente);
+        }
     }
 
     public void setAlgoritmoConsenso(IAlgoritmoConsenso algoritmoConsenso) {

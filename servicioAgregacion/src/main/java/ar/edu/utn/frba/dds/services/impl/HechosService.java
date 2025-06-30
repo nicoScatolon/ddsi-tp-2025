@@ -1,8 +1,13 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IHechosService;
@@ -10,18 +15,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriaService categoriaService;
+    private final CriterioFactory criterioFactory;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService, CriterioFactory criterioFactory) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
+        this.criterioFactory = criterioFactory;
     }
 
     @Override
@@ -44,6 +53,24 @@ public class HechosService implements IHechosService {
     @Override
     public Hecho findEntidadPorId(Long id){
         return this.hechosRepository.findById(id);
+    }
+
+    @Override
+    public List<HechoOutputDTO> getHechos(CategoriaInputDTO catDTO, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, UbicacionInputDTO ubiDTO){
+        Categoria categoria = DTOConverter.categoriaInputDTO(catDTO);
+        if (categoriaService.findByNombre(categoria.getNombre()) == null) {categoria = null;}
+        //verificar si categoria existe
+        Ubicacion ubicacion = DTOConverter.convertirUbicacion(ubiDTO);
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,ubicacion);
+
+        if (criterios.isEmpty() || criterios == null){
+            return findAllOutput();
+        } else {
+            return this.findAll().stream()
+                    .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
+                    .map(DTOConverter::convertirHechoOutputDTO)
+                    .toList();
+        }
     }
 
     public void actualizarHechosRepository(List<Hecho> hechosActualizados){

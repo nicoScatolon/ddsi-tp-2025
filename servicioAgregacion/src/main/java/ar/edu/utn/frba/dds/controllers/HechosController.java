@@ -1,12 +1,16 @@
 package ar.edu.utn.frba.dds.controllers;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,13 +22,20 @@ public class HechosController {
         this.hechosService = hechosService;
     }
 
-    @GetMapping
-    public List<HechoOutputDTO> getHechos() {
-        return hechosService.findAllOutput();
-    }
-
     @GetMapping("/{id}")
     public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
         return hechosService.findByID(id);
+    }
+
+    @GetMapping("/publica")
+    public List<HechoOutputDTO> getHechos(
+            @RequestParam(required = false) CategoriaInputDTO categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
+            @RequestParam(required = false) UbicacionInputDTO ubicacion
+    ) {
+        return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, ubicacion);
     }
 }

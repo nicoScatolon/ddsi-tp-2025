@@ -29,25 +29,15 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
-    @Override
-    public Mono<List<HechoExternoDTO>> getHechos() {
-        return webClient.get()
-                .uri("/api/hechos")
-                .retrieve()
-                .bodyToFlux(HechoExternoDTO.class)
-                .collectList();
-
-    }
-
 
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
+    public Mono<List<HechoExternoDTO>> buscarHechosConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
 
         return webClient.get()
                 .uri(uriBuilder -> {
-                    uriBuilder.path("/api/hechos");
+                    uriBuilder.path("/api/hechos/publica");
                     if (categoria != null && !categoria.isEmpty()) {
                         uriBuilder.queryParam("categoria", categoria);
                     }
@@ -78,7 +68,7 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
     @Override
     public Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones(){
         return webClient.get()
-                .uri("api/colecciones")
+                .uri("api/colecciones/publica/obtener-colecciones")
                 .retrieve()
                 .bodyToFlux(ColeccionInputDTO.class)
                 .collectList();
@@ -86,39 +76,21 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador) {
-        List<HechoExternoDTO> acumulados = new ArrayList<>();
-        return traerPagina(identificador, 0, acumulados)
-                .then(Mono.just(acumulados));
+    Mono<List<HechoExternoDTO>> buscarPorColeccion(
+            String handle,
+            List<ICriterio> criterios,
+            boolean curado
+    ) {
+
     }
 
-    private Mono<Void> traerPagina(String identificador, int pagina, List<HechoExternoDTO> acumulados) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/colecciones/{id}/hechos")
-                        .queryParam("page", pagina)
-                        .build(identificador))
-                .retrieve()
-                .bodyToMono(HechosPaginadosDTO.class)
-                .flatMap(respuesta -> {
-                    if (respuesta.getHechos() != null && !respuesta.getHechos().isEmpty()) {
-                        acumulados.addAll(respuesta.getHechos());
-                    }
-
-                    if (respuesta.hayMasPaginas()) {
-                        return traerPagina(identificador, pagina + 1, acumulados);
-                    } else {
-                        return Mono.empty();
-                    }
-                });
-    }
 
 
 
     @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){
         return webClient.post()
-                .uri("/api/solicitudes")
+                .uri("api/solicitudes-eliminacion/publica/crear-solicitud-eliminacion")
                 .bodyValue(solicitud)
                 .retrieve()
                 .bodyToMono(Void.class);

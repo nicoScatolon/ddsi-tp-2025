@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.services.impl;
 
+import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +33,7 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public void agregarFuente(FuenteInputDTO fuenteDTO) {
-        IFuente nuevaFuente = this.fuenteDTOToFuente(fuenteDTO);
+        IFuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
         fuentesRepository.saveFuente(nuevaFuente);
     }
 
@@ -90,12 +90,5 @@ public class FuentesService implements IFuentesService {
         }
 
         coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
-    }
-
-
-    private IFuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
-        IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
-        fuente.setNombre(fuenteDTO.getNombre());
-        return fuente;
     }
 }

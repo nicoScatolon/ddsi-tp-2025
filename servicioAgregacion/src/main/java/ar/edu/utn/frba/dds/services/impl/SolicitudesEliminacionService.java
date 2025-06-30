@@ -47,22 +47,19 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) {
+        if (detectorDeSpam.esSpam(razon)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
+        }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
-
-        if (detectorDeSpam.esSpam(razon)){ //ToDO: Si se rechaza antes de construir, no se puede guardar (soft-delete)
-            solicitud.rechazarAutomaticamente();
-        }
-
         repository.save(solicitud);
     }
-
 
     @Override
     public void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
         Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
 
-        if (hecho == null) {
+        if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
         }
 
