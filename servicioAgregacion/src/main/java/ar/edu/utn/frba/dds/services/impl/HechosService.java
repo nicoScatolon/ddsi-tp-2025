@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
@@ -63,7 +64,7 @@ public class HechosService implements IHechosService {
         Ubicacion ubicacion = DTOConverter.convertirUbicacion(ubiDTO);
         List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,ubicacion);
 
-        if (criterios.isEmpty() || criterios == null){
+        if (criterios.isEmpty()){
             return findAllOutput();
         } else {
             return this.findAll().stream()
@@ -78,6 +79,13 @@ public class HechosService implements IHechosService {
         // la idea es enviarla
         hechosActualizados.forEach(n -> n.setCategoria(categoriaService.agregarCategoria(n.getCategoria())) );
         this.hechosRepository.saveAll(hechosActualizados);
+    }
+
+    public void configurarComparacion(){
+        HechoComparator comparator = HechoComparator.getInstance();
+        //comparator.agregarComando(comando1);
+        //comparator.eliminarComando(comando2);
+        //TODO
     }
 
     // LOGGER

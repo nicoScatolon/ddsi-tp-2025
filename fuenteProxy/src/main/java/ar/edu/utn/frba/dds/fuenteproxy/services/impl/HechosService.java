@@ -81,9 +81,9 @@ public class HechosService implements IHechosService {
 
 
     @Override
-    public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String idColeccion) {
+    public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String handleColeccion) {
         return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
-                .flatMap(f -> f.buscarPorColeccion(idColeccion))
+                .flatMap(f -> f.buscarHechosPorColeccion(handleColeccion,null,null,null,null,null,null,false))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();

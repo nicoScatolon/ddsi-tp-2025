@@ -68,6 +68,7 @@ public class ColeccionesService implements IColeccionesService {
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion(),
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
+        coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.findById( fuente )));
         coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
         coleccionesRepository.save(coleccion);
         return DTOConverter.coleccionOutputDTO(coleccion);
