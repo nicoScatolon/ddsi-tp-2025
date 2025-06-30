@@ -14,7 +14,9 @@ import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitud(Hecho hecho, String razon, String nombre, String apellido) {
+    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, nombre, apellido);
 
@@ -53,6 +55,23 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         }
 
         repository.save(solicitud);
+    }
+
+
+    @Override
+    public void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
+        Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
+
+        if (hecho == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
+        }
+
+        this.crearSolicitudDesdeEntidad(
+                hecho,
+                solicitud.getRazonDeEliminacion(),
+                solicitud.getNombreCreador(),
+                solicitud.getApellidoCreador()
+        );
     }
 
     @Override

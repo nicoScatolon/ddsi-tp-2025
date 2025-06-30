@@ -12,7 +12,8 @@ public interface ISolicitudesEliminacionService {
     List<SolicitudEliminarHechoOutputDTO> findAll();
     void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO);
     void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO);
-    void crearSolicitud(Hecho hecho, String razon, String nombre, String apellido);
+    void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido);
+    void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud);
     SolicitudEliminarHecho findByID(Long id);
     void logearSolicitudesEliminacionCargadas(List<SolicitudEliminarHecho> solicitudEliminarHechos);
 }
