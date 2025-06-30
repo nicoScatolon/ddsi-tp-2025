@@ -1,14 +1,13 @@
 package ar.edu.utn.frba.dds.domain.dtos.output;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Data
-@Setter
-@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class HechosPaginadosResponseDTO {
     private List<HechoOutputDTO> hechos;
     private int page;

@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.TipoFuenteProxy;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.TipoFuenteProxy;
 
 import java.util.List;
 

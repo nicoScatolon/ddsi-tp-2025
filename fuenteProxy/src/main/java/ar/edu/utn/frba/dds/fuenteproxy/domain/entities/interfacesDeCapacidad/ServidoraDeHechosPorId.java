@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import reactor.core.publisher.Mono;

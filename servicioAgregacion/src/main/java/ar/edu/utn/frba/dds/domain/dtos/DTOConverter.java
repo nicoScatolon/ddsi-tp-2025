@@ -151,6 +151,7 @@ public class DTOConverter {
     }
 
     public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
+        if (dto == null) { return null;}
         return dto.getTipo().obtenerConsenso();
     }
 

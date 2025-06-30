@@ -40,38 +40,38 @@ public class ColeccionesController {
 
     // Operaciones CRUD sobre las colecciones
 
-    @PostMapping("/privada/coleccion/crear-coleccion")
+    @PostMapping("/privada")
     public void crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         coleccionesService.crearColeccion(coleccionInputDTO);
     }
 
-    @GetMapping("/privada/coleccion/obtener-coleccion")
+    @GetMapping("/privada")
     public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
         return coleccionesService.findAll();
     }
 
-    @PutMapping("/privada/coleccion/modificar-coleccion")
+    @PutMapping("/privada")
     public void modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
 
-    @PutMapping("/privada/coleccion/{handle}/modificar-coleccion/modificar-criterio")
+    @PutMapping("/privada/{handle}/modificar-criterio")
     public void modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
         coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
-    @PutMapping("/privada/coleccion/{handle}/modificar-coleccion/modificar-consenso")
+    @PutMapping("/privada/{handle}/modificar-consenso")
     public void modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable String handle) {
         coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
 
-    @PutMapping("/privada/coleccion/{handle}/modificar-coleccion/modificar-fuentes")
+    @PutMapping("/privada/{handle}/modificar-fuentes")
     public void modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
         coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 
 
-    @DeleteMapping("/privada/coleccion/eliminar-coleccion")
+    @DeleteMapping("/privada")
     public void eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         coleccionesService.eliminarColeccion(coleccionInputDTO);
     }
@@ -79,7 +79,7 @@ public class ColeccionesController {
 
     // ------------------------------------------- API PÚBLICA -------------------------------------------
 
-    @GetMapping("/publica/obtener-colecciones")
+    @GetMapping("/publica")
     public List<ColeccionOutputDTO> obtenerColeccionesPublica() {return coleccionesService.findAll();}
 
 

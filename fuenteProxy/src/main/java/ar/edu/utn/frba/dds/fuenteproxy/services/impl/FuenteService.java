@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.TipoFuenteProxy;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
 import org.springframework.stereotype.Service;

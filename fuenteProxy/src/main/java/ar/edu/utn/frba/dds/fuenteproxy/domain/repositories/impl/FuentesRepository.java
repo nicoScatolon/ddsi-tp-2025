@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.impl;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.interfacesDeCapacidad.*;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.*;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
 import org.springframework.stereotype.Repository;
 

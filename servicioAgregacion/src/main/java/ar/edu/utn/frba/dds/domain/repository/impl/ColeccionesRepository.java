@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ColeccionesRepository implements IColeccionesRepository {
     private final Map<String, Coleccion> colecciones = new ConcurrentHashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public Coleccion findByHandle(String handle) {
@@ -42,11 +44,18 @@ public class ColeccionesRepository implements IColeccionesRepository {
             throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
         }
 
-        return string
-                .trim()
+        String handle =  string.trim()
                 .toLowerCase()
                 .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
                 .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
+        handle = handle + "-" + idGenerator.getAndIncrement();
+
+        return handle;
     }
 
 }
+
+//handle = titulo + contador
+// ej1: "111" + "-" + 1 -> 111-1
+// ej2: "111" + 2 -> 111-2
+// ej11: "11" + 11 -> 11-11

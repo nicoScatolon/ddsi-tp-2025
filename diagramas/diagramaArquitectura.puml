@@ -1,36 +1,69 @@
 @startuml
-!theme plain
 
-package "Agregador" {
-  [API REST] --> [UI Solicitudes]
-  [API REST] --> [Agregación]
-  [Agregación] --> [Modelo Agregador]
-  [Modelo Agregador] --> [Fuentes Agregador]
-  [Modelo Agregador] --> [Solicitudes]
+package "Servicio Agregador" {
+  [API REST Agregador] as "API REST"
+  [UI Solicitudes]
+  [Modelo Agregador]
+
+  [Gestor Colecciones]
+  [Gestor Consenso]
+  [Gestor Navegación]
+  [Gestor Solicitudes]
+  ' Relaciones API
+  [API REST Agregador] --> [Modelo Agregador]
+
+  ' Lógica interna
+  [Modelo Agregador] --> [Gestor Colecciones]
+  [Modelo Agregador] --> [Gestor Consenso]
+  [Modelo Agregador] --> [Gestor Navegación]
+  [Modelo Agregador] --> [Gestor Solicitudes]
+
+  ' Interfaces usuario
+  [API REST Agregador] --> [UI Solicitudes]
 }
 
-package "Fuente De Datos Estática" {
-  [API REST] --> [Principal]
-  [Principal] --> [Fuentes Estática]
-  [Principal] --> [Dataset]
+package "Fuente Estática" {
+  [API REST Estática] as "API REST"
+  [Modelo Estática]
+  [Fuentes Estática]
+  [Dataset]
+
+  [API REST Estática] --> [Modelo Estática]
+  [Modelo Estática] --> [Fuentes Estática]
+  [Modelo Estática] --> [Dataset]
 }
 
-package "Fuente De Datos Dinámica" {
-  [API REST] --> [UI Editor]
-  [API REST] --> [Modelo Dinámico]
+package "Fuente Dinámica" {
+  [API REST Dinámica] as "API REST"
+  [UI Editor]
+  [Modelo Dinámico]
+  [Fuentes Dinámicas]
+  [Solicitudes Dinámicas]
+  [Hechos y Solicitudes]
+  [UI Solicitudes Dinámicas]
+
+  [API REST Dinámica] --> [UI Editor]
+  [API REST Dinámica] --> [Modelo Dinámico]
   [Modelo Dinámico] --> [Fuentes Dinámicas]
   [Modelo Dinámico] --> [Solicitudes Dinámicas]
   [Modelo Dinámico] --> [Hechos y Solicitudes]
   [UI Editor] --> [UI Solicitudes Dinámicas]
 }
 
-package "Fuente De Datos Proxy" {
-  [API REST] --> [Modelo Proxy]
+package "Fuente Proxy" {
+  [API REST Proxy] as "API REST"
+  [Modelo Proxy]
+  [Fuentes Proxy]
+  [Servicio Externo]
+
+  [API REST Proxy] --> [Modelo Proxy]
   [Modelo Proxy] --> [Fuentes Proxy]
   [Modelo Proxy] --> [Servicio Externo]
 }
 
-' Relaciones entre sistemas
-[Modelo Agregador] --> [API REST] : Protocolo MetaMapa
-[API REST] --> [OAuth / Proveedor de Identidad]
+' Relaciones entre servicios vía APIs
+[API REST Agregador] --> [API REST Estática]
+[API REST Agregador] --> [API REST Dinámica]
+[API REST Agregador] --> [API REST Proxy]
+
 @enduml

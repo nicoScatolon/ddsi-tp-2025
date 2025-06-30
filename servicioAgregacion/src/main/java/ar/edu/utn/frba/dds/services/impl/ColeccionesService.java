@@ -68,8 +68,12 @@ public class ColeccionesService implements IColeccionesService {
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion(),
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
-        coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.findById( fuente )));
-        coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
+        // extra
+        if ( coleccionInputDTO.getListaIdsFuentes() != null) {
+            coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.findById( fuente ))); }
+        if (coleccionInputDTO.getListaCriterios() != null) {
+            coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
+        }
         coleccionesRepository.save(coleccion);
         return DTOConverter.coleccionOutputDTO(coleccion);
     }
@@ -109,13 +113,16 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesRepository.save(coleccion);
     }
 
+    @Override
     public void eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
         if(coleccionInputDTO == null){
-            return;
+            throw new IllegalArgumentException("argumento nulo");
         }
         if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) != null) {
             Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
             coleccionesRepository.delete(coleccion);
+        } else {
+            throw new RuntimeException("No se encontro la coleccion");
         }
     }
 
