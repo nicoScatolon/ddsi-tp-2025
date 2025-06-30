@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Data
@@ -33,7 +34,7 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarHechosConFiltros(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
+    public Mono<List<HechoExternoDTO>> buscarHechos(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {
 
         return webClient.get()
                 .uri(uriBuilder -> {
@@ -76,13 +77,34 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
     @Override
-    Mono<List<HechoExternoDTO>> buscarPorColeccion(
+    public Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(
             String handle,
-            List<ICriterio> criterios,
-            boolean curado
+            String categoria,
+            String fechaReporteDesde,
+            String fechaReporteHasta,
+            String fechaAcontecimientoDesde,
+            String fechaAcontecimientoHasta,
+            String ubicacion,
+            Boolean curado
     ) {
-
+        return webClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder
+                            .path("/api/publica/{handle}/hechos")
+                            .queryParam("curado", curado)
+                            .queryParamIfPresent("categoria", Optional.ofNullable(categoria).filter(s -> !s.isEmpty()))
+                            .queryParamIfPresent("fecha_reporte_desde", Optional.ofNullable(fechaReporteDesde).filter(s -> !s.isEmpty()))
+                            .queryParamIfPresent("fecha_reporte_hasta", Optional.ofNullable(fechaReporteHasta).filter(s -> !s.isEmpty()))
+                            .queryParamIfPresent("fecha_acontecimiento_desde", Optional.ofNullable(fechaAcontecimientoDesde).filter(s -> !s.isEmpty()))
+                            .queryParamIfPresent("fecha_acontecimiento_hasta", Optional.ofNullable(fechaAcontecimientoHasta).filter(s -> !s.isEmpty()))
+                            .queryParamIfPresent("ubicacion", Optional.ofNullable(ubicacion).filter(s -> !s.isEmpty()));
+                    return uriBuilder.build(handle);
+                })
+                .retrieve()
+                .bodyToFlux(HechoExternoDTO.class)
+                .collectList();
     }
+
 
 
 

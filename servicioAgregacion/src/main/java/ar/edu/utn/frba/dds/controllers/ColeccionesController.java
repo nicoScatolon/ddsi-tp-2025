@@ -1,7 +1,9 @@
 package ar.edu.utn.frba.dds.controllers;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
@@ -11,10 +13,13 @@ import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.impl.CriterioFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -81,9 +86,15 @@ public class ColeccionesController {
     @GetMapping("publica/{handle}/hechos")
     public List<HechoOutputDTO> mostrarHechos(
             @PathVariable String handle,
-            @RequestParam List<CriterioInputDTO> criterios,
-            @RequestParam Boolean curado
+            @RequestParam Boolean curado,
+            @RequestParam(required = false) CategoriaInputDTO categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
+            @RequestParam(required = false) UbicacionInputDTO ubicacion
+
     ) {
-        return this.coleccionesService.mostrarHechosColeccion(handle,criterios,curado);
+        return this.coleccionesService.mostrarHechosColeccion(handle,curado, categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,ubicacion);
     }
 }

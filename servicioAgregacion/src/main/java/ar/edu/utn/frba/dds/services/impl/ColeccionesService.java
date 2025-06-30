@@ -1,8 +1,10 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
@@ -23,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -163,7 +167,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-    public HechosPaginadosResponseDTO paginarHechos(List<Hecho> hechos, int page, int size){
+    /*public HechosPaginadosResponseDTO paginarHechos(List<Hecho> hechos, int page, int size){
         if (page < 0 || size <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parámetros de paginación inválidos");
         }
@@ -180,13 +184,13 @@ public class ColeccionesService implements IColeccionesService {
 
         return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
 
-    }
+    }*/
 
     @Override
-    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, List<CriterioInputDTO> criterios, Boolean curado){
-        List<ICriterio> criteriosEntidades = this.criterioFactory.crearVarios(criterios);
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, CategoriaInputDTO categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, UbicacionInputDTO ubicacion){
+        List<ICriterio> criteriosEntidades = this.criterioFactory.crearCriteriosParametros(DTOConverter.categoriaInputDTO(categoria),fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,DTOConverter.convertirUbicacion(ubicacion));
 
-        if(criterios.isEmpty()){
+        if(criteriosEntidades.isEmpty()){
             List<Hecho> hechos = this.getHechosColeccion(handle,curado);
             return DTOConverter.hechoOutputDTO(hechos);
 

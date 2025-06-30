@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ServidoraDeColecciones extends IFuente {
     Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones();
-    Mono<List<HechoExternoDTO>> buscarPorColeccion(String identificador);
+    Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(String handle, String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion, Boolean curado);
 }
