@@ -17,9 +17,9 @@ public interface IColeccionesService {
     ColeccionOutputDTO findByHandle(String handle);
     List<ColeccionOutputDTO> findAll();
     void crearColeccion(ColeccionInputDTO coleccionInputDTO);
-    void actualizarColeccion(ColeccionInputDTO coleccionInputDTO);
     void modificarColeccion(ColeccionInputDTO coleccionInputDTO);
     void eliminarColeccion(ColeccionInputDTO coleccionInputDTO);
     HechosPaginadosResponseDTO mostrarHechosColeccion(String handle, int page, int size,List<CriterioInputDTO> criterios, Boolean curado);
     void notificarActualizacionFuentes(List<IFuente> fuentes);
+    void notificarFuenteEliminada(IFuente fuente);
 }

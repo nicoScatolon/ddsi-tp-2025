@@ -32,7 +32,7 @@ public class Coleccion {
     @Setter private Boolean actualizarHechos;
     @Setter private Boolean curarHechos;
 
-    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
+    public Coleccion(String handle, String titulo, String descripcion) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -57,13 +57,18 @@ public class Coleccion {
     }
 
     public void eliminarFuente(IFuente fuente) {
+        FuenteAdapter adapter = fuente.getTipo().crearAdapter();
+        List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
+        this.listaHechos.removeAll(hechosFuenteEliminada);
+        this.listaHechosCurados.removeAll(hechosFuenteEliminada);
+        //funciona incluso para proxy porque son el mismo objeto, ambos estan cargados en memoria.
         this.listaFuentes.remove(fuente);
-        actualizarHechos = true;
+        curarHechos = true;
     }
 
     public void setAlgoritmoConsenso(IAlgoritmoConsenso algoritmoConsenso) {
         this.algoritmoConsenso = algoritmoConsenso;
-        this.curarHechos = true;
+        curarHechos = true;
     }
 
     public List<Hecho> filtrarHechos(List<Hecho> hechosDisponibles) {
@@ -107,7 +112,7 @@ public class Coleccion {
 
     public List<Hecho> getHechos() {
         if (listaHechos.isEmpty()) {this.actualizarHechos();} //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
-        return listaHechos;
+        return listaHechos.stream().filter(h -> !h.getFueEliminado()).toList();
         //NOTA: actualmente estamos guardando proxy dentro de la lista hechos, entonces estos se actualizan cada 1 hora (segun scheduler)
         // si necesitamos que proxy, al ser consumidas, se actualize mas rapido, habria que hacer peticiones a proxy de sus hechos cada x tiempo / en cada peticion
         // (solo le pedimos sus hechos cargados, no que haga un get, la fuente sabe cuando debe pedirlos nuevamente)
@@ -115,18 +120,18 @@ public class Coleccion {
 
     public List<Hecho> getHechosCurados() {
         if (listaHechosCurados.isEmpty()) { this.curarHechos(); } //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
-        return listaHechosCurados;
+        return listaHechosCurados.stream().filter(h -> !h.getFueEliminado()).toList();
     }
 
     public List<Hecho> getHechosConFiltro(List<ICriterio> filtros) {
         return this.filtrarHechos(listaHechos).stream()
-                .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
+                .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();
     }
 
     public List<Hecho> getHechosCuradosYFiltrados(List<ICriterio> filtros){
         return this.filtrarHechos(listaHechosCurados).stream()
-                .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)))
+                .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();
     }
 }

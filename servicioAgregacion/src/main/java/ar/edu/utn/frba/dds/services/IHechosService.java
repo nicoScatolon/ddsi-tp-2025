@@ -13,5 +13,5 @@ public interface IHechosService {
     List<Hecho> findAll();
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
-    void actualizarHechos(List<Hecho> hechosActualizados);
+    void actualizarHechosRepository(List<Hecho> hechosActualizados);
 }

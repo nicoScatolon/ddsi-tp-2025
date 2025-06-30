@@ -16,16 +16,23 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
-    public Categoria agregarCategoria(Categoria categoria) {
-        if (categoria.getId() == null) {
-            // no esta y creamos una nueva
-            categoria.setId(crearIdCategoria(categoria.getNombre()));
-            categoria = categoriasRepository.save(categoria);
-            return categoria;
+    public Categoria agregarCategoria(Categoria nuevaCategoria) {
+        if (nuevaCategoria.getId() == null) {
+            String idnuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
+            Categoria categoriaExistente = categoriasRepository.findByID(idnuevaCategoria);
+
+            if (categoriaExistente == null) {return categoriasRepository.save(nuevaCategoria);}
+            else {return categoriaExistente;}
+
         } else {
-            //posible verificacion de que el id que tiene la categoria corresponda a la forma de crearlos (crear el id y verificarlo con el que tiene)
-            //ya existe
-            return categoriasRepository.findByID(categoria.getId());
+            String idNuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
+            if (! idNuevaCategoria.equals(nuevaCategoria.getId())) { //categoria con id mal cargado
+                nuevaCategoria.setId(idNuevaCategoria);
+                return this.agregarCategoria(nuevaCategoria);
+            }
+            Categoria categoriaExistente = categoriasRepository.findByID(nuevaCategoria.getId());
+            if (categoriaExistente == null) {return categoriasRepository.save(nuevaCategoria);}
+            else {return categoriaExistente;}
         }
     }
 

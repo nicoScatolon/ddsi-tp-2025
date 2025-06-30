@@ -8,7 +8,6 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator
 import java.util.List;
 
 public class ConsensoAbsoluto implements IAlgoritmoConsenso {
-
     @Override
     public List<Hecho> curar(List<Hecho> listaHechos, List<IFuente> listaFuentes) {
         List<Hecho> listaHechosCurados = listaHechos;

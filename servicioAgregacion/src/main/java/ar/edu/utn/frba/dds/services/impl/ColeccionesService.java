@@ -6,9 +6,9 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.ConsensoAbsoluto;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.ConsensoMayoriaSimple;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
@@ -16,7 +16,6 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.HechosRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.http.HttpStatus;
@@ -35,19 +34,15 @@ public class ColeccionesService implements IColeccionesService {
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
-    private final HechosRepository hechosRepository;
-
 
     public ColeccionesService(ColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
                               CriterioFactory criterioFactory,
-                              FuentesRepository fuentesRepository,
-                              HechosRepository hechosRepository) {
+                              FuentesRepository fuentesRepository) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
         this.criterioFactory  = criterioFactory;
         this.fuentesRepository = fuentesRepository;
-        this.hechosRepository = hechosRepository;
     }
 
     @Override
@@ -106,28 +101,31 @@ public class ColeccionesService implements IColeccionesService {
         // 5) Recalculo y curo hechos
         coleccion.actualizarHechos();
 
+        //TODO TERMINAR EL TEMA DE ALGORITMOS DE CONSENSO
         // 6) Modifico el algoritmo de consenso
         AlgoritmoConsensoDTO algDTO = coleccionInputDTO.getAlgoritmoConsenso();
         if (algDTO != null) {
-            String tipo = algDTO.getTipo();
+            TipoAlgoritmoConsenso tipo = algDTO.getTipo();
             Map<String,String> p = algDTO.getParametros();
 
             IAlgoritmoConsenso nuevoAlg;
             switch (tipo) {
-                case "mayoriaSimple":
-                    nuevoAlg = new ConsensoMayoriaSimple();
-                    break;
+                case ABSOLUTO:
+
+                case MAYORIASIMPLE:
+
+                case MULTIPLEMENCION:
 
                 default:
                     throw new IllegalArgumentException("Algoritmo desconocido: " + tipo);
             }
 
-            coleccion.setAlgoritmoConsenso(nuevoAlg);
+            coleccion.setAlgoritmoConsenso(nuevoAlg); //TODO REVISAR LUCHO
             coleccion.setCurarHechos(false);
 
         // 7) Persiste los cambios
         coleccionesRepository.save(coleccion);
-    }
+    }}
 
     public void eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
         Coleccion coleccion = this.coleccionFromInputDTO(coleccionInputDTO);
@@ -146,12 +144,20 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 
+    @Override
     public void notificarActualizacionFuentes(List<IFuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
         colecciones = colecciones.stream()
                 .filter( c -> c.getListaFuentes().stream().anyMatch( fuentes::contains) )
                 .toList();
         colecciones.forEach(c -> c.setActualizarHechos(true));
+    }
+
+    @Override
+    public void notificarFuenteEliminada(IFuente fuente){
+        List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
+                .filter(c -> c.getListaFuentes().contains(fuente)).toList();
+        colecciones.forEach(c -> c.eliminarFuente(fuente));
     }
 
 
@@ -191,13 +197,12 @@ public class ColeccionesService implements IColeccionesService {
 
         int fromIndex = Math.min(page * size, hechos.size());
         int toIndex = Math.min(fromIndex + size, hechos.size());
-        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex);
+        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex); //TODO REVISAR NACHO
 
         return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
 
     }
 
-    @Override
     public HechosPaginadosResponseDTO mostrarHechosColeccion(String handle, int page, int size,List<CriterioInputDTO> criterios, Boolean curado){
         List<ICriterio> criteriosEntidades = this.criterioFactory.crearVarios(criterios);
 
@@ -225,7 +230,7 @@ public class ColeccionesService implements IColeccionesService {
         return new Coleccion(
                 input.getTitulo(),
                 input.getDescripcion(),
-                input.getHandle()), null;
+                input.getHandle());
     }
 
     private ColeccionInputDTO toInputDTO(Coleccion coleccion) {

@@ -46,12 +46,11 @@ public class HechosService implements IHechosService {
         return this.hechosRepository.findById(id);
     }
 
-    public void guardarHechosRepository(List<Hecho> hechos){ //Util para los test
-        hechosRepository.saveAll(hechos);
-    }
-
-    public void actualizarHechos(List<Hecho> hechosActualizados){
-
+    public void actualizarHechosRepository(List<Hecho> hechosActualizados){
+        // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
+        // la idea es enviarla
+        hechosActualizados.forEach(n -> n.setCategoria(categoriaService.agregarCategoria(n.getCategoria())) );
+        this.hechosRepository.saveAll(hechosActualizados);
     }
 
     // LOGGER
