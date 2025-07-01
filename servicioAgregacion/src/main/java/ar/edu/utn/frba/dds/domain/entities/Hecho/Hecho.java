@@ -27,7 +27,7 @@ public class Hecho {
 
     private Long id;
     private Long origenId;
-    private IFuente fuente;
+    // private IFuente fuente; - posible List<TipoFuente> tipos
 
     private Boolean fueEliminado = false;
 

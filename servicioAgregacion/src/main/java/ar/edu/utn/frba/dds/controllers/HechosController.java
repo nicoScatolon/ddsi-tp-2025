@@ -1,30 +1,59 @@
 package ar.edu.utn.frba.dds.controllers;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import ar.edu.utn.frba.dds.services.ISeederService;
+import ar.edu.utn.frba.dds.services.impl.SeederService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/agregador/hechos")
+@RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
+    private final ISeederService seederService;
 
-    public HechosController(IHechosService hechosService) {
+    public HechosController(IHechosService hechosService, ISeederService seederService) {
         this.hechosService = hechosService;
-    }
-
-    @GetMapping
-    public List<HechoOutputDTO> getHechos() {
-        return hechosService.findAllOutput();
+        this.seederService = seederService;
     }
 
     @GetMapping("/{id}")
     public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
         return hechosService.findByID(id);
+    }
+
+
+
+    @GetMapping("/publica")
+    public List<HechoOutputDTO> getHechos(
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud
+    ) {
+        return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, latitud, longitud);
+    }
+
+    @GetMapping("/todos")
+    public List<HechoOutputDTO> getHechos() {
+        return hechosService.findAllOutput();
+    }
+
+    @GetMapping("/inicializar")
+    public boolean inicializarDatos(){
+        this.seederService.init();
+        return true;
     }
 }

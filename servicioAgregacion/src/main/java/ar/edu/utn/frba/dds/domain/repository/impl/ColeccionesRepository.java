@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.domain.repository.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IColeccionesRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ColeccionesRepository implements IColeccionesRepository {
     private final Map<String, Coleccion> colecciones = new ConcurrentHashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public Coleccion findByHandle(String handle) {
@@ -26,6 +27,9 @@ public class ColeccionesRepository implements IColeccionesRepository {
 
     @Override
     public void save(Coleccion coleccion) {
+        if (coleccion.getHandle() == null){
+            coleccion.setHandle(this.stringToHandle(coleccion.getTitulo()));
+        }
         colecciones.put(coleccion.getHandle(), coleccion);
     }
 
@@ -34,10 +38,24 @@ public class ColeccionesRepository implements IColeccionesRepository {
         colecciones.remove(coleccion.getHandle());
     }
 
-    @Override
-    public List<Hecho> hechosByHandle(String handle, List<Hecho> hechosDisponibles) {
-        Coleccion coleccion = colecciones.get(handle);
-        if (coleccion == null) return List.of();
-        return new ArrayList<>(coleccion.filtrarHechos(hechosDisponibles));
+
+    private String stringToHandle(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
+        }
+
+        String handle =  string.trim()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
+                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
+        handle = handle + "-" + idGenerator.getAndIncrement();
+
+        return handle;
     }
+
 }
+
+//handle = titulo + contador
+// ej1: "111" + "-" + 1 -> 111-1
+// ej2: "111" + 2 -> 111-2
+// ej11: "11" + 11 -> 11-11

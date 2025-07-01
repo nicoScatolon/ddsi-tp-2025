@@ -44,8 +44,4 @@ public class SolicitudEliminarHecho {
         this.apellidoAdministrador = apellidoAdministrador;
     }
 
-    public void rechazarAutomaticamente(){
-        this.serRechazada("Rechazada","Automaticamente");
-        this.eliminada = true;
-    }
 }

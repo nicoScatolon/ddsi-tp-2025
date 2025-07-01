@@ -1,12 +1,12 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.TipoFuenteProxy;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.adapters.IFuenteAdapter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.TipoFuenteProxy;
 
 import java.util.List;
 
 public interface IFuenteService {
-    IFuenteAdapter buscarPorId(Long id);
-    List<IFuenteAdapter> obtenerPorTipo(TipoFuenteProxy tipo);
-    List<IFuenteAdapter> obtenerTodas();
+    IFuente buscarPorId(Long id);
+    List<IFuente> obtenerPorTipo(TipoFuenteProxy tipo);
+    List<IFuente> obtenerTodas();
 }

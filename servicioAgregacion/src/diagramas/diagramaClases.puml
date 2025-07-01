@@ -101,7 +101,37 @@ class Usuario {
     -fechaNacimiento: LocalDate
 }
 
+interface IAlgoritmoConsenso {
+    + getTipo()
+    + curar()
+}
+class ConsensoAbsoluto {
+    - tipo: TipoAlgoritmoConsenso
+    + getTipo()
+    + curar()
+}
+class ConsensoMayoriaSimple {
+    - tipo: TipoAlgoritmoConsenso
+    + getTipo()
+    + curar()
+}
+class ConsensoMultipleMencion {
+    - tipo: TipoAlgoritmoConsenso
+    + getTipo()
+    + curar()
+}
+
+class HechoComparator {
+    - listaComandos: List<Comandos>
+    + comparar(Hecho h1, Hecho h2)
+}
+
+
 '====== RELACIONES ======
+
+ConsensoAbsoluto ..|> IAlgoritmoConsenso
+ConsensoMayoriaSimple ..|> IAlgoritmoConsenso
+ConsensoMultipleMencion ..|> IAlgoritmoConsenso
 
 CriterioCategoria ..|> Criterio
 CriterioTitulo ..|> Criterio

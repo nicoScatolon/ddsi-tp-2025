@@ -1,12 +1,18 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Fuente.adapters.IFuenteAdapter;
+
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechos;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
@@ -17,29 +23,45 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
 @Data
 @Service
-
 public class HechosService implements IHechosService {
-    private final List<IFuenteAdapter> fuentesAdapters = new ArrayList<>();
+    private final IFuentesRepository fuentesRepository;
     private final ICategoriaService categoriaService;
 
-    public HechosService(ICategoriaService categoriaService) {
+    public HechosService(IFuentesRepository fuentesRepository, ICategoriaService categoriaService) {
+        this.fuentesRepository = fuentesRepository;
         this.categoriaService = categoriaService;
-    }
-
-    public void agregarFuente(IFuenteAdapter fuenteAdapter) {
-        fuentesAdapters.add(fuenteAdapter);
     }
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
-        return Flux.fromIterable(fuentesAdapters)
-                .flatMap(IFuenteAdapter::obtenerHechos)
+        return Flux.fromIterable(fuentesRepository.fuentesConHechos())
+                .flatMap(ServidoraDeHechos::getHechos)
+                .flatMapIterable(lista -> lista)
+                .map(this::mapToHechoDTO)
+                .collectList();
+    }
+
+    @Override
+    public Mono<HechoOutputDTO> buscarPorId(Long id) {
+        return Flux.fromIterable(fuentesRepository.fuentesQuePermitenBuscarPorId())
+                .flatMap(fuente -> fuente.getHechoPorId(id)
+                        .onErrorResume(e -> Mono.empty()))
+                .next()
+                .map(this::mapToHechoDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Hecho con ID " + id + " no encontrado en ninguna fuente")));
+    }
+
+
+    @Override
+    public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, LocalDateTime frDesde, LocalDateTime frHasta,
+                                                       LocalDate faDesde, LocalDate faHasta, Double latitud, Double longitud) {
+        return Flux.fromIterable(fuentesRepository.fuentesConFiltros())
+                .flatMap(f -> f.buscarHechos(categoria, frDesde, frHasta, faDesde, faHasta, latitud, longitud))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();
@@ -47,30 +69,65 @@ public class HechosService implements IHechosService {
 
 
 
+    @Override
+    public Mono<List<ColeccionInputDTO>> traerTodasLasColecciones() {
+        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
+                .flatMap(ServidoraDeColecciones::buscarTodasLasColecciones)
+                .flatMapIterable(lista -> lista)
+                .collectList();
+    }
+
+
+
+
+    @Override
+    public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String handleColeccion) {
+        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
+                .flatMap(f -> f.buscarHechosPorColeccion(handleColeccion,null,null,null,null,null,null,null,false))
+                .flatMapIterable(lista -> lista)
+                .map(this::mapToHechoDTO)
+                .collectList();
+    }
+
+
+
+
+    @Override
+    public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud) {
+        return Flux.fromIterable(fuentesRepository.fuentesQuePermitenEliminar())
+                .next()
+                .flatMap(f -> f.crearSolicitudEliminacion(solicitud))
+                .switchIfEmpty(Mono.error(new RuntimeException("No hay fuentes que permitan crear solicitudes de eliminación")));
+    }
+
+
+
+
+
+
+    // Mapper DTO externo → DTO de salida del sistema
     private HechoOutputDTO mapToHechoDTO(HechoExternoDTO dto) {
-    DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    return HechoOutputDTO.builder()
-            .id(dto.getId())
-            .titulo(dto.getTitulo())
-            .descripcion(dto.getDescripcion())
-            .categoria(categoriaToDTO(dto.getCategoria()))
-            .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
-            .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
-            .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
-            .build();
-}
+        return HechoOutputDTO.builder()
+                .id(dto.getId())
+                .titulo(dto.getTitulo())
+                .descripcion(dto.getDescripcion())
+                .categoria(categoriaToDTO(dto.getCategoria()))
+                .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
+                .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
+                .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
+                .build();
+    }
 
 
 
-private CategoriaOutputDTO categoriaToDTO(String nombreCategoria){
+    private CategoriaOutputDTO categoriaToDTO(String nombreCategoria) {
         return CategoriaOutputDTO.builder()
                 .id(categoriaService.obtenerIdCategoria(nombreCategoria))
                 .nombre(nombreCategoria)
                 .build();
-}
-
-
+    }
 
 }
 

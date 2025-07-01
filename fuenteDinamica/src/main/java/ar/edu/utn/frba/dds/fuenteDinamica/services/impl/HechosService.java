@@ -19,33 +19,32 @@ import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
-    private final IHechosRepository hechosRepository;
-    private final ICategoriaService categoriaService;
+    private IHechosRepository hechosRepository;
+    private ICategoriaService categoriaService;
 
     @Value("${hecho.diasModificacion}")
     private Long diasValidosModificacion;
 
-    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService) {
+    public HechosService(IHechosRepository hechosRepository) {
         this.hechosRepository = hechosRepository;
-        this.categoriaService = categoriaService;
     }
 
     @Override
-    public Hecho cargarHecho(HechoInputDTO hechoDTO) {
-        Hecho hecho = hechoInputDTO(hechoDTO, hechoDTO.getContribuyenteInputDTO());
+    public Hecho cargarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO, ICategoriaService categoriaService) {
+        Hecho hecho = hechoInputDTO(hechoDTO, contribuyenteDTO);
         hecho.setFechaDeCarga(LocalDateTime.now());
         return this.hechosRepository.save(hecho);
     }
 
     @Override
-    public Hecho modificarHecho(HechoInputDTO hechoDTO) {
+    public Hecho modificarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
         Hecho hechoGuardado = this.hechosRepository.findById(hechoDTO.getId());
-        Hecho hechoNuevo = hechoInputDTO(hechoDTO, hechoDTO.getContribuyenteInputDTO());
+        Hecho hechoNuevo = hechoInputDTO(hechoDTO, contribuyenteDTO);
 
         if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
         if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
         if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
-            { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
+        { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
 
         hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
@@ -69,6 +68,7 @@ public class HechosService implements IHechosService {
     }
 
     //Metodos privados
+
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
         return Hecho.builder()
                 .titulo(hechoDTO.getTitulo())
@@ -77,11 +77,11 @@ public class HechosService implements IHechosService {
                 .ubicacion(hechoDTO.getUbicacion())
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteInputDTO(contribuyenteDTO))
+                .contribuyente(this.contribuyenteDTO(contribuyenteDTO))
                 .build();
     }
 
-    private Contribuyente contribuyenteInputDTO(ContribuyenteInputDTO contribuyenteDTO) {
+    private Contribuyente contribuyenteDTO(ContribuyenteInputDTO contribuyenteDTO) {
         return Contribuyente.builder()
                 .id(contribuyenteDTO.getId())
                 .nombre(contribuyenteDTO.getNombre())
@@ -104,6 +104,7 @@ public class HechosService implements IHechosService {
                 .contribuyente(hecho.getContribuyente())
                 .build();
     }
+
 
     private CategoriaOutputDTO categoriaOutputDTO(String nombreCategoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();

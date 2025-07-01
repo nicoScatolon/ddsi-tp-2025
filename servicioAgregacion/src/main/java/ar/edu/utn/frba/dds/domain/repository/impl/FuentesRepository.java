@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Repository
 public class FuentesRepository implements IFuentesRepository {
@@ -19,14 +21,21 @@ public class FuentesRepository implements IFuentesRepository {
     }
 
     @Override
+    public List<IFuente> findAllById(Set<Long> ids) {
+        return fuentes.stream()
+                .filter(f -> ids.contains(f.getId()))
+                .collect(Collectors.toList());
+    }
+    @Override
     public List<IFuente> findAll() {
         return fuentes;
     }
 
     @Override
-    public void saveFuente(IFuente fuente) {
+    public Boolean saveFuente(IFuente fuente) {
         fuente.setId(idGenerator.getAndIncrement());
         fuentes.add(fuente);
+        return true;
     }
 
     @Override

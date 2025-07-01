@@ -29,8 +29,8 @@ public class HechosRepository implements IHechosRepository {
     @Override
     public void saveAll(List<Hecho> nuevosHechos) {
         for (Hecho hecho : nuevosHechos) {
-            Hecho hechoVerificado = verificarExistenteYAsignarId(hecho);
-            hechos.put(hechoVerificado.getId(), hechoVerificado);
+            if (hecho.getId() == null) { hecho.setId(idGenerator.getAndIncrement()); }
+            hechos.put(hecho.getId(), hecho);
         }
     }
 
@@ -39,24 +39,6 @@ public class HechosRepository implements IHechosRepository {
         hechos.remove(hecho.getId());
     }
 
-    public Optional<Hecho> findByFuenteAndId(IFuente fuente, Long idOrigenHecho) {
-        //verifico los hechos con el mismo id de su origen que provengan de la misma fuente
-        return hechos.values().stream()
-                .filter(h -> Objects.equals(h.getOrigenId(), idOrigenHecho) && h.getFuente().equals(fuente))
-                .findFirst();
-    }
-
-    private Hecho verificarExistenteYAsignarId(Hecho hecho) {
-        Optional<Hecho> existente = this.findByFuenteAndId(hecho.getFuente(), hecho.getOrigenId());
-
-        existente.ifPresent(hechoExistente -> hechos.remove(hechoExistente.getId()));
-
-        if (hecho.getId() == null) {
-            hecho.setId(idGenerator.getAndIncrement());
-        }
-
-        return hecho;
-    }
 
     private List<Hecho> filtrarEliminados(List<Hecho> hechos) {
         return hechos.stream()

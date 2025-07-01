@@ -1,9 +1,8 @@
 package ar.edu.utn.frba.dds.domain.entities.Fuente.adapters;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.FuenteDinamica;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.FuenteEstatica;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
 
 import java.util.List;
@@ -19,7 +18,12 @@ public class FuenteEstaticaAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<IHechoInputDTO> obtenerHechosFuente() {
-        return fuenteEstatica.getHechos().stream().map(dto -> (IHechoInputDTO) dto).toList();
+    public List<Hecho> actualizarHechos() {
+        return fuenteEstatica.updateHechos();
+    }
+
+    @Override
+    public List<Hecho> obtenerHechos() {
+        return fuenteEstatica.getMapHechos().values().stream().toList();
     }
 }

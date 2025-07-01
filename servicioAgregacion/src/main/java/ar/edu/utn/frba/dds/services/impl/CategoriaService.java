@@ -15,12 +15,44 @@ public class CategoriaService implements ICategoriaService {
         this.categoriasRepository = categoriasRepository;
     }
 
+    public Categoria findByID(String idCategoria){
+        return categoriasRepository.findByID(idCategoria);
+    }
+
+    public Categoria findByNombre(String nombreCategoria){
+        return categoriasRepository.findByID(this.crearIdCategoria(nombreCategoria));
+    }
+
     @Override
-    public Categoria agregarCategoria(CategoriaInputDTO categoriaInputDTO) {
-        Categoria categoria = DTOConverter.categoriaInputDTO(categoriaInputDTO);
-        if (categoria == null) {
-            categoria = categoriasRepository.save(categoria);
+    public Categoria agregarCategoria(Categoria nuevaCategoria) {
+        if (nuevaCategoria.getNombre() == null) {
+            throw new IllegalArgumentException("La categoría debe tener un nombre");
         }
-        return categoria;
+
+        String idNuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
+
+        if (nuevaCategoria.getId() == null || !idNuevaCategoria.equals(nuevaCategoria.getId())) {
+            nuevaCategoria.setId(idNuevaCategoria);
+        }
+
+        Categoria existente = categoriasRepository.findByID(idNuevaCategoria);
+        if (existente == null) {
+            return categoriasRepository.save(nuevaCategoria);
+        } else {
+            return existente;
+        }
+    }
+
+
+    private String crearIdCategoria(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
+        }
+
+        return string
+                .trim()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
+                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
     }
 }

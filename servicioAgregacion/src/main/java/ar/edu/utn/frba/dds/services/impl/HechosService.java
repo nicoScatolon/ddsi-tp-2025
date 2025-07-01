@@ -1,66 +1,37 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
-import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
-
-    private final IFuentesService fuentesService;
     private final ICategoriaService categoriaService;
+    private final CriterioFactory criterioFactory;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    public HechosService(IHechosRepository hechosRepository, IFuentesService fuentesService ,ICategoriaService categoriaService) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService, CriterioFactory criterioFactory) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
-        this.fuentesService = fuentesService;
-    }
-
-    @Override
-    public void actualizarHechosScheduler() {
-        List <TipoFuente> listaTipos = new ArrayList<>();
-        listaTipos.add(TipoFuente.ESTATICA);
-        listaTipos.add(TipoFuente.DINAMICA);
-        List<IFuente> fuentes = fuentesService.buscarFuentePorTipo(listaTipos);
-        for (IFuente fuente : fuentes){
-            boolean resultado = actualizarHechos(fuente);
-            if (resultado){
-                //las colecciones que tengan esa fuente deben ser actualizadas
-                //TODO setear la actualizacion de las colecciones
-            }
-        }
-        //TODO ver como setearlo en las properties
-    }
-
-    @Override
-    public List<Hecho> obtenerHechosProxy(){
-        List<IFuente> fuentes = fuentesService.buscarFuentePorTipo(TipoFuente.PROXY);
-        List<Hecho> hechoBases = new ArrayList<>();
-
-        for (IFuente fuente : fuentes){
-            List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
-            List<Hecho> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente);
-            hechoBases.addAll(hechosListos);
-        }
-        return hechoBases;
+        this.criterioFactory = criterioFactory;
     }
 
     @Override
@@ -81,49 +52,41 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<Hecho> findByFuente(List<IFuente> fuentes){
-        List<Hecho> hechoBuscados = new ArrayList<>();
-        //si no tiene fuentes asociadas devolvemos una lista vacía
-        if (fuentes.isEmpty()) return hechoBuscados;
-        //filtramos los hechos que tengan alguna fuente de las pedidas
-        hechoBuscados = this.hechosRepository.findAll().stream().filter(h -> fuentes.contains(h.getFuente())).toList();
-        return hechoBuscados;
+    public Hecho findEntidadPorId(Long id){
+        return this.hechosRepository.findById(id);
     }
 
-    private List<IHechoInputDTO> obtenerHechosFuente(IFuente fuente){
-        List<IHechoInputDTO> hechoInputDTOS;
-        FuenteAdapter adapterConcreto = fuente.getTipo().crearAdapter();
-        adapterConcreto.setFuente(fuente);
-        hechoInputDTOS = adapterConcreto.obtenerHechosFuente();
-        return hechoInputDTOS;
-    }
+    @Override
+    public List<HechoOutputDTO> getHechos(String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud){
+        Categoria categoriaEntidad =  categoriaService.findByNombre(categoria);
+        if (categoriaService.findByNombre(categoriaEntidad.getNombre()) == null) {categoria = null;}
+        //verificar si categoria existe
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud,longitud);
 
-    private List<Hecho> convertirHechosDTO (List<IHechoInputDTO> iHechoInputDTOS, IFuente fuente){
-        List<Hecho> hechosListos = new ArrayList<>();
-        for (IHechoInputDTO hechoInputDTO : iHechoInputDTOS) {
-            Hecho hecho = DTOConverter.convertirHechoInputDTO(hechoInputDTO,fuente);
-            Categoria categoriaPersistida = categoriaService.agregarCategoria(hechoInputDTO.getCategoria());
-            hecho.setCategoria(categoriaPersistida);
-            hechosListos.add(hecho);
+        if (criterios.isEmpty()){
+            return findAllOutput();
+        } else {
+            return this.findAll().stream()
+                    .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
+                    .map(DTOConverter::convertirHechoOutputDTO)
+                    .toList();
         }
-        return hechosListos;
     }
 
-    private boolean actualizarHechos(IFuente fuente) {
-        List<IHechoInputDTO> hechoInputDTOS = this.obtenerHechosFuente(fuente);
+    @Override
+    public void actualizarHechosRepository(List<Hecho> hechosActualizados){
+        // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
+        // la idea es enviarla
 
-        List<Hecho> hechosListos = this.convertirHechosDTO(hechoInputDTOS, fuente);
-        if (hechosListos.isEmpty()) {
-            logger.info("No se encontraron hechos para actualizar.");
-            return false;
-        }
-        this.guardarHechosRepository(hechosListos);
-        this.logearHechosCargados(hechosListos, fuente.getUrl());
-        return true;
+        hechosActualizados.forEach(n -> n.setCategoria(categoriaService.agregarCategoria(n.getCategoria())) );
+        this.hechosRepository.saveAll(hechosActualizados);
     }
 
-    public void guardarHechosRepository(List<Hecho> hechos){ //Util para los test
-        hechosRepository.saveAll(hechos);
+    public void configurarComparacion(){
+        HechoComparator comparator = HechoComparator.getInstance();
+        //comparator.agregarComando(comando1);
+        //comparator.eliminarComando(comando2);
+        //TODO
     }
 
     // LOGGER
@@ -132,6 +95,6 @@ public class HechosService implements IHechosService {
         hechos.forEach(hecho ->
                 logger.info
                         ("Hecho cargado - ID: {} - Titulo: {} -  Descripción: {} -  Categoria: {} -  Fecha De Ocurrencia: {}"
-                        , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
+                                , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
     }
 }
