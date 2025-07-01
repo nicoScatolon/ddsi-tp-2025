@@ -54,7 +54,7 @@ public class CriterioFactory {
                 .toList();
     }
 
-    public List<ICriterio> crearCriteriosParametros(Categoria cat, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Ubicacion ubicacion){
+    public List<ICriterio> crearCriteriosParametros(Categoria cat, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud){
         List<ICriterio> criterios = new ArrayList<>();
         if (cat != null) {
             criterios.add(new CriterioCategoria(cat));
@@ -65,8 +65,8 @@ public class CriterioFactory {
         if(fAconDesde != null || fAconHasta != null){
             criterios.add(this.crearCriterioOcurrenciaEntreFechas(fAconDesde,fAconHasta));
         }
-        if(ubicacion != null){
-            criterios.add(new CriterioUbicacion(ubicacion));
+        if(latitud != null && longitud!= null){
+            criterios.add(new CriterioUbicacion(new Ubicacion(latitud,longitud)));
         }
         return criterios;
     }

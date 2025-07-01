@@ -24,7 +24,7 @@ public interface IColeccionesService {
     List<ColeccionOutputDTO> findAll();
     ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO);
     void eliminarColeccion(ColeccionInputDTO coleccionInputDTO);
-    List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, CategoriaInputDTO categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, UbicacionInputDTO ubicacion);
+    List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, Double latitud, Double longitud);
     void notificarActualizacionFuentes(List<IFuente> fuentes);
     void notificarFuenteEliminada(IFuente fuente);
     void modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO);

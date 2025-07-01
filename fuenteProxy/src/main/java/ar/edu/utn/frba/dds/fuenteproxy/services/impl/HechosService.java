@@ -58,10 +58,10 @@ public class HechosService implements IHechosService {
 
 
     @Override
-    public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, String frDesde, String frHasta,
-                                                       String faDesde, String faHasta, String ubicacion) {
+    public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, LocalDateTime frDesde, LocalDateTime frHasta,
+                                                       LocalDate faDesde, LocalDate faHasta, Double latitud, Double longitud) {
         return Flux.fromIterable(fuentesRepository.fuentesConFiltros())
-                .flatMap(f -> f.buscarHechos(categoria, frDesde, frHasta, faDesde, faHasta, ubicacion))
+                .flatMap(f -> f.buscarHechos(categoria, frDesde, frHasta, faDesde, faHasta, latitud, longitud))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();
@@ -83,7 +83,7 @@ public class HechosService implements IHechosService {
     @Override
     public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String handleColeccion) {
         return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
-                .flatMap(f -> f.buscarHechosPorColeccion(handleColeccion,null,null,null,null,null,null,false))
+                .flatMap(f -> f.buscarHechosPorColeccion(handleColeccion,null,null,null,null,null,null,null,false))
                 .flatMapIterable(lista -> lista)
                 .map(this::mapToHechoDTO)
                 .collectList();

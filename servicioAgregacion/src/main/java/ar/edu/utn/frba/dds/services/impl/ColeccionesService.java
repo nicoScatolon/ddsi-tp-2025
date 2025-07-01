@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
@@ -16,6 +17,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
+import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
@@ -34,17 +36,20 @@ public class ColeccionesService implements IColeccionesService {
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
+    private final ICategoriaService categoriaService;
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
     public ColeccionesService(ColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
                               CriterioFactory criterioFactory,
-                              FuentesRepository fuentesRepository) {
+                              FuentesRepository fuentesRepository,
+                              ICategoriaService categoriaService) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
         this.criterioFactory  = criterioFactory;
         this.fuentesRepository = fuentesRepository;
+        this.categoriaService = categoriaService;
     }
 
     @Override
@@ -204,8 +209,8 @@ public class ColeccionesService implements IColeccionesService {
     }*/
 
     @Override
-    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, CategoriaInputDTO categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, UbicacionInputDTO ubicacion){
-        List<ICriterio> criteriosEntidades = this.criterioFactory.crearCriteriosParametros(DTOConverter.categoriaInputDTO(categoria),fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,DTOConverter.convertirUbicacion(ubicacion));
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, Double latitud, Double longitud){
+        List<ICriterio> criteriosEntidades = this.criterioFactory.crearCriteriosParametros(this.categoriaService.findByNombre(categoria),fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud, longitud);
 
         if(criteriosEntidades.isEmpty()){
             List<Hecho> hechos = this.getHechosColeccion(handle,curado);

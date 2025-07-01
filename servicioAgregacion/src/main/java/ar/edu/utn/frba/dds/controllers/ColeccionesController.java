@@ -60,7 +60,7 @@ public class ColeccionesController {
         coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
-    @PutMapping("/privada/{handle}/modificar-consenso")
+    @PutMapping("/privada/{handle}/modificar-consenso") //TODO cambiar ruta "Modificar" NO
     public void modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
@@ -87,14 +87,15 @@ public class ColeccionesController {
     public List<HechoOutputDTO> mostrarHechos(
             @PathVariable String handle,
             @RequestParam Boolean curado,
-            @RequestParam(required = false) CategoriaInputDTO categoria,
+            @RequestParam(required = false) String categoria,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
-            @RequestParam(required = false) UbicacionInputDTO ubicacion
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud
 
     ) {
-        return this.coleccionesService.mostrarHechosColeccion(handle,curado, categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,ubicacion);
+        return this.coleccionesService.mostrarHechosColeccion(handle,curado, categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud,longitud);
     }
 }

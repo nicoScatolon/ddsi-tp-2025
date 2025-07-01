@@ -15,27 +15,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/solicitudes-eliminacion")
 public class SolicitudesEliminacionController {
-    private final ISolicitudesEliminacionService solicitudesEliminacionService;
-    private final IHechosService hechosService;
+    private final ISolicitudesEliminacionService solicitudesEliminacionService;;
 
-    public SolicitudesEliminacionController(ISolicitudesEliminacionService solicitudesEliminacionService, IHechosService hechosService) {
+    public SolicitudesEliminacionController(ISolicitudesEliminacionService solicitudesEliminacionService) {
         this.solicitudesEliminacionService = solicitudesEliminacionService;
-        this.hechosService = hechosService;
     }
 
-    @PostMapping("/publica/crear-solicitud-eliminacion")
+    @PostMapping("/publica")
     @ResponseStatus(HttpStatus.CREATED)
     public void crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
         this.solicitudesEliminacionService.crearSolicitudDesdeDTO(request);
     }
 
 
-    @GetMapping
+    @GetMapping("/publica")
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.findAll();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/publica/{id}")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
     }
