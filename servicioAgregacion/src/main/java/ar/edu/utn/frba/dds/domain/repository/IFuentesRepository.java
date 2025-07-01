@@ -9,6 +9,6 @@ public interface IFuentesRepository {
     List<IFuente> findAll();
     IFuente findById(Long id);
     List<IFuente> findAllById(Set<Long> ids);
-    void saveFuente(IFuente fuente);
+    Boolean saveFuente(IFuente fuente);
     void deleteFuente(Long id);
 }

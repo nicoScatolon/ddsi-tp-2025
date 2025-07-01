@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ConsensoMayoriaSimple implements IAlgoritmoConsenso{
+    private TipoAlgoritmoConsenso tipo = TipoAlgoritmoConsenso.MAYORIASIMPLE;
+
+    @Override
+    public TipoAlgoritmoConsenso getTipo() {
+        return this.tipo;
+    }
 
     @Override
     public List<Hecho> curar(List<Hecho> listaHechos, List<IFuente> listaFuentes) {
@@ -18,7 +24,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoConsenso{
         Integer cantApariciones = (listaHechos.size()+1)/2;
 
         for (IFuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter();
+            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
             List<Hecho> hechosFuente = adapter.obtenerHechos();
 
             List<Hecho> hechosRepetidos = mapHechos.keySet().stream()

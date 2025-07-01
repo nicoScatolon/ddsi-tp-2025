@@ -61,7 +61,7 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada/{handle}/modificar-consenso")
-    public void modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable String handle) {
+    public void modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
 

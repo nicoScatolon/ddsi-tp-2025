@@ -155,11 +155,18 @@ public class DTOConverter {
         return dto.getTipo().obtenerConsenso();
     }
 
+    public static AlgoritmoConsensoDTO algoritmoConsensoFromDTO(IAlgoritmoConsenso algoritmoConsenso) {
+        if (algoritmoConsenso == null) { return null;}
+        return new AlgoritmoConsensoDTO(algoritmoConsenso.getTipo());
+    }
+
+
     public static ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
         return ColeccionOutputDTO.builder()
                 .titulo(coleccion.getTitulo())
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
+                .algoritmoConsenso(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
                 .build();
     }
 

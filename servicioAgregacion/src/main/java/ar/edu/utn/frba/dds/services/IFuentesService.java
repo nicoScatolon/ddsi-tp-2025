@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IFuentesService {
     List<IFuente> buscarFuentes();
-    void agregarFuente(FuenteInputDTO fuenteDTO);
+    Boolean agregarFuente(FuenteInputDTO fuenteDTO);
     void eliminarFuente(Long id);
     IFuente buscarFuentePorId(Long id);
     List<IFuente> buscarFuentePorTipo(TipoFuente tipoFuente);

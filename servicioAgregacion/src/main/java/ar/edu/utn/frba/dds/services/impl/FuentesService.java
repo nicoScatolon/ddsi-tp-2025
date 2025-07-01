@@ -8,6 +8,8 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ public class FuentesService implements IFuentesService {
     private final IFuentesRepository fuentesRepository;
     private final IHechosService hechosService;
     private final IColeccionesService coleccionesService;
+
+    private static final Logger logger = LoggerFactory.getLogger(FuentesService.class);
 
     public FuentesService(IFuentesRepository fuentesRepository, IHechosService hechosService, IColeccionesService coleccionesService) {
         this.fuentesRepository = fuentesRepository;
@@ -32,9 +36,10 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public void agregarFuente(FuenteInputDTO fuenteDTO) {
+    public Boolean agregarFuente(FuenteInputDTO fuenteDTO) {
         IFuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
-        fuentesRepository.saveFuente(nuevaFuente);
+        this.loguearFuenteCargada(nuevaFuente);
+        return fuentesRepository.saveFuente(nuevaFuente);
     }
 
     @Override
@@ -73,16 +78,16 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public void actualizarHechosFuentesScheduler() {
+        logger.info("Actualizar fuentes Scheduler");
         List<TipoFuente> listaTipos = new ArrayList<>();
-        listaTipos.add(TipoFuente.DINAMICA); //TODO ver como setearlo en las properties
+        listaTipos.add(TipoFuente.DINAMICA);
         listaTipos.add(TipoFuente.ESTATICA);
-
         List<IFuente> fuentes = this.buscarFuentePorTipo(listaTipos);
 
         List<IFuente> fuentesActualizadas = new ArrayList<>();
-
         for (IFuente fuente : fuentes){
-            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter().actualizarHechos();
+            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
+            logger.info("Fuente actualizada {}", fuente.getTipo());
             if (!hechosFuente.isEmpty()){
                 this.hechosService.actualizarHechosRepository(hechosFuente);
                 fuentesActualizadas.add(fuente);
@@ -90,5 +95,10 @@ public class FuentesService implements IFuentesService {
         }
 
         coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
+    }
+
+    private void loguearFuenteCargada(IFuente fuente){
+        logger.info("Fuente cargada - ID: {} - URL: {} - Tipo de Fuente: {}"
+                    ,fuente.getId(), fuente.getUrl(), fuente.getUrl());
     }
 }

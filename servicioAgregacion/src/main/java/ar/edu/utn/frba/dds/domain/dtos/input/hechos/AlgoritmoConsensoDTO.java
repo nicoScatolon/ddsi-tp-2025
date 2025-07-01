@@ -14,5 +14,4 @@ import java.util.Map;
 @AllArgsConstructor
 public class AlgoritmoConsensoDTO {
     private TipoAlgoritmoConsenso tipo;
-    private Map<String,String> parametros;
 }

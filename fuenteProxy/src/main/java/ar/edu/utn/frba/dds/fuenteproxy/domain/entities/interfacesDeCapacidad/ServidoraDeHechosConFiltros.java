@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface ServidoraDeHechosConFiltros extends IFuente {
+public interface ServidoraDeHechosConFiltros extends ServidoraDeHechos{
     Mono<List<HechoExternoDTO>> buscarHechos(String categoria, String fechaReporteDesde, String fechaReporteHasta, String fechaAcontecimientoDesde, String fechaAcontecimientoHasta, String ubicacion);
 }

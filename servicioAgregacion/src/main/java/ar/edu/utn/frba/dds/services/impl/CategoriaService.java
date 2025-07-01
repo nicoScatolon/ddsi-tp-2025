@@ -25,24 +25,24 @@ public class CategoriaService implements ICategoriaService {
 
     @Override
     public Categoria agregarCategoria(Categoria nuevaCategoria) {
-        if (nuevaCategoria.getId() == null) {
-            String idnuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
-            Categoria categoriaExistente = categoriasRepository.findByID(idnuevaCategoria);
+        if (nuevaCategoria.getNombre() == null) {
+            throw new IllegalArgumentException("La categoría debe tener un nombre");
+        }
 
-            if (categoriaExistente == null) {return categoriasRepository.save(nuevaCategoria);}
-            else {return categoriaExistente;}
+        String idNuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
 
+        if (nuevaCategoria.getId() == null || !idNuevaCategoria.equals(nuevaCategoria.getId())) {
+            nuevaCategoria.setId(idNuevaCategoria);
+        }
+
+        Categoria existente = categoriasRepository.findByID(idNuevaCategoria);
+        if (existente == null) {
+            return categoriasRepository.save(nuevaCategoria);
         } else {
-            String idNuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
-            if (! idNuevaCategoria.equals(nuevaCategoria.getId())) { //categoria con id mal cargado
-                nuevaCategoria.setId(idNuevaCategoria);
-                return this.agregarCategoria(nuevaCategoria);
-            }
-            Categoria categoriaExistente = categoriasRepository.findByID(nuevaCategoria.getId());
-            if (categoriaExistente == null) {return categoriasRepository.save(nuevaCategoria);}
-            else {return categoriaExistente;}
+            return existente;
         }
     }
+
 
     private String crearIdCategoria(String string) {
         if (string == null || string.isBlank()) {

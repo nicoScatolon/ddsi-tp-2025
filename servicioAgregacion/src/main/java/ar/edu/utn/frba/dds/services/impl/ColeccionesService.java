@@ -9,9 +9,6 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
@@ -21,9 +18,10 @@ import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +34,8 @@ public class ColeccionesService implements IColeccionesService {
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
     public ColeccionesService(ColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
@@ -129,7 +129,9 @@ public class ColeccionesService implements IColeccionesService {
     //-------------------------------------------------------------------------------
 
     public void actualizarColeccionesScheduler(){
+        logger.info("Actualizando Colecciones Scheduler");
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+        coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 

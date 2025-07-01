@@ -32,9 +32,10 @@ public class FuentesRepository implements IFuentesRepository {
     }
 
     @Override
-    public void saveFuente(IFuente fuente) {
+    public Boolean saveFuente(IFuente fuente) {
         fuente.setId(idGenerator.getAndIncrement());
         fuentes.add(fuente);
+        return true;
     }
 
     @Override

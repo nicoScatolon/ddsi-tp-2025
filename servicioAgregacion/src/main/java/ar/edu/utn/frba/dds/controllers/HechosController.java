@@ -31,6 +31,18 @@ public class HechosController {
         return hechosService.findByID(id);
     }
 
+//    @GetMapping("/publica")
+//    public List<HechoOutputDTO> getHechos(
+//            @RequestParam(required = false) CategoriaInputDTO categoria,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
+//            @RequestParam(required = false) UbicacionInputDTO ubicacion
+//    ) {
+//        return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, ubicacion);
+//    }
+
     @GetMapping("/publica")
     public List<HechoOutputDTO> getHechos(
             @RequestParam(required = false) CategoriaInputDTO categoria,
@@ -41,6 +53,11 @@ public class HechosController {
             @RequestParam(required = false) UbicacionInputDTO ubicacion
     ) {
         return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, ubicacion);
+    }
+
+    @GetMapping("/todos")
+    public List<HechoOutputDTO> getHechos() {
+        return hechosService.findAllOutput();
     }
 
     @GetMapping("/inicializar")

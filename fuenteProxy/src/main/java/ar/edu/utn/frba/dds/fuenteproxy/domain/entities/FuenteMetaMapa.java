@@ -30,6 +30,17 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
 
+    @Override
+    public Mono<List<HechoExternoDTO>> getHechos(){
+        return webClient.get()
+                .uri("/api/hechos/publica")
+                .retrieve()
+                .bodyToFlux(HechoExternoDTO.class)
+                .collectList();
+
+    }
+
+
 
     @Override
     public Mono<List<HechoExternoDTO>> buscarHechos(String categoria, String fechaReporteDesde, String fechaReporteHasta,  String fechaAcontecimientoDesde,  String fechaAcontecimientoHasta,  String ubicacion) {

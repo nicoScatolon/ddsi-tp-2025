@@ -8,12 +8,19 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator
 import java.util.List;
 
 public class ConsensoAbsoluto implements IAlgoritmoConsenso {
+    private TipoAlgoritmoConsenso tipo = TipoAlgoritmoConsenso.ABSOLUTO;
+
+    @Override
+    public TipoAlgoritmoConsenso getTipo() {
+        return this.tipo;
+    }
+
     @Override
     public List<Hecho> curar(List<Hecho> listaHechos, List<IFuente> listaFuentes) {
         List<Hecho> listaHechosCurados = listaHechos;
 
         for (IFuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter();
+            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
             List<Hecho> hechosFuente = adapter.obtenerHechos();
 
             if (hechosFuente.isEmpty()) {break;}

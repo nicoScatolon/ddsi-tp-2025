@@ -1,6 +1,5 @@
 @startuml
 
-
 enum TipoFuenteProxy {
   EXTERNA
   METAMAPA
@@ -13,7 +12,7 @@ interface IFuente {
   +TipoFuenteProxy getTipoFuenteProxy()
 }
 
-' Interfaces de capacidad (todas extienden IFuente)
+' Interfaces de capacidad
 interface ServidoraDeHechos extends IFuente {
   +Mono<List<HechoExternoDTO>> getHechos()
 }
@@ -22,7 +21,7 @@ interface ServidoraDeHechosPorId extends ServidoraDeHechos {
   +Mono<HechoExternoDTO> getHechoPorId(Long id)
 }
 
-interface ServidoraDeHechosConFiltros extends IFuente {
+interface ServidoraDeHechosConFiltros extends ServidoraDeHechos {
   +Mono<List<HechoExternoDTO>> buscarHechos(...)
 }
 
@@ -41,6 +40,7 @@ class FuenteMetaMapa {
   -TipoFuenteProxy tipoFuenteProxy = METAMAPA
   -WebClient webClient
   -String baseUrl
+  +Mono<List<HechoExternoDTO>> getHechos()
 }
 
 ' FuenteDDS
@@ -56,10 +56,13 @@ class FuenteDDS {
 FuenteMetaMapa ..|> ServidoraDeHechosConFiltros
 FuenteMetaMapa ..|> ServidoraDeColecciones
 FuenteMetaMapa ..|> ServidoraDeEliminaciones
+FuenteMetaMapa ..|> ServidoraDeHechos
 
 FuenteDDS ..|> ServidoraDeHechosPorId
 
-' Para mostrar herencia entre interfaces
+' Herencia de interfaces
 ServidoraDeHechosPorId -|> ServidoraDeHechos
+ServidoraDeHechosConFiltros -|> ServidoraDeHechos
 
 @enduml
+

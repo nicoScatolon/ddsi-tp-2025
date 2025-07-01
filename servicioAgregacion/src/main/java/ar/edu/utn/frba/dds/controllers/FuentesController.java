@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+
 @RequestMapping("/api/fuente")
 @RestController
 public class FuentesController {
@@ -16,8 +17,8 @@ public class FuentesController {
     }
 
     @PutMapping("/privada/agregar-fuente")
-    public void agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
-        fuenteService.agregarFuente(fuenteInputDTO);
+    public Boolean agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
+        return fuenteService.agregarFuente(fuenteInputDTO);
     }
 
     @PutMapping("/privada/eliminar-fuente/{fuenteId}")
