@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.services.IHechosService;
@@ -37,5 +38,15 @@ public class SolicitudesEliminacionController {
     @GetMapping("{id}")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
+    }
+
+    @PostMapping("/privada/aceptar")
+    public void aceptarSolicitud(@RequestParam SolicitudEliminarHechoInputDTO solicitudDTO, @RequestParam UsuarioInputDTO administrador) {
+        this.solicitudesEliminacionService.aceptarSolicitud(solicitudDTO, administrador);
+    }
+
+    @PostMapping("/privada/eliminar")
+    public void eliminarSolicitud(@RequestParam SolicitudEliminarHechoInputDTO solicitudDTO, @RequestParam UsuarioInputDTO administrador) {
+        this.solicitudesEliminacionService.rechazarSolicitud(solicitudDTO, administrador);
     }
 }

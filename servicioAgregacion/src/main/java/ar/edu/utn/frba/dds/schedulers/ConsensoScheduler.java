@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.dds.schedulers;
 
-import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConsensoScheduler {
     private final ColeccionesService coleccionesService;
 
@@ -11,7 +12,7 @@ public class ConsensoScheduler {
         this.coleccionesService = coleccionesService;
     }
 
-    @Scheduled(cron = "${curacionColecciones}")
+    @Scheduled(cron = "${cron.curacionColecciones}")
     public void actualizarHechos() {
         coleccionesService.curarColeccionesScheduler();
     }

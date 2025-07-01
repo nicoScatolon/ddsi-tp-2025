@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class ColeccionInputDTO {
     private Set<CriterioInputDTO> listaCriterios;
-    private Set<Long> listaIdsFuentes; //TODO cambiado, fijarse el crear colecciones como cambia
+    private Set<Long> listaIdsFuentes;
     private String handle;
     private String titulo;
     private String descripcion;
