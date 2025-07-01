@@ -46,7 +46,6 @@ public class FuenteDinamica implements IFuente {
         // por la uri pasar como queryParam parametro la ultima fecha de actualizacion
     }
 
-
     public void actualizarHechos(List<Hecho> hechosNuevos){
         for (Hecho hechoActual : hechosNuevos){
             Hecho hechoExistente = mapHechos.get( hechoActual.getOrigenId() );

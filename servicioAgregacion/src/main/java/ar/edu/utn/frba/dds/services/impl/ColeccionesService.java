@@ -135,6 +135,13 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 
+    public void curarColeccionesScheduler(){
+        logger.info("Curando Colecciones Scheduler");
+        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
+        coleccionesActualizables.forEach(n->logger.info("Coleccion a curar; Titulo: {}", n.getTitulo()));
+        coleccionesActualizables.forEach(Coleccion::curarHechos);
+    }
+
     @Override
     public void notificarActualizacionFuentes(List<IFuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
