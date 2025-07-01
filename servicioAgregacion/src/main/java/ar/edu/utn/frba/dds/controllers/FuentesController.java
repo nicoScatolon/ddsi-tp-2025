@@ -15,12 +15,12 @@ public class FuentesController {
         this.fuenteService = fuenteService;
     }
 
-    @PutMapping("/privada/fuente/agregar-fuente")
+    @PutMapping("/privada/agregar-fuente")
     public void agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
         fuenteService.agregarFuente(fuenteInputDTO);
     }
 
-    @PutMapping("/privada/fuente/eliminar-fuente/{fuenteId}")
+    @PutMapping("/privada/eliminar-fuente/{fuenteId}")
     public void eliminarUnaFuente (@RequestParam long fuenteId) {
         fuenteService.eliminarFuente(fuenteId);
     }

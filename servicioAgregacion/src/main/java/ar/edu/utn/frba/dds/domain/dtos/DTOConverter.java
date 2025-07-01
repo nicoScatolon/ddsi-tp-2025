@@ -165,9 +165,9 @@ public class DTOConverter {
 
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
         return new Coleccion(
+                input.getHandle(),
                 input.getTitulo(),
                 input.getDescripcion(),
-                input.getHandle(),
                 DTOConverter.algoritmoConsensoFromDTO(input.getAlgoritmoConsenso()));
     }
 
