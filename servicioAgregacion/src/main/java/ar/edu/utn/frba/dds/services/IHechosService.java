@@ -20,5 +20,5 @@ public interface IHechosService {
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
     void actualizarHechosRepository(List<Hecho> hechosActualizados);
-    List<HechoOutputDTO> getHechos(CategoriaInputDTO cat, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, UbicacionInputDTO ubicacion);
+    List<HechoOutputDTO> getHechos(String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud);
 }

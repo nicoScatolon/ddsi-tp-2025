@@ -57,12 +57,11 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<HechoOutputDTO> getHechos(CategoriaInputDTO catDTO, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, UbicacionInputDTO ubiDTO){
-        Categoria categoria = DTOConverter.categoriaInputDTO(catDTO);
-        if (categoriaService.findByNombre(categoria.getNombre()) == null) {categoria = null;}
+    public List<HechoOutputDTO> getHechos(String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud){
+        Categoria categoriaEntidad =  categoriaService.findByNombre(categoria);
+        if (categoriaService.findByNombre(categoriaEntidad.getNombre()) == null) {categoria = null;}
         //verificar si categoria existe
-        Ubicacion ubicacion = DTOConverter.convertirUbicacion(ubiDTO);
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,ubicacion);
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud,longitud);
 
         if (criterios.isEmpty()){
             return findAllOutput();

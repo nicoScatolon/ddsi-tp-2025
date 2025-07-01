@@ -46,38 +46,48 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarHechos(String categoria, LocalDateTime fechaReporteDesde, LocalDateTime fechaReporteHasta,  LocalDate fechaAcontecimientoDesde,  LocalDate fechaAcontecimientoHasta,  Double latitud, Double  longitud) {
+    public Mono<List<HechoExternoDTO>> buscarHechos(
+            String categoria,
+            LocalDateTime fechaReporteDesde,
+            LocalDateTime fechaReporteHasta,
+            LocalDate fechaAcontecimientoDesde,
+            LocalDate fechaAcontecimientoHasta,
+            Double latitud,
+            Double longitud) {
 
         return webClient.get()
                 .uri(uriBuilder -> {
                     uriBuilder.path("/api/hechos/publica");
+
                     if (categoria != null && !categoria.isEmpty()) {
                         uriBuilder.queryParam("categoria", categoria);
                     }
-                    if (fechaReporteDesde != null && !fechaReporteDesde.isEmpty()) {
+                    if (fechaReporteDesde != null) {
                         uriBuilder.queryParam("fecha_reporte_desde", fechaReporteDesde);
                     }
-                    if (fechaReporteHasta != null && !fechaReporteHasta.isEmpty()) {
+                    if (fechaReporteHasta != null) {
                         uriBuilder.queryParam("fecha_reporte_hasta", fechaReporteHasta);
                     }
-                    if (fechaAcontecimientoDesde != null && !fechaAcontecimientoDesde.isEmpty()) {
+                    if (fechaAcontecimientoDesde != null) {
                         uriBuilder.queryParam("fecha_acontecimiento_desde", fechaAcontecimientoDesde);
                     }
-                    if (fechaAcontecimientoHasta != null && !fechaAcontecimientoHasta.isEmpty()) {
+                    if (fechaAcontecimientoHasta != null) {
                         uriBuilder.queryParam("fecha_acontecimiento_hasta", fechaAcontecimientoHasta);
                     }
-                    if (latitud != 0) {
+                    if (latitud != null) {
                         uriBuilder.queryParam("latitud", latitud);
                     }
-                    if (longitud != 0) {
+                    if (longitud != null) {
                         uriBuilder.queryParam("longitud", longitud);
                     }
+
                     return uriBuilder.build();
                 })
                 .retrieve()
                 .bodyToFlux(HechoExternoDTO.class)
                 .collectList();
     }
+
 
 
 
