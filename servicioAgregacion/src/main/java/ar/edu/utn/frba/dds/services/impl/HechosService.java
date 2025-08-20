@@ -2,12 +2,14 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
@@ -57,15 +59,34 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<HechoOutputDTO> getHechos(String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud){
-        Categoria categoriaEntidad =  categoriaService.findByNombre(categoria);
-        if (categoriaService.findByNombre(categoriaEntidad.getNombre()) == null) {categoria = null;}
-        //verificar si categoria existe
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud,longitud);
+    public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
+        HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
 
+        Categoria categoriaEntidad = null; //la inicializo en null
+
+        //Verifico si la categoria existe
+        if (hechosFilter.getCategoria() != null){
+            categoriaEntidad = categoriaService.findByNombre(hechosFilter.getCategoria());
+            if (categoriaEntidad == null){
+                hechosFilter.setCategoria(null);
+            }
+        }
+
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(
+                categoriaEntidad,
+                hechosFilter.getFReporteDesde(),
+                hechosFilter.getFReporteHasta(),
+                hechosFilter.getFAconDesde(),
+                hechosFilter.getFAconHasta(),
+                hechosFilter.getLatitud(),
+                hechosFilter.getLongitud()
+        );
+
+        // Si no hay criterios, devolver todos los hechos
         if (criterios.isEmpty()){
             return findAllOutput();
         } else {
+            //Filtrar por criterios
             return this.findAll().stream()
                     .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
                     .map(DTOConverter::convertirHechoOutputDTO)

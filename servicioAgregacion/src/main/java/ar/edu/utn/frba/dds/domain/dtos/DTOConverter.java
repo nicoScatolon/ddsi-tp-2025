@@ -3,13 +3,10 @@ package ar.edu.utn.frba.dds.domain.dtos;
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
+import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
@@ -190,5 +187,17 @@ public class DTOConverter {
         IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
         fuente.setNombre(fuenteDTO.getNombre());
         return fuente;
+    }
+
+    public static HechoFilter convertirHechoFilterInputDTO(HechosFilterDTO filterDTO) {
+        return HechoFilter.builder()
+                .categoria(filterDTO.getCategoria())
+                .fReporteDesde(filterDTO.getFReporteDesde())
+                .fReporteHasta(filterDTO.getFReporteHasta())
+                .fAconDesde(filterDTO.getFAconDesde())
+                .fAconHasta(filterDTO.getFAconHasta())
+                .latitud(filterDTO.getLatitud())
+                .longitud(filterDTO.getLongitud())
+                .build();
     }
 }

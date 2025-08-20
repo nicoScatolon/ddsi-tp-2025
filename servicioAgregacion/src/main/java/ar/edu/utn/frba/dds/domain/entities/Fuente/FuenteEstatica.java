@@ -33,16 +33,24 @@ public class FuenteEstatica implements IFuente {
         nuevosHechosDTO = this.getHechos();
         List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
         this.actualizarHechos(nuevosHechos);
+        this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
 
     public List<HechoInputEstaticaDTO> getHechos() {
-        return Objects.requireNonNull(this.webClient.get()
-                .uri("/hechos")
+        return this.webClient.get()
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/hechos");
+                    if (ultimaActualizacion != null) {
+                        builder.queryParam("fechaDeCarga", ultimaActualizacion);
+                    }
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToFlux(HechoInputEstaticaDTO.class)
                 .collectList()
-                .block());
+                .blockOptional()
+                .orElse(Collections.emptyList());
     }
 
     public void actualizarHechos(List<Hecho> hechosNuevos){

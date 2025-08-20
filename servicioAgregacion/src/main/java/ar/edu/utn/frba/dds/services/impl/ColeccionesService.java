@@ -22,6 +22,7 @@ import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -84,7 +85,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO) {
+    public ColeccionOutputDTO modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO) {
         // 1) Cargo la colección existente por handle
         Coleccion coleccion = coleccionesRepository.findByHandle(coleccionInputDTO.getHandle());
 
@@ -92,21 +93,35 @@ public class ColeccionesService implements IColeccionesService {
         coleccion.setTitulo(coleccionInputDTO.getTitulo());
         coleccion.setDescripcion(coleccionInputDTO.getDescripcion());
         coleccionesRepository.save(coleccion);
+
+        return DTOConverter.coleccionOutputDTO(coleccion);
     }
 
     @Override
-    public void modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO){
+    public ResponseEntity<Void> modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+
+        if (coleccion == null){
+            return ResponseEntity.notFound().build();
+        }
+
         Set<ICriterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
         coleccion.setListaCriterios(nuevos);
         coleccionesRepository.save(coleccion);
+
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO) {
+    public ResponseEntity<Void> modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO) {
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null){
+            return ResponseEntity.notFound().build();
+        }
+
         coleccion.setAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
         coleccionesRepository.save(coleccion);
+        return ResponseEntity.ok().build();
     }
 
     @Override

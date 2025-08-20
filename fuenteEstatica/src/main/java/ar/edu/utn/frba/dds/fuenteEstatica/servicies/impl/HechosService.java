@@ -8,7 +8,9 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
 import org.springframework.stereotype.Service;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,12 +41,16 @@ public class HechosService implements IHechosService {
         return hechos;
     }
 
+
     @Override
-    public List<HechoOutputDTO> getAllHechosParaActualizar(){
-        List<Hecho> hechos = hechosRepository.findAll().stream()
-                .filter(Hecho::getActualizar)
-                .toList();
-        hechos.forEach(h -> h.setActualizar(false));
+    public List<HechoOutputDTO> getAllHechosPorFecha(LocalDateTime fechaDeCarga) {
+        List<Hecho> hechos;
+        if(fechaDeCarga == null){
+            hechos = hechosRepository.findAll();
+        } else {
+            hechos = hechosRepository.findByFechaDeCarga(fechaDeCarga);
+        }
+
         return hechos.stream().map(this::hechoToDTO).toList();
     }
 

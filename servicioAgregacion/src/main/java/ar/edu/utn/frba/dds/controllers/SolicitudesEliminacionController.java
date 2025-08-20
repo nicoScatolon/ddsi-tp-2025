@@ -45,6 +45,6 @@ public class SolicitudesEliminacionController {
 
     @PostMapping("/privada/eliminar")
     public void eliminarSolicitud(@RequestParam SolicitudEliminarHechoInputDTO solicitudDTO, @RequestParam UsuarioInputDTO administrador) {
-        this.solicitudesEliminacionService.rechazarSolicitud(solicitudDTO, administrador);
+        this.solicitudesEliminacionService.rechazarSolicitud(solicitudDTO, administrador); //Todo: Hay q pasar el administrador completo?? Habría un sistema de validación?
     }
 }

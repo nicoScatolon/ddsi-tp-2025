@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.services;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
@@ -20,5 +21,6 @@ public interface IHechosService {
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
     void actualizarHechosRepository(List<Hecho> hechosActualizados);
-    List<HechoOutputDTO> getHechos(String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud);
+    List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO);
+
 }

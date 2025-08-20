@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
@@ -34,16 +35,8 @@ public class HechosController {
 
 
     @GetMapping("/publica")
-    public List<HechoOutputDTO> getHechos(
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
-            @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud
-    ) {
-        return hechosService.getHechos(categoria, fReporteDesde, fReporteHasta, fAconDesde, fAconHasta, latitud, longitud);
+    public List<HechoOutputDTO> getHechos(HechosFilterDTO hechosFilterDTO) {
+        return hechosService.getHechos(hechosFilterDTO);
     }
 
     @GetMapping("/todos")

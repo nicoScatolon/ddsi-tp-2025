@@ -21,6 +21,4 @@ public class Hecho {
     //Metadata
     private Long id;
     private LocalDateTime fechaDeCarga;
-    private Boolean actualizar = true; //le dice al service cuando si debe enviar o no el hecho
-    //private Boolean fueEliminado = false; -> No sabemos si se modifica el hecho solamente en el agregador o aca tambien
 }

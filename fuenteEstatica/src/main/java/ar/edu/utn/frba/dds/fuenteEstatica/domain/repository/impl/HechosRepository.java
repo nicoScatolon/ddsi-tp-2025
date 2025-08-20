@@ -4,10 +4,13 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
+// Ver JpaRepository cuando tengamos que implementar una DB relacional. Lo que hace es migrar estos métodos a SQL
 @Repository
 public class HechosRepository implements IHechosRepository {
     private List<Hecho> hechos;
@@ -36,5 +39,12 @@ public class HechosRepository implements IHechosRepository {
     @Override
     public void delete(Hecho hecho) {
         this.hechos.remove(hecho);
+    }
+
+    @Override
+    public List<Hecho> findByFechaDeCarga(LocalDateTime fechaDeCarga){
+        return hechos.stream()
+                .filter(h -> h.getFechaDeCarga() != null && !h.getFechaDeCarga().isBefore(fechaDeCarga))
+                .toList();
     }
 }

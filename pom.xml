@@ -11,6 +11,7 @@
 	<groupId>ar.utn.ba.ddsi</groupId>
 	<artifactId>MetaMapa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 	<name>MetaMapa</name>
 	<description>Sistema de gestión de mapeos colaborativos</description>
 	<url/>

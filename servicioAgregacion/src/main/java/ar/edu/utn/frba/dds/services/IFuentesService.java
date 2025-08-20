@@ -16,4 +16,5 @@ public interface IFuentesService {
     List<IFuente> buscarFuentePorTipo(List<TipoFuente> tipoFuente);
     void notificarEliminaciones (List<Hecho> hechosAEliminar);
     void actualizarHechosFuentesScheduler();
+
 }

@@ -14,6 +14,7 @@ import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,8 +28,8 @@ public interface IColeccionesService {
     List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, Double latitud, Double longitud);
     void notificarActualizacionFuentes(List<IFuente> fuentes);
     void notificarFuenteEliminada(IFuente fuente);
-    void modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO);
-    void modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO);
-    void modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO);
+    ColeccionOutputDTO modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO);
+    ResponseEntity<Void> modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO);
+    ResponseEntity<Void> modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO);
     void modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO);
 }

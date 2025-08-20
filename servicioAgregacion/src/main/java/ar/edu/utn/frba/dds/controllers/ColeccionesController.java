@@ -15,6 +15,7 @@ import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.impl.CriterioFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,8 +42,8 @@ public class ColeccionesController {
     // Operaciones CRUD sobre las colecciones
 
     @PostMapping("/privada")
-    public void crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        coleccionesService.crearColeccion(coleccionInputDTO);
+    public ColeccionOutputDTO crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        return coleccionesService.crearColeccion(coleccionInputDTO);
     }
 
     @GetMapping("/privada")
@@ -51,18 +52,18 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada")
-    public void modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        coleccionesService.modificarColeccionBasica(coleccionInputDTO);
+    public ColeccionOutputDTO modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
 
     @PutMapping("/privada/{handle}/modificar-criterio")
-    public void modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
-        coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
+    public ResponseEntity<Void> modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
+        return coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
     @PutMapping("/privada/{handle}/modificar-consenso") //TODO cambiar ruta "Modificar" NO
-    public void modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
-        coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
+    public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
+        return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
 
     @PutMapping("/privada/{handle}/modificar-fuentes")
