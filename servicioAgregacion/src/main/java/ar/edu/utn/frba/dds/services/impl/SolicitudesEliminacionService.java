@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import ar.edu.utn.frba.dds.domain.repository.ISolicitudesEliminacionRepository;
 import ar.edu.utn.frba.dds.services.IFuentesService;
@@ -15,6 +16,7 @@ import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -72,19 +74,33 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void rechazarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
-        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud, hecho);
-        solicitudEliminarHecho.serRechazada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
-        repository.save(solicitudEliminarHecho);
-    }
+    public ResponseEntity<Void> procesarSolicitud(SolicitudEliminarHechoInputDTO solicitudDTO, UsuarioInputDTO usuarioDTO, Boolean aceptar) {
+        Hecho hecho = hechosService.findEntidadPorId(solicitudDTO.getHechoId());
+        if (hecho == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-    @Override
-    public void aceptarSolicitud(SolicitudEliminarHechoInputDTO solicitud, UsuarioInputDTO usuarioInputDTO) {
-        Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
-        SolicitudEliminarHecho solicitudEliminarHecho = DTOConverter.solicitudEliminarHecho(solicitud, hecho);
-        solicitudEliminarHecho.serAceptada(usuarioInputDTO.getNombre(), usuarioInputDTO.getApellido());
-        repository.save(solicitudEliminarHecho);
+        SolicitudEliminarHecho solicitud = repository.findById(solicitudDTO.getHechoId());
+        if (solicitud == null) {
+            solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO, hecho);
+        }
+
+        if (EstadoDeSolicitud.PENDIENTE.equals(solicitud.getEstado())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        if (usuarioDTO.getNombre() == null || usuarioDTO.getApellido() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (aceptar) {
+            solicitud.serAceptada(usuarioDTO.getNombre(), usuarioDTO.getApellido());
+        } else {
+            solicitud.serRechazada(usuarioDTO.getNombre(), usuarioDTO.getApellido());
+        }
+
+        repository.save(solicitud);
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -107,6 +123,8 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 )
         );
     }
+
+
 
     public void notificarEliminacionHechos(){
         List<SolicitudEliminarHecho> solicitudesAceptadas = repository.findAll().stream()

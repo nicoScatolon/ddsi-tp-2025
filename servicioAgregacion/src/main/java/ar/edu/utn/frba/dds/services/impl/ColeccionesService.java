@@ -1,10 +1,7 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
@@ -14,6 +11,7 @@ import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
@@ -125,25 +123,29 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
+    public List<IFuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
         List<IFuente> nuevasFuentes = new ArrayList<>();
         fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById( f.getId()) ) );
         coleccion.setListaFuentes(nuevasFuentes);
         coleccionesRepository.save(coleccion);
+
+        return coleccion.getListaFuentes();
     }
 
     @Override
-    public void eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
+    public ResponseEntity<Void> eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
         if(coleccionInputDTO == null){
-            throw new IllegalArgumentException("argumento nulo");
+            return ResponseEntity.notFound().build();
         }
-        if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) != null) {
-            Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
-            coleccionesRepository.delete(coleccion);
-        } else {
-            throw new RuntimeException("No se encontro la coleccion");
+
+        if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) == null) {
+            return ResponseEntity.notFound().build();
         }
+
+        Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
+        coleccionesRepository.delete(coleccion);
+        return ResponseEntity.ok().build();
     }
 
     //-------------------------------------------------------------------------------
@@ -224,18 +226,28 @@ public class ColeccionesService implements IColeccionesService {
     }*/
 
     @Override
-    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, String categoria, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde,LocalDate fAconHasta, Double latitud, Double longitud){
-        List<ICriterio> criteriosEntidades = this.criterioFactory.crearCriteriosParametros(this.categoriaService.findByNombre(categoria),fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud, longitud);
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO filterDTO) {
+        // Convertir el DTO en objeto de dominio
+        HechoFilter filter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
 
-        if(criteriosEntidades.isEmpty()){
-            List<Hecho> hechos = this.getHechosColeccion(handle,curado);
-            return DTOConverter.hechoOutputDTO(hechos);
-
+        // Buscar la categoría si corresponde
+        Categoria categoria = null;
+        if (filter.getCategoria() != null) {
+            categoria = this.categoriaService.findByNombre(filter.getCategoria());
         }
 
-        List<Hecho> hechosFiltrados = this.getHechosColeccionFiltrados(handle,criteriosEntidades, curado);
-        return DTOConverter.hechoOutputDTO(hechosFiltrados);
+        // Generar criterios con la factory
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
 
+        // btener hechos según haya o no criterios
+        List<Hecho> hechos;
+        if (criterios.isEmpty()) {
+            hechos = this.getHechosColeccion(handle, curado);
+        } else {
+            hechos = this.getHechosColeccionFiltrados(handle, criterios, curado);
+        }
+
+        return DTOConverter.hechoOutputDTO(hechos);
     }
 }
 

@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.domain.repository.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -32,10 +33,9 @@ public class FuentesRepository implements IFuentesRepository {
     }
 
     @Override
-    public Boolean saveFuente(IFuente fuente) {
+    public void saveFuente(IFuente fuente) {
         fuente.setId(idGenerator.getAndIncrement());
         fuentes.add(fuente);
-        return true;
     }
 
     @Override

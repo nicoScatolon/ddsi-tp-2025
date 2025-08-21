@@ -1,9 +1,6 @@
 package ar.edu.utn.frba.dds.controllers;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
@@ -56,25 +53,25 @@ public class ColeccionesController {
         return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
 
-    @PutMapping("/privada/{handle}/modificar-criterio")
+    @PutMapping("/privada/{handle}/criterios")
     public ResponseEntity<Void> modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
         return coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
-    @PutMapping("/privada/{handle}/modificar-consenso") //TODO cambiar ruta "Modificar" NO
+    @PutMapping("/privada/{handle}/consenso") //TODO cambiar ruta "Modificar" NO
     public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
 
-    @PutMapping("/privada/{handle}/modificar-fuentes")
-    public void modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
-        coleccionesService.modificarFuenteColeccion(handle, fuentes);
+    @PutMapping("/privada/{handle}/fuentes")
+    public List<IFuente> modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
+        return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 
 
     @DeleteMapping("/privada")
-    public void eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        coleccionesService.eliminarColeccion(coleccionInputDTO);
+    public ResponseEntity<Void> eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        return coleccionesService.eliminarColeccion(coleccionInputDTO);
     }
 
 
@@ -88,15 +85,8 @@ public class ColeccionesController {
     public List<HechoOutputDTO> mostrarHechos(
             @PathVariable String handle,
             @RequestParam Boolean curado,
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fReporteHasta,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fAconHasta,
-            @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud
-
+            @ModelAttribute HechosFilterDTO filtros
     ) {
-        return this.coleccionesService.mostrarHechosColeccion(handle,curado, categoria,fReporteDesde,fReporteHasta,fAconDesde,fAconHasta,latitud,longitud);
+        return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
     }
 }
