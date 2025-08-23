@@ -32,8 +32,6 @@ public class HechosController {
         return hechosService.findByID(id);
     }
 
-
-
     @GetMapping("/publica")
     public List<HechoOutputDTO> getHechos(HechosFilterDTO hechosFilterDTO) {
         return hechosService.getHechos(hechosFilterDTO);
@@ -43,10 +41,25 @@ public class HechosController {
     public List<HechoOutputDTO> getHechos() {
         return hechosService.findAllOutput();
     }
+    //TODO revisar los path que estan medio raros
 
     @GetMapping("/inicializar")
     public boolean inicializarDatos(){
         this.seederService.init();
         return true;
     }
+
+    @PutMapping("/privada/{id}/etiquetas")
+    public void agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
+        hechosService.agregarEtiquetaHecho(id, etiqueta);
+        //TODO hacer que devuelva codigos de estado HTTP
+    }
+
+    @DeleteMapping ("/privada/{id}/etiquetas")
+    public void eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
+        hechosService.eliminarEtiquetaHecho(id, etiqueta);
+        //TODO hacer que devuelva codigos de estado HTTP
+    }
+
+
 }

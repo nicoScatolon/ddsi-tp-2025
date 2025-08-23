@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
-
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
@@ -17,11 +16,8 @@ public class CriterioCargaEntreFechas implements ICriterio {
 
     @Override
     public Boolean pertenece(Hecho hecho) {
-        LocalDateTime fecha = this.getFechaNecesaria(hecho);
+        LocalDateTime fecha = hecho.getFechaDeCarga();
         return fecha.isAfter(primeraFecha) && fecha.isBefore(segundaFecha);
     }
 
-    public LocalDateTime getFechaNecesaria(Hecho hecho) {
-        return hecho.getFechaDeCarga();
-    }
 }

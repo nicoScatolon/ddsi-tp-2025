@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HechosService implements IHechosService {
@@ -80,7 +82,7 @@ public class HechosService implements IHechosService {
                 hechosFilter.getFAconHasta(),
                 hechosFilter.getLatitud(),
                 hechosFilter.getLongitud()
-        );
+        ); //TODO esto da error, revisar
 
         // Si no hay criterios, devolver todos los hechos
         if (criterios.isEmpty()){
@@ -108,6 +110,23 @@ public class HechosService implements IHechosService {
         //comparator.agregarComando(comando1);
         //comparator.eliminarComando(comando2);
         //TODO
+    }
+
+    public int agregarEtiquetaHecho(Long hechoId, String etiqueta){
+        Hecho hechoModificado = hechosRepository.findById(hechoId);
+        Etiqueta nuevaEtiqueta = new Etiqueta(etiqueta);
+        hechoModificado.agregarEtiqueta(nuevaEtiqueta);
+        return 101;
+        //TODO hacer que devuelva codigos de estado http
+    }
+
+    public int eliminarEtiquetaHecho(Long hechoId, String etiqueta){
+        Hecho hechoModificado = hechosRepository.findById(hechoId);
+        List<Etiqueta> etiquetasHecho = hechoModificado.getEtiquetas();
+        Optional<Etiqueta> etiquetaEliminada = etiquetasHecho.stream().filter(e -> e.getNombre().equals(etiqueta)).findFirst();
+        etiquetaEliminada.ifPresent(hechoModificado::eliminarEtiqueta);
+        return 101;
+        //TODO hacer que devuelva codigos de estado http
     }
 
     // LOGGER

@@ -7,8 +7,10 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,8 +23,11 @@ public class HechosController {
     }
 
     @GetMapping
-    public List<HechoOutputDTO> buscarTodos(){
-        return hechosService.getHechosActualizar();
+    public List<HechoOutputDTO> obtenerHechos(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga)
+    {
+        return hechosService.getHechos(fechaDeCarga);
     }
 
     @PostMapping

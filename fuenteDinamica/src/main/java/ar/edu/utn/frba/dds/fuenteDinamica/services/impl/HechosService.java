@@ -60,11 +60,14 @@ public class HechosService implements IHechosService {
         return hecho;
     }
 
-    public List<HechoOutputDTO> getHechosActualizar() {
-        return this.hechosRepository.findAll().stream()
-                .filter(h -> h.getActualizar() && h.getEstado().equals(EstadoHecho.ACEPTADO))
-                .map(this::hechoOutputDTO)
-                .collect(Collectors.toList());
+    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
+        List<Hecho> hechosAEnviar = this.hechosRepository.findAll().stream().filter(h -> h.getEstado().equals(EstadoHecho.ACEPTADO)).toList();
+
+        if (fechaDeCarga !=null){
+            hechosAEnviar = hechosAEnviar.stream().filter(h -> h.getFechaDeCarga().isAfter(fechaDeCarga)).toList();
+        }
+
+        return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
     }
 
     //Metodos privados
@@ -104,7 +107,6 @@ public class HechosService implements IHechosService {
                 .contribuyente(hecho.getContribuyente())
                 .build();
     }
-
 
     private CategoriaOutputDTO categoriaOutputDTO(String nombreCategoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
