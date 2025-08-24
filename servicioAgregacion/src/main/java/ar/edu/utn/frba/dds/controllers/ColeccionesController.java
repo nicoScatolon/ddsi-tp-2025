@@ -58,7 +58,7 @@ public class ColeccionesController {
         return coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
-    @PutMapping("/privada/{handle}/consenso") //TODO cambiar ruta "Modificar" NO
+    @PutMapping("/privada/{handle}/consenso")
     public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }

@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.ISeederService;
 import ar.edu.utn.frba.dds.services.impl.SeederService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -50,15 +51,14 @@ public class HechosController {
     }
 
     @PutMapping("/privada/{id}/etiquetas")
-    public void agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
-        hechosService.agregarEtiquetaHecho(id, etiqueta);
-        //TODO hacer que devuelva codigos de estado HTTP
+    public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
+        return hechosService.agregarEtiquetaHecho(id, etiqueta);
     }
 
     @DeleteMapping ("/privada/{id}/etiquetas")
-    public void eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
-        hechosService.eliminarEtiquetaHecho(id, etiqueta);
-        //TODO hacer que devuelva codigos de estado HTTP
+    public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
+        return hechosService.eliminarEtiquetaHecho(id, etiqueta);
+
     }
 
 

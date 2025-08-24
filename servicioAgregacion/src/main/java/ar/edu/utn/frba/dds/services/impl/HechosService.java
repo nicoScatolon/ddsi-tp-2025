@@ -17,6 +17,7 @@ import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -74,15 +75,7 @@ public class HechosService implements IHechosService {
             }
         }
 
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(
-                categoriaEntidad,
-                hechosFilter.getFReporteDesde(),
-                hechosFilter.getFReporteHasta(),
-                hechosFilter.getFAconDesde(),
-                hechosFilter.getFAconHasta(),
-                hechosFilter.getLatitud(),
-                hechosFilter.getLongitud()
-        ); //TODO esto da error, revisar
+        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad, hechosFilter);
 
         // Si no hay criterios, devolver todos los hechos
         if (criterios.isEmpty()){
@@ -112,21 +105,34 @@ public class HechosService implements IHechosService {
         //TODO
     }
 
-    public int agregarEtiquetaHecho(Long hechoId, String etiqueta){
+    public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
+        if (etiqueta == null || etiqueta.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         Hecho hechoModificado = hechosRepository.findById(hechoId);
+        if (hechoModificado == null){
+            return ResponseEntity.notFound().build();
+        }
         Etiqueta nuevaEtiqueta = new Etiqueta(etiqueta);
         hechoModificado.agregarEtiqueta(nuevaEtiqueta);
-        return 101;
-        //TODO hacer que devuelva codigos de estado http
+        return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe parar una URL
     }
 
-    public int eliminarEtiquetaHecho(Long hechoId, String etiqueta){
+    public ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta){
+        if (etiqueta == null || etiqueta.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         Hecho hechoModificado = hechosRepository.findById(hechoId);
+        if (hechoModificado == null){
+            return ResponseEntity.notFound().build();
+        }
         List<Etiqueta> etiquetasHecho = hechoModificado.getEtiquetas();
         Optional<Etiqueta> etiquetaEliminada = etiquetasHecho.stream().filter(e -> e.getNombre().equals(etiqueta)).findFirst();
+        if (etiquetaEliminada.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
         etiquetaEliminada.ifPresent(hechoModificado::eliminarEtiqueta);
-        return 101;
-        //TODO hacer que devuelva codigos de estado http
+        return ResponseEntity.noContent().build();
     }
 
     // LOGGER
