@@ -28,26 +28,14 @@ public class HechosController {
         this.seederService = seederService;
     }
 
-    @GetMapping("/{id}")
-    public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
-        return hechosService.findByID(id);
-    }
-
     @GetMapping("/publica")
     public List<HechoOutputDTO> getHechos(HechosFilterDTO hechosFilterDTO) {
         return hechosService.getHechos(hechosFilterDTO);
     }
 
-    @GetMapping("/todos")
-    public List<HechoOutputDTO> getHechos() {
-        return hechosService.findAllOutput();
-    }
-    //TODO revisar los path que estan medio raros
-
-    @GetMapping("/inicializar")
-    public boolean inicializarDatos(){
-        this.seederService.init();
-        return true;
+    @GetMapping("/publica/{id}")
+    public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
+        return hechosService.findByID(id);
     }
 
     @PutMapping("/privada/{id}/etiquetas")
@@ -61,5 +49,15 @@ public class HechosController {
 
     }
 
+    @GetMapping("/pruebas")
+    public List<HechoOutputDTO> getHechosPrueba() {
+        return hechosService.findAllOutput();
+    }
+
+    @GetMapping("/inicializar")
+    public boolean inicializarDatos(){
+        this.seederService.init();
+        return true;
+    }
 
 }
