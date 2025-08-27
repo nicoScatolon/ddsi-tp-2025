@@ -1,0 +1,127 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    background: #f9f9f9;
+    color: #222;
+}
+
+/* Navbar */
+header {
+    background-color: #2ecc71;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* logo izquierda, links centrados, login derecha */
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    gap: 2rem;
+}
+
+/* Logo + nombre */
+.brand a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+    text-decoration: none; /* quita subrayado */
+}
+
+.brand a:hover {
+    background: #27ae60;
+}
+
+.brand img {
+    height: 45px;
+    display: block;
+}
+
+.site-name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: white;
+}
+
+/* Links centrados */
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    margin: 0 auto;
+    list-style: none;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+/* Hover normal para links */
+.nav-links li a:hover {
+    background: #27ae60;
+}
+
+/* Botón Create destacado */
+.nav-links li a.btn-crear {
+    background: white;           /* Fondo blanco */
+    color: #2ecc71;              /* Texto verde */
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;      /* Más grande que los otros links */
+    border-radius: 20px;          /* Redondeado estilo “pill” */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra sutil */
+    border: 2px solid #2ecc71;
+    transition: all 0.3s ease;
+}
+
+.nav-links li a.btn-crear:hover {
+    background: #27ae60; /* Verde fuerte al pasar el mouse */
+    color: white;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15); /* Sombra más visible */
+    transform: translateY(-2px); /* Pequeño efecto de “levantarse” */
+}
+
+/* Botón de iniciar sesión */
+.login a {
+    background: white;
+    color: #2ecc71;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: background 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+}
+
+.login a:hover {
+    background: #27ae60;
+    color: white;
+}
+
+/* Secciones full-screen */
+section {
+    height: 100vh;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+}
