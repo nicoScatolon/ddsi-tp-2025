@@ -12,44 +12,51 @@ html, body {
     color: #222;
 }
 
-/* Navbar */
+/* Navbar  */
 header {
     background-color: #2ecc71;
     height: 60px;
-    position: sticky;
+    position: fixed;
+    width: 100%;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    z-index: 100;
     display: flex;
     align-items: center;
+    padding: 1em 2em;
 }
+
 
 nav {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* logo izquierda, links centrados, login derecha */
-    max-width: 1200px;
-    margin: 0 auto;
+    justify-content: space-between;
     width: 100%;
-    gap: 2rem;
 }
 
 /* Logo + nombre */
 .brand a {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.5rem 1rem;
+    gap: 10px;
+    padding: 0.25rem 1rem;
     border-radius: 8px;
     transition: background 0.3s ease;
-    text-decoration: none; /* quita subrayado */
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.4em;
 }
 
 .brand a:hover {
-    background: #27ae60;
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 .brand img {
-    height: 45px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     display: block;
 }
 
@@ -62,7 +69,8 @@ nav {
 /* Links centrados */
 .nav-links {
     display: flex;
-    gap: 1rem;
+    align-items: center;  
+    gap: 20px;
     margin: 0 auto;
     list-style: none;
 }
@@ -73,55 +81,82 @@ nav {
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
+    line-height: 1;
 }
 
-/* Hover normal para links */
 .nav-links li a:hover {
     background: #27ae60;
-}
-
-/* Botón Create destacado */
-.nav-links li a.btn-crear {
-    background: white;           /* Fondo blanco */
-    color: #2ecc71;              /* Texto verde */
-    font-weight: 700;
-    padding: 0.6rem 1.5rem;      /* Más grande que los otros links */
-    border-radius: 20px;          /* Redondeado estilo “pill” */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra sutil */
-    border: 2px solid #2ecc71;
-    transition: all 0.3s ease;
-}
-
-.nav-links li a.btn-crear:hover {
-    background: #27ae60; /* Verde fuerte al pasar el mouse */
     color: white;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.15); /* Sombra más visible */
-    transform: translateY(-2px); /* Pequeño efecto de “levantarse” */
 }
 
-/* Botón de iniciar sesión */
-.login a {
+.login .btn {
+    margin-left: 10px;
+}
+/* ============ BOTONES ============ */
+.btn {
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 2px solid #2ecc71;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    line-height: 1; 
+    margin-left: 1rem;
+}
+
+.btn-secondary {
     background: white;
     color: #2ecc71;
-    font-weight: 600;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    transition: background 0.3s ease, color 0.3s ease;
-    text-decoration: none;
 }
 
-.login a:hover {
+.btn-secondary:hover {
+    background: #27ae60;
+    color: white;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.btn-primary {
     background: #27ae60;
     color: white;
 }
 
+.btn-primary:hover {
+    background: white;
+    color: #27ae60;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* --- NAV LINKS --- */
+.nav-links li a.btn-primary {
+    color: white; 
+    background: #27ae60; 
+    border: 2px solid #27ae60;
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+.nav-links li a.btn-primary:hover {
+    background: white; 
+    color: #27ae60;
+    transform: translateY(-2px);
+}
+
+
 /* Secciones full-screen */
-section {
+.hero {
     height: 100vh;
     padding: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 3rem;
+}
+
+/* Otras secciones normales */
+section {
+    padding: 2rem;
 }

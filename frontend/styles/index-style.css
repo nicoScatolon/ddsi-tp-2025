@@ -1,0 +1,65 @@
+/* --- RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    color: #fff;
+    background: url("../images/background-home.jpg") center/cover no-repeat fixed;
+}
+
+/* --- HEADER --- */
+header {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+}
+
+
+/* --- HOME SECTION --- */
+#home {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 100px;
+    text-align: center;
+}
+
+#home .content h1 {
+    font-size: 5.5em;
+    margin-bottom: 0.4em;
+    font-weight: 700;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+#home .content h3 {
+    font-size: 2.6em;
+    margin-bottom: 0.3em;
+    font-weight: 500;
+}
+
+#home .content h5 {
+    font-size: 1.5em;
+    font-weight: 400;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* --- HOME BUTTONS --- */
+.home-buttons {
+    margin-top: 70px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.home-buttons .btn {
+    font-size: 1.4em;
+    padding: 18px 40px;
+}

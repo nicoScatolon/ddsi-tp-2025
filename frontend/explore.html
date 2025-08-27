@@ -11,8 +11,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="images/icon.ico">
 
-
     <link rel="stylesheet" href="styles/styles.css">
+
+    <link rel="stylesheet" href="styles/explore-style.css">
 </head>
 <body>
     <header>
@@ -24,28 +25,98 @@
                     <span class="site-name">MetaMapa</span>
                 </a>
             </div>
-
-            <!-- Links centrados -->
+            
             <ul class="nav-links">
+                <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
                 <li><a href="explore.html">Explore</a></li>
                 <li><a href="community.html">Community</a></li>
                 <li><a href="contact.html">Contact</a></li>
                 <li><a href="about.html">About Us</a></li>
-                <li><a href="create.html" class="btn-crear">+ Create</a></li>
             </ul>
 
-            <!-- Botón de iniciar sesión -->
             <div class="login">
-                <a href="login.html">Iniciar sesión</a>
+                <a href="login.html" class="btn btn-secondary">Log in</a>
+                <a href="signup.html" class="btn btn-secondary">Sign up</a>
             </div>
         </nav>
     </header>
 
-    <!-- Contenido de la página -->
     <section id="explore">
-        <div class="content">
-            <h1>Explore</h1>
+    <div class="cards-container">
+        <div class="card" onclick="openModal('Hecho 1', 'images/hecho1.jpg', 'Categoría A', 'Ciudad X', '27/08/2025', 'Descripción completa y detallada del hecho 1.')">
+            <img src="images/hecho1.jpg" alt="Imagen hecho 1">
+            <div class="card-content">
+                <h2>Hecho 1</h2>
+                <p class="meta">Categoría A | Ciudad X | 27/08/2025</p>
+                <p class="description">Descripción breve del hecho 1...</p>
+            </div>
         </div>
+
+        <div class="card" onclick="openModal('Hecho 2', 'images/hecho2.jpg', 'Categoría B', 'Ciudad Y', '25/08/2025', 'Descripción completa y detallada del hecho 2.')">
+            <img src="images/hecho2.jpg" alt="Imagen hecho 2">
+            <div class="card-content">
+                <h2>Hecho 2</h2>
+                <p class="meta">Categoría B | Ciudad Y | 25/08/2025</p>
+                <p class="description">Descripción breve del hecho 2...</p>
+            </div>
+        </div>
+
+        <!-- Más tarjetas -->
+         <div class="card no-image">
+    <div class="image-container">
+        <span></span>
+    </div>
+    <div class="card-content">
+        <h2>Hecho sin foto</h2>
+        <p class="meta">Categoría | Ciudad | Fecha</p>
+        <p class="description">Descripción breve...</p>
+        </div>
+    </div>
+
+    <div class="card no-image">
+        <div class="image-container">
+            <span></span>
+        </div>
+        <div class="card-content">
+            <h2>Otro hecho</h2>
+            <p class="meta">Categoría | Ciudad | Fecha</p>
+            <p class="description">Descripción breve...</p>
+        </div>
+    </div>
+    </div>
     </section>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <img id="modal-img" src="" alt="">
+            <p class="meta" id="modal-meta"></p>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <script>
+        function openModal(title, img, category, location, date, description) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-img').src = img;
+            document.getElementById('modal-meta').innerText = category + " | " + location + " | " + date;
+            document.getElementById('modal-description').innerText = description;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('modal')) {
+                closeModal();
+            }
+        }
+    </script>
+
+
 </body>
 </html>

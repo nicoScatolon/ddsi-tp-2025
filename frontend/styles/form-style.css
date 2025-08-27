@@ -1,0 +1,127 @@
+/* --- BASE & RESET --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    background: url("../images/background-home.jpg") center/cover no-repeat fixed;
+    color: #fff;
+}
+
+/* --- HEADER / NAVBAR --- */
+header {
+    background: rgba(0,0,0,0.6); /* transparente */
+    backdrop-filter: blur(6px);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 1em 2em;
+    display: flex;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- BRAND --- */
+.brand a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.4em;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.2s;
+    padding: 0.25rem 1rem;
+    border-radius: 8px;
+}
+
+.brand a:hover {
+    background: rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+}
+
+.brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+/* --- FORM SECTIONS (LOGIN & SIGNUP) --- */
+.login-section, .signup-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding-top: 80px; /* navbar height */
+}
+
+.login-form, .signup-form {
+    background: rgba(0,0,0,0.7);
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-form h2, .signup-form h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.login-form label, .signup-form label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.login-form input, .signup-form input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.login-form input:focus, .signup-form input:focus {
+    box-shadow: 0 0 0 2px #27ae60;
+}
+
+/* --- BUTTONS --- */
+.login-form .btn-primary,
+.signup-form .btn-primary {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.8rem 0;
+    margin-top: 1rem;   /* para separar del input */
+    margin-left: 0;      /* eliminar margen heredado */
+}
+
+/* --- LINKS --- */
+.login-form p, .signup-form p {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.login-form a, .signup-form a {
+    color: #27ae60;
+    text-decoration: none;
+}
+
+.login-form a:hover, .signup-form a:hover {
+    text-decoration: underline;
+}
