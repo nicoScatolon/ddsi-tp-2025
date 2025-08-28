@@ -1,20 +1,14 @@
 package ar.edu.utn.frba.dds.controllers;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
+
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.ISeederService;
-import ar.edu.utn.frba.dds.services.impl.SeederService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @RestController
@@ -29,7 +23,7 @@ public class HechosController {
     }
 
     @GetMapping("/publica")
-    public List<HechoOutputDTO> getHechos(HechosFilterDTO hechosFilterDTO) {
+    public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
         return hechosService.getHechos(hechosFilterDTO);
     }
 

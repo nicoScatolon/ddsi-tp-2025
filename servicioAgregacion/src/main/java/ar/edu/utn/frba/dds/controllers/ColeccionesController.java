@@ -3,21 +3,15 @@ package ar.edu.utn.frba.dds.controllers;
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.HechosPaginadosResponseDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
-import ar.edu.utn.frba.dds.services.IHechosService;
-import ar.edu.utn.frba.dds.services.impl.CriterioFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+
 import java.util.List;
 
 
@@ -25,12 +19,9 @@ import java.util.List;
 @RequestMapping("/api/colecciones")
 public class ColeccionesController {
 
-    private final IHechosService hechosService;
     private final IColeccionesService coleccionesService;
 
-    public ColeccionesController(IHechosService hechosService,
-                                 IColeccionesService coleccionesService) {
-        this.hechosService = hechosService;
+    public ColeccionesController(IColeccionesService coleccionesService) {
         this.coleccionesService = coleccionesService;
     }
 
@@ -82,11 +73,7 @@ public class ColeccionesController {
 
 
     @GetMapping("publica/{handle}/hechos")
-    public List<HechoOutputDTO> mostrarHechos(
-            @PathVariable String handle,
-            @RequestParam Boolean curado,
-            @ModelAttribute HechosFilterDTO filtros
-    ) {
+    public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
         return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
     }
 }
