@@ -7,31 +7,35 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 
 @RestController
 @RequestMapping("/api/colecciones")
 public class ColeccionesController {
-
     private final IColeccionesService coleccionesService;
+    @Qualifier("coleccionesExecutor")
+    private final Executor coleccionesExecutor;
 
-    public ColeccionesController(IColeccionesService coleccionesService) {
+    public ColeccionesController(IColeccionesService coleccionesService, Executor coleccionesExecutor) {
         this.coleccionesService = coleccionesService;
+        this.coleccionesExecutor = coleccionesExecutor;
     }
-
     // ------------------------------------------- API Privada -------------------------------------------
 
     // Operaciones CRUD sobre las colecciones
-
     @PostMapping("/privada")
-    public ColeccionOutputDTO crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        return coleccionesService.crearColeccion(coleccionInputDTO);
+    public ResponseEntity<Void> crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        CompletableFuture.runAsync(() -> coleccionesService.crearColeccion(coleccionInputDTO), coleccionesExecutor);
+        return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/privada")
@@ -58,7 +62,6 @@ public class ColeccionesController {
     public List<IFuente> modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
         return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
-
 
     @DeleteMapping("/privada")
     public ResponseEntity<Void> eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {

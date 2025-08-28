@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.domain.dtos.input.ProcesarSolicitudInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
@@ -74,29 +74,30 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public ResponseEntity<Void> procesarSolicitud(SolicitudEliminarHechoInputDTO solicitudDTO, UsuarioInputDTO usuarioDTO, Boolean aceptar) {
-        Hecho hecho = hechosService.findEntidadPorId(solicitudDTO.getHechoId());
+    public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO solicitudDTO, Boolean aceptar) {
+        Hecho hecho = hechosService.findEntidadPorId(solicitudDTO.getSolicitud().getHechoId());
         if (hecho == null) {
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.findById(solicitudDTO.getHechoId());
+        SolicitudEliminarHecho solicitud = repository.findById(solicitudDTO.getSolicitud().getHechoId());
         if (solicitud == null) {
-            solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO, hecho);
+            solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
         }
+
 
         if (EstadoDeSolicitud.PENDIENTE.equals(solicitud.getEstado())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        if (usuarioDTO.getNombre() == null || usuarioDTO.getApellido() == null) {
+        if (solicitudDTO.getAdministrador().getNombre() == null || solicitudDTO.getAdministrador().getApellido() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         if (aceptar) {
-            solicitud.serAceptada(usuarioDTO.getNombre(), usuarioDTO.getApellido());
+            solicitud.serAceptada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
         } else {
-            solicitud.serRechazada(usuarioDTO.getNombre(), usuarioDTO.getApellido());
+            solicitud.serRechazada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
         }
 
         repository.save(solicitud);

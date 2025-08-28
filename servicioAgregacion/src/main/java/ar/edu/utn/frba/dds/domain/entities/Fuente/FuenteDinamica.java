@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Getter
@@ -40,9 +41,9 @@ public class FuenteDinamica implements IFuente {
     public List<HechoInputDinamicaDTO> getHechos() {
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    var builder = uriBuilder.path("/hechos");
+                    var builder = uriBuilder.path("/api/fuenteDinamica/hechos");
                     if (ultimaActualizacion != null) {
-                        builder.queryParam("fechaDeCarga", ultimaActualizacion);
+                        builder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
                     }
                     return builder.build();
                 })

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.services;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.ProcesarSolicitudInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
@@ -15,5 +16,5 @@ public interface ISolicitudesEliminacionService {
     void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud);
     SolicitudEliminarHecho findByID(Long id);
     void logearSolicitudesEliminacionCargadas(List<SolicitudEliminarHecho> solicitudEliminarHechos);
-    ResponseEntity<Void> procesarSolicitud(SolicitudEliminarHechoInputDTO solicitud,  UsuarioInputDTO usuarioInputDTO, Boolean aceptar);
+    ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO solicitud, Boolean aceptar);
 }

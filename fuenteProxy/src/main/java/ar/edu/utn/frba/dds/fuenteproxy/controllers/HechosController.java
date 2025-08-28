@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @RestController
-@RequestMapping("proxy/hechos")
+@RequestMapping("/api/fuenteProxy/hechos")
 public class HechosController {
     private final IHechosService hechosService;
     private final ICollecionesService coleccionesService;

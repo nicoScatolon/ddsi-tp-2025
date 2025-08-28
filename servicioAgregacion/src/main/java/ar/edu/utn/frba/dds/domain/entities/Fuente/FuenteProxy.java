@@ -32,7 +32,7 @@ public class FuenteProxy implements IFuente {
 
     public List<Hecho> getHechos() {
         return Objects.requireNonNull(this.webClient.get()
-                .uri("/hechos")
+                .uri("/api/fuenteProxy/hechos")
                 .retrieve()
                 .bodyToFlux(HechoInputProxyDTO.class)
                 .collectList()
