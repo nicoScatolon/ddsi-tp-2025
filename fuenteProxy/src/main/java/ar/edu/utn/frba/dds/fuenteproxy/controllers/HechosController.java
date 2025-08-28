@@ -16,14 +16,11 @@ import java.util.List;
 @RequestMapping("/api/fuenteProxy/hechos")
 public class HechosController {
     private final IHechosService hechosService;
-    private final ICollecionesService coleccionesService;
-    private final ISolicitudesEliminacionService solicitudesEliminacionService;
+
 
     @Autowired
-    public HechosController(IHechosService hechosService, ISolicitudesEliminacionService solicitudesEliminacionService, ICollecionesService coleccionesService) {
+    public HechosController(IHechosService hechosService) {
         this.hechosService = hechosService;
-        this.solicitudesEliminacionService = solicitudesEliminacionService;
-        this.coleccionesService = coleccionesService;
     }
 
     @GetMapping
@@ -36,23 +33,11 @@ public class HechosController {
         return hechosService.buscarPorId(id);
     }
 
-
     @GetMapping("/filtrar")
     public Mono<List<HechoOutputDTO>> filtrarHechos(@ModelAttribute HechosFilterDTO filtros) {
         return hechosService.buscarConFiltros(filtros);
     }
 
-
-    @GetMapping("/coleccion")
-    public Mono<List<HechoOutputDTO>> hechosDeColeccion(@RequestParam(name = "id_coleccion") String idColeccion) {
-        return coleccionesService.traerHechosDeColeccion(idColeccion);
-    }
-
-
-    @PostMapping("/solicitudes")
-    public Mono<Void> crearSolicitudEliminacion(@RequestBody SolicitudEliminarHechoOutputDTO solicitud) {
-        return solicitudesEliminacionService.crearSolicitudEliminacion(solicitud);
-    }
 
 
 }

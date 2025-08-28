@@ -1,25 +1,31 @@
 
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
+
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ModificarHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @RestController
 @RequestMapping("/api/fuenteDinamica/hechos")
 public class HechosController {
-
     private final HechosService hechosService;
-    public HechosController(HechosService hechosService) {
+    private final Executor executorHechos;
+
+    public HechosController(
+            HechosService hechosService,
+            @Qualifier("executorHechos") Executor executorHechos) {
         this.hechosService = hechosService;
+        this.executorHechos = executorHechos;
     }
 
     @GetMapping
@@ -31,14 +37,15 @@ public class HechosController {
     }
 
     @PostMapping
-    public void crearHecho(@RequestBody HechoInputDTO hechoInputDTO, @RequestBody ContribuyenteInputDTO contribuyenteInputDTO, @RequestBody CategoriaInputDTO categoriaInputDTO) {
-        this.hechosService.cargarHecho(hechoInputDTO, contribuyenteInputDTO, (ICategoriaService) categoriaInputDTO);
+    public ResponseEntity<Void> crearHecho(@RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
+        CompletableFuture.runAsync(() -> hechosService.cargarHecho(modificarHechoInputDTO), executorHechos);
+        return ResponseEntity.accepted().build();
     }
 
     @PutMapping("/{id}")
-    public void modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO, @RequestBody ContribuyenteInputDTO contribuyenteInputDTO) {
-        hechoInputDTO.setId(id);
-        this.hechosService.modificarHecho(hechoInputDTO, contribuyenteInputDTO);
+    public void modificarHecho(@PathVariable Long id, @RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
+        modificarHechoInputDTO.getHechoInputDTO().setId(id);
+        this.hechosService.modificarHecho(modificarHechoInputDTO);
     }
 }
 

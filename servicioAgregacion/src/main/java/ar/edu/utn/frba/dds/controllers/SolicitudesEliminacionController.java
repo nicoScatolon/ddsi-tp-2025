@@ -23,12 +23,12 @@ import java.util.concurrent.Executor;
 @RequestMapping("/api/solicitudes-eliminacion")
 public class SolicitudesEliminacionController {
     private final ISolicitudesEliminacionService solicitudesEliminacionService;
-    @Qualifier("solicitudesExecutor")
     private final Executor solicitudesExecutor;
 
-    public SolicitudesEliminacionController(ISolicitudesEliminacionService solicitudesEliminacionService, Executor solicitudesExecutor) {
+    public SolicitudesEliminacionController(ISolicitudesEliminacionService solicitudesEliminacionService,
+                                            @Qualifier("executorSolicitudes") Executor executor) {
         this.solicitudesEliminacionService = solicitudesEliminacionService;
-        this.solicitudesExecutor = solicitudesExecutor;
+        this.solicitudesExecutor = executor;
     }
 
 

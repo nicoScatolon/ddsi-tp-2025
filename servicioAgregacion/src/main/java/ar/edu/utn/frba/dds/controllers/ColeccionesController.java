@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
+import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,20 +22,21 @@ import java.util.concurrent.Executor;
 @RestController
 @RequestMapping("/api/colecciones")
 public class ColeccionesController {
-    private final IColeccionesService coleccionesService;
-    @Qualifier("coleccionesExecutor")
-    private final Executor coleccionesExecutor;
+    private final ColeccionesService coleccionesService;
+    private final Executor executor;
 
-    public ColeccionesController(IColeccionesService coleccionesService, Executor coleccionesExecutor) {
+    public ColeccionesController(
+            ColeccionesService coleccionesService,
+            @Qualifier("executorColecciones") Executor executor) {
         this.coleccionesService = coleccionesService;
-        this.coleccionesExecutor = coleccionesExecutor;
+        this.executor = executor;
     }
     // ------------------------------------------- API Privada -------------------------------------------
 
     // Operaciones CRUD sobre las colecciones
     @PostMapping("/privada")
     public ResponseEntity<Void> crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        CompletableFuture.runAsync(() -> coleccionesService.crearColeccion(coleccionInputDTO), coleccionesExecutor);
+        CompletableFuture.runAsync(() -> coleccionesService.crearColeccion(coleccionInputDTO), executor);
         return ResponseEntity.accepted().build();
     }
 

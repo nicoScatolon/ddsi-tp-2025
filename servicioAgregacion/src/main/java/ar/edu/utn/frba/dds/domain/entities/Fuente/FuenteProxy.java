@@ -48,6 +48,4 @@ public class FuenteProxy implements IFuente {
         this.hechos.addAll(hechosNuevos);
         return this.hechos;
     }
-
-
 }
