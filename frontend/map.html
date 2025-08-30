@@ -1,36 +1,28 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explore - MetaMapa</title>
+  <title>Map - MetaMapa</title>
 
-  <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="images/icon.ico">
 
-  <!-- CSS Global -->
   <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/map-style.css">
 
-  <!-- CSS Explore -->
-  <link rel="stylesheet" href="styles/explore-style.css">
-
-  <!-- JS con hechos dinámicos -->
-  <script src="js/main.js" defer></script>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <header>
     <nav>
-      <!-- Logo -->
       <div class="brand">
         <a href="index.html">
           <img src="images/icon.ico" alt="MetaMapa Logo">
           <span class="site-name">MetaMapa</span>
         </a>
       </div>
-      
       <ul class="nav-links">
         <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
         <li><a href="explore.html">Explore</a></li>
@@ -38,7 +30,6 @@
         <li><a href="collections.html">Collections</a></li>
         <li><a href="about.html">About Us</a></li>
       </ul>
-
       <div class="login">
         <a href="login.html" class="btn btn-secondary">Log in</a>
         <a href="signup.html" class="btn btn-secondary">Sign up</a>
@@ -46,22 +37,9 @@
     </nav>
   </header>
 
-  <!-- CONTENIDO -->
-  <section id="explore">
-    <div id="hechos-container" class="cards-container">
-      <!-- Las cards se cargan dinámicamente desde main.js -->
-    </div>
-  </section>
+  <div id="map"></div>
 
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2 id="modal-title"></h2>
-      <img id="modal-img" src="" alt="">
-      <p class="meta" id="modal-meta"></p>
-      <p id="modal-description"></p>
-    </div>
-  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

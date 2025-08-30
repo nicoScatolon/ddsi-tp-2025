@@ -13,6 +13,9 @@
 
 
     <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/create-style.css">
+
+    <script src="js/main.js"></script>
 </head>
 <body>
     <header>
@@ -28,8 +31,8 @@
             <ul class="nav-links">
                 <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
                 <li><a href="explore.html">Explore</a></li>
-                <li><a href="community.html">Community</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><a href="map.html">Map</a></li>
+                <li><a href="collections.html">Collections</a></li>
                 <li><a href="about.html">About Us</a></li>
             </ul>
 
@@ -41,10 +44,75 @@
     </header>
 
     <!-- Contenido de la página -->
-    <section id="create">
-        <div class="content">
-            <h1>Create</h1>
+    <section class="form-container">
+      <h1>Crear Hecho</h1>
+      <form id="hechoForm">
+        <!-- Datos básicos -->
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required>
         </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="categoria">Categoría</label>
+            <div class="categoria-wrapper">
+                <!-- Select principal -->
+                <select id="categoria" name="categoria" required>
+                <option value="" disabled selected>Seleccione una categoría</option>
+                <option value="Ambiental">Ambiental</option>
+                <option value="Social">Social</option>
+                <option value="Política">Política</option>
+                <option value="other">Otra...</option>
+                </select>
+
+                <!-- Input que aparece si selecciona "Otra..." -->
+                <input type="text" id="categoriaNueva" name="categoriaNueva" placeholder="Escriba nueva categoría" style="display:none; margin-top:0.5rem;">
+            </div>
+        </div>
+
+        <!-- Ubicación (en un futuro directamente se selecciona en el mapa) -->
+        <h2>Ubicación</h2>
+        <div class="form-inline">
+          <div class="form-group">
+            <label for="latitud">Latitud</label>
+            <input type="number" step="any" id="latitud" name="latitud" required>
+          </div>
+          <div class="form-group">
+            <label for="longitud">Longitud</label>
+            <input type="number" step="any" id="longitud" name="longitud" required>
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="form-group">
+          <label for="fechaDeOcurrencia">Fecha de Ocurrencia</label>
+          <input type="date" id="fechaDeOcurrencia" name="fechaDeOcurrencia" required>
+        </div>
+
+        <!-- Multimedia -->
+        <h2>Contenido Multimedia</h2>
+        <div class="form-group">
+          <label for="contenidoMultimedia">Subir archivo</label>
+          <input type="file" id="contenidoMultimedia" name="contenidoMultimedia" accept="image/*,video/*">
+        </div>
+
+        <div class="form-group checkbox">
+          <input type="checkbox" id="esAnonimo" name="esAnonimo">
+          <label for="esAnonimo">Publicar como anónimo</label>
+        </div>
+
+        <!-- Botón -->
+        <div class="form-actions">
+          <button type="submit" class="btn-local-primary">Guardar</button>
+          <button type="reset" class="btn-local-secondary">Cancelar</button>
+        </div>
+      </form>
     </section>
+  </main>
 </body>
 </html>
