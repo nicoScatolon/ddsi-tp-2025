@@ -1,9 +1,12 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Etiqueta {
+    private Long id;
     private String nombre;
 
     public Etiqueta(String nombre){

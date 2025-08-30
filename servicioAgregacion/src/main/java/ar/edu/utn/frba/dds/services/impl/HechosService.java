@@ -10,10 +10,12 @@ import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.IComandComparator;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
+import ar.edu.utn.frba.dds.services.IEtiquetasService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriaService categoriaService;
     private final CriterioFactory criterioFactory;
+    private final IEtiquetasService etiquetaService;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
@@ -99,11 +102,11 @@ public class HechosService implements IHechosService {
         this.hechosRepository.saveAll(hechosActualizados);
     }
 
-    public void configurarComparacion(){
+    public void configurarComparacion(List<IComandComparator> comandos){
         HechoComparator comparator = HechoComparator.getInstance();
-        //comparator.agregarComando(comando1);
-        //comparator.eliminarComando(comando2);
-        //TODO
+        comparator.setListaComandos(comandos);
+        //TODO para conectarse a front deberiamos asociar enums/strings con cada comando para que se puedan ver por pantalla,
+        //  y recibiriamos eso por la conexion no el comando en si
     }
 
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
@@ -114,7 +117,7 @@ public class HechosService implements IHechosService {
         if (hechoModificado == null){
             return ResponseEntity.notFound().build();
         }
-        Etiqueta nuevaEtiqueta = new Etiqueta(etiqueta);
+        Etiqueta nuevaEtiqueta = etiquetaService.verificarEtiqueta(etiqueta);
         hechoModificado.agregarEtiqueta(nuevaEtiqueta);
         return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe pasar una URL
     }
