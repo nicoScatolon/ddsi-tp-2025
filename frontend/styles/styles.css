@@ -1,4 +1,12 @@
 /* Reset básico */
+
+/*
+Color principal (mas claro, header) = #2F60F4
+Color de acento (oscuro, botones) = #1746D2
+Color fondo no lectura (casi blanco) = #E5ECFF
+Color fondo lectura = #F2F6FF
+*/
+
 * {
     margin: 0;
     padding: 0;
@@ -14,7 +22,7 @@ html, body {
 
 /* Navbar  */
 header {
-    background-color: #2ecc71;
+    background-color: #2F60F4;
     height: 60px;
     position: fixed;
     width: 100%;
@@ -86,7 +94,7 @@ nav {
 }
 
 .nav-links li a:hover {
-    background: #27ae60;
+    background: #1746D2;
     color: white;
 }
 
@@ -99,7 +107,7 @@ nav {
     padding: 0.6rem 1.5rem;
     border-radius: 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 2px solid #2ecc71;
+    border: 2px solid #1746D2;
     text-decoration: none;
     transition: all 0.3s ease;
     display: inline-block;
@@ -109,24 +117,24 @@ nav {
 
 .btn-secondary {
     background: white;
-    color: #2ecc71;
+    color: #1746D2;
 }
 
 .btn-secondary:hover {
-    background: #27ae60;
+    background: #1746D2;
     color: white;
     box-shadow: 0 6px 10px rgba(0,0,0,0.15);
     transform: translateY(-2px);
 }
 
 .btn-primary {
-    background: #27ae60;
+    background: #1746D2;
     color: white;
 }
 
 .btn-primary:hover {
     background: white;
-    color: #27ae60;
+    color: #1746D2;
     box-shadow: 0 6px 10px rgba(0,0,0,0.15);
     transform: translateY(-2px);
 }
@@ -134,14 +142,14 @@ nav {
 /* --- NAV LINKS --- */
 .nav-links li a.btn-primary {
     color: white; 
-    background: #27ae60; 
-    border: 2px solid #27ae60;
+    background: #1746D2; 
+    border: 2px solid #1746D2;
     transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
 .nav-links li a.btn-primary:hover {
     background: white; 
-    color: #27ae60;
+    color: #1746D2;
     transform: translateY(-2px);
 }
 

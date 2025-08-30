@@ -98,7 +98,7 @@ nav {
 }
 
 .login-form input:focus, .signup-form input:focus {
-    box-shadow: 0 0 0 2px #27ae60;
+    box-shadow: 0 0 0 2px #2F60F4;
 }
 
 /* --- BUTTONS --- */
@@ -118,7 +118,8 @@ nav {
 }
 
 .login-form a, .signup-form a {
-    color: #27ae60;
+    color: #2F60F4;
+    font-weight: bold; 
     text-decoration: none;
 }
 

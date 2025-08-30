@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hecho - MetaMapa</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/hecho-style.css">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/hecho.js" defer></script>
+</head>
+
+<body>
+  <header>
+      <nav>
+        <div class="brand">
+          <a href="index.html">
+            <img src="images/icon.ico" alt="MetaMapa Logo">
+            <span class="site-name">MetaMapa</span>
+          </a>
+        </div>
+        
+        <ul class="nav-links">
+          <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="collections.html">Collections</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+
+        <div class="login">
+          <a href="login.html" class="btn btn-secondary">Log in</a>
+          <a href="signup.html" class="btn btn-secondary">Sign up</a>
+        </div>
+      </nav>
+  </header>
+
+  <main>
+    <section id="hecho-detail" class="card">
+      <!-- Título -->
+      <h1 id="hecho-title">Título del Hecho</h1>
+
+      <!-- Descripción -->
+      <h2>Descripción</h2>
+      <p id="hecho-description">
+        Aquí irá el texto de la descripción del hecho cargado dinámicamente.
+      </p>
+
+      <!-- Categorías -->
+      <h2>Categorías</h2>
+      <ul id="hecho-categorias" class="tags"></ul>
+
+      <!-- Etiquetas -->
+      <h2>Etiquetas</h2>
+      <ul id="hecho-etiquetas" class="tags"></ul>
+
+      <!-- Ubicación -->
+      <h2>Ubicación</h2>
+      <div id="hecho-map"></div>
+
+      <!-- Multimedia -->
+      <h2>Contenido Multimedia</h2>
+      <div id="hecho-multimedia" class="multimedia-container">
+        <!-- Ejemplo de items -->
+        <img src="images/example1.jpg" alt="Ejemplo 1">
+        <img src="images/example2.jpg" alt="Ejemplo 2">
+        <video controls>
+          <source src="videos/example.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

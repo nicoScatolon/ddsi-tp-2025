@@ -1,26 +1,25 @@
 html, body {
-  height: 100%;      /* body ocupa toda la ventana */
+  height: 100%;      
   margin: 0;
   padding: 0;
+  background: #E5ECFF;
 }
 
 body {
   display: flex;
-  flex-direction: column; /* header arriba, main abajo */
+  flex-direction: column; 
   font-family: 'Poppins', sans-serif;
-  background: #f5f6fa;
   color: #2c3e50;
 }
 
 main {
-  flex: 1;                      /* ocupa todo el espacio disponible */
+  flex: 1;                      
   display: flex;
-  justify-content: center;      /* centra horizontal */
+  justify-content: center;     
   padding: 2rem;
   box-sizing: border-box;
-  min-height: 100%;             /* asegura que siempre haya espacio para margin-bottom */
+  min-height: 100%;            
 }
-
 
 /* --- Formulario --- */
 .form-container {
@@ -30,9 +29,9 @@ main {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 700px;
-
-  margin: 5rem auto; /* 5rem arriba y abajo, centrado horizontal */
+  margin: 5rem auto; 
 }
+
 .form-container h1 {
   margin-bottom: 1.5rem;
   color: #2c3e50;
@@ -94,32 +93,35 @@ input[type="checkbox"] {
 }
 
 .btn-local-primary {
-  background: #2ecc71;
+  background: #2F60F4;
   border: none;
   padding: 0.8rem 1.5rem;
   color: #fff;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: bold; 
   font-size: 1rem;
   transition: background 0.3s;
 }
 
 .btn-local-primary:hover {
-  background: #27ae60;
+  background: #1746D2;
 }
 
 .btn-local-secondary {
   background: #fff;
   padding: 0.8rem 1.5rem;
-  color: #2ecc71;
-  border: 2px solid #2ecc71;
+  color: #1746D2;
+  border: 2px solid #1746D2;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: bold; 
   font-size: 1rem;
   transition: background 0.3s;
 }
 
 .btn-local-secondary:hover {
-  background: #2ecc71;
+  background: #1746D2;
   color: #fff;
 }
+

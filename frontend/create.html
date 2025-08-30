@@ -5,22 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create - MetaMapa</title>
 
-    <!-- Google Font moderna -->
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="images/icon.ico">
 
-
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/create-style.css">
-
-    <script src="js/main.js"></script>
 </head>
 <body>
     <header>
         <nav>
-            <!-- Logo -->
             <div class="brand">
                 <a href="index.html">
                     <img src="images/icon.ico" alt="MetaMapa Logo">
@@ -43,49 +39,32 @@
         </nav>
     </header>
 
-    <!-- Contenido de la página -->
     <section class="form-container">
       <h1>Crear Hecho</h1>
       <form id="hechoForm">
         <!-- Datos básicos -->
         <div class="form-group">
           <label for="titulo">Título</label>
-          <input type="text" id="titulo" name="titulo" required>
+          <input type="text" id="titulo" name="titulo" placeholder="Incendio Forestal" required>
         </div>
 
         <div class="form-group">
           <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+          <textarea id="descripcion" name="descripcion" rows="3" required placeholder="Escribí aquí la descripción..."></textarea>
         </div>
 
         <div class="form-group">
             <label for="categoria">Categoría</label>
             <div class="categoria-wrapper">
-                <!-- Select principal -->
                 <select id="categoria" name="categoria" required>
-                <option value="" disabled selected>Seleccione una categoría</option>
-                <option value="Ambiental">Ambiental</option>
-                <option value="Social">Social</option>
-                <option value="Política">Política</option>
-                <option value="other">Otra...</option>
+                    <option value="" disabled selected>Seleccione una categoría</option>
+                    <option value="Ambiental">Ambiental</option>
+                    <option value="Social">Social</option>
+                    <option value="Política">Política</option>
+                    <option value="other">Otra...</option>
                 </select>
-
-                <!-- Input que aparece si selecciona "Otra..." -->
                 <input type="text" id="categoriaNueva" name="categoriaNueva" placeholder="Escriba nueva categoría" style="display:none; margin-top:0.5rem;">
             </div>
-        </div>
-
-        <!-- Ubicación (en un futuro directamente se selecciona en el mapa) -->
-        <h2>Ubicación</h2>
-        <div class="form-inline">
-          <div class="form-group">
-            <label for="latitud">Latitud</label>
-            <input type="number" step="any" id="latitud" name="latitud" required>
-          </div>
-          <div class="form-group">
-            <label for="longitud">Longitud</label>
-            <input type="number" step="any" id="longitud" name="longitud" required>
-          </div>
         </div>
 
         <!-- Fecha -->
@@ -93,6 +72,54 @@
           <label for="fechaDeOcurrencia">Fecha de Ocurrencia</label>
           <input type="date" id="fechaDeOcurrencia" name="fechaDeOcurrencia" required>
         </div>
+
+        <!-- Ubicación -->
+        <h2>Ubicación</h2>
+        <div class="form-group">
+          <label for="tipoUbicacion">Tipo de ubicación:</label>
+          <select id="tipoUbicacion" name="tipoUbicacion" required>
+            <option value="">-- Seleccione --</option>
+            <option value="direccion">Provincia, Localidad, Calle y Número</option>
+            <option value="coordenadas">Latitud y Longitud</option>
+            <option value="puntoInteres">Punto de Interés Conocido</option>
+          </select>
+        </div>
+
+        <!-- Dirección -->
+        <div class="form-group">
+          <label for="provincia">Provincia</label>
+          <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires">
+        </div>
+        <div class="form-group">
+          <label for="localidad">Localidad</label>
+          <input type="text" id="localidad" name="localidad" placeholder="Ej: La Plata">
+        </div>
+        <div class="form-group">
+          <label for="calle">Calle</label>
+          <input type="text" id="calle" name="calle" placeholder="Ej: 7">
+        </div>
+        <div class="form-group">
+          <label for="numero">Número</label>
+          <input type="text" id="numero" name="numero" placeholder="Ej: 1234">
+        </div>
+
+        <!-- Coordenadas -->
+        <div class="form-group">
+          <label for="latitudUbicacion">Latitud</label>
+          <input type="number" step="any" id="latitudUbicacion" name="latitudUbicacion" placeholder="10.4341607196">
+        </div>
+        <div class="form-group">
+          <label for="longitudUbicacion">Longitud</label>
+          <input type="number" step="any" id="longitudUbicacion" name="longitudUbicacion" placeholder="-66.9756333673">
+        </div>
+
+        <!-- Punto de interés -->
+        <div class="form-group">
+          <label for="puntoInteres">Punto de Interés</label>
+          <input type="text" id="puntoInteres" name="puntoInteres" placeholder="Ej: Parque Centenario">
+        </div>
+
+        
 
         <!-- Multimedia -->
         <h2>Contenido Multimedia</h2>
@@ -106,13 +133,15 @@
           <label for="esAnonimo">Publicar como anónimo</label>
         </div>
 
-        <!-- Botón -->
+        <!-- Botones -->
         <div class="form-actions">
           <button type="submit" class="btn-local-primary">Guardar</button>
           <button type="reset" class="btn-local-secondary">Cancelar</button>
         </div>
       </form>
     </section>
-  </main>
+    <br>
+    <!-- JS -->
+    <script src="js/form.js"></script>
 </body>
 </html>
