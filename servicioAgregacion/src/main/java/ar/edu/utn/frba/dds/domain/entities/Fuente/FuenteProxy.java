@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.IHechoInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,6 +22,8 @@ public class FuenteProxy implements IFuente {
     private String url;
     private String nombre;
     private TipoFuente tipo = TipoFuente.PROXY;
+
+    @JsonIgnore
     private WebClient webClient;
     private List<Hecho> hechos;
     private LocalDateTime ultimaActualizacion = LocalDateTime.MIN;

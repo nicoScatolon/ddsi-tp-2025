@@ -36,6 +36,7 @@ public class DTOConverter {
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .categoria(categoriaInputDTO(dto.getCategoria()))
+                .fueEliminado(false)
                 .build();
     }
 
@@ -48,6 +49,7 @@ public class DTOConverter {
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .categoria(categoriaInputDTO(dto.getCategoria()))
+                .fueEliminado(false)
                 .build();
     }
 
@@ -62,6 +64,7 @@ public class DTOConverter {
                 .contenidoMultimedia(dto.getContenidoMultimedia())
                 .contribuyente(convertirUsuario(dto.getContribuyente()))
                 .categoria(categoriaInputDTO(dto.getCategoria()))
+                .fueEliminado(false)
                 .build();
     }
 

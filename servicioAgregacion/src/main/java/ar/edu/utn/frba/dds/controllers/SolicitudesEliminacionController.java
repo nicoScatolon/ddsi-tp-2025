@@ -31,7 +31,6 @@ public class SolicitudesEliminacionController {
         this.solicitudesExecutor = executor;
     }
 
-
     @PostMapping("/publica")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
