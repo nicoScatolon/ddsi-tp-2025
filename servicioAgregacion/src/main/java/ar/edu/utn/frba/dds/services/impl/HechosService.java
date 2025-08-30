@@ -33,10 +33,11 @@ public class HechosService implements IHechosService {
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService, CriterioFactory criterioFactory) {
+    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService, CriterioFactory criterioFactory, IEtiquetasService etiquetaService) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
         this.criterioFactory = criterioFactory;
+        this.etiquetaService = etiquetaService;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class HechosService implements IHechosService {
         }
         Etiqueta nuevaEtiqueta = new Etiqueta(etiqueta);
         hechoModificado.agregarEtiqueta(nuevaEtiqueta);
-        return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe parar una URL
+        return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe pasar una URL
     }
 
     public ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta){

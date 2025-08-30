@@ -53,14 +53,16 @@ public class SolicitudesEliminacionController {
             @RequestBody ProcesarSolicitudInputDTO inputDTO,
             @RequestParam EstadoDeSolicitud accion
     ) {
-        if (accion == EstadoDeSolicitud.ACEPTADA) {
-            CompletableFuture.runAsync(() -> solicitudesEliminacionService.procesarSolicitud(inputDTO, true),  solicitudesExecutor);
-            return ResponseEntity.accepted().build();
-        } else if (accion == EstadoDeSolicitud.RECHAZADA) {
-            CompletableFuture.runAsync(() -> solicitudesEliminacionService.procesarSolicitud(inputDTO, false),  solicitudesExecutor);
-            return ResponseEntity.accepted().build();
-        } else {
+        if (accion != EstadoDeSolicitud.ACEPTADA && accion != EstadoDeSolicitud.RECHAZADA) {
             return ResponseEntity.badRequest().build();
         }
+        boolean esAceptada = accion == EstadoDeSolicitud.ACEPTADA;
+
+        // Hace asincronica la llamada, pero devuelve el codigo de estado de procesar solicitud
+        CompletableFuture<ResponseEntity<Void>> future = CompletableFuture.supplyAsync(
+                () -> solicitudesEliminacionService.procesarSolicitud(inputDTO, esAceptada),
+                solicitudesExecutor
+        );
+        return ResponseEntity.ok().build();
     }
 }
