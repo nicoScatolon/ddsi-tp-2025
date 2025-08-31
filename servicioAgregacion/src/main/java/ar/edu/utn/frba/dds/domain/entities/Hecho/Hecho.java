@@ -1,14 +1,13 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho;
 
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
+import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.domain.entities.IContenidoMultimedia;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,6 +18,7 @@ public class Hecho {
     private String titulo;
     private String descripcion;
     private Categoria categoria;
+    private List<Etiqueta> etiquetas = new ArrayList<>();
     private Ubicacion ubicacion;
     private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
@@ -27,17 +27,20 @@ public class Hecho {
 
     private Long id;
     private Long origenId;
-    // private IFuente fuente; - posible List<TipoFuente> tipos
 
     private Boolean fueEliminado = false;
 
     private TipoHecho tipoHecho;
     private Contribuyente contribuyente = null;
+
+    // metodos
+
+    public void agregarEtiqueta(Etiqueta etiqueta){
+        etiquetas.add(etiqueta);
+    }
+
+    public void eliminarEtiqueta(Etiqueta etiqueta){
+        etiquetas.remove(etiqueta);
+    }
 }
-
-// origen: Contribuyente / archivo / fuente externa -> el segundo sera un nombre
-// no puedo tener distinto comportamiento entre hechos -> mucho acoplamiento
-
-
-
 

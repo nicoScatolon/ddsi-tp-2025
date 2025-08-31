@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeEliminaciones;
@@ -12,11 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 
 @Component
 @Data
@@ -46,47 +45,18 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarHechos(
-            String categoria,
-            LocalDateTime fechaReporteDesde,
-            LocalDateTime fechaReporteHasta,
-            LocalDate fechaAcontecimientoDesde,
-            LocalDate fechaAcontecimientoHasta,
-            Double latitud,
-            Double longitud) {
-
+    public Mono<List<HechoExternoDTO>> buscarHechos(HechosFilterDTO filtros) {
         return webClient.get()
                 .uri(uriBuilder -> {
                     uriBuilder.path("/api/hechos/publica");
-
-                    if (categoria != null && !categoria.isEmpty()) {
-                        uriBuilder.queryParam("categoria", categoria);
-                    }
-                    if (fechaReporteDesde != null) {
-                        uriBuilder.queryParam("fecha_reporte_desde", fechaReporteDesde);
-                    }
-                    if (fechaReporteHasta != null) {
-                        uriBuilder.queryParam("fecha_reporte_hasta", fechaReporteHasta);
-                    }
-                    if (fechaAcontecimientoDesde != null) {
-                        uriBuilder.queryParam("fecha_acontecimiento_desde", fechaAcontecimientoDesde);
-                    }
-                    if (fechaAcontecimientoHasta != null) {
-                        uriBuilder.queryParam("fecha_acontecimiento_hasta", fechaAcontecimientoHasta);
-                    }
-                    if (latitud != null) {
-                        uriBuilder.queryParam("latitud", latitud);
-                    }
-                    if (longitud != null) {
-                        uriBuilder.queryParam("longitud", longitud);
-                    }
-
+                    agregarFiltrosQueryParams(uriBuilder, filtros);
                     return uriBuilder.build();
                 })
                 .retrieve()
                 .bodyToFlux(HechoExternoDTO.class)
                 .collectList();
     }
+
 
 
 
@@ -103,28 +73,13 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
     @Override
     public Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(
-            String handle,
-            String categoria,
-            LocalDateTime fechaReporteDesde,
-            LocalDateTime fechaReporteHasta,
-            LocalDate fechaAcontecimientoDesde,
-            LocalDate fechaAcontecimientoHasta,
-            Double latitud,
-            Double longitud,
-            Boolean curado
-    ) {
+            String handle, Boolean curado, HechosFilterDTO filtros) {
+
         return webClient.get()
                 .uri(uriBuilder -> {
-                    uriBuilder
-                            .path("/api/publica/{handle}/hechos")
-                            .queryParam("curado", curado)
-                            .queryParamIfPresent("categoria", Optional.ofNullable(categoria).filter(s -> !s.isEmpty()))
-                            .queryParamIfPresent("fecha_reporte_desde", Optional.ofNullable(fechaReporteDesde))
-                            .queryParamIfPresent("fecha_reporte_hasta", Optional.ofNullable(fechaReporteHasta))
-                            .queryParamIfPresent("fecha_acontecimiento_desde", Optional.ofNullable(fechaAcontecimientoDesde))
-                            .queryParamIfPresent("fecha_acontecimiento_hasta", Optional.ofNullable(fechaAcontecimientoHasta))
-                            .queryParamIfPresent("latitud", Optional.ofNullable(latitud))
-                            .queryParamIfPresent("longitud", Optional.ofNullable(longitud));
+                    uriBuilder.path("/api/publica/{handle}/hechos")
+                            .queryParam("curado", curado);
+                    agregarFiltrosQueryParams(uriBuilder, filtros);
                     return uriBuilder.build(handle);
                 })
                 .retrieve()
@@ -135,16 +90,43 @@ public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeC
 
 
 
-
-
     @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){
         return webClient.post()
-                .uri("api/solicitudes-eliminacion/publica/crear-solicitud-eliminacion")
+                .uri("/api/solicitudes-eliminacion/publica")
                 .bodyValue(solicitud)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
+
+
+
+    //Agrega los filtros del DTO a la query respetando camelCase
+    private void agregarFiltrosQueryParams(org.springframework.web.util.UriBuilder uri, HechosFilterDTO f) {
+        if (f == null) return;
+
+        if (f.getCategoria() != null && !f.getCategoria().isEmpty())
+            uri.queryParam("categoria", f.getCategoria());
+
+        if (f.getFReporteDesde() != null)
+            uri.queryParam("fechaReporteDesde", f.getFReporteDesde());
+
+        if (f.getFReporteHasta() != null)
+            uri.queryParam("fechaReporteHasta", f.getFReporteHasta());
+
+        if (f.getFAconDesde() != null)
+            uri.queryParam("fechaAcontecimientoDesde", f.getFAconDesde());
+
+        if (f.getFAconHasta() != null)
+            uri.queryParam("fechaAcontecimientoHasta", f.getFAconHasta());
+
+        if (f.getLatitud() != null)
+            uri.queryParam("latitud", f.getLatitud());
+
+        if (f.getLongitud() != null)
+            uri.queryParam("longitud", f.getLongitud());
+    }
+
 
 
 }

@@ -3,12 +3,14 @@ package ar.edu.utn.frba.dds.fuenteEstatica.controllers;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteEstatica.domain.entities.ImportadorHechos;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl.HechosService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,14 +23,15 @@ public class HechosController {
     private HechosService hechosService;
     private final ImportadorHechos csvImportador;
 
-
-    @GetMapping()
-    public List<HechoOutputDTO> buscarTodos(){
-        return hechosService.getAllHechosParaActualizar();
+    @GetMapping
+    public List<HechoOutputDTO> buscarTodosPorFecha(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga
+    ) {
+        return hechosService.getAllHechosPorFecha(fechaDeCarga);
     }
 
-
-    @PostMapping("/importar")
+    @PostMapping()
     public ResponseEntity<String> importarArchivo(@RequestParam String filename) {
         try {
             // 1) buscamos en classpath

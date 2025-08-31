@@ -39,10 +39,11 @@ public class HechosRepository implements IHechosRepository {
         hechos.remove(hecho.getId());
     }
 
-
     private List<Hecho> filtrarEliminados(List<Hecho> hechos) {
+        if (hechos == null) return Collections.emptyList();
         return hechos.stream()
-                .filter(h -> h != null && Boolean.FALSE.equals(h.getFueEliminado()))
-                .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
+                .toList();
     }
 }

@@ -2,12 +2,15 @@ package ar.edu.utn.frba.dds.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Getter
@@ -17,6 +20,8 @@ public class FuenteDinamica implements IFuente {
     private String url;
     private String nombre;
     private TipoFuente tipo = TipoFuente.DINAMICA;
+
+    @JsonIgnore
     private WebClient webClient;
     private Map<Long, Hecho> mapHechos;
     private LocalDateTime ultimaActualizacion;
@@ -32,18 +37,24 @@ public class FuenteDinamica implements IFuente {
         nuevosHechosDTO = this.getHechos();
         List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
         this.actualizarHechos(nuevosHechos);
+        this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
 
     public List<HechoInputDinamicaDTO> getHechos() {
-        return Objects.requireNonNull(this.webClient.get()
-                .uri("/hechos")
+        return this.webClient.get()
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/api/fuenteDinamica/hechos");
+                    if (ultimaActualizacion != null) {
+                        builder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
+                    }
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToFlux(HechoInputDinamicaDTO.class)
                 .collectList()
-                .block());
-        //TODO resolver el tema de actualizacion por fecha (que getHechos reciba unicamente a partir de su ultima fecha de modificación)
-        // por la uri pasar como queryParam parametro la ultima fecha de actualizacion
+                .blockOptional()
+                .orElse(Collections.emptyList());
     }
 
     public void actualizarHechos(List<Hecho> hechosNuevos){

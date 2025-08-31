@@ -10,8 +10,10 @@ import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ public class FuentesService implements IFuentesService {
     private final IFuentesRepository fuentesRepository;
     private final IHechosService hechosService;
     private final IColeccionesService coleccionesService;
+
 
     private static final Logger logger = LoggerFactory.getLogger(FuentesService.class);
 
@@ -36,16 +39,23 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public Boolean agregarFuente(FuenteInputDTO fuenteDTO) {
+    public ResponseEntity<Void> agregarFuente(FuenteInputDTO fuenteDTO) {
         IFuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
         this.loguearFuenteCargada(nuevaFuente);
-        return fuentesRepository.saveFuente(nuevaFuente);
+        fuentesRepository.saveFuente(nuevaFuente);
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void eliminarFuente(Long id) {
+    public ResponseEntity<Void> eliminarFuente(Long id) {
+        IFuente fuente = this.buscarFuentePorId(id);
+        if (fuente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         coleccionesService.notificarFuenteEliminada(this.buscarFuentePorId(id));
         fuentesRepository.deleteFuente(id);
+        return ResponseEntity.ok().build();
     }
 
     @Override

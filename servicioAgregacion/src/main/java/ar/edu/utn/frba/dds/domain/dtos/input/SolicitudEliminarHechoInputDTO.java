@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.dtos.input;
 
 
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

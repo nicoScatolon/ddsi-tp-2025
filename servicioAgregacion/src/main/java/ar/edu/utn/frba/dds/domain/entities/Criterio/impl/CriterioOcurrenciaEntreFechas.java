@@ -1,11 +1,9 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
-
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 
 import java.time.LocalDate;
-
 
 public class CriterioOcurrenciaEntreFechas implements ICriterio {
     private final LocalDate primeraFecha;
@@ -18,11 +16,8 @@ public class CriterioOcurrenciaEntreFechas implements ICriterio {
 
     @Override
     public Boolean pertenece(Hecho hecho) {
-        LocalDate fecha = this.getFechaNecesaria(hecho);
+        LocalDate fecha = hecho.getFechaDeOcurrencia();
         return fecha.isAfter(primeraFecha) && fecha.isBefore(segundaFecha);
     }
 
-    public LocalDate getFechaNecesaria(Hecho hecho) {
-        return hecho.getFechaDeOcurrencia();
-    }
 }
