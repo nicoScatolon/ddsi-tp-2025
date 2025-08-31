@@ -28,7 +28,6 @@ public class Hecho {
     private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
     private Long idAdmin; //el administrador que gestiono el hecho subido
     private String sugerencia = null;
-    private Boolean actualizar = true;
 
     public void verificarModificacionValida(Long diasMaximos, LocalDateTime fechaModificacion) {
         if ( getFechaDeCarga().plusDays(diasMaximos).isBefore(fechaModificacion) ) {
@@ -54,6 +53,5 @@ public class Hecho {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}
-        this.setActualizar(true);
     }
 }

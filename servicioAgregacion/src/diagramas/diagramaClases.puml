@@ -1,162 +1,187 @@
 @startuml
 ' Diagrama UML para el modelo de hechos y criterios
 
-interface Criterio {
-    +pertenece(hecho: HechoBase): boolean
+class Hecho {
+    - id: Long
+    - origenId: Long
+    - fuente: IFuente
+    - titulo: String
+    - descripcion: String
+    - categoria: Categoria
+    - ubicacion: Ubicacion
+    - fechaDeOcurrencia: LocalDate
+    - fechaDeCarga: LocalDateTime
+    - contenidoMultimedia: IContenidoMultimedia
+    - fueEliminado: Boolean
+    - tipoHecho: TipoHecho
+    - contribuyente : Contribuyente
 }
 
-abstract class CriterioEntreFechas {
-    -primeraFecha: LocalDate
-    -segundaFecha: LocalDate
-    +getFechaNecesaria(hecho: HechoBase): LocalDate
-    +pertenece(hecho: HechoBase): boolean
+enum TipoHecho {
+    ESTATICO,
+    DINAMICO,
+    PROXY
 }
 
-class CriterioCargaEntreFechas
-class CriterioOcurrenciaEntreFechas
-class CriterioTitulo
-class CriterioCategoria
-class CriterioContenidoMultimedia {
-    +pertenece(hecho: HechoBase): boolean
+interface IFuente {}
+
+class FuenteDinamica{
+    - id: Long
+    - url: String
+    - nombre: String
+    - tipo : TipoFuente
+    - webClient: WebClient
+    + getHechos(): List<HechoDTO>
 }
 
-
-interface HechoBase {
-    -id: Long
-    -fuenteId: Long
-    -titulo: String
-    -descripcion: String
-    -categoria: Categoria
-    -ubicacion: Ubicacion
-    -fechaDeOcurrencia: LocalDate
-    -fechaDeCarga: LocalDate
-    -origen: OrigenHecho
-    -fueEliminado: Boolean
+class FuenteEstatica{
+    - id: Long
+    - url: String
+    - nombre: String
+    - tipo : TipoFuente
+    - webClient: WebClient
+    + getHechos(): List<HechoDTO>
 }
 
-class HechoFuenteEstatica
-class HechoFuenteProxy
-class HechoFuenteDinamica {
-    -contenidoMultimedia: IContenidoMultimedia
-    -contribuyente: Usuario
+class FuenteProxy{
+    - id: Long
+    - url: String
+    - nombre: String
+    - tipo : TipoFuente
+    - webClient: WebClient
+    + getHechos(): List<HechoDTO>
 }
 
-class Categoria {
-    -id: Long
-    -nombre: String
+enum TipoFuente{
+    ESTATICA,
+    DINAMICA,
+    PROXY
+}
+
+class Coleccion{
+    - handle: String
+    - titulo: String
+    - descripcion: String
+    - listaFuentes: List<IFuentes>
+    - listaCriterios: Set<ICriterio>
+    - algoritmoConsenso: IAlgoritmoConsenso
+    - listaHechos: List<Hecho>
+    - listaHechosCurados: List<Hecho>
+    - actualizarHechos: Boolean
+    - curarHechos: Boolean
+    + filtrarHechos(List<Hecho>): List<Hecho>
+    + actualizarHechos():void
+    + curarHechos():void
+    + getHechos(): List<Hecho>
+    + getHechosCurados(): List<Hecho>
+    + getHechosConFiltro(List<ICriterio>): List<Hecho>
+    + getHechosCuradosYFiltrados(List<ICriterio>=: List<Hecho>
+}
+
+class Categoria{
+    - id: String
+    - nombre: String
+}
+
+class Contribuyente {
+    - id: Long
+    - nombre: String
+    - apellido: String
+    - fechaNacimiento: LocalDate
+    - esAnonimo: Boolean
+    + getNombreDisplay(): String
 }
 
 class Ubicacion {
-    -latitud: Double
-    -longitud: Double
+    - latitud: Double
+    - longitud: Double
 }
 
-class Coleccion {
-    -listaCriterios: Set<Criterio>
-    -titulo: String
-    -handle: String
-    -descripcion: String
-
-    +filtrarHechos(hechosDisponibles: List<HechoBase>): Set<HechoBase>
-    +agregarCriterio(criterio: Criterio)
-    +eliminarCriterio(criterio: Criterio)
-    +getHechos(): Set<HechoBase>
-    +getHechosConFiltro(criterio: Criterio): Set<HechoBase>
+interface IContenidoMultimedia{
+    + getURL(): String
 }
 
-class ConstructorSolicitudesEliminacion {
-    -CARACTERES_MINIMOS_RAZON_ELIMINACION: Integer
-    +constructorSolicitud(hecho: HechoBase, razon: String): SolicitudEliminarHecho
-}
-
-class SolicitudEliminarHecho {
-    -id: Long
-    -razonDeEliminacion: String
-    -hecho: HechoBase
-    -estado: EstadoDeSolicitud
-    -nombreCreador: String
-    -apellidoCreador: String
-    -nombreAdministrador: String
-    -apellidoAdministrador: String
-    -fechaCreacion: LocalDateTime
-    -fechaAceptacion: LocalDateTime
-    -eliminada: Boolean
-
-    +serAceptada(): void
-    +serRechazada(): void
-    +rechazarAutomaticamente(): void
-}
-
-enum EstadoDeSolicitud {
-    ACEPTADA
-    RECHAZADA
-    PENDIENTE
-}
-
-class Usuario {
-    -id: Long
-    -nombre: String
-    -apellido: String
-    -esAnonimo: Boolean
-    -fechaNacimiento: LocalDate
+interface ICriterio{
+    + pertenece(Hecho): Boolean
 }
 
 interface IAlgoritmoConsenso {
-    + getTipo()
-    + curar()
+    + getTipo(): TipoAlgoritmoConsenso
+    + curar(List<Hecho>, List<IFuente>): List<Hecho>
 }
-class ConsensoAbsoluto {
-    - tipo: TipoAlgoritmoConsenso
-    + getTipo()
-    + curar()
+
+enum TipoAlgoritmoConsenso {
+    ABSOLUTO,
+    MAYORIASIMPLE,
+    MULTIPLEMENCION
 }
+
+class ConcensoAbsoluto {
+    + curar(List<Hecho>, List<IFuente>): List<Hecho>
+}
+
 class ConsensoMayoriaSimple {
-    - tipo: TipoAlgoritmoConsenso
-    + getTipo()
-    + curar()
+    + curar(List<Hecho>, List<IFuente>): List<Hecho>
 }
+
 class ConsensoMultipleMencion {
-    - tipo: TipoAlgoritmoConsenso
-    + getTipo()
-    + curar()
+    + curar(List<Hecho>, List<IFuente>): List<Hecho>
 }
 
-class HechoComparator {
-    - listaComandos: List<Comandos>
-    + comparar(Hecho h1, Hecho h2)
+class SolicitudEliminarHecho {
+    - id: Long
+    - razonDeEliminacion: String
+    - hecho: Hecho
+    - estado: EstadoDeSolicitud
+    - nombreCreador: String
+    - apellidoCreador: String
+    - nombreAdministrador: String
+    - apellidoAdministrador: String
+    - fechaCreacion: LocalDateTime
+    - fechaGestion: LocalDateTime
+    - eliminada: Boolean
+    - actualizarFuenteOrigen: Boolean
+    + serAceptada(String nombreAdministrador, String apellidoAdministrador): void
+    + serRechazada(String nombreAdministrador, String apellidoAdministrador): void
 }
 
+enum EstadoDeSolicitud {
+    ACEPTADA,
+    RECHAZADA,
+    PENDIENTE
+}
 
-'====== RELACIONES ======
+class ConstructorSolicitudesEliminacion {
+    + constructorSolicitud (Hecho hecho, String razonDeEliminacion, String nombreContribuyente, String apellidoContribuyente): SolicitudEliminarHecho
+}
 
-ConsensoAbsoluto ..|> IAlgoritmoConsenso
-ConsensoMayoriaSimple ..|> IAlgoritmoConsenso
-ConsensoMultipleMencion ..|> IAlgoritmoConsenso
+Hecho -> TipoHecho
+Hecho -> IFuente
+Hecho -> Categoria
+Hecho -> Contribuyente
+Hecho -> IContenidoMultimedia
+Hecho -> Ubicacion
 
-CriterioCategoria ..|> Criterio
-CriterioTitulo ..|> Criterio
-CriterioEntreFechas ..|> Criterio
-CriterioCargaEntreFechas --|> CriterioEntreFechas
-CriterioOcurrenciaEntreFechas --|> CriterioEntreFechas
-CriterioContenidoMultimedia ..|> Criterio
+IFuente <|.. FuenteDinamica
+IFuente <|.. FuenteEstatica
+IFuente <|.. FuenteProxy
 
-HechoFuenteEstatica --|> HechoBase
-HechoFuenteProxy --|> HechoBase
-HechoFuenteDinamica --|> HechoBase
+FuenteDinamica -> TipoFuente
+FuenteEstatica -> TipoFuente
+FuenteProxy -> TipoFuente
 
-HechoBase *-- Categoria
-HechoBase *-- Ubicacion
-HechoFuenteDinamica *-- Usuario
-HechoFuenteDinamica *-- IContenidoMultimedia
+Coleccion -* Hecho
+Coleccion -* IFuente
+Coleccion -* ICriterio
+Coleccion -> IAlgoritmoConsenso
 
-Coleccion --> "0..*" HechoBase
-Coleccion *-- Criterio
+IAlgoritmoConsenso -> TipoAlgoritmoConsenso
 
-SolicitudEliminarHecho --> HechoBase
-SolicitudEliminarHecho --> EstadoDeSolicitud
+IAlgoritmoConsenso <|.. ConcensoAbsoluto
+IAlgoritmoConsenso <|.. ConsensoMayoriaSimple
+IAlgoritmoConsenso <|.. ConsensoMultipleMencion
 
-ConstructorSolicitudesEliminacion ..> SolicitudEliminarHecho
-ConstructorSolicitudesEliminacion ..> HechoBase
-ConstructorSolicitudesEliminacion ..> Usuario
+SolicitudEliminarHecho -> EstadoDeSolicitud
+ConstructorSolicitudesEliminacion -> SolicitudEliminarHecho
 
 @enduml

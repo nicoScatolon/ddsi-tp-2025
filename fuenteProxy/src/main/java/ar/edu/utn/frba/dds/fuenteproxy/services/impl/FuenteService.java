@@ -4,10 +4,12 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Data
 @Service
 public class FuenteService implements IFuenteService {
 

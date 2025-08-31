@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ModificarHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
@@ -15,11 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
-    private IHechosRepository hechosRepository;
+    private final IHechosRepository hechosRepository;
     private ICategoriaService categoriaService;
 
     @Value("${hecho.diasModificacion}")
@@ -30,16 +30,16 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public Hecho cargarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO, ICategoriaService categoriaService) {
-        Hecho hecho = hechoInputDTO(hechoDTO, contribuyenteDTO);
+    public void cargarHecho(ModificarHechoInputDTO inputDTO) {
+        Hecho hecho = hechoInputDTO(inputDTO.getHechoInputDTO(), inputDTO.getContribuyenteInputDTO());
         hecho.setFechaDeCarga(LocalDateTime.now());
-        return this.hechosRepository.save(hecho);
+        this.hechosRepository.save(hecho);
     }
 
     @Override
-    public Hecho modificarHecho(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
-        Hecho hechoGuardado = this.hechosRepository.findById(hechoDTO.getId());
-        Hecho hechoNuevo = hechoInputDTO(hechoDTO, contribuyenteDTO);
+    public void modificarHecho(ModificarHechoInputDTO inputDTO) {
+        Hecho hechoGuardado = this.hechosRepository.findById(inputDTO.getHechoInputDTO().getId());
+        Hecho hechoNuevo = hechoInputDTO(inputDTO.getHechoInputDTO(), inputDTO.getContribuyenteInputDTO());
 
         if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
         if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
@@ -49,7 +49,6 @@ public class HechosService implements IHechosService {
 
         hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
         this.hechosRepository.save(hechoGuardado);
-        return hechoNuevo;
     }
 
     @Override
@@ -60,11 +59,14 @@ public class HechosService implements IHechosService {
         return hecho;
     }
 
-    public List<HechoOutputDTO> getHechosActualizar() {
-        return this.hechosRepository.findAll().stream()
-                .filter(h -> h.getActualizar() && h.getEstado().equals(EstadoHecho.ACEPTADO))
-                .map(this::hechoOutputDTO)
-                .collect(Collectors.toList());
+    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
+        List<Hecho> hechosAEnviar = this.hechosRepository.findAll().stream().filter(h -> h.getEstado().equals(EstadoHecho.ACEPTADO)).toList();
+
+        if (fechaDeCarga !=null){
+            hechosAEnviar = hechosAEnviar.stream().filter(h -> h.getFechaDeCarga().isAfter(fechaDeCarga)).toList();
+        }
+
+        return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
     }
 
     //Metodos privados
@@ -104,7 +106,6 @@ public class HechosService implements IHechosService {
                 .contribuyente(hecho.getContribuyente())
                 .build();
     }
-
 
     private CategoriaOutputDTO categoriaOutputDTO(String nombreCategoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();

@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
+import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import org.springframework.stereotype.Component;
 
@@ -54,19 +55,19 @@ public class CriterioFactory {
                 .toList();
     }
 
-    public List<ICriterio> crearCriteriosParametros(Categoria cat, LocalDateTime fReporteDesde, LocalDateTime fReporteHasta, LocalDate fAconDesde, LocalDate fAconHasta, Double latitud, Double longitud){
+    public List<ICriterio> crearCriteriosParametros(Categoria cat, HechoFilter filter){
         List<ICriterio> criterios = new ArrayList<>();
         if (cat != null) {
             criterios.add(new CriterioCategoria(cat));
         }
-        if (fReporteDesde != null || fReporteHasta != null) {
-            criterios.add( this.crearCriterioCargaEntreFechas(fReporteDesde, fReporteHasta) );
+        if (filter.getFReporteDesde() != null || filter.getFReporteHasta() != null) {
+            criterios.add( this.crearCriterioCargaEntreFechas(filter.getFReporteDesde(), filter.getFReporteHasta()) );
         }
-        if(fAconDesde != null || fAconHasta != null){
-            criterios.add(this.crearCriterioOcurrenciaEntreFechas(fAconDesde,fAconHasta));
+        if(filter.getFAconDesde() != null || filter.getFAconHasta() != null){
+            criterios.add(this.crearCriterioOcurrenciaEntreFechas(filter.getFAconDesde(),filter.getFAconHasta()));
         }
-        if(latitud != null && longitud!= null){
-            criterios.add(new CriterioUbicacion(new Ubicacion(latitud,longitud)));
+        if(filter.getLatitud() != null && filter.getLongitud()!= null){
+            criterios.add(new CriterioUbicacion(new Ubicacion(filter.getLatitud(),filter.getLongitud())));
         }
         return criterios;
     }

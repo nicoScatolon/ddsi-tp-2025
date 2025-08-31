@@ -16,10 +16,11 @@ public class SolicitudEliminarHecho {
     private EstadoDeSolicitud estado;
     private String nombreCreador;
     private String apellidoCreador;
+    //posible cambio por Contribuyente
     private String nombreAdministrador;
     private String apellidoAdministrador;
     private LocalDateTime fechaCreacion;
-    private LocalDateTime fechaAceptacion = null;
+    private LocalDateTime fechaGestion = null;
     private boolean eliminada = false;
     private Boolean actualizarFuenteOrigen = false; //el actualizar con la fuente de origen
 
@@ -28,7 +29,7 @@ public class SolicitudEliminarHecho {
             throw new IllegalStateException("La solicitud ya fue procesada.");
         }
         estado = EstadoDeSolicitud.ACEPTADA;
-        fechaAceptacion = LocalDateTime.now();
+        fechaGestion = LocalDateTime.now();
         this.nombreAdministrador = nombreAdministrador;
         this.apellidoAdministrador = apellidoAdministrador;
         hecho.setFueEliminado(true);

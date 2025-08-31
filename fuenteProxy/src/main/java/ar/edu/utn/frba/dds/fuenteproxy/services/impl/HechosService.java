@@ -1,17 +1,13 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.*;
 
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
+
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechos;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
@@ -20,9 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 
@@ -42,7 +36,7 @@ public class HechosService implements IHechosService {
         return Flux.fromIterable(fuentesRepository.fuentesConHechos())
                 .flatMap(ServidoraDeHechos::getHechos)
                 .flatMapIterable(lista -> lista)
-                .map(this::mapToHechoDTO)
+                .map(dto -> DTOConverter.mapToHechoDTO(dto, categoriaService))
                 .collectList();
     }
 
@@ -52,82 +46,20 @@ public class HechosService implements IHechosService {
                 .flatMap(fuente -> fuente.getHechoPorId(id)
                         .onErrorResume(e -> Mono.empty()))
                 .next()
-                .map(this::mapToHechoDTO)
+                .map(dto -> DTOConverter.mapToHechoDTO(dto, categoriaService))
                 .switchIfEmpty(Mono.error(new RuntimeException("Hecho con ID " + id + " no encontrado en ninguna fuente")));
     }
 
 
     @Override
-    public Mono<List<HechoOutputDTO>> buscarConFiltros(String categoria, LocalDateTime frDesde, LocalDateTime frHasta,
-                                                       LocalDate faDesde, LocalDate faHasta, Double latitud, Double longitud) {
+    public Mono<List<HechoOutputDTO>> buscarConFiltros(HechosFilterDTO filtros) {
         return Flux.fromIterable(fuentesRepository.fuentesConFiltros())
-                .flatMap(f -> f.buscarHechos(categoria, frDesde, frHasta, faDesde, faHasta, latitud, longitud))
+                .flatMap(f -> f.buscarHechos(filtros))
                 .flatMapIterable(lista -> lista)
-                .map(this::mapToHechoDTO)
+                .map(dto -> DTOConverter.mapToHechoDTO(dto, categoriaService))
                 .collectList();
     }
 
-
-
-    @Override
-    public Mono<List<ColeccionInputDTO>> traerTodasLasColecciones() {
-        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
-                .flatMap(ServidoraDeColecciones::buscarTodasLasColecciones)
-                .flatMapIterable(lista -> lista)
-                .collectList();
-    }
-
-
-
-
-    @Override
-    public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String handleColeccion) {
-        return Flux.fromIterable(fuentesRepository.fuentesConColecciones())
-                .flatMap(f -> f.buscarHechosPorColeccion(handleColeccion,null,null,null,null,null,null,null,false))
-                .flatMapIterable(lista -> lista)
-                .map(this::mapToHechoDTO)
-                .collectList();
-    }
-
-
-
-
-    @Override
-    public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud) {
-        return Flux.fromIterable(fuentesRepository.fuentesQuePermitenEliminar())
-                .next()
-                .flatMap(f -> f.crearSolicitudEliminacion(solicitud))
-                .switchIfEmpty(Mono.error(new RuntimeException("No hay fuentes que permitan crear solicitudes de eliminación")));
-    }
-
-
-
-
-
-
-    // Mapper DTO externo → DTO de salida del sistema
-    private HechoOutputDTO mapToHechoDTO(HechoExternoDTO dto) {
-        DateTimeFormatter fmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-
-        return HechoOutputDTO.builder()
-                .id(dto.getId())
-                .titulo(dto.getTitulo())
-                .descripcion(dto.getDescripcion())
-                .categoria(categoriaToDTO(dto.getCategoria()))
-                .ubicacion(new UbicacionOutputDTO(dto.getLatitud(), dto.getLongitud()))
-                .fechaDeOcurrencia(LocalDate.parse(dto.getFechaDeOcurrencia(), fmt))
-                .fechaDeCarga(LocalDateTime.parse(dto.getFechaDeCarga(), fmt))
-                .build();
-    }
-
-
-
-    private CategoriaOutputDTO categoriaToDTO(String nombreCategoria) {
-        return CategoriaOutputDTO.builder()
-                .id(categoriaService.obtenerIdCategoria(nombreCategoria))
-                .nombre(nombreCategoria)
-                .build();
-    }
 
 }
 
