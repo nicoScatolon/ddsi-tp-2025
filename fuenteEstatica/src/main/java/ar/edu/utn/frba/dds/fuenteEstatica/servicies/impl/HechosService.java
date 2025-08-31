@@ -48,7 +48,9 @@ public class HechosService implements IHechosService {
         if(fechaDeCarga == null){
             hechos = hechosRepository.findAll();
         } else {
-            hechos = hechosRepository.findByFechaDeCarga(fechaDeCarga);
+            hechos = hechosRepository.findByFechaDeCarga(fechaDeCarga); // eze no explicó como sumar al repo de JPA todavía
+            // esto sería agregarle un where al select que iguale el campo de fecha de un hecho a la que se pasa por parametro
+            //throw new RuntimeException("No se encontró la fecha de carga para el hecho.");
         }
 
         return hechos.stream().map(this::hechoToDTO).toList();
