@@ -5,7 +5,11 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,10 +19,12 @@ import java.util.*;
 
 @Getter
 @Setter
-public class FuenteEstatica implements IFuente {
-    private Long id;
-    private String url;
-    private String nombre;
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@DiscriminatorValue("ESTATICA")
+public class FuenteEstatica extends Fuente {
     private TipoFuente tipo = TipoFuente.ESTATICA;
 
     @JsonIgnore

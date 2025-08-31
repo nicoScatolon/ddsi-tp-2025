@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Table(name= "hechos")
 public class Hecho {
     //Datos
-    @Column
+    @Column (nullable = false)
     private String titulo;
-    @Column(columnDefinition = "VARCHAR(2000)")
+    @Column(columnDefinition = "TEXT", unique = true)
     private String descripcion;
     @Embedded
     private Ubicacion ubicacion;

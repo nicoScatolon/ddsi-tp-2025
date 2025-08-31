@@ -2,12 +2,16 @@ package ar.edu.utn.frba.dds.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,14 +19,19 @@ import java.util.*;
 
 @Getter
 @Setter
-public class FuenteDinamica implements IFuente {
-    private Long id;
-    private String url;
-    private String nombre;
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@DiscriminatorValue("DINAMICA")
+public class FuenteDinamica extends Fuente {
     private TipoFuente tipo = TipoFuente.DINAMICA;
 
+    @Transient
     @JsonIgnore
     private WebClient webClient;
+
+
     private Map<Long, Hecho> mapHechos;
     private LocalDateTime ultimaActualizacion;
 

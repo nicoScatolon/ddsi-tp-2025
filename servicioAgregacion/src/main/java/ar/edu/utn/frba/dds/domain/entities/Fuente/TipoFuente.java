@@ -15,7 +15,7 @@ public enum TipoFuente {
             FuenteAdapter adapter = new FuenteEstaticaAdapter();
             adapter.setFuente(fuente);
             return adapter;
-        } //ToDO Supuestamente el problema esta aca
+        }
     },
     DINAMICA {
         public IFuente crearFuente(String url){

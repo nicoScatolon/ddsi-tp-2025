@@ -39,6 +39,7 @@ public class HechosRepository implements IHechosRepository {
         hechos.remove(hecho.getId());
     }
 
+    //TODO esto en la base de datos puede hacerse con un SELECT con un WHERE
     private List<Hecho> filtrarEliminados(List<Hecho> hechos) {
         if (hechos == null) return Collections.emptyList();
         return hechos.stream()

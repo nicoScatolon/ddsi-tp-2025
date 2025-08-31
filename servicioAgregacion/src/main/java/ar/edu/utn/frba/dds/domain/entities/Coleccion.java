@@ -2,11 +2,13 @@ package ar.edu.utn.frba.dds.domain.entities;
 
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -16,21 +18,38 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "coleccion")
 public class Coleccion {
+    @Id
     @Setter private String handle;
+
+    @Column(nullable = false, name = "titulo")
     @Setter private String titulo;
+    @Column(nullable = false, columnDefinition = "TEXT", name = "descripcion")
     @Setter private String descripcion;
 
-    private final List<IFuente> listaFuentes = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_fuente",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "fuente_id")
+    )
+    private final List<Fuente> listaFuentes = new ArrayList<>();
+    //TODO ver como persistir los criterios
     private final Set<ICriterio> listaCriterios = new HashSet<>();
+    //TODO el algoritmo de consenso podria guardarse como
     private IAlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
     private List<Hecho> listaHechos = new ArrayList<>();
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
-    @Setter private Boolean actualizarHechos;
-    @Setter private Boolean curarHechos;
+    @Setter private Boolean actualizarHechos = true;
+    @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
@@ -77,7 +96,7 @@ public class Coleccion {
                 .filter(f2 -> !listaFuentes.contains(f2))
                 .toList();
 
-        List<IFuente> fuentesEliminadas = listaFuentes.stream()
+        List<Fuente> fuentesEliminadas = listaFuentes.stream()
                 .filter(f1 -> !nuevasFuentes.contains(f1))
                 .toList();
         if ( !fuentesNuevas.isEmpty() ) {

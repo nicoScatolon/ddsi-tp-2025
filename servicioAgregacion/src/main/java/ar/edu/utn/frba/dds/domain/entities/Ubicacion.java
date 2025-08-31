@@ -1,12 +1,14 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+
+@Embeddable
 public class Ubicacion {
     private Double latitud;
     private Double longitud;

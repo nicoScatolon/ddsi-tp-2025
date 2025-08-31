@@ -24,8 +24,6 @@ public class HechoComparator {
         listaComandos.remove(comando);
     }
 
-
-
     public static HechoComparator getInstance() {
         return INSTANCE;
     }
