@@ -1,28 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
-  let hechos = JSON.parse(localStorage.getItem("hechos"));
+  const hechos = HECHOS;
 
-  if (!hechos || hechos.length === 0) {
-    hechos = [
-      { id: 1, titulo: "Hecho 1", img: "images/hecho1.jpg", categoria: "Ambiental", ciudad: "Ciudad X", fecha: "27/08/2025", descripcion: "Descripción completa del hecho 1" },
-      { id: 2, titulo: "Hecho 2", img: "images/hecho2.jpg", categoria: "Social", ciudad: "Ciudad Y", fecha: "25/08/2025", descripcion: "Descripción completa del hecho 2" },
-      { id: 3, titulo: "Hecho 3", img: "images/hecho3.jpg", categoria: "Política", ciudad: "Ciudad Z", fecha: "23/08/2025", descripcion: "Descripción completa del hecho 3" }
-    ];
-    localStorage.setItem("hechos", JSON.stringify(hechos));
-  }
-
-  // Obtener ID de la URL
   const urlParams = new URLSearchParams(window.location.search);
   const id = parseInt(urlParams.get('id'));
-
   const hecho = hechos.find(h => h.id === id);
 
   if (hecho) {
-    document.getElementById('hecho-title').textContent = hecho.titulo;
-    document.getElementById('hecho-img').src = hecho.img;
-    document.getElementById('hecho-img').alt = hecho.titulo;
-    document.getElementById('hecho-meta').textContent = `${hecho.categoria} | ${hecho.ciudad} | ${hecho.fecha}`;
-    document.getElementById('hecho-description').textContent = hecho.descripcion;
+    // Título y descripción
+    document.getElementById('hecho-title').textContent = hecho.title;
+    document.getElementById('hecho-description').textContent = hecho.description;
+
+    // Categorías
+    const categoriasEl = document.getElementById('hecho-categorias');
+    categoriasEl.innerHTML = hecho.categoria ? `<li>${hecho.categoria}</li>` : '';
+
+    // Etiquetas
+    const etiquetasEl = document.getElementById('hecho-etiquetas');
+    etiquetasEl.innerHTML = hecho.etiqueta ? `<li>${hecho.etiqueta}</li>` : '';
+
+    // Fecha
+    const fechaEl = document.getElementById('hecho-fecha');
+    if (fechaEl && hecho.fecha) {
+      fechaEl.textContent = hecho.fecha;
+    }
+
+    // Ubicación textual
+    const ubicacionEl = document.getElementById('hecho-ubicacion');
+    if (ubicacionEl && hecho.ubicacion) {
+      ubicacionEl.textContent = hecho.ubicacion;
+    }
+
+    // Mapa
+    const mapEl = document.getElementById('hecho-map');
+    if (mapEl && hecho.lat && hecho.lng) {
+      const map = L.map('hecho-map').setView([hecho.lat, hecho.lng], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      L.marker([hecho.lat, hecho.lng]).addTo(map)
+      .bindPopup(`<strong>${hecho.title}</strong><br>${hecho.fecha}`)
+      .openPopup();
+    }
+
+    // Multimedia
+    const multimediaEl = document.getElementById('hecho-multimedia');
+    multimediaEl.innerHTML = '';
+    let hasContent = false;
+
+    if (hecho.img) {
+      const img = document.createElement('img');
+      img.src = hecho.img;
+      img.alt = hecho.title;
+      multimediaEl.appendChild(img);
+      hasContent = true;
+    }
+
+    if (hecho.video) {
+      const video = document.createElement('video');
+      video.controls = true;
+      const source = document.createElement('source');
+      source.src = hecho.video;
+      source.type = 'video/mp4';
+      video.appendChild(source);
+      multimediaEl.appendChild(video);
+      hasContent = true;
+    }
+
+    if (hecho.images && hecho.images.length) {
+      hecho.images.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = hecho.title;
+        multimediaEl.appendChild(img);
+        hasContent = true;
+      });
+    }
+
+    if (!hasContent) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'placeholder';
+      placeholder.textContent = 'No hay contenido multimedia disponible';
+      multimediaEl.appendChild(placeholder);
+    }
+
+    // Título de la pestaña
+    document.title = hecho.title + ' | MetaMapa';
   } else {
-    document.getElementById('hecho-detail').innerHTML = '<p>Hecho no encontrado.</p>';
+    const detalle = document.getElementById('hecho-detail');
+    detalle.innerHTML = '<p>Hecho no encontrado.</p>';
   }
 });

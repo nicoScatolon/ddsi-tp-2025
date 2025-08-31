@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explore - MetaMapa</title>
+  <title>Explore | MetaMapa</title>
 
   <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
@@ -18,11 +18,13 @@
   <link rel="stylesheet" href="styles/explore-style.css">
 
   <!-- JS con hechos dinámicos -->
+  <script src="js/hechos.js" defer></script>
   <script src="js/explore.js" defer></script>
+  <script src="js/navbar.js" defer></script>
 </head>
 <body>
-  <!-- HEADER -->
-  <header>
+  <!-- NAVBAR DESKTOP -->
+  <header class="desktop-nav">
     <nav>
       <div class="brand">
         <a href="index.html">
@@ -32,7 +34,7 @@
       </div>
       <ul class="nav-links">
         <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
-        <li><a href="explore.html" class="active">Explore</a></li>
+        <li><a href="explore.html">Explore</a></li>
         <li><a href="map.html">Map</a></li>
         <li><a href="collections.html">Collections</a></li>
         <li><a href="about.html">About Us</a></li>
@@ -44,11 +46,33 @@
     </nav>
   </header>
 
+  <!-- NAVBAR MOBILE -->
+  <nav class="mobile-nav">
+    <a href="explore.html"><span>Explore</span></a>
+    <a href="map.html"><span>Map</span></a>
+    <a href="create.html" class="create-btn">+</a>
+    <a href="collections.html"><span>Collections</span></a>
+    <a href="login.html"><span>Perfil</span></a>
+  </nav>
+
+  <!-- NAVBAR ZOOM (Burger) -->
+  <nav class="zoom-nav">
+    <div class="burger" id="burgerBtn">&#9776;</div>
+    <div class="sidebar" id="sidebar">
+        <a href="create.html" class="btn-secondary-custom">Create</a>
+        <a href="explore.html">Explore</a>
+        <a href="map.html">Map</a>
+        <a href="collections.html">Collections</a>
+        <a href="about.html">About Us</a>
+      <a href="login.html" class="btn-secondary-custom">Log in</a>
+      <a href="signup.html" class="btn-secondary-custom">Sign up</a>
+    </div>
+  </nav>
+
   <!-- MAIN CONTENT -->
   <main>
     <section id="explore">
       <div class="explore-layout">
-        
         <!-- BOX FILTROS -->
         <aside class="filter-box">
           <h2>Filtros</h2>
@@ -79,18 +103,6 @@
       </div>
     </section>
   </main>
-
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2 id="modal-title"></h2>
-      <img id="modal-img" src="" alt="">
-      <p class="meta" id="modal-meta"></p>
-      <p id="modal-description"></p>
-    </div>
-  </div>
-
-  
 </body>
 </html>
+

@@ -1,3 +1,8 @@
+:root {
+    --desktop-navbar-height: 80px;
+    --zoom-navbar-height: 60px;
+}
+
 /* --- BASE & RESET --- */
 * {
     margin: 0;
@@ -14,12 +19,12 @@ html, body {
 
 /* --- HEADER / NAVBAR --- */
 header {
-    background: rgba(0,0,0,0.6); /* transparente */
+    background: rgba(0,0,0,0.6);
     backdrop-filter: blur(6px);
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 100;
+    z-index: 1000;
     padding: 1em 2em;
     display: flex;
     align-items: center;
@@ -56,15 +61,27 @@ nav {
     border-radius: 6px;
 }
 
-/* --- FORM SECTIONS (LOGIN & SIGNUP) --- */
+/* --- SECCIONES LOGIN / SIGNUP --- */
 .login-section, .signup-section {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start; /* contenido empieza debajo del navbar */
     align-items: center;
-    height: 100vh;
-    padding-top: 80px; /* navbar height */
+    min-height: calc(100vh - var(--desktop-navbar-height));
+    padding-top: calc(var(--desktop-navbar-height) + 2rem); /* separa del navbar */
+    padding-bottom: 4rem; 
 }
 
+@media (max-width: 1024px) {
+    .login-section, .signup-section {
+        min-height: calc(100vh - var(--zoom-navbar-height));
+        padding-top: calc(var(--zoom-navbar-height) + 1.5rem);
+        padding-bottom: 3rem;
+    }
+}
+
+
+/* --- FORMULARIOS --- */
 .login-form, .signup-form {
     background: rgba(0,0,0,0.7);
     padding: 3rem 2rem;
@@ -72,6 +89,7 @@ nav {
     box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     width: 100%;
     max-width: 400px;
+    margin-top: 0; /* eliminamos margen grande que lo bajaba */
     text-align: center;
 }
 
@@ -101,14 +119,13 @@ nav {
     box-shadow: 0 0 0 2px #2F60F4;
 }
 
-/* --- BUTTONS --- */
+/* --- BOTONES --- */
 .login-form .btn-primary,
 .signup-form .btn-primary {
     width: 100%;
     font-size: 1.1rem;
     padding: 0.8rem 0;
-    margin-top: 1rem;   /* para separar del input */
-    margin-left: 0;      /* eliminar margen heredado */
+    margin-top: 1rem;
 }
 
 /* --- LINKS --- */
@@ -119,10 +136,85 @@ nav {
 
 .login-form a, .signup-form a {
     color: #2F60F4;
-    font-weight: bold; 
+    font-weight: bold;
     text-decoration: none;
 }
 
 .login-form a:hover, .signup-form a:hover {
     text-decoration: underline;
+}
+
+/* --- HOME SECTION --- */
+#home {
+    display: block;
+    min-height: calc(100vh - var(--desktop-navbar-height));
+    padding: calc(var(--desktop-navbar-height) + 3rem) 2rem 2rem 2rem;
+    text-align: center;
+}
+
+#home .content h1 {
+    font-size: 5.5em;
+    margin-bottom: 0.4em;
+    font-weight: 700;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+#home .content h3 {
+    font-size: 2.6em;
+    margin-bottom: 0.3em;
+    font-weight: 500;
+}
+
+#home .content h5 {
+    font-size: 1.5em;
+    font-weight: 400;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* --- BOTONES HOME --- */
+.home-buttons {
+    margin: 40px 0;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.home-buttons .btn {
+    font-size: 1.4em;
+    padding: 18px 40px;
+}
+
+/* --- RESPONSIVE HOME --- */
+@media (max-width: 1024px) {
+    #home {
+        min-height: calc(100vh - var(--zoom-navbar-height));
+        padding-top: calc(var(--zoom-navbar-height) + 2rem);
+    }
+
+    #home .content h1 { font-size: 4em; }
+    #home .content h3 { font-size: 2em; }
+    #home .content h5 { font-size: 1.2em; max-width: 700px; }
+    .home-buttons .btn { font-size: 1.2em; padding: 15px 30px; }
+}
+
+@media (max-width: 768px) {
+    #home {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    #home .content h1 { font-size: 3em; }
+    #home .content h3 { font-size: 1.6em; }
+    #home .content h5 { font-size: 1em; max-width: 500px; }
+    .home-buttons { flex-direction: column; gap: 20px; }
+    .home-buttons .btn { width: 70%; font-size: 1.1em; padding: 14px 20px; }
+}
+
+@media (max-width: 480px) {
+    #home .content h1 { font-size: 2.2em; }
+    #home .content h3 { font-size: 1.4em; }
+    #home .content h5 { font-size: 0.95em; max-width: 100%; }
+    .home-buttons .btn { font-size: 1em; padding: 12px 18px; }
 }

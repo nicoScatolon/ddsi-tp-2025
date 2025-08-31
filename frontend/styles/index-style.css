@@ -1,3 +1,8 @@
+:root {
+    --desktop-navbar-height: 80px; /* altura del navbar desktop */
+    --zoom-navbar-height: 60px;    /* altura del navbar mobile / zoom */
+}
+
 /* --- RESET & BASE --- */
 * {
     margin: 0;
@@ -16,19 +21,46 @@ html, body {
 header {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(6px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 1em 2em;
 }
 
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 /* --- HOME SECTION --- */
 #home {
-    height: 100vh;
+    position: relative;
+    z-index: 5; 
+    min-height: calc(100vh - var(--desktop-navbar-height));
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start; /* evita que suba al hacer zoom */
     align-items: center;
-    padding-top: 100px;
     text-align: center;
+    padding-top: calc(var(--desktop-navbar-height) + 2rem);
+    padding-bottom: 4rem; /* espacio extra abajo */
 }
 
+/* en mobile usamos la altura del zoom-nav */
+@media (max-width: 1024px) {
+    #home {
+        min-height: calc(100vh - var(--zoom-navbar-height));
+        padding-top: calc(var(--zoom-navbar-height) + 1.5rem);
+        padding-bottom: 3rem; /* menos espacio en móvil */
+    }
+}
+
+/* --- HOME CONTENT --- */
 #home .content h1 {
     font-size: 5.5em;
     margin-bottom: 0.4em;
@@ -53,7 +85,7 @@ header {
 
 /* --- HOME BUTTONS --- */
 .home-buttons {
-    margin-top: 70px;
+    margin: 40px 0;
     display: flex;
     gap: 30px;
     justify-content: center;
@@ -62,4 +94,38 @@ header {
 .home-buttons .btn {
     font-size: 1.4em;
     padding: 18px 40px;
+}
+
+/* --- RESPONSIVE --- */
+#home .content h1,
+#home .content h3,
+#home .content h5 {
+    position: relative;
+    z-index: 20;
+}
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
+    #home .content h1 { font-size: 4em; }
+    #home .content h3 { font-size: 2em; }
+    #home .content h5 { font-size: 1.2em; max-width: 700px; }
+    .home-buttons .btn { font-size: 1.2em; padding: 15px 30px; }
+}
+
+/* Celulares grandes */
+@media (max-width: 768px) {
+    #home { padding-left: 1rem; padding-right: 1rem; }
+    #home .content h1 { font-size: 3em; }
+    #home .content h3 { font-size: 1.6em; }
+    #home .content h5 { font-size: 1em; max-width: 500px; }
+    .home-buttons { flex-direction: column; gap: 20px; align-items: center;}
+    .home-buttons .btn { width: 70%; font-size: 1.1em; padding: 14px 20px;  }
+}
+
+/* Celulares chicos */
+@media (max-width: 480px) {
+    #home .content h1 { font-size: 2.2em; }
+    #home .content h3 { font-size: 1.4em; }
+    #home .content h5 { font-size: 0.95em; max-width: 100%; }
+    .home-buttons .btn { font-size: 1em; padding: 12px 18px; }
 }

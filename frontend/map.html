@@ -1,21 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Map - MetaMapa</title>
+  <title>Map | MetaMapa</title>
 
+  <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="images/icon.ico">
 
+  <!-- CSS -->
   <link rel="stylesheet" href="styles/styles.css">
   <link rel="stylesheet" href="styles/map-style.css">
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- JS -->
+  <script src="js/hechos.js" defer></script>
+  <script src="js/map.js" defer></script>
+  <script src="js/navbar.js" defer></script>
 </head>
 <body>
-  <header>
+  <!-- NAVBAR DESKTOP -->
+  <header class="desktop-nav">
     <nav>
       <div class="brand">
         <a href="index.html">
@@ -37,9 +45,33 @@
     </nav>
   </header>
 
+  <!-- NAVBAR MOBILE -->
+  <nav class="mobile-nav">
+    <a href="explore.html"><span>Explore</span></a>
+    <a href="map.html"><span>Map</span></a>
+    <a href="create.html" class="create-btn">+</a>
+    <a href="collections.html"><span>Collections</span></a>
+    <a href="login.html"><span>Perfil</span></a>
+  </nav>
+
+  <!-- NAVBAR ZOOM (Burger) -->
+  <nav class="zoom-nav">
+    <div class="burger" id="burgerBtn">&#9776;</div>
+    <div class="sidebar" id="sidebar">
+      <a href="create.html" class="btn-secondary-custom">Create</a>
+      <a href="explore.html">Explore</a>
+      <a href="map.html">Map</a>
+      <a href="collections.html">Collections</a>
+      <a href="about.html">About Us</a>
+      <a href="login.html" class="btn-secondary-custom">Log in</a>
+      <a href="signup.html" class="btn-secondary-custom">Sign up</a>
+    </div>
+  </nav>
+
+  <!-- MAPA -->
   <div id="map"></div>
 
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/main.js"></script>
 </body>
 </html>

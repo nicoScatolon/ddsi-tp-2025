@@ -1,55 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - MetaMapa</title>
-    
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="images/icon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetaMapa</title>
 
-    <link rel="stylesheet" href="styles/styles.css"> 
-    <link rel="stylesheet" href="styles/index-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="images/icon.ico">
+
+  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/index-style.css">
+  <script src="js/navbar.js" defer></script>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="brand">
-                <a href="index.html">
-                    <img src="images/icon.ico" alt="MetaMapa Logo">
-                    <span class="site-name">MetaMapa</span>
-                </a>
-            </div>
-            
-            <ul class="nav-links">
-                <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
-                <li><a href="explore.html">Explore</a></li>
-                <li><a href="map.html">Map</a></li>
-                <li><a href="collections.html">Collections</a></li>
-                <li><a href="about.html">About Us</a></li>
-            </ul>
+  <!-- NAVBAR DESKTOP -->
+  <header class="desktop-nav">
+    <nav>
+      <div class="brand">
+        <a href="index.html">
+          <img src="images/icon.ico" alt="MetaMapa Logo">
+          <span class="site-name">MetaMapa</span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="map.html">Map</a></li>
+        <li><a href="collections.html">Collections</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+      <div class="login">
+        <a href="login.html" class="btn btn-secondary">Log in</a>
+        <a href="signup.html" class="btn btn-secondary">Sign up</a>
+      </div>
+    </nav>
+  </header>
 
-            <div class="login">
-                <a href="login.html" class="btn btn-secondary">Log in</a>
-                <a href="signup.html" class="btn btn-secondary">Sign up</a>
-            </div>
-        </nav>
-    </header>
+  <!-- NAVBAR MOBILE -->
+<nav class="mobile-nav">
+    <a href="explore.html">
+        <img src="images/explore.ico" alt="Explore Icon">
+        <span>Explore</span>
+    </a>
+    <a href="map.html">
+        <img src="images/map.ico" alt="Map Icon">
+        <span>Map</span>
+    </a>
+    <a href="create.html" class="create-btn">
+        <img src="images/create.ico" alt="Create Icon">
+        <span>Create</span>
+    </a>
+    <a href="collections.html">
+        <img src="images/folder.ico" alt="Collections Icon">
+        <span>Collections</span>
+    </a>
+    <a href="login.html">
+        <img src="images/user.ico" alt="Perfil Icon">
+        <span>Perfil</span>
+    </a>
+</nav>
 
-    <section id="home">
-        <div class="content">
-            <h1>MetaMapa</h1>
-            <h3>Sistema de gestión de mapeos colaborativos</h3>
-            <h5>Sumate a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva que beneficie a todos</h5>
+  <!-- NAVBAR ZOOM (Burger) -->
+  <nav class="zoom-nav">
+    <div class="burger" id="burgerBtn">&#9776;</div>
+    <div class="sidebar" id="sidebar">
+        <a href="create.html" class="btn-secondary-custom">Create</a>
+        <a href="explore.html">Explore</a>
+        <a href="map.html">Map</a>
+        <a href="collections.html">Collections</a>
+        <a href="about.html">About Us</a>
+      <a href="login.html" class="btn-secondary-custom">Log in</a>
+      <a href="signup.html" class="btn-secondary-custom">Sign up</a>
+    </div>
+  </nav>
 
-            <div class="home-buttons">
-                <a href="create.html" class="btn btn-primary">+ Create</a>
-                <a href="explore.html" class="btn btn-secondary">Explore</a>
-            </div>
-        </div>
-    </section>
+  <!-- CONTENIDO -->
+  <section id="home">
+    <div class="content">
+      <h1>MetaMapa</h1>
+      <h3>Sistema de gestión de mapeos colaborativos</h3>
+      <h5>Sumate a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva que beneficie a todos</h5>
+
+      <div class="home-buttons">
+        <a href="create.html" class="btn btn-primary">+ Create</a>
+        <a href="explore.html" class="btn btn-secondary">Explore</a>
+      </div>
+    </div>
+  </section>
 </body>
 </html>
