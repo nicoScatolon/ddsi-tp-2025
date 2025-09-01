@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Solicitudes | MetaMapa</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="images/icon.ico">
+
+  <!-- CSS general -->
+  <link rel="stylesheet" href="styles/styles.css">
+  <!-- CSS específico para mis solicitudes -->
+  <link rel="stylesheet" href="styles/mis-solicitudes.css">
+
+  <script src="js/navbar.js" defer></script>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="desktop-nav">
+    <nav>
+      <div class="brand">
+        <a href="index.html">
+          <img src="images/icon.ico" alt="MetaMapa Logo">
+          <span class="site-name">MetaMapa</span>
+        </a>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="map.html">Map</a></li>
+        <li><a href="collections.html">Collections</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+
+      <div class="right-controls" style="display:flex; align-items:center; gap:8px;">
+        <div id="authButtons" class="login">
+          <a href="login.html" class="btn btn-secondary" id="desktopLoginBtn">Log in</a>
+          <a href="signup.html" class="btn btn-secondary" id="desktopSignupBtn">Sign up</a>
+        </div>
+        <div id="desktopUserContainer" style="display:none; position:relative;">
+          <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
+            <span id="desktopUserLabel">User</span>
+            <img id="desktopAvatar" src="images/user.ico" alt="avatar" class="nav-avatar" style="margin-left:8px;">
+          </button>
+          <div id="desktopUserDropdown" style="position:absolute; right:0; top:calc(100% + 8px); display:none; min-width:220px; background:var(--color-primary); border-radius:8px; padding:6px 0; z-index:4000; box-shadow:0 6px 14px rgba(0,0,0,0.18);">
+            <!-- items por JS -->
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- NAVBAR MOBILE -->
+  <nav class="mobile-nav">
+    <a href="explore.html"><img src="images/explore.ico" alt="Explore Icon"><span>Explore</span></a>
+    <a href="map.html"><img src="images/map.ico" alt="Map Icon"><span>Map</span></a>
+    <a href="create.html" class="create-btn"><img src="images/create.ico" alt="Create Icon"><span>Create</span></a>
+    <a href="collections.html"><img src="images/folder.ico" alt="Collections Icon"><span>Collections</span></a>
+    <div id="mobileProfileMenu" class="mobile-profile">
+      <img src="images/user.ico" alt="Perfil Icon"><span>Perfil</span>
+      <div id="mobileProfileDropdown" class="profile-dropdown" style="display:none;"></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="card">
+      <h1>Mis Solicitudes de Eliminación</h1>
+      <div id="solicitudes-list" class="solicitudes-container">
+        <!-- JS cargará las solicitudes aquí -->
+      </div>
+    </section>
+  </main>
+
+  <script src="js/hechos.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Datos simulados de solicitudes del usuario
+      const solicitudes = [
+        { id: 1, hechoId: 2, fecha: '2025-08-01', razon: 'Contenido incorrecto' },
+        { id: 2, hechoId: 3, fecha: '2025-08-10', razon: 'Duplicado' },
+      ];
+
+      const container = document.getElementById('solicitudes-list');
+
+      if(solicitudes.length === 0){
+        container.innerHTML = '<p>No hay solicitudes realizadas.</p>';
+        return;
+      }
+
+      solicitudes.forEach(solicitud => {
+        const hecho = HECHOS.find(h => h.id === solicitud.hechoId);
+
+        const div = document.createElement('div');
+        div.className = 'solicitud-card';
+
+        div.innerHTML = `
+            <div class="row">
+                <div><span class="label">Hecho:</span> ${hecho ? hecho.title : 'Desconocido'}</div>
+                <div><span class="label">Fecha de solicitud:</span> ${solicitud.fecha}</div>
+            </div>
+            <div><span class="label">Razón:</span> ${solicitud.razon}</div>
+            <div class="actions">
+                <a href="#" class="btn cancel">Cancelar solicitud</a>
+                <a href="${hecho ? `hecho.html?id=${hecho.id}` : '#'}" class="btn">Ver contenido</a>
+            </div>
+            `;
+        container.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>

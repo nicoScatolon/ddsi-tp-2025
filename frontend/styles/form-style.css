@@ -15,6 +15,7 @@ html, body {
     font-family: 'Poppins', Arial, Helvetica, sans-serif;
     background: url("../images/background-home.jpg") center/cover no-repeat fixed;
     color: #fff;
+    padding: 1rem;
 }
 
 /* --- HEADER / NAVBAR --- */

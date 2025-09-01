@@ -1,6 +1,5 @@
 const colors = [
-  "#2F60F4","#1746D2","#1A3FA0","#3B6EFF","#4A79FF",
-  "#444","#555","#666","#777","#5A5AFF","#3C3C3C","#6A6AFF"
+  "#2F60F4","#1746D2","#1A3FA0","#3B6EFF","#4A79FF","#5A5AFF","#6A6AFF"
 ];
 
 function getRandomColor() {
@@ -37,10 +36,10 @@ function createCard(hecho) {
   // 3️⃣ Datos
   const data = document.createElement("div");
   data.classList.add("card-data");
-  if (hecho.ubicacion) data.innerHTML += `<p>Ubicación: ${hecho.ubicacion}</p>`;
-  if (hecho.categoria) data.innerHTML += `<p>Categoría: ${hecho.categoria}</p>`;
-  if (hecho.etiqueta) data.innerHTML += `<p>Etiqueta: ${hecho.etiqueta}</p>`;
-  if (hecho.fecha) data.innerHTML += `<p>Fecha: ${hecho.fecha}</p>`;
+  if (hecho.ubicacion) data.innerHTML += `<p><strong>📍 Ubicación:</strong> ${hecho.ubicacion}</p>`;
+  if (hecho.categoria) data.innerHTML += `<p><strong>🏷️ Categoría:</strong> ${hecho.categoria}</p>`;
+  if (hecho.etiqueta) data.innerHTML += `<p><strong>🔖 Etiqueta:</strong> ${hecho.etiqueta}</p>`;
+  if (hecho.fecha) data.innerHTML += `<p><strong>📅 Fecha:</strong> ${hecho.fecha}</p>`;
   card.appendChild(data);
 
   // 4️⃣ Imagen o color

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hechos | MetaMapa</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/explore-collections-style.css">
+
+  <script src="js/hechos.js" defer></script>
+  <script src="js/collection-detail.js" defer></script>
+  <script src="js/navbar.js" defer></script>
+</head>
+<body>
+  <!-- NAVBAR repetido -->
+  <header class="desktop-nav">
+    <nav>
+      <div class="brand">
+        <a href="index.html">
+          <img src="images/icon.ico" alt="MetaMapa Logo">
+          <span class="site-name">MetaMapa</span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="map.html">Map</a></li>
+        <li><a href="collections.html">Collections</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+    <main>
+    <section id="collection-detail">
+      <div class="explore-layout">
+        <div id="hechos-container" class="cards-container">
+          <!-- JS llenará los hechos de la colección -->
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

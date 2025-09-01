@@ -1,0 +1,144 @@
+/* styles/explore-collections-style.css
+   Cards para collection-detail — match con explore-style.css
+*/
+
+:root{
+  --bg: #E5ECFF;
+  --card-bg: #fff;
+  --primary: #2F60F4;
+  --primary-dark: #1746D2;
+  --muted: #666;
+  --shadow: 0 4px 12px rgba(0,0,0,0.18);
+  --radius: 10px;
+}
+
+/* Layout (si no lo tenés global) */
+.explore-layout{
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+  padding: 0 2rem 2rem 2rem;
+  align-items: start;
+}
+
+/* Contenedor de cards (lista vertical igual que Explore) */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 0.5rem;
+  width: 100%;
+}
+
+/* Card: igual que explore, con alto fijo */
+.card {
+  display: grid;
+  grid-template-columns: 150px 1fr 250px 150px; /* columna 1 = título, 2 = descripción, 3 = datos, 4 = foto */
+  align-items: stretch;
+  height: 150px;
+  gap: 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform .18s, box-shadow .18s;
+}
+
+/* Imagen / icon */
+.card-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Si no hay imagen mostramos una inicial/icon */
+.card-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  font-weight:700;
+  color:#fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+/* Título centrado */
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* izquierda */
+  padding: 0 0.75rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #222;
+  border-right: 1px solid #e6e6e6;
+  text-align: left;
+}
+
+/* Descripción (recortada) */
+.card-description {
+  padding: 0 0.6rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.card-description p {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2rem;
+}
+
+/* Datos (ubicacion, categoria, etiqueta, fecha) */
+.card-data {
+  padding: 0 0.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--muted);
+  border-right: 1px solid #e6e6e6;
+}
+.card-data p {
+  margin: 0.18rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+}
+
+/* Responsive: apilar en pantallas estrechas */
+@media (max-width: 1024px) {
+  .explore-layout { grid-template-columns: 1fr; padding: 1.5rem; }
+  .card { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; height: auto; }
+  .card-title, .card-description, .card-data, .card-img { width: 100%; border-right: none; border-bottom: 1px solid #e6e6e6; padding: 0.6rem; }
+  .card-img { height: 200px; border-bottom: none; }
+}
+
+/* Móvil */
+@media (max-width: 480px) {
+  .card-img { height: 150px; }
+  .card-title, .card-description, .card-data { font-size: 0.95rem; }
+}

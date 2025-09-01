@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }).addTo(map);
 
       L.marker([hecho.lat, hecho.lng]).addTo(map)
-      .bindPopup(`<strong>${hecho.title}</strong><br>${hecho.fecha}`)
-      .openPopup();
+        .bindPopup(`<strong>${hecho.title}</strong><br>${hecho.fecha}`)
+        .openPopup();
     }
 
     // Multimedia
@@ -86,6 +86,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Título de la pestaña
     document.title = hecho.title + ' | MetaMapa';
+
+    // Ejemplo de detección de usuario loggeado y rol
+    const currentUser = {
+      loggedIn: true,
+      role: 'admin' // o 'contribuyente' o 'guest'
+    };
+
+    // Solo mostrar botón si es admin o contribuyente
+    if (currentUser.loggedIn && (currentUser.role === 'admin' || currentUser.role === 'contribuyente')) {
+      const actionsEl = document.getElementById('hecho-actions');
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Solicitar eliminación';
+      deleteBtn.className = 'btn-warning';
+      actionsEl.appendChild(deleteBtn);
+
+      // Modal de eliminación
+      const modal = document.getElementById('deleteModal');
+      const closeBtn = modal.querySelector('.close');
+      const form = document.getElementById('deleteForm');
+
+      // Abrir modal al click del botón
+      deleteBtn.addEventListener('click', () => {
+        modal.style.display = 'block';
+      });
+
+      // Cerrar modal al click de la X
+      closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+
+      // Cerrar modal al click fuera del contenido
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+
+      // Manejar envío del formulario
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const reason = document.getElementById('reason').value.trim();
+        if(reason){
+          alert('Solicitud enviada con la razón: ' + reason);
+          form.reset();
+          modal.style.display = 'none';
+          // Aquí podrías enviar la razón al backend vía fetch() o AJAX
+        } else {
+          alert('Por favor ingresa una razón.');
+        }
+      });
+    }
+
   } else {
     const detalle = document.getElementById('hecho-detail');
     detalle.innerHTML = '<p>Hecho no encontrado.</p>';
