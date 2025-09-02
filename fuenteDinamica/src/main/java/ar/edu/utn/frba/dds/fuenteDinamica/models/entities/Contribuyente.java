@@ -9,12 +9,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class Contribuyente {
     private Long id;
-    // no tiene id -> no esta cargado en la base de datos de usuarios -> no esta registrado
+    // consideramos que el id nos viene de el sistema de autenticacion de sesiones
     private String nombre;
     private String apellido;
-    private LocalDate fechaNacimiento;
-    private Boolean esAnonimo;
-    // si estan estos datos cargados significa que inicio sesion y por ende es un "contribuyente" anonimo o no
+    // si se carga un hecho de forma anonima, no se va a poder cargar, 
 }

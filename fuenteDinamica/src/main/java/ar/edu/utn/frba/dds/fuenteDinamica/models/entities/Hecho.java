@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
+
 public class Hecho {
     //Contenido del Hecho
     private String titulo;
@@ -20,6 +22,7 @@ public class Hecho {
     private LocalDate fechaDeOcurrencia;
     private IContenidoMultimedia contenidoMultimedia;
     private LocalDateTime fechaDeCarga;
+    private Boolean esAnonimo;
 
     //Metadata
     private Long id;

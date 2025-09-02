@@ -16,4 +16,5 @@ public class SolicitudEliminacion {
     private Long idAdmin;
     private LocalDateTime fechaGestion = null;
     private EstadoSolicitudEliminacion estado;
+    //TODO consultar que hacer con las solicitudes de eliminacion, ya que las guardamos en el agregador, si aca son necesarias o que
 }

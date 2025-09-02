@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Ubicacion {
+    //TODO agregar provincia y localidad
     private Double latitud;
     private Double longitud;
 }
