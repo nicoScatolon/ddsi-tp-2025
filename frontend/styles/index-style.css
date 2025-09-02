@@ -1,6 +1,6 @@
 :root {
-    --desktop-navbar-height: 80px; /* altura del navbar desktop */
-    --zoom-navbar-height: 60px;    /* altura del navbar mobile / zoom */
+    --desktop-navbar-height: 80px;
+    --zoom-navbar-height: 60px;
 }
 
 /* --- RESET & BASE --- */
@@ -37,30 +37,20 @@ nav {
     align-items: center;
 }
 
-/* --- HOME SECTION --- */
+/* --- HERO / HOME --- */
 #home {
     position: relative;
-    z-index: 5; 
+    z-index: 5;
     min-height: calc(100vh - var(--desktop-navbar-height));
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* evita que suba al hacer zoom */
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     padding-top: calc(var(--desktop-navbar-height) + 2rem);
-    padding-bottom: 4rem; /* espacio extra abajo */
+    padding-bottom: 2rem;
 }
 
-/* en mobile usamos la altura del zoom-nav */
-@media (max-width: 1024px) {
-    #home {
-        min-height: calc(100vh - var(--zoom-navbar-height));
-        padding-top: calc(var(--zoom-navbar-height) + 1.5rem);
-        padding-bottom: 3rem; /* menos espacio en móvil */
-    }
-}
-
-/* --- HOME CONTENT --- */
 #home .content h1 {
     font-size: 5.5em;
     margin-bottom: 0.4em;
@@ -85,47 +75,166 @@ nav {
 
 /* --- HOME BUTTONS --- */
 .home-buttons {
-    margin: 40px 0;
+    margin: 30px 0;
     display: flex;
     gap: 30px;
     justify-content: center;
+    padding-bottom: 40px; /* mayor espacio inferior */
 }
 
 .home-buttons .btn {
     font-size: 1.4em;
-    padding: 18px 40px;
+    padding: 18px 40px 20px 40px; /* padding bottom aumentado */
 }
 
-/* --- RESPONSIVE --- */
-#home .content h1,
-#home .content h3,
-#home .content h5 {
-    position: relative;
-    z-index: 20;
-}
-
-/* Tablets y pantallas medianas */
+/* --- RESPONSIVE HERO --- */
 @media (max-width: 1024px) {
+    #home { padding-top: calc(var(--zoom-navbar-height) + 1.5rem); padding-bottom: 1.5rem; }
     #home .content h1 { font-size: 4em; }
     #home .content h3 { font-size: 2em; }
     #home .content h5 { font-size: 1.2em; max-width: 700px; }
-    .home-buttons .btn { font-size: 1.2em; padding: 15px 30px; }
+    .home-buttons .btn { font-size: 1.2em; padding: 15px 30px 25px 30px; }
 }
 
-/* Celulares grandes */
 @media (max-width: 768px) {
     #home { padding-left: 1rem; padding-right: 1rem; }
     #home .content h1 { font-size: 3em; }
     #home .content h3 { font-size: 1.6em; }
     #home .content h5 { font-size: 1em; max-width: 500px; }
     .home-buttons { flex-direction: column; gap: 20px; align-items: center;}
-    .home-buttons .btn { width: 70%; font-size: 1.1em; padding: 14px 20px;  }
+    .home-buttons .btn { width: 70%; font-size: 1.1em; padding: 14px 20px 24px 20px; }
 }
 
-/* Celulares chicos */
 @media (max-width: 480px) {
     #home .content h1 { font-size: 2.2em; }
     #home .content h3 { font-size: 1.4em; }
     #home .content h5 { font-size: 0.95em; max-width: 100%; }
-    .home-buttons .btn { font-size: 1em; padding: 12px 18px; }
+    .home-buttons .btn { font-size: 1em; padding: 12px 18px 20px 18px; }
 }
+
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    background: #0000003f;
+    border: 2px solid #2F60F4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, opacity 0.3s, transform 0.3s;
+    z-index: 100;
+}
+
+.scroll-indicator svg {
+    width: 24px;
+    height: 24px;
+    stroke: #2F60F4;
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.3s;
+}
+
+.scroll-indicator:hover {
+    background: #2F60F4;
+}
+
+.scroll-indicator:hover svg {
+    stroke: #fff;
+}
+
+/* ===== SECCIÓN INFERIOR: HECHOS + COLECCIONES + FOOTER ===== */
+#lower-content {
+    min-height: calc(100vh - var(--desktop-navbar-height));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* separa Hechos, Colecciones y Footer */
+}
+
+#hechos, #colecciones {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+section h2 {
+    margin-left: 2rem;
+    text-align: left;
+    font-size: 2.6em;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.cards-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 1rem;
+    gap: 1.5rem;
+    scrollbar-width: none;
+}
+
+.cards-row::-webkit-scrollbar { display: none; }
+
+.card {
+    flex: 0 0 350px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    padding: 1.2rem;
+    color: #fff;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    background: rgba(0,0,0,0.75);
+}
+
+/* --- SCROLL BUTTONS --- */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1746D2;
+    color: white;
+    border: none;
+    width: 50px;       /* ancho fijo */
+    height: 50px;      /* alto fijo igual al ancho */
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%; /* redondo */
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;        /* quitar padding para no deformar */
+}
+
+
+.scroll-btn:hover { 
+    background: #0f2c82; 
+}
+
+
+.scroll-btn.left { left: -1px; } 
+.scroll-btn.right { right: -1px; }
+
+@media (max-width: 768px) {
+    .card { flex: 0 0 260px; }
+}
+

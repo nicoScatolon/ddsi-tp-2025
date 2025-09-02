@@ -8,111 +8,167 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="images/icon.ico">
 
-  <!-- tus CSS ya cargados -->
+  <!-- estilos -->
   <link rel="stylesheet" href="styles/styles.css">
   <link rel="stylesheet" href="styles/index-style.css">
 
-  <!-- este JS se carga al final con defer en el ejemplo previo, aquí mantenemos la misma referencia -->
-  <script src="js/navbar.js" defer></script>
+  <script src="js/collections.js"></script>
+  <script src="js/hechos.js"></script>
+  <script src="js/scroll.js"></script>
 </head>
 <body>
   <!-- NAVBAR DESKTOP -->
-  <header class="desktop-nav">
-    <nav>
-      <div class="brand">
-        <a href="index.html">
-          <img src="images/icon.ico" alt="MetaMapa Logo">
-          <span class="site-name">MetaMapa</span>
-        </a>
-      </div>
-
-      <ul class="nav-links">
-        <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
-        <li><a href="explore.html">Explore</a></li>
-        <li><a href="map.html">Map</a></li>
-        <li><a href="collections.html">Collections</a></li>
-        <li><a href="about.html">About Us</a></li>
-      </ul>
-
-      <!-- Right-side area: authButtons (guest) OR desktop single user/admin button -->
-      <div class="right-controls" style="display:flex; align-items:center; gap:8px;">
-        <!-- auth buttons for guest -->
-        <div id="authButtons" class="login">
-          <a href="login.html" class="btn btn-secondary" id="desktopLoginBtn">Log in</a>
-          <a href="signup.html" class="btn btn-secondary" id="desktopSignupBtn">Sign up</a>
+    <header class="desktop-nav">
+      <nav>
+        <div class="brand">
+          <a href="index.html">
+            <img src="images/icon.ico" alt="MetaMapa Logo">
+            <span class="site-name">MetaMapa</span>
+          </a>
         </div>
 
-        <!-- desktop single button container (hidden for guest) -->
-        <div id="desktopUserContainer" style="display:none; position:relative;">
-          <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
-            <span id="desktopUserLabel">User</span>
-            <img id="desktopAvatar" src="images/user.ico" alt="avatar" class="nav-avatar" style="vertical-align:middle; margin-left:8px;">
-          </button>
+        <ul class="nav-links">
+          <li><a href="create.html" class="btn btn-primary">+ Create</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="collections.html">Collections</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
 
-          <!-- dropdown on desktop -->
-          <div id="desktopUserDropdown"
-               style="position:absolute; right:0; top:calc(100% + 8px); display:none; min-width:220px;
-                      background:var(--color-primary); border-radius:8px; padding:6px 0; z-index:4000; box-shadow:0 6px 14px rgba(0,0,0,0.18);">
-            <!-- items built by JS -->
+        <!-- Right-side area: authButtons (guest) OR desktop single user/admin button -->
+        <div class="right-controls" style="display:flex; align-items:center; gap:8px;">
+          <!-- auth buttons for guest -->
+          <div id="authButtons" class="login">
+            <a href="login.html" class="btn btn-secondary" id="desktopLoginBtn">Log in</a>
+            <a href="signup.html" class="btn btn-secondary" id="desktopSignupBtn">Sign up</a>
           </div>
+
+          <!-- desktop single button container (hidden for guest) -->
+          <div id="desktopUserContainer" style="display:none; position:relative;">
+            <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
+              <span id="desktopUserLabel">User</span>
+              <img id="desktopAvatar" src="images/user.ico" alt="avatar" class="nav-avatar" style="vertical-align:middle; margin-left:8px;">
+            </button>
+
+            <!-- dropdown on desktop -->
+            <div id="desktopUserDropdown"
+                style="position:absolute; right:0; top:calc(100% + 8px); display:none; min-width:220px;
+                        background:var(--color-primary); border-radius:8px; padding:6px 0; z-index:4000; box-shadow:0 6px 14px rgba(0,0,0,0.18);">
+              <!-- items built by JS -->
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- NAVBAR MOBILE -->
+    <nav class="mobile-nav">
+      <a href="explore.html">
+        <img src="images/explore.ico" alt="Explore Icon"><span>Explore</span>
+      </a>
+      <a href="map.html">
+        <img src="images/map.ico" alt="Map Icon"><span>Map</span>
+      </a>
+      <a href="create.html" class="create-btn">
+        <img src="images/create.ico" alt="Create Icon"><span>Create</span>
+      </a>
+      <a href="collections.html">
+        <img src="images/folder.ico" alt="Collections Icon"><span>Collections</span>
+      </a>
+
+      <!-- Perfil con dropdown (mobile) - mantenido tal cual -->
+      <div id="mobileProfileMenu" class="mobile-profile">
+        <img src="images/user.ico" alt="Perfil Icon"><span>Perfil</span>
+        <div id="mobileProfileDropdown" class="profile-dropdown" style="display:none;">
+          <!-- JS llena esto -->
         </div>
       </div>
     </nav>
-  </header>
 
-  <!-- NAVBAR MOBILE -->
-  <nav class="mobile-nav">
-    <a href="explore.html">
-      <img src="images/explore.ico" alt="Explore Icon"><span>Explore</span>
-    </a>
-    <a href="map.html">
-      <img src="images/map.ico" alt="Map Icon"><span>Map</span>
-    </a>
-    <a href="create.html" class="create-btn">
-      <img src="images/create.ico" alt="Create Icon"><span>Create</span>
-    </a>
-    <a href="collections.html">
-      <img src="images/folder.ico" alt="Collections Icon"><span>Collections</span>
-    </a>
+    <!-- NAVBAR ZOOM (Burger) -->
+    <nav class="zoom-nav">
+      <div class="burger" id="burgerBtn">&#9776;</div>
 
-    <!-- Perfil con dropdown (mobile) - mantenido tal cual -->
-    <div id="mobileProfileMenu" class="mobile-profile">
-      <img src="images/user.ico" alt="Perfil Icon"><span>Perfil</span>
-      <div id="mobileProfileDropdown" class="profile-dropdown" style="display:none;">
-        <!-- JS llena esto -->
+      <div class="sidebar" id="sidebar">
+        <a href="create.html" class="btn-secondary-custom">Create</a>
+        <a href="explore.html">Explore</a>
+        <a href="map.html">Map</a>
+        <a href="collections.html">Collections</a>
+        <a href="about.html">About Us</a>
+
+        <!-- aquí el contenedor para el control único en la sidebar;
+            JS rellenará auth o el botón user/admin + submenu -->
+        <div id="sidebarUserArea" style="margin-top:8px;"></div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- NAVBAR ZOOM (Burger) -->
-  <nav class="zoom-nav">
-    <div class="burger" id="burgerBtn">&#9776;</div>
-
-    <div class="sidebar" id="sidebar">
-      <a href="create.html" class="btn-secondary-custom">Create</a>
-      <a href="explore.html">Explore</a>
-      <a href="map.html">Map</a>
-      <a href="collections.html">Collections</a>
-      <a href="about.html">About Us</a>
-
-      <!-- aquí el contenedor para el control único en la sidebar;
-           JS rellenará auth o el botón user/admin + submenu -->
-      <div id="sidebarUserArea" style="margin-top:8px;"></div>
-    </div>
-  </nav>
-
-  <!-- CONTENIDO -->
+  <!-- HERO -->
   <section id="home">
     <div class="content">
       <h1>MetaMapa</h1>
       <h3>Sistema de gestión de mapeos colaborativos</h3>
-      <h5>Sumate a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva que beneficie a todos</h5>
-
+      <h5>Sumate a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva</h5>
       <div class="home-buttons">
         <a href="create.html" class="btn btn-primary">+ Create</a>
         <a href="explore.html" class="btn btn-secondary">Explore</a>
       </div>
     </div>
+    <div class="scroll-indicator" id="scrollIndicator">
+      <svg viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </div>
   </section>
+  <div id="lower-content">
+    <!-- Hechos destacados -->
+    <section id="hechos">
+      <h2>Hechos destacados</h2>
+      <div class="scroll-container">
+        <button class="scroll-btn left" data-target="hechos-container">&#10094;</button>
+        <div id="hechos-container" class="cards-row"></div>
+        <button class="scroll-btn right" data-target="hechos-container">&#10095;</button>
+      </div>
+    </section>
+
+    <!-- Colecciones destacadas -->
+    <section id="colecciones">
+      <h2>Colecciones destacadas</h2>
+      <div class="scroll-container">
+        <button class="scroll-btn left" data-target="collections-container">&#10094;</button>
+        <div id="collections-container" class="cards-row"></div>
+        <button class="scroll-btn right" data-target="collections-container">&#10095;</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Render dinámico de hechos destacados
+    function renderHechos() {
+      const container = document.getElementById("hechos-container");
+      container.innerHTML = "";
+
+      HECHOS.forEach(h => {
+        const card = document.createElement("a");
+        card.className = "card";
+        card.href = `hecho.html?id=${h.id}`;
+        card.innerHTML = `
+          <div class="card-title">${h.title}</div>
+          <div class="card-description"><p>${h.description.substring(0, 120)}...</p></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderColecciones();
+      renderHechos();
+    });
+  </script>
 </body>
+
+ <footer>
+      <p>© 2025 MetaMapa - Todos los derechos reservados</p>
+      <a href="legal-privacidad.html">Información legal | Privacidad</a>
+  </footer>
+
 </html>

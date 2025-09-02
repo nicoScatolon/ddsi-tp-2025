@@ -482,3 +482,11 @@ main, section, .content, .form-container, .about, .collections, .login-section, 
 .profile-dropdown a.admin-option:focus-visible {
   box-shadow: 0 0 0 4px rgba(23,70,210,0.12);
 }
+
+footer {
+    flex-shrink: 0;
+    background: #1746D2;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}

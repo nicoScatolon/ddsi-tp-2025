@@ -144,8 +144,15 @@
             <ul id="hecho-etiquetas" class="tags"></ul>
           </div>
 
+          <hr class="separator">
+          <div class="info-item">
+            <div class="tags-header">Fuente:</div>
+            <p id="hecho-fuente" class="fuente">Sin fuente disponible</p>
+          </div>
+
+
           <div id="hecho-actions" class="info-item" style="margin-top:12px;">
-            <!-- Aquí JS agregará el botón "Solicitar eliminación" -->
+            <button id="saveHechoBtn" class="btn-warning" style="display:none;">Guardar Cambios</button>
           </div>
         </div>
 
@@ -171,6 +178,8 @@
       </div>
     </section>
   </main>
+
+  
   <!-- Modal Solicitud de Eliminación -->
 <div id="deleteModal" class="modal">
   <div class="modal-content">
@@ -178,11 +187,17 @@
     <h2>Solicitar Eliminación del Hecho</h2>
     <form id="deleteForm">
       <label for="reason">Razón de la eliminación:</label>
-      <textarea id="reason" name="reason" rows="4" placeholder="Escribe tu razón aquí..." required></textarea>
+      <textarea id="reason" name="reason" rows="6" placeholder="Escribe tu razón aquí..." required minlength="500"></textarea>
       <button type="submit" class="btn-warning">Enviar Solicitud</button>
     </form>
   </div>
 </div>
 
+
 </body>
+
+ <footer>
+      <p>© 2025 MetaMapa - Todos los derechos reservados</p>
+      <a href="legal-privacidad.html">Información legal | Privacidad</a>
+  </footer>
 </html>

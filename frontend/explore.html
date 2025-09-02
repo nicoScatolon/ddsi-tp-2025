@@ -115,24 +115,50 @@
         <!-- BOX FILTROS -->
         <aside class="filter-box">
           <h2>Filtros</h2>
+          <!-- 🔽 Nuevo filtro de modo -->
           <div class="filter-group">
-            <label for="categoria">Categoría</label>
-            <select id="categoria">
-              <option value="">Todas</option>
-              <option value="historia">Historia</option>
-              <option value="cultura">Cultura</option>
-              <option value="evento">Evento</option>
+            <label for="filter-modo">Modo de navegación:</label>
+            <select id="filter-modo">
+              <option value="irrestricto">Irrestricto</option>
+              <option value="curados">Curados</option>
             </select>
           </div>
+
+
           <div class="filter-group">
-            <label for="etiquetas">Etiquetas</label>
-            <input type="text" id="etiquetas" placeholder="Buscar etiqueta...">
+            <label for="filter-fecha">Fecha:</label>
+            <input type="text" id="filter-fecha" placeholder="YYYY-MM-DD">
           </div>
+
           <div class="filter-group">
-            <label for="fecha">Fecha</label>
-            <input type="date" id="fecha">
+            <label for="filter-ubicacion">Ubicación:</label>
+            <input type="text" id="filter-ubicacion" placeholder="Ej: Buenos Aires">
           </div>
-          <button class="btn-filter">Aplicar filtros</button>
+
+          <div class="filter-group">
+            <label for="filter-categoria">Categoría:</label>
+            <input type="text" id="filter-categoria">
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-etiqueta">Etiqueta:</label>
+            <input type="text" id="filter-etiqueta">
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-fuente">Fuente:</label>
+            <input type="text" id="filter-fuente">
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-fuente">Fuente:</label>
+            <input type="text" id="filter-fuente">
+          </div>
+
+          
+
+          <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
+
         </aside>
 
         <!-- CARDS -->
@@ -142,6 +168,13 @@
       </div>
     </section>
   </main>
+
+  
 </body>
+
+ <footer>
+      <p>© 2025 MetaMapa - Todos los derechos reservados</p>
+      <a href="legal-privacidad.html">Información legal | Privacidad</a>
+  </footer>
 </html>
 
