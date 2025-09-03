@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.IContenidoMultimedia;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Ubicacion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,6 +24,7 @@ public class HechoOutputDTO {
     private Ubicacion ubicacion;
     private LocalDate fechaOcurrencia;
     private LocalDateTime fechaCarga;
-    private IContenidoMultimedia contenidoMultimedia;
+    private List<ContenidoMultimedia> contenidoMultimedia;
     private Contribuyente contribuyente;
+    private Boolean esAnonimo;
 }

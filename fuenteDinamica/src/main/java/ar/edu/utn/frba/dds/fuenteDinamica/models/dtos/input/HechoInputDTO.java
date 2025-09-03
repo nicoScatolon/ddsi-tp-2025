@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input;
 
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.IContenidoMultimedia;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Ubicacion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,10 +18,11 @@ public class HechoInputDTO {
     private Long id;
     private String titulo;
     private String descripcion;
-    private String categoria;
-    private Ubicacion ubicacion;
+    private CategoriaInputDTO categoriaInputDTO;
+    private Ubicacion ubicacion; //posible dto tambien para ubicacion para desacoplar, pero puedo usarlos directamente asi
     private LocalDate fechaDeOcurrencia;
+    private Boolean esAnonimo;
 
-    private IContenidoMultimedia contenidoMultimedia;
+    private List<ContenidoMultimedia> contenidoMultimedia;
     private ContribuyenteInputDTO contribuyenteInputDTO;
 }

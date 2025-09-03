@@ -1,10 +1,11 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ModificarHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Categoria;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HechosService implements IHechosService {
@@ -30,35 +32,6 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public void cargarHecho(ModificarHechoInputDTO inputDTO) {
-        Hecho hecho = hechoInputDTO(inputDTO.getHechoInputDTO(), inputDTO.getContribuyenteInputDTO());
-        hecho.setFechaDeCarga(LocalDateTime.now());
-        this.hechosRepository.save(hecho);
-    }
-
-    @Override
-    public void modificarHecho(ModificarHechoInputDTO inputDTO) {
-        Hecho hechoGuardado = this.hechosRepository.findById(inputDTO.getHechoInputDTO().getId());
-        Hecho hechoNuevo = hechoInputDTO(inputDTO.getHechoInputDTO(), inputDTO.getContribuyenteInputDTO());
-
-        if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
-        if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-        if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
-        { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
-
-
-        hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
-        this.hechosRepository.save(hechoGuardado);
-    }
-
-    @Override
-    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
-        Hecho hecho = this.hechosRepository.findById(idHecho);
-        hecho.serRevisado(idAdmin, nuevoEstado, sugerencia);
-        this.hechosRepository.save(hecho);
-        return hecho;
-    }
-
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
         List<Hecho> hechosAEnviar = this.hechosRepository.findAll().stream().filter(h -> h.getEstado().equals(EstadoHecho.ACEPTADO)).toList();
 
@@ -69,17 +42,62 @@ public class HechosService implements IHechosService {
         return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
     }
 
+    @Override
+    public void cargarHecho(HechoInputDTO hechoInputDTO) {
+        Hecho hecho = hechoInputDTO(hechoInputDTO);
+        hecho.setFechaDeCarga(LocalDateTime.now());
+        this.hechosRepository.save(hecho);
+    }
+
+    @Override
+    public Hecho modificarHecho(HechoInputDTO hechoInputDTO) {
+        Optional<Hecho> optionalHechoGuardado = this.hechosRepository.findById(hechoInputDTO.getId());
+        Hecho hechoNuevo = hechoInputDTO(hechoInputDTO);
+        if (optionalHechoGuardado.isPresent()) {
+            Hecho hechoGuardado = optionalHechoGuardado.get();
+
+            if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
+            if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
+            if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
+            { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
+
+            hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
+            this.hechosRepository.save(hechoGuardado);
+            return hechoGuardado;
+
+        } else {
+           return null;//TODO responder 404
+        }
+    }
+
+    @Override
+    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
+        Optional<Hecho> optionalHecho = this.hechosRepository.findById(idHecho);
+        if (optionalHecho.isPresent()) {
+            Hecho hecho = optionalHecho.get();
+            hecho.serRevisado(idAdmin, nuevoEstado, sugerencia);
+            this.hechosRepository.save(hecho);
+            return hecho;
+        }
+        else {
+            return null; //TODO responder 404
+        }
+    }
+
+
+
     //Metodos privados
 
-    private Hecho hechoInputDTO(HechoInputDTO hechoDTO, ContribuyenteInputDTO contribuyenteDTO) {
+    private Hecho hechoInputDTO(HechoInputDTO hechoDTO) {
         return Hecho.builder()
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
-                .categoria(hechoDTO.getCategoria())
+                .categoria(this.categoriaInputDTO(hechoDTO.getCategoriaInputDTO()))
                 .ubicacion(hechoDTO.getUbicacion())
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(contribuyenteDTO))
+                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyenteInputDTO()))
+                .esAnonimo(hechoDTO.getEsAnonimo())
                 .build();
     }
 
@@ -88,9 +106,16 @@ public class HechosService implements IHechosService {
                 .id(contribuyenteDTO.getId())
                 .nombre(contribuyenteDTO.getNombre())
                 .apellido(contribuyenteDTO.getApellido())
-                .fechaNacimiento(contribuyenteDTO.getFechaNacimiento())
-                .esAnonimo(contribuyenteDTO.getEsAnonimo())
                 .build();
+    }
+
+    private Categoria categoriaInputDTO(CategoriaInputDTO categoriaDTO){
+        Categoria categoria = new Categoria();
+        if(categoriaDTO.getNombreCategoria() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
+        categoria.setNombre(categoriaDTO.getNombreCategoria());
+        if (categoriaDTO.getId() != null) {categoria.setId(categoriaDTO.getId());}
+        else {categoria.setId(categoriaService.obtenerIdCategoria(categoria.getNombre()));}
+        return categoria;
     }
 
     private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
@@ -103,14 +128,15 @@ public class HechosService implements IHechosService {
                 .fechaOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
+                .esAnonimo(hecho.getEsAnonimo())
                 .contribuyente(hecho.getContribuyente())
                 .build();
     }
 
-    private CategoriaOutputDTO categoriaOutputDTO(String nombreCategoria) {
+    private CategoriaOutputDTO categoriaOutputDTO(Categoria categoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
-        categoriaOutputDTO.setId(this.categoriaService.obtenerIdCategoria(nombreCategoria));
-        categoriaOutputDTO.setNombreCategoria(nombreCategoria);
+        categoriaOutputDTO.setId(categoria.getId());
+        categoriaOutputDTO.setNombreCategoria(categoria.getNombre());
         return categoriaOutputDTO;
     }
 }

@@ -9,7 +9,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContenidoMultimedia {
-    private String url;
-    private String descripcion;
+
+public class Categoria {
+    private String id;
+    private String nombre;
 }

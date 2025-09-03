@@ -1,8 +1,6 @@
-
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
-
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ModificarHechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,15 +35,16 @@ public class HechosController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> crearHecho(@RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
-        CompletableFuture.runAsync(() -> hechosService.cargarHecho(modificarHechoInputDTO), executorHechos);
+    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO hechoInputDTO) {
+        CompletableFuture.runAsync(() -> hechosService.cargarHecho(hechoInputDTO), executorHechos);
         return ResponseEntity.accepted().build();
     }
 
     @PutMapping("/{id}")
-    public void modificarHecho(@PathVariable Long id, @RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
-        modificarHechoInputDTO.getHechoInputDTO().setId(id);
-        this.hechosService.modificarHecho(modificarHechoInputDTO);
+    public void modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
+        if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
+        if (!id.equals(hechoInputDTO.getId())) {throw new IllegalArgumentException("Id del hecho no matchea con la url utilizada");}
+        this.hechosService.modificarHecho(hechoInputDTO);
     }
 }
 

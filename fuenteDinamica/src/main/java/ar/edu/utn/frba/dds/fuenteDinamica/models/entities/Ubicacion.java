@@ -1,13 +1,17 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ubicacion {
-    //TODO agregar provincia y localidad
+    private String provincia;
+    private String localidad;
+    private String calle;
+    private Integer numero;
+
     private Double latitud;
     private Double longitud;
 }

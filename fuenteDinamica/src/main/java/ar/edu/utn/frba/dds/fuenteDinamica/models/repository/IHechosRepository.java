@@ -1,11 +1,10 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.repository;
 
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface IHechosRepository {
-    Hecho save(Hecho hecho);
-    Hecho findById(Long id);
-    List<Hecho> findAll();
+@Repository
+public interface IHechosRepository extends JpaRepository<Hecho, Long> {
+    //agregar find all by estado = Aceptado
 }

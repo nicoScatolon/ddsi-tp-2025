@@ -2,8 +2,6 @@ package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Setter
 @Getter
 @AllArgsConstructor
