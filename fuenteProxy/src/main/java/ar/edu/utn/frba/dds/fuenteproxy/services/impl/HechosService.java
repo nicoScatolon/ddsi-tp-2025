@@ -59,8 +59,6 @@ public class HechosService implements IHechosService {
                 .map(dto -> DTOConverter.mapToHechoDTO(dto, categoriaService))
                 .collectList();
     }
-
-
 }
 
 

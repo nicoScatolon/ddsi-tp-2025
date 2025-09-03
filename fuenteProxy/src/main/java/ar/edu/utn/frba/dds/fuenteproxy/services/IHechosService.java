@@ -17,7 +17,4 @@ public interface IHechosService {
 
 
     Mono<List<HechoOutputDTO>> buscarConFiltros(HechosFilterDTO filtros);
-
-
-
 }

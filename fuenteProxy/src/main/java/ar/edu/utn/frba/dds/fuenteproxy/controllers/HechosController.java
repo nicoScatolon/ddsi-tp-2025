@@ -2,10 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.controllers;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.services.ICollecionesService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
-import ar.edu.utn.frba.dds.fuenteproxy.services.ISolicitudesEliminacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -33,7 +30,7 @@ public class HechosController {
         return hechosService.buscarPorId(id);
     }
 
-    @GetMapping("/filtrar")
+    @GetMapping("/filtrados")
     public Mono<List<HechoOutputDTO>> filtrarHechos(@ModelAttribute HechosFilterDTO filtros) {
         return hechosService.buscarConFiltros(filtros);
     }
