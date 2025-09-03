@@ -43,28 +43,28 @@ public class FuenteDDS implements ServidoraDeHechosPorId {
                     int lastPage = primerPagina.getLastPage();
                     List<HechoExternoDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
 
+                    if (lastPage <= 1) {
+                        return Mono.just(hechosTotales);
+                    }
+
                     List<Mono<PaginaHechosResponseDdsDTO>> llamadasRestantes = new ArrayList<>();
-                    for(int page =2; page <= lastPage; page++) {
+                    for (int page = 2; page <= lastPage; page++) {
                         Mono<PaginaHechosResponseDdsDTO> llamada = webClient.get()
                                 .uri("/api/desastres?page=" + page)
-                                .headers(h->h.setBearerAuth(token))
+                                .headers(h -> h.setBearerAuth(token))
                                 .retrieve()
                                 .bodyToMono(PaginaHechosResponseDdsDTO.class);
                         llamadasRestantes.add(llamada);
-
                     }
 
-                    return Mono.zip(llamadasRestantes,resultados->{
-                        for(Object resultado : resultados) {
+                    return Mono.zip(llamadasRestantes, resultados -> {
+                        for (Object resultado : resultados) {
                             PaginaHechosResponseDdsDTO pagina = (PaginaHechosResponseDdsDTO) resultado;
                             hechosTotales.addAll(pagina.getData());
                         }
                         return hechosTotales;
                     });
-
-
                 });
-
     }
 
 
