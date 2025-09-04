@@ -23,13 +23,14 @@ public class Hecho {
     private String titulo;
     @Column(nullable = false, name = "descripcion")
     private String descripcion;
-    //TODO
+    @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
-    //TODO
+    @ManyToOne
+    @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
     @Column(nullable = false, name = "fecha-ocurrencia")
     private LocalDate fechaDeOcurrencia;
-    //TODO
+    @OneToMany(mappedBy = "hecho")
     private List<ContenidoMultimedia> contenidoMultimedia;
     @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
@@ -42,13 +43,17 @@ public class Hecho {
     private Long id;
     @Column(nullable = false, name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
-    //TODO
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
+            @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
+    })
     private Contribuyente contribuyente; // el ususario que lo carga
-    //TODO
+    @Enumerated(EnumType.STRING)
     private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
-    //TODO
+    @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
-    //TODO
+    @Column(name = "sugerencia")
     private String sugerencia = null;
 
     public void verificarModificacionValida(Long diasMaximos, LocalDateTime fechaModificacion) {

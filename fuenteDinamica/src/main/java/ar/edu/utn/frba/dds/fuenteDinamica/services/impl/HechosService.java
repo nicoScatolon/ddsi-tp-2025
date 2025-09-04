@@ -12,6 +12,7 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ public class HechosService implements IHechosService {
         return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
     }
 
+    @Transactional
     @Override
     public void cargarHecho(HechoInputDTO hechoInputDTO) {
         Hecho hecho = hechoInputDTO(hechoInputDTO);

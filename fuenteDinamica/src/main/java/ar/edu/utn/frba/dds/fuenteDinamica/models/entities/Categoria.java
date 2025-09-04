@@ -1,5 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
+@Embeddable
 public class Categoria {
+    @Id
     private String id;
+    @Column(name = "nombre")
     private String nombre;
 }
