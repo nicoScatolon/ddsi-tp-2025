@@ -91,7 +91,7 @@
       <ul class="sidebar-menu">
         <li class="menu-item active" data-section="resumen">Resumen Actividad</li>
         <li class="menu-item" data-section="importar">Importar Hechos</li>
-        <li class="menu-item" data-section="hechos">Hechos</li>
+        <li class="menu-item" data-section="hechos">Gestión de Hechos</li>
         <li class="menu-item" data-section="solicitudes">Solicitudes de Eliminación</li>
       </ul>
     </aside>
@@ -102,35 +102,7 @@
       <section id="resumen" class="content-section active">
         <h1>Resumen de Actividad</h1>
         <div class="activity-feed">
-          <div class="activity-item">
-            <div class="activity-header">
-              <span class="activity-type">Hecho creado</span>
-              <span class="activity-datetime">2025-09-01 01:45</span>
-            </div>
-            <div class="activity-details">
-              <span><strong>ID Usuario:</strong> 102</span>
-              <span><strong>Nombre:</strong> Juan Pérez</span>
-            </div>
-            <div class="activity-actions">
-              <button class="btn-action edit">Editar</button>
-              <button class="btn-action delete">Eliminar</button>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-header">
-              <span class="activity-type">Solicitud de eliminación</span>
-              <span class="activity-datetime">2025-09-01 01:20</span>
-            </div>
-            <div class="activity-details">
-              <span><strong>ID Usuario:</strong> 203</span>
-              <span><strong>Nombre:</strong> María González</span>
-            </div>
-            <div class="activity-actions">
-              <button class="btn-action edit">Editar</button>
-              <button class="btn-action delete">Eliminar</button>
-            </div>
-          </div>
+          <!-- JS inyectará aquí las actividades dinámicamente -->
         </div>
       </section>
 
@@ -149,8 +121,21 @@
       <section id="hechos" class="content-section">
         <h1>Gestión de Hechos</h1>
         <p>Lista de todos los hechos existentes, con opciones de editar o eliminar.</p>
-      </section>
 
+        <!-- Panel de moderación: tabs (Nuevos / Modificados) + contenedor -->
+        <div class="moderation-panel">
+          <div class="moderation-tabs" role="tablist" aria-label="Moderación de hechos">
+            <button class="mod-tab active" data-type="nuevos" role="tab" aria-selected="true">Peticiones — Nuevos</button>
+            <button class="mod-tab" data-type="modificados" role="tab" aria-selected="false">Peticiones — Modificados</button>
+          </div>
+
+          <div id="moderacion-hechos" class="moderacion-container">
+            <!-- JS inyectará aquí las tarjetas de moderación -->
+          </div>
+        </div>
+
+      </section>
+      
       <!-- Solicitudes -->
         <section id="solicitudes" class="content-section">
             <h1>Solicitudes de Eliminación</h1>
@@ -162,7 +147,6 @@
   </div>
 </body>
 </html>
-
 
 
 

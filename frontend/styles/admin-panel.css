@@ -1,4 +1,11 @@
 /* ===== RESET & BASE ===== */
+:root {
+  --desktop-nav-height: 60px;
+  --sidebar-width: 220px;
+  --sidebar-left-padding: 2rem; /* coincide con el padding del contenedor */
+  --sidebar-gap: 1rem;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -12,27 +19,42 @@ html, body {
   display: flex;
   min-height: 100vh;
   gap: 2rem;
-  padding: calc(var(--desktop-nav-height, 60px) + 1rem) 2rem 2rem 2rem;
+  /* padding mantiene la separación respecto al header */
+  padding: calc(var(--desktop-nav-height) + 1rem) 2rem 2rem 2rem;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR (FIJA EN DESKTOP) ===== */
 .sidebar {
   background: #fff;
   padding: 1.25rem;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  width: 220px;
+  width: var(--sidebar-width);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-self: center;
-  height: auto;
-  max-height: calc(100vh - (var(--desktop-nav-height, 60px) + 4rem));
-  overflow: visible;
+
+  /* --- FIXED positioning --- */
+  position: fixed;
+  top: calc(var(--desktop-nav-height) + 1rem); /* bajo el navbar */
+  left: var(--sidebar-left-padding);
+  height: calc(100vh - (var(--desktop-nav-height) + 2rem));
+  max-height: calc(100vh - (var(--desktop-nav-height) + 2rem));
+  overflow: auto; /* permite scroll interno si hay muchas opciones */
+  z-index: 50;
+
+  /* para que el borde redondeado se vea al estar fijo */
+  box-sizing: border-box;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.sidebar::-webkit-scrollbar { height: 8px; width: 8px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 8px; }
+
+/* mantengo la estética previa */
 .sidebar-brand h2 {
   margin: 0;
   font-size: 1.15rem;
@@ -75,7 +97,8 @@ html, body {
   box-shadow: 0 8px 20px rgba(47,96,244,0.12);
 }
 
-/* ===== CONTENIDO PRINCIPAL ===== */
+/* ===== CONTENIDO PRINCIPAL (compensar sidebar fija) ===== */
+/* Margin-left debe dejar espacio igual al ancho de la sidebar + padding lateral */
 .admin-content {
   flex-grow: 1;
   padding: 1rem 1.5rem;
@@ -86,8 +109,13 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: calc(100vh - var(--desktop-nav-height, 60px) - 3rem);
+  min-height: calc(100vh - var(--desktop-nav-height) - 3rem);
   height: auto;
+
+  /* Dejar margen para la sidebar fija:
+     2rem es el left padding del contenedor; sumamos 1rem extra de separación */
+  margin-left: calc(var(--sidebar-width) + var(--sidebar-left-padding) + 1rem);
+  box-sizing: border-box;
 }
 
 /* ===== SECCIONES ===== */
@@ -137,19 +165,24 @@ html, body {
 .summary-cards .panel-card { min-width: 180px; }
 
 /* ===== RESPONSIVE ===== */
+/* En pantallas pequeñas revertimos la sidebar a flujo normal para que ocupe toda la fila */
 @media (max-width: 1024px) {
   .admin-container {
-    padding: calc(var(--desktop-nav-height, 60px) + 0.75rem) 1.5rem 1.5rem 1.5rem;
+    padding: calc(var(--desktop-nav-height) + 0.75rem) 1.5rem 1.5rem 1.5rem;
     gap: 1rem;
   }
 
   .sidebar {
+    position: static; /* ya no fija */
     width: 100%;
     flex-direction: row;
     overflow-x: auto;
     gap: 0.5rem;
     padding: 0.75rem;
     align-self: flex-start;
+    border-radius: 10px;
+    height: auto;
+    max-height: none;
   }
 
   .sidebar-menu {
@@ -164,6 +197,7 @@ html, body {
   }
 
   .admin-content {
+    margin-left: 0; /* quitar el offset en mobile */
     padding: 1rem;
   }
 }
@@ -280,7 +314,6 @@ html, body {
 }
 
 /* ===== SOLICITUDES ===== */
-/* Contenedor de solicitudes */
 .solicitudes-container {
   display: flex;
   flex-direction: column;
@@ -289,7 +322,6 @@ html, body {
   width: 100%;
 }
 
-/* Tarjeta de solicitud ocupa todo el ancho */
 .solicitud-card {
   background: #fff;
   border-radius: 12px;
@@ -303,7 +335,6 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Fila superior: ID | Nombre | Fecha */
 .solicitud-header {
   display: flex;
   justify-content: space-between;
@@ -312,7 +343,6 @@ html, body {
   font-size: 0.95rem;
 }
 
-/* Razón */
 .solicitud-razon {
   font-size: 0.9rem;
   color: #555;
@@ -324,7 +354,6 @@ html, body {
   max-height: 120px;
 }
 
-/* Fila inferior: Ver Hecho | Aceptar/Rechazar */
 .solicitud-actions-row {
   display: flex;
   justify-content: space-between;
@@ -365,3 +394,31 @@ html, body {
 .solicitud-actions .reject { background: #f43f5e; color: #fff; }
 .solicitud-actions .reject:hover { background: #e11d48; }
 
+/* ===== Moderation panel (tabs) ===== */
+.moderation-panel {
+  margin-top: 1.25rem;
+  background: transparent;
+}
+
+.moderation-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mod-tab {
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e6eefc;
+  cursor: pointer;
+  font-weight: 600;
+}
+.mod-tab.active {
+  background: #2F60F4;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* utilidades */
+.hidden { display: none !important; }

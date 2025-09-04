@@ -1,4 +1,10 @@
-/* --- RESET & BASE --- */
+main {
+  margin: 1rem; /* solo al contenido principal */
+  margin-top: 2rem;
+  padding: 0;
+}
+
+
 html, body {
   margin: 0;
   padding: 0;

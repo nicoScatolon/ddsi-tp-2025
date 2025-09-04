@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="styles/explore-collections-style.css">
 
   <!-- JS dinámico -->
+  <script src="js/collections-db.js" defer></script>
   <script src="js/collections.js" defer></script>
   <script src="js/navbar.js" defer></script>
 </head>
@@ -109,16 +110,27 @@
   <!-- MAIN CONTENT -->
   <main>
     <section id="collections">
+      <h1>Collections</h1>
       <div class="explore-layout">
-        <div id="collections-container" class="cards-container">
-          <!-- JS llenará las colecciones dinámicamente -->
+        <div class="filter-bar">
+          <label for="filtro-colecciones">Filtrar por Consenso: </label>
+          <select id="filtro-colecciones">
+            <option value="all">Ninguno</option>
+            <option value="Concenso Absoluto">Absoluto</option>
+            <option value="Mayoria Simple">Mayoría Simple</option>
+            <option value="Multiple Mencion">Múltiple Mención</option>
+          </select>
         </div>
+
+        <div id="collections-container" class="cards-container"></div>
+        <div id="pagination" class="pagination"></div>
       </div>
     </section>
   </main>
+
+
   
 </body>
-
  <footer>
       <p>© 2025 MetaMapa - Todos los derechos reservados</p>
       <a href="legal-privacidad.html">Información legal | Privacidad</a>

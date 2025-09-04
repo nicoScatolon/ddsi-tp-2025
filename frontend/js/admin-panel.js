@@ -1,6 +1,49 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* =====================
+     0. Resumen de Actividad dinámico
+     ===================== */
+  const ACTIVIDADES = [
+    {
+      tipo: "Hecho creado",
+      datetime: "2025-09-01 01:45",
+      usuario: { id: 102, nombre: "Juan Pérez" }
+    },
+    {
+      tipo: "Solicitud de eliminación",
+      datetime: "2025-09-01 01:20",
+      usuario: { id: 203, nombre: "María González" }
+    }
+  ];
+
+  const resumenContainer = document.querySelector("#resumen .activity-feed");
+  if (resumenContainer) {
+    resumenContainer.innerHTML = ''; // limpiar contenido hardcodeado
+    ACTIVIDADES.forEach(act => {
+      const item = document.createElement("div");
+      item.className = "activity-item";
+
+      const header = document.createElement("div");
+      header.className = "activity-header";
+      header.innerHTML = `
+        <span class="activity-type">${act.tipo}</span>
+        <span class="activity-datetime">${act.datetime}</span>
+      `;
+
+      const details = document.createElement("div");
+      details.className = "activity-details";
+      details.innerHTML = `
+        <span><strong>ID Usuario:</strong> ${act.usuario.id}</span>
+        <span><strong>Nombre:</strong> ${act.usuario.nombre}</span>
+      `;
+
+      item.appendChild(header);
+      item.appendChild(details);
+      resumenContainer.appendChild(item);
+    });
+  }
+
+  /* =====================
      1. Navegación lateral
      ===================== */
   const menuItems = document.querySelectorAll('.menu-item');
@@ -65,14 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 3, title: 'Hecho 3' }
   ];
 
-   const container = document.getElementById('solicitudes-list');
+  const solicitudesContainer = document.getElementById('solicitudes-list');
 
-  
   function renderSolicitudes() {
-    container.innerHTML = '';
+    if (!solicitudesContainer) return;
+    solicitudesContainer.innerHTML = '';
 
     if (solicitudes.length === 0) {
-      container.innerHTML = '<p>No hay solicitudes pendientes.</p>';
+      solicitudesContainer.innerHTML = '<p>No hay solicitudes pendientes.</p>';
       return;
     }
 
@@ -115,10 +158,112 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSolicitudes();
       });
 
-      container.appendChild(card);
+      solicitudesContainer.appendChild(card);
     });
   }
 
   renderSolicitudes();
+
+  /* =========================
+   Gestión de Hechos (Moderación)
+   ========================= */
+  const hechosContainer = document.getElementById('moderacion-hechos');
+
+  // Datos demo
+  const moderacionNuevos = [
+    { id: 'n-1', usuario: 'Ana López', title: 'Denuncia ilegal - nueva', descripcion: 'Descripción del hecho nuevo enviado por usuario.', fecha: '2025-09-02' },
+    { id: 'n-2', usuario: 'Carlos Ruiz', title: 'Incidente en parque', descripcion: 'Nuevo hecho reportado con fotos y coordenadas.', fecha: '2025-09-03' }
+  ];
+
+  const moderacionModificados = [
+    { id: 'm-1', usuario: 'Lucía Díaz', title: 'Hecho 5 (modificado)', descripcion: 'Cambio de ubicación y texto explicativo.', fecha: '2025-09-04' },
+    { id: 'm-2', usuario: 'Martín Soto', title: 'Hecho 7 (modificado)', descripcion: 'Corrección en categoría y detalle.', fecha: '2025-09-05' }
+  ];
+
+  function renderHechos(type = 'nuevos') {
+    if (!hechosContainer) return;
+    hechosContainer.innerHTML = '';
+
+    const list = type === 'nuevos' ? moderacionNuevos : moderacionModificados;
+
+    if (!list || list.length === 0) {
+      hechosContainer.innerHTML = `<p>No hay peticiones de ${type} pendientes.</p>`;
+      return;
+    }
+
+    list.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'solicitud-card';
+
+      // Definir link según tipo
+      const viewHref = `hecho-suggestion.html?id=${item.id}`;
+
+
+      card.innerHTML = `
+        <div class="solicitud-info">
+          <span><strong>ID:</strong> ${item.id}</span>
+          <span><strong>Usuario:</strong> ${item.usuario}</span>
+          <span><strong>Fecha:</strong> ${item.fecha}</span>
+        </div>
+        <div class="solicitud-razon"><strong>Título:</strong> ${item.title}</div>
+        <div class="solicitud-actions-row">
+          <a href="${viewHref}" class="btn">Ver ${type === 'nuevos' ? 'Nuevo Hecho' : 'Sugerencia'}</a>
+          <div class="solicitud-actions">
+            <button class="accept">Aceptar</button>
+            <button class="reject">Rechazar</button>
+          </div>
+        </div>
+      `;
+
+      const acceptBtn = card.querySelector('.accept');
+      const rejectBtn = card.querySelector('.reject');
+
+      acceptBtn.addEventListener('click', () => {
+        alert(`Moderación (${type}) ID ${item.id} aceptada.`);
+        const idx = list.indexOf(item);
+        if (idx > -1) list.splice(idx, 1);
+        renderHechos(type);
+      });
+
+      rejectBtn.addEventListener('click', () => {
+        alert(`Moderación (${type}) ID ${item.id} rechazada.`);
+        const idx = list.indexOf(item);
+        if (idx > -1) list.splice(idx, 1);
+        renderHechos(type);
+      });
+
+      hechosContainer.appendChild(card);
+    });
+  }
+
+  // Pestañas de moderación
+  const modTabs = document.querySelectorAll('.mod-tab');
+  modTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      modTabs.forEach(t => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      const type = tab.dataset.type;
+      renderHechos(type);
+    });
+  });
+
+  // Render inicial
+  renderHechos('nuevos');
+
+
+  /* =====================
+     Auxiliares
+     ===================== */
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
 
 });

@@ -79,13 +79,16 @@ nav {
     display: flex;
     gap: 30px;
     justify-content: center;
-    padding-bottom: 40px; /* mayor espacio inferior */
+    padding-bottom: 40px; 
 }
 
 .home-buttons .btn {
     font-size: 1.4em;
-    padding: 18px 40px 20px 40px; /* padding bottom aumentado */
+    padding: 18px 40px 20px 40px;
 }
+
+
+
 
 /* --- RESPONSIVE HERO --- */
 @media (max-width: 1024px) {
@@ -117,7 +120,7 @@ nav {
     position: fixed;
     bottom: 30px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0);
     cursor: pointer;
     width: 50px;
     height: 50px;
@@ -127,10 +130,11 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.3s, opacity 0.3s, transform 0.3s;
-    z-index: 100;
+    transition: transform 0.26s ease, top 0.26s ease, bottom 0.26s ease, background 0.3s;
+    pointer-events: auto; 
+    z-index: 4001;
+    /* no will-change agresivo para evitar issues móviles */
 }
-
 .scroll-indicator svg {
     width: 24px;
     height: 24px;
@@ -138,6 +142,12 @@ nav {
     stroke-width: 2;
     fill: none;
     transition: stroke 0.3s;
+}
+
+/* clase visual cuando el indicador se "eleva" (ya estás en la parte baja) */
+.scroll-indicator.up {
+    transform: translateX(-50%) translateY(10px);
+    top: calc(var(--desktop-navbar-height) + 40px); /* ajusta según prefieras */
 }
 
 .scroll-indicator:hover {
@@ -150,25 +160,24 @@ nav {
 
 /* ===== SECCIÓN INFERIOR: HECHOS + COLECCIONES + FOOTER ===== */
 #lower-content {
-    min-height: calc(100vh - var(--desktop-navbar-height));
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* separa Hechos, Colecciones y Footer */
+  
 }
 
 #hechos, #colecciones {
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
 }
 
+
 section h2 {
     margin-left: 2rem;
     text-align: left;
     font-size: 2.6em;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem; /* antes 2rem */
     text-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }
 
@@ -177,15 +186,19 @@ section h2 {
     display: flex;
     align-items: center;
     width: 100%;
+    overflow: hidden; 
 }
 
 .cards-row {
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 1rem;
+    padding: 0 1rem; 
+    margin: 0 5rem;
     gap: 1.5rem;
     scrollbar-width: none;
+    border-radius: 28px;
+    border: none;
 }
 
 .cards-row::-webkit-scrollbar { display: none; }
@@ -213,28 +226,101 @@ section h2 {
     background: #1746D2;
     color: white;
     border: none;
-    width: 50px;       /* ancho fijo */
-    height: 50px;      /* alto fijo igual al ancho */
+    width: 50px;
+    height: 50px;
     font-size: 1.5rem;
     cursor: pointer;
-    border-radius: 50%; /* redondo */
+    border-radius: 50%;
     z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;        /* quitar padding para no deformar */
+    padding: 0;
 }
-
 
 .scroll-btn:hover { 
     background: #0f2c82; 
 }
 
-
-.scroll-btn.left { left: -1px; } 
-.scroll-btn.right { right: -1px; }
+.scroll-btn.left { left: 5px; } 
+.scroll-btn.right { right: 5px; }
 
 @media (max-width: 768px) {
     .card { flex: 0 0 260px; }
 }
 
+#colecciones .card {
+    margin-bottom: 4rem; 
+}
+
+#mi-boton {
+  position: relative;
+  z-index: 10;
+}
+/* ===== Scroll Indicator Animación (doble rebote cada 6s) ===== */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  /* Primer rebote */
+  4% {
+    transform: translateX(-50%) translateY(8px);
+  }
+  8% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Segundo rebote (seguido) */
+  12% {
+    transform: translateX(-50%) translateY(8px);
+  }
+  16% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Normal (abajo) */
+.scroll-indicator:not(.up) {
+  animation: bounce 6s infinite;
+}
+
+/* Rebote hacia arriba (doble también) */
+@keyframes bounce-up {
+  0%, 100% {
+    transform: translateX(-50%) translateY(10px);
+  }
+  /* Primer rebote */
+  4% {
+    transform: translateX(-50%) translateY(2px);
+  }
+  8% {
+    transform: translateX(-50%) translateY(10px);
+  }
+
+  /* Segundo rebote */
+  12% {
+    transform: translateX(-50%) translateY(2px);
+  }
+  16% {
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+.scroll-indicator.up {
+  animation: bounce-up 6s infinite;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2F60F4;
+  margin-bottom: 0.5rem;
+}
+
+.card-description p {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.4rem;
+  margin: 0;
+}

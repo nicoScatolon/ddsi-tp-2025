@@ -1,3 +1,17 @@
+main{
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2rem;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    color: #333;
+}
+
 #about {
     background: #F2F6FF;
     color: #2c3e50;
