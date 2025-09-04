@@ -1,24 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us | MetaMapa</title>
-
-  <!-- Google Font -->
+  <title>Modificar Colección | MetaMapa</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="images/icon.ico">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="styles/styles.css">
-  <link rel="stylesheet" href="styles/about-style.css">
+  <link rel="stylesheet" href="styles/create-collections-style.css">
 
+  <script src="js/collections-db.js" defer></script>
+  <script src="js/edit-collection.js" defer></script>
   <script src="js/navbar.js" defer></script>
+
 </head>
 <body>
-  <!-- NAVBAR DESKTOP -->
+  
+    <!-- NAVBAR DESKTOP -->
   <header class="desktop-nav">
     <nav>
       <div class="brand">
@@ -102,50 +100,59 @@
       <div id="sidebarUserArea" style="margin-top:8px;"></div>
     </div>
   </nav>
+<main class="collection-form-page">
+    <section class="card">
+      <h1>Modificar Colección</h1>
+      <p class="hint">Editá los campos de la colección. Seleccioná fuentes desde el panel desplegable. Agregá/ajustá criterios y sus parámetros.</p>
 
-  <!-- Contenido About Us -->
-  <main>
-    <section id="about">
-      <div class="content">
-        <h1>About Us</h1>
-        <p>En <strong>MetaMapa</strong> creemos en conectar personas con información geolocalizada de manera fácil y segura. Nuestro objetivo es brindar herramientas intuitivas para explorar, crear y compartir hechos relevantes en distintos contextos.</p>
-
-        <h2>Nuestra Misión</h2>
-        <p>Facilitar el acceso a datos geográficos y multimedia, promoviendo la colaboración y la transparencia en la información.</p>
-
-        <h2>Nuestro Equipo</h2>
-        <div class="team">
-        <div class="member">
-            <img src="images/integrante1.jpg" alt="Integrante 1">
-            <h3>Lucio De Goñi</h3>
+      <form id="modifyCollectionForm" novalidate>
+        <div>
+          <label for="titulo">Título</label>
+          <input id="titulo" name="titulo" type="text" placeholder="Ej: Incidentes de tráfico" required>
         </div>
-        <div class="member">
-            <img src="images/integrante2.jpg" alt="Integrante 2">
-            <h3>Ignacio Martin Jubilla</h3>
-        </div>
-        <div class="member">
-            <img src="images/integrante3.jpg" alt="Integrante 3">
-            <h3>Gonzalo Pinto Irigoyen</h3>
-        </div>
-        <div class="member">
-            <img src="images/integrante4.jpg" alt="Integrante 4">
-            <h3>Nicolás Martin Scatolon</h3>
-        </div>
-        <div class="member">
-            <img src="images/integrante5.jpg" alt="Integrante 5">
-            <h3>Ignacio Tomás Vila</h3>
-        </div>
+        <div>
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" placeholder="Descripción breve de la colección"></textarea>
         </div>
 
+        <div>
+          <label>Fuentes</label>
+          <div class="fuentes-selector">
+            <div id="fuentesToggle" class="fuentes-toggle" role="button" aria-expanded="false">
+              Seleccionar fuentes <span id="fuentesCount" class="small">(0)</span>
+            </div>
+            <div id="fuentesPanel" class="fuentes-panel" aria-hidden="true"></div>
+            <div id="fuentesChips" class="fuentes-chips" aria-live="polite"></div>
+          </div>
+        </div>
 
-        <h2>Contacto</h2>
-        <p>Si querés ponerte en contacto con nosotros, envíanos un correo a <a href="mailto:contacto@metamapa.com">contacto@metamapa.com</a> o seguinos en nuestras redes sociales.</p>
-      </div>
+        <div>
+          <label>Criterios</label>
+          <div class="criterios-area">
+            <div class="criterio-controls">
+              <select id="criterioSelect" aria-label="Seleccionar criterio">
+                <option value="">-- escoger criterio --</option>
+              </select>
+              <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
+            </div>
+            <div id="criteriosContainer"></div>
+          </div>
+        </div>
+
+        <div>
+          <label for="algoritmo">Algoritmo de Consenso</label>
+          <select id="algoritmo" name="algoritmo"></select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="deleteBtn">Eliminar colección</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Guardar cambios</button>
+        </div>
+      </form>
     </section>
   </main>
+
+  <div id="toast" class="toast"></div>
 </body>
- <footer>
-      <p>© 2025 MetaMapa - Todos los derechos reservados</p>
-      <a href="legal-privacidad.html">Información legal | Privacidad</a>
-  </footer>
 </html>

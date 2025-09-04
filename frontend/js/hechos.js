@@ -179,6 +179,125 @@ const HECHOS = [
     img: "",
     lat: -34.4732,
     lng: -58.5276
-  }
-];
+  },
+  {
+    id: 16,
+    title: "Hurto en supermercado de Palermo",
+    description: "Un hombre fue detenido tras intentar robar productos en un supermercado.",
+    ubicacion: "Palermo, Buenos Aires",
+    categoria: "Policial",
+    etiqueta: "Hurto",
+    fecha: "2024-05-15",
+    img: "",
+    lat: -34.5836,
+    lng: -58.4255
+  },
+  {
+    id: 17,
+    title: "Desborde de arroyo en Lomas de Zamora",
+    description: "Las lluvias provocaron el desborde de un arroyo y evacuaciones preventivas.",
+    ubicacion: "Lomas de Zamora, Buenos Aires",
+    categoria: "Accidente",
+    etiqueta: "Inundación",
+    fecha: "2024-05-16",
+    img: "",
+    lat: -34.7609,
+    lng: -58.3960
+  },
+  {
+    id: 18,
+    title: "Estafa telefónica en Santa Fe",
+    description: "Una mujer fue víctima de una estafa telefónica y perdió sus ahorros.",
+    ubicacion: "Santa Fe",
+    categoria: "Policial",
+    etiqueta: "Estafa",
+    fecha: "2024-05-17",
+    img: "",
+    lat: -31.6333,
+    lng: -60.7000
+  },
+  {
+    id: 19,
+    title: "Incendio en fábrica de Avellaneda",
+    description: "Un incendio afectó una fábrica textil. No hubo heridos.",
+    ubicacion: "Avellaneda, Buenos Aires",
+    categoria: "Accidente",
+    etiqueta: "Incendio",
+    fecha: "2024-05-18",
+    img: "",
+    lat: -34.6635,
+    lng: -58.3645
+  },
+  {
+    id: 20,
+    title: "Choque múltiple en Panamericana",
+    description: "Un choque entre cinco vehículos generó demoras y dos heridos leves.",
+    ubicacion: "Panamericana, Buenos Aires",
+    categoria: "Accidente",
+    etiqueta: "Choque",
+    fecha: "2024-05-19",
+    img: "",
+    lat: -34.5000,
+    lng: -58.5000
+  },
+  {
+    id: 21,
+    title: "Robo de celulares en microcentro",
+    description: "Una banda fue detenida tras robar celulares en la zona de microcentro.",
+    ubicacion: "Microcentro, Buenos Aires",
+    categoria: "Policial",
+    etiqueta: "Robo",
+    fecha: "2024-05-20",
+    img: "",
+    lat: -34.6037,
+    lng: -58.3816
+  },
+  {
+    id: 22,
+    title: "Desaparición de menor en San Juan",
+    description: "Se busca a un menor desaparecido desde hace dos días.",
+    ubicacion: "San Juan",
+    categoria: "Policial",
+    etiqueta: "Desaparición",
+    fecha: "2024-05-21",
+    img: "",
+    lat: -31.5375,
+    lng: -68.5364
+  },
+  {
+    id: 23,
+    title: "Incendio de vehículo en Neuquén",
+    description: "Un auto se incendió en plena avenida. Bomberos controlaron la situación.",
+    ubicacion: "Neuquén",
+    categoria: "Accidente",
+    etiqueta: "Incendio",
+    fecha: "2024-05-22",
+    img: "",
+    lat: -38.9516,
+    lng: -68.0591
+  },
+  {
+    id: 24,
+    title: "Allanamiento por drogas en Merlo",
+    description: "La policía incautó drogas en un allanamiento en Merlo.",
+    ubicacion: "Merlo, Buenos Aires",
+    categoria: "Policial",
+    etiqueta: "Allanamiento",
+    fecha: "2024-05-23",
+    img: "",
+    lat: -34.6654,
+    lng: -58.7278
+  },
+  {
+    id: 25,
+    title: "Accidente de moto en San Luis",
+    description: "Un motociclista resultó herido tras chocar contra un auto.",
+    ubicacion: "San Luis",
+    categoria: "Accidente",
+    etiqueta: "Moto",
+    fecha: "2024-05-24",
+    img: "",
+    lat: -33.2950,
+    lng: -66.3356
+  }];
 window.HECHOS = HECHOS;
