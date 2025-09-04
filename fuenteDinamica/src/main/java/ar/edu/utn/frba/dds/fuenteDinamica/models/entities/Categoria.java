@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Embeddable
 public class Categoria {
-    @Id
+    @Column(name = "id_categoria")
     private String id;
     @Column(name = "nombre")
     private String nombre;

@@ -23,14 +23,16 @@ import java.util.Optional;
 @Service
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
-    private ICategoriaService categoriaService;
+    private final ICategoriaService categoriaService;
 
+    public HechosService(IHechosRepository hechosRepository,
+                         ICategoriaService categoriaService) {
+        this.hechosRepository = hechosRepository;
+        this.categoriaService = categoriaService;
+    }
     @Value("${hecho.diasModificacion}")
     private Long diasValidosModificacion;
 
-    public HechosService(IHechosRepository hechosRepository) {
-        this.hechosRepository = hechosRepository;
-    }
 
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
@@ -44,11 +46,10 @@ public class HechosService implements IHechosService {
     }
 
     @Transactional
-    @Override
-    public void cargarHecho(HechoInputDTO hechoInputDTO) {
-        Hecho hecho = hechoInputDTO(hechoInputDTO);
-        hecho.setFechaDeCarga(LocalDateTime.now());
-        this.hechosRepository.save(hecho);
+    public void cargarHecho(HechoInputDTO dto) {
+        Hecho h = hechoInputDTO(dto);
+        h.setFechaDeCarga(LocalDateTime.now());
+        hechosRepository.save(h);
     }
 
     @Override

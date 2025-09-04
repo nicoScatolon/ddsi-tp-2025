@@ -19,10 +19,7 @@ public class ContenidoMultimedia {
     private long id;
     @Column(name = "url", nullable = false)
     private String url;
-    @Column(name = "descripcion", nullable = false)
+    @Column(name = "descripcion")
     private String descripcion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hecho_id", nullable = false)
-    private Hecho hecho;
 }

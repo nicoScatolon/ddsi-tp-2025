@@ -15,9 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 
+@Access(AccessType.FIELD)
 @Entity
 @Table(name = "Hechos")
 public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     //Contenido del Hecho
     @Column(nullable = false, name = "titulo")
     private String titulo;
@@ -25,23 +30,23 @@ public class Hecho {
     private String descripcion;
     @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
     @Column(nullable = false, name = "fecha-ocurrencia")
     private LocalDate fechaDeOcurrencia;
-    @OneToMany(mappedBy = "hecho")
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "hecho_id", nullable = false) // esto crea/escribe la FK en la tabla del hijo
     private List<ContenidoMultimedia> contenidoMultimedia;
+
     @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
     @Column(nullable = false, name = "anonimo")
     private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
 
     //Metadata
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false, name = "fecha-modificacion")
+    @Column(name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
     @Embedded
     @AttributeOverrides({
