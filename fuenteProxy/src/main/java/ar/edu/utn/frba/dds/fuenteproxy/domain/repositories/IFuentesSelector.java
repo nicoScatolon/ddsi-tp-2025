@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.*;
 
 import java.util.List;
 
-public interface IFuentesRepository {
+public interface IFuentesSelector {
     List<IFuente> todasLasFuentes();
     List<ServidoraDeHechos> fuentesConHechos();
     List<ServidoraDeHechosConFiltros> fuentesConFiltros();

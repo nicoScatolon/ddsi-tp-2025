@@ -7,9 +7,10 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHecho
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeEliminaciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosConFiltros;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -17,22 +18,33 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 
-@Component
-@Data
-public class FuenteMetaMapa implements ServidoraDeHechosConFiltros, ServidoraDeColecciones, ServidoraDeEliminaciones{
-    private Long Id;
-    private TipoFuenteProxy tipoFuenteProxy = TipoFuenteProxy.METAMAPA;
-    private WebClient webClient;
-    private final String baseUrl;
 
-    public FuenteMetaMapa(@Value("${api.metamapa.base-url}") String baseUrl) {
-        this.baseUrl = baseUrl;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+@Entity
+@DiscriminatorValue("METAMAPA")
+public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltros, ServidoraDeColecciones, ServidoraDeEliminaciones{
+
+    @Transient
+    private TipoFuenteProxy tipo = TipoFuenteProxy.METAMAPA;
+
+    @Transient
+    private WebClient webClient;
+
+
+    public FuenteMetaMapa(String baseUrl) {
+        this.setBaseUrl(baseUrl);
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
 
 
+
     @Override
+    @Transient
     public Mono<List<HechoExternoDTO>> getHechos(){
         return webClient.get()
                 .uri("/api/hechos/publica")

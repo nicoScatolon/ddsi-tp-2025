@@ -2,7 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.TipoFuenteProxy;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.util.List;
 @Service
 public class FuenteService implements IFuenteService {
 
-    private final IFuentesRepository fuentesRepository;
+    private final IFuentesSelector fuentesRepository;
 
-    public FuenteService(IFuentesRepository fuentesRepository) {
+    public FuenteService(IFuentesSelector fuentesRepository) {
         this.fuentesRepository = fuentesRepository;
     }
 
@@ -30,7 +30,7 @@ public class FuenteService implements IFuenteService {
     @Override
     public List<IFuente> obtenerPorTipo(TipoFuenteProxy tipo) {
         return fuentesRepository.todasLasFuentes().stream()
-                .filter(f -> f.getTipoFuenteProxy().equals(tipo))
+                .filter(f -> f.getTipo().equals(tipo))
                 .toList();
     }
 

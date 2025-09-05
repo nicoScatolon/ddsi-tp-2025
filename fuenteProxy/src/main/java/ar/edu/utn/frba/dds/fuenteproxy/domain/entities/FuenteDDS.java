@@ -3,9 +3,10 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosPorId;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -13,26 +14,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
-@Component
-public class FuenteDDS implements ServidoraDeHechosPorId {
-    private Long Id;
-    private TipoFuenteProxy tipoFuenteProxy= TipoFuenteProxy.EXTERNA;
-    private final WebClient webClient;
-    private final String token;
-    private final String baseUrl;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+@Entity
+@DiscriminatorValue("EXTERNA")
+public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
+
+    @Transient
+    private TipoFuenteProxy tipo = TipoFuenteProxy.EXTERNA;
+
+    @Transient
+    private WebClient webClient;
+
+    @Transient
+    private String token;
 
 
-    public FuenteDDS(@Value("${api.ddsi.base-url}") String baseUrl,
-                     @Value("${api.ddsi.token}") String token) {
-        this.baseUrl = baseUrl;
-        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+    public FuenteDDS(String baseUrl, String token) {
+        this.setBaseUrl(baseUrl);
         this.token = token;
+        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
 
 
     @Override
+    @Transient
     public Mono<List<HechoExternoDTO>> getHechos() {
         return webClient.get()
                 .uri("/api/desastres?page=1")

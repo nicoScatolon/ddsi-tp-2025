@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICollecionesService;
 import lombok.Data;
@@ -18,10 +18,10 @@ import java.util.List;
 @Data
 @Service
 public class ColeccionesService implements ICollecionesService {
-    private final IFuentesRepository fuentesRepository;
+    private final IFuentesSelector fuentesRepository;
     private final ICategoriaService categoriaService;
 
-    public ColeccionesService(IFuentesRepository fuentesRepository, ICategoriaService categoriaService) {
+    public ColeccionesService(IFuentesSelector fuentesRepository, ICategoriaService categoriaService) {
         this.fuentesRepository = fuentesRepository;
         this.categoriaService = categoriaService;
     }

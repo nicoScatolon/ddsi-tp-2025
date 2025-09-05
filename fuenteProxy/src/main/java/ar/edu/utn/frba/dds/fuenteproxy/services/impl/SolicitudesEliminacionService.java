@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ISolicitudesEliminacionService;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -9,9 +9,9 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class SolicitudesEliminacionService implements ISolicitudesEliminacionService {
-    private final IFuentesRepository fuentesRepository;
+    private final IFuentesSelector fuentesRepository;
 
-    public SolicitudesEliminacionService(IFuentesRepository fuentesRepository) {
+    public SolicitudesEliminacionService(IFuentesSelector fuentesRepository) {
         this.fuentesRepository = fuentesRepository;
     }
 

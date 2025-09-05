@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.*;
 
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepository;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
 
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechos;
@@ -23,10 +23,10 @@ import java.util.List;
 @Data
 @Service
 public class HechosService implements IHechosService {
-    private final IFuentesRepository fuentesRepository;
+    private final IFuentesSelector fuentesRepository;
     private final ICategoriaService categoriaService;
 
-    public HechosService(IFuentesRepository fuentesRepository, ICategoriaService categoriaService) {
+    public HechosService(IFuentesSelector fuentesRepository, ICategoriaService categoriaService) {
         this.fuentesRepository = fuentesRepository;
         this.categoriaService = categoriaService;
     }
