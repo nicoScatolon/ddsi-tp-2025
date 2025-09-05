@@ -46,8 +46,8 @@ public class Hecho {
     @Column (nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
 
-    @OneToMany(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true) // TODO: CHEQUEAR CUANDO EZE DIGA COMO SE PERSISTE UNA INTERFAZ
-    private List<ContenidoMultimedia> contenidos = new ArrayList<>();
+    @OneToMany(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContenidoMultimedia> contenidoMultimedia = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +59,8 @@ public class Hecho {
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
-    //private TipoHecho tipoHecho;
+    @Enumerated(EnumType.STRING)
+    private TipoHecho tipoHecho;
 
     @ManyToOne
     private Contribuyente contribuyente = null;

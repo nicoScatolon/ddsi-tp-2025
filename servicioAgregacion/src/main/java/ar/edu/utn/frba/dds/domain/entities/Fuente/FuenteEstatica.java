@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,11 @@ import java.util.*;
 public class FuenteEstatica extends Fuente {
     private TipoFuente tipo = TipoFuente.ESTATICA;
 
+    @Transient
     @JsonIgnore
     private WebClient webClient;
+    @Transient
+    @JsonIgnore
     private Map<Long, Hecho> mapHechos;
     private LocalDateTime ultimaActualizacion;
 
@@ -47,6 +51,7 @@ public class FuenteEstatica extends Fuente {
         return nuevosHechos;
     }
 
+    @Transient
     public List<HechoInputEstaticaDTO> getHechos() {
         return this.webClient.get()
                 .uri(uriBuilder -> {

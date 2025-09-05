@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
@@ -56,13 +57,13 @@ public class HechosService implements IHechosService {
 
     @Override
     public HechoOutputDTO findByID(Long id) {
-        Hecho hecho = this.hechosRepository.findById(id);
+        Hecho hecho = this.hechosRepository.getHechoById(id);
         return DTOConverter.convertirHechoOutputDTO(hecho);
     }
 
     @Override
     public Hecho findEntidadPorId(Long id){
-        return this.hechosRepository.findById(id);
+        return this.hechosRepository.getHechoById(id);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class HechosService implements IHechosService {
             }
         }
 
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad, hechosFilter);
+        List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad, hechosFilter);
 
         // Si no hay criterios, devolver todos los hechos
         if (criterios.isEmpty()){
@@ -113,7 +114,7 @@ public class HechosService implements IHechosService {
         if (etiqueta == null || etiqueta.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        Hecho hechoModificado = hechosRepository.findById(hechoId);
+        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
         if (hechoModificado == null){
             return ResponseEntity.notFound().build();
         }
@@ -126,7 +127,7 @@ public class HechosService implements IHechosService {
         if (etiqueta == null || etiqueta.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        Hecho hechoModificado = hechosRepository.findById(hechoId);
+        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
         if (hechoModificado == null){
             return ResponseEntity.notFound().build();
         }

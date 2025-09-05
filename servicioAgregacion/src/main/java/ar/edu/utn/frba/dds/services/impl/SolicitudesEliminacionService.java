@@ -80,7 +80,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.findById(solicitudDTO.getSolicitud().getHechoId());
+        SolicitudEliminarHecho solicitud = repository.getById(solicitudDTO.getSolicitud().getHechoId());
         if (solicitud == null) {
             solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
         }
@@ -106,7 +106,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public SolicitudEliminarHecho findByID(Long id) {
-        return repository.findById(id);
+        return repository.getById(id);
     }
 
     @Override

@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +27,11 @@ import java.util.Objects;
 public class FuenteProxy extends Fuente {
     private TipoFuente tipo = TipoFuente.PROXY;
 
+    @Transient
     @JsonIgnore
     private WebClient webClient;
+    @Transient
+    @JsonIgnore
     private List<Hecho> hechos;
     private LocalDateTime ultimaActualizacion = LocalDateTime.MIN;
 
@@ -36,6 +40,7 @@ public class FuenteProxy extends Fuente {
         this.webClient = WebClient.builder().baseUrl(url).build();
     }
 
+    @Transient
     public List<Hecho> getHechos() {
         return Objects.requireNonNull(this.webClient.get()
                 .uri("/api/fuenteProxy/hechos")

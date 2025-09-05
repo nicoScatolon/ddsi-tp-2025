@@ -5,8 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.services.IColeccionesService;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +60,7 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada/{handle}/fuentes")
-    public List<IFuente> modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
+    public List<Fuente> modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
         return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 

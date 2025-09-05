@@ -5,9 +5,14 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
-public class CriterioTitulo implements ICriterio {
-    private final String titulo;
+@NoArgsConstructor
+
+@Entity
+public class CriterioTitulo extends Criterio {
+    private  String titulo;
 
     public CriterioTitulo(String titulo) {
         this.titulo = titulo;

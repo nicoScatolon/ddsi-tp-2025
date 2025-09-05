@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,42 +33,42 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public List<IFuente> buscarFuentes() {
+    public List<Fuente> buscarFuentes() {
         return fuentesRepository.findAll();
     }
 
     @Override
     public ResponseEntity<Void> agregarFuente(FuenteInputDTO fuenteDTO) {
-        IFuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
+        Fuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
         this.loguearFuenteCargada(nuevaFuente);
-        fuentesRepository.saveFuente(nuevaFuente);
+        fuentesRepository.save(nuevaFuente);
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<Void> eliminarFuente(Long id) {
-        IFuente fuente = this.buscarFuentePorId(id);
+        Fuente fuente = this.buscarFuentePorId(id);
         if (fuente == null) {
             return ResponseEntity.notFound().build();
         }
 
         coleccionesService.notificarFuenteEliminada(this.buscarFuentePorId(id));
-        fuentesRepository.deleteFuente(id);
+        fuentesRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @Override
-    public IFuente buscarFuentePorId(Long id) {
-        return fuentesRepository.findById(id);
+    public Fuente buscarFuentePorId(Long id) {
+        return fuentesRepository.getById(id);
     }
 
     @Override
-    public List<IFuente> buscarFuentePorTipo(TipoFuente tipoFuente){
+    public List<Fuente> buscarFuentePorTipo(TipoFuente tipoFuente){
         return this.buscarFuentes().stream().filter(fuente -> fuente.getTipo().equals(tipoFuente)).collect(Collectors.toList());
     }
 
     @Override
-    public List<IFuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
+    public List<Fuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
         return this.buscarFuentes().stream().filter(fuente -> tiposFuente.contains(fuente.getTipo())).collect(Collectors.toList());
     }
 
@@ -92,10 +91,10 @@ public class FuentesService implements IFuentesService {
         List<TipoFuente> listaTipos = new ArrayList<>();
         listaTipos.add(TipoFuente.DINAMICA);
         listaTipos.add(TipoFuente.ESTATICA);
-        List<IFuente> fuentes = this.buscarFuentePorTipo(listaTipos);
+        List<Fuente> fuentes = this.buscarFuentePorTipo(listaTipos);
 
-        List<IFuente> fuentesActualizadas = new ArrayList<>();
-        for (IFuente fuente : fuentes){
+        List<Fuente> fuentesActualizadas = new ArrayList<>();
+        for (Fuente fuente : fuentes){
             List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
             logger.info("Fuente actualizada {}", fuente.getTipo());
             if (!hechosFuente.isEmpty()){

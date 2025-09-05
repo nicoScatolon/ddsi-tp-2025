@@ -2,12 +2,18 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-public class CriterioOcurrenciaEntreFechas implements ICriterio {
-    private final LocalDate primeraFecha;
-    private final LocalDate segundaFecha;
+@Entity
+
+@NoArgsConstructor
+
+public class CriterioOcurrenciaEntreFechas extends Criterio {
+    private  LocalDate primeraFecha;
+    private  LocalDate segundaFecha;
 
     public CriterioOcurrenciaEntreFechas(LocalDate primeraFecha, LocalDate segundaFecha) {
         this.primeraFecha = primeraFecha;

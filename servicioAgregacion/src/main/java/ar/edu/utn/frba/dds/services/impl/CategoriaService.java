@@ -9,19 +9,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CategoriaService implements ICategoriaService {
-    ICategoriasRepository categoriasRepository;
+
+    private final ICategoriasRepository categoriasRepository;
 
     public CategoriaService(ICategoriasRepository categoriasRepository) {
         this.categoriasRepository = categoriasRepository;
     }
 
-    public Categoria findByID(String idCategoria){
-        return categoriasRepository.findByID(idCategoria);
+    public Categoria findById(Long idCategoria) {
+        return categoriasRepository.findById(idCategoria)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id " + idCategoria));
     }
 
-    public Categoria findByNombre(String nombreCategoria){
-        return categoriasRepository.findByID(this.crearIdCategoria(nombreCategoria));
-    }
+    public Categoria findByNombre(String nombreCategoria) {
+        return categoriasRepository.findByNombre(nombreCategoria);}
 
     @Override
     public Categoria agregarCategoria(Categoria nuevaCategoria) {
@@ -29,13 +30,12 @@ public class CategoriaService implements ICategoriaService {
             throw new IllegalArgumentException("La categoría debe tener un nombre");
         }
 
-        String idNuevaCategoria = crearIdCategoria(nuevaCategoria.getNombre());
+        // Normalizar nombre antes de persistir
+        String normalizado = normalizarNombre(nuevaCategoria.getNombre());
+        nuevaCategoria.setNombre(normalizado);
 
-        if (nuevaCategoria.getId() == null || !idNuevaCategoria.equals(nuevaCategoria.getId())) {
-            nuevaCategoria.setId(idNuevaCategoria);
-        }
-
-        Categoria existente = categoriasRepository.findByID(idNuevaCategoria);
+        // Buscar si ya existe por nombre
+        Categoria existente = categoriasRepository.findByNombre(normalizado);
         if (existente == null) {
             return categoriasRepository.save(nuevaCategoria);
         } else {
@@ -43,13 +43,12 @@ public class CategoriaService implements ICategoriaService {
         }
     }
 
-
-    private String crearIdCategoria(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("El string no puede ser nulo ni vacío.");
+    private String normalizarNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede ser nulo ni vacío.");
         }
 
-        return string
+        return nombre
                 .trim()
                 .toLowerCase()
                 .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones

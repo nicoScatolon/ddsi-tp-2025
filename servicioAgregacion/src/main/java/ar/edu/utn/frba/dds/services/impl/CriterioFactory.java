@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class CriterioFactory {
 
-    public ICriterio crear(CriterioInputDTO criterioInputDTO) {
+    public Criterio crear(CriterioInputDTO criterioInputDTO) {
         String tipo = criterioInputDTO.getTipo();
         Map<String, String> p = criterioInputDTO.getParametros();
 
@@ -49,14 +49,14 @@ public class CriterioFactory {
         }
     }
 
-    public List<ICriterio> crearVarios(List<CriterioInputDTO> criterios){
+    public List<Criterio> crearVarios(List<CriterioInputDTO> criterios){
         return criterios.stream()
                 .map(this::crear)
                 .toList();
     }
 
-    public List<ICriterio> crearCriteriosParametros(Categoria cat, HechoFilter filter){
-        List<ICriterio> criterios = new ArrayList<>();
+    public List<Criterio> crearCriteriosParametros(Categoria cat, HechoFilter filter){
+        List<Criterio> criterios = new ArrayList<>();
         if (cat != null) {
             criterios.add(new CriterioCategoria(cat));
         }
@@ -72,7 +72,7 @@ public class CriterioFactory {
         return criterios;
     }
 
-    private ICriterio crearCriterioCargaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
+    private Criterio crearCriterioCargaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
         if (fecha1 == null && fecha2 == null) {
             return null;
         }
@@ -83,7 +83,7 @@ public class CriterioFactory {
         }
     }
 
-    private ICriterio crearCriterioOcurrenciaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
+    private Criterio crearCriterioOcurrenciaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
         if (fecha1 == null && fecha2 == null) {
             return null;
         }

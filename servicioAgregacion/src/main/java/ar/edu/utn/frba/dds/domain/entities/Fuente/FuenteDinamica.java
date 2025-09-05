@@ -31,7 +31,8 @@ public class FuenteDinamica extends Fuente {
     @JsonIgnore
     private WebClient webClient;
 
-
+    @Transient
+    @JsonIgnore
     private Map<Long, Hecho> mapHechos;
     private LocalDateTime ultimaActualizacion;
 
@@ -50,6 +51,7 @@ public class FuenteDinamica extends Fuente {
         return nuevosHechos;
     }
 
+    @Transient
     public List<HechoInputDinamicaDTO> getHechos() {
         return this.webClient.get()
                 .uri(uriBuilder -> {

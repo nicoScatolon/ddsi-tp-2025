@@ -1,13 +1,12 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,19 +38,31 @@ public class Coleccion {
             inverseJoinColumns = @JoinColumn(name = "fuente_id")
     )
     private final List<Fuente> listaFuentes = new ArrayList<>();
-    //TODO ver como persistir los criterios
-    private final Set<ICriterio> listaCriterios = new HashSet<>();
-    //TODO el algoritmo de consenso podria guardarse como
-    private IAlgoritmoConsenso algoritmoConsenso = null;
+
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_criterios",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "criterio_id")
+    )
+    private final Set<Criterio> listaCriterios = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "algoritmoConsenso_id")
+    private AlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
+    @Transient
     private List<Hecho> listaHechos = new ArrayList<>();
+    @Transient
     private List<Hecho> listaHechosCurados = new ArrayList<>();
+
+    //Ahora que persistimos en BD, no harían falta esas listas en memoria
 
     @Setter private Boolean actualizarHechos = true;
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
-    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
+    public Coleccion(String handle, String titulo, String descripcion, AlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -60,27 +71,27 @@ public class Coleccion {
         }
     }
 
-    public void agregarCriterio(ICriterio criterio) {
+    public void agregarCriterio(Criterio criterio) {
         this.listaCriterios.add(criterio);
         actualizarHechos = true;
     }
 
-    public void eliminarCriterio(ICriterio criterio) {
+    public void eliminarCriterio(Criterio criterio) {
         this.listaCriterios.remove(criterio);
         actualizarHechos = true;
     }
 
-    public void setListaCriterios(Set<ICriterio> criterios){
+    public void setListaCriterios(Set<Criterio> criterios){
         this.listaCriterios.clear();
         this.listaCriterios.addAll(criterios);
     }
 
-    public void agregarFuente(IFuente fuente) {
+    public void agregarFuente(Fuente fuente) {
         this.listaFuentes.add(fuente);
         actualizarHechos = true;
     }
 
-    public void eliminarFuente(IFuente fuente) {
+    public void eliminarFuente(Fuente fuente) {
         FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
         List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
         this.listaHechos.removeAll(hechosFuenteEliminada);
@@ -90,9 +101,9 @@ public class Coleccion {
         curarHechos = true;
     }
 
-    public void setListaFuentes(List<IFuente> nuevasFuentes) {
+    public void setListaFuentes(List<Fuente> nuevasFuentes) {
         //con las fuentes comunes no hago nada
-        List<IFuente> fuentesNuevas = nuevasFuentes.stream()
+        List<Fuente> fuentesNuevas = nuevasFuentes.stream()
                 .filter(f2 -> !listaFuentes.contains(f2))
                 .toList();
 
@@ -108,7 +119,7 @@ public class Coleccion {
         }
     }
 
-    public void setAlgoritmoConsenso(IAlgoritmoConsenso algoritmoConsenso) {
+    public void setAlgoritmoConsenso(AlgoritmoConsenso algoritmoConsenso) {
         this.algoritmoConsenso = algoritmoConsenso;
         curarHechos = true;
     }
@@ -127,7 +138,7 @@ public class Coleccion {
         // por eso obtener Hechos Cargados devuelve null si es proxy
         List<Hecho> listaAuxiliar = new ArrayList<>();
         //cargamos todos los hechos de las fuentes
-        for (IFuente fuente : listaFuentes) {
+        for (Fuente fuente : listaFuentes) {
             FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
             List<Hecho> hechosFuente = adapter.obtenerHechos();
             if (hechosFuente != null) {
@@ -165,13 +176,13 @@ public class Coleccion {
         return listaHechosCurados.stream().filter(h -> !h.getFueEliminado()).toList();
     }
 
-    public List<Hecho> getHechosConFiltro(List<ICriterio> filtros) {
+    public List<Hecho> getHechosConFiltro(List<Criterio> filtros) {
         return this.filtrarHechos(listaHechos).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();
     }
 
-    public List<Hecho> getHechosCuradosYFiltrados(List<ICriterio> filtros){
+    public List<Hecho> getHechosCuradosYFiltrados(List<Criterio> filtros){
         return this.filtrarHechos(listaHechosCurados).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();
