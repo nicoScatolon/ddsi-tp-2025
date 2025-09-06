@@ -1,33 +1,30 @@
-package ar.edu.utn.frba.dds.domain.dtos.output;
+package ar.edu.utn.frba.dds.domain.entities;
 
-import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia;
-import ar.edu.utn.frba.dds.domain.entities.Contribuyente;
-import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HechoOutputDTO {
+
+public class Hecho {
     private Long id;
     private String titulo;
     private String descripcion;
-    private CategoriaOutputDTO categoria;
-    private UbicacionOutputDTO ubicacion;
+    private Categoria categoria;
+    private Ubicacion ubicacion;
     private List<Etiqueta> etiquetas; //posible DTO
     private List<ContenidoMultimedia> contenidoMultimedia; //posible DTO
     private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
     private Contribuyente contribuyente; //posible DTO
     private Boolean cargadoAninimamente;
-    // TODO los cambios agregados deben ser mostrador por el DTO converter
+    private Fuente fuente;
 }
-

@@ -26,12 +26,4 @@ public class Contribuyente {
     private String apellido;
     @Column(nullable = false)
     private LocalDate fechaNacimiento;
-
-    @Column
-    private Boolean esAnonimo;
-
-    public String getNombreDisplay(){
-        if (esAnonimo) {return "Anonimo";}
-        else return String.join(nombre, " ", apellido);
-    }
 }
