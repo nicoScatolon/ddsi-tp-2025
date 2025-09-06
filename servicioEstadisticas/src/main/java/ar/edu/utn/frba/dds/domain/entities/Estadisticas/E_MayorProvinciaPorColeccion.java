@@ -1,16 +1,15 @@
 package ar.edu.utn.frba.dds.domain.entities.Estadisticas;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 public class E_MayorProvinciaPorColeccion {
     private Long id;

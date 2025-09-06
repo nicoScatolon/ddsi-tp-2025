@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,11 +18,15 @@ public class Hecho {
     private String descripcion;
     private Categoria categoria;
     private Ubicacion ubicacion;
-    private List<Etiqueta> etiquetas; //posible DTO
-    private List<ContenidoMultimedia> contenidoMultimedia; //posible DTO
-    private LocalDate fechaDeOcurrencia;
+    //private List<Etiqueta> etiquetas; //posible DTO
+    //private List<ContenidoMultimedia> contenidoMultimedia; //posible DTO
+    private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
-    private Contribuyente contribuyente; //posible DTO
-    private Boolean cargadoAninimamente;
-    private Fuente fuente;
+    //private Contribuyente contribuyente; //posible DTO
+    //private Boolean cargadoAninimamente;
+    //private Fuente fuente;
+
+    // -- Los datos comentados no son necesarios para las estadisticas actuales, pero vienen en el input DTO
+    // -- asi que podemos obtenerlos sin modificar la comunicacion, solo el proceso de creacion de la entidad
+    // -- como no son necesarios actualmente no los cargo del DTO
 }
