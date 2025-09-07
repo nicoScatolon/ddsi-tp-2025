@@ -28,6 +28,6 @@ public class HechoOutputDTO {
     private LocalDateTime fechaDeCarga;
     private Contribuyente contribuyente; //posible DTO
     private Boolean cargadoAninimamente;
-    // TODO los cambios agregados deben ser mostrador por el DTO converter
+    // NOTA los cambios agregados deben ser mostrador por el DTO converter
 }
 

@@ -61,13 +61,13 @@ public class CategoriasService implements ICategoriasService {
                 if (!categoria.getNombre().equals(categoriaDTO.getNombre())) {
                     categoria.setNombre(categoriaDTO.getNombre());
                     categoria.setFechaActualizacion(LocalDateTime.now());
-                    //TODO save(categoria)
+                    this.categoriasRepository.save(categoria);
                 }
             }
             , () -> {
                 //si no existe la creo
-                        var nuevaCategoria = DTOconverter.categoriaInputDTO(categoriaDTO);
-                        //TODO save(nuevaCategoria)
+                        Categoria nuevaCategoria = DTOconverter.categoriaInputDTO(categoriaDTO);
+                        this.categoriasRepository.save(nuevaCategoria);
                     }
             );
         }
