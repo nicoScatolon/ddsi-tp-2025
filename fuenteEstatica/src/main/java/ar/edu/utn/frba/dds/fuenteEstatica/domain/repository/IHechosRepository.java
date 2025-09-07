@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IHechosRepository extends JpaRepository<Hecho, Long> {
-    List<Hecho> findByFechaDeCarga(LocalDateTime fechaCarga); //Ahi lo mapea automatico, sino le pongo query manualmente con @Query
+    List<Hecho> findByFechaDeCargaAfter(LocalDateTime fechaCarga); //Ahi lo mapea automatico, sino le pongo query manualmente con @Query
 }

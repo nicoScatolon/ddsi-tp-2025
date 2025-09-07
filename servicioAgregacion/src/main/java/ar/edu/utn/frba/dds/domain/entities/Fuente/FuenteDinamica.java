@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Fuente;
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
@@ -33,7 +34,8 @@ public class FuenteDinamica extends Fuente {
 
     @Transient
     @JsonIgnore
-    private Map<Long, Hecho> mapHechos;
+    private Map<Long, Hecho> mapHechos = new HashMap<>();
+    @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteDinamica(String url) {
@@ -45,7 +47,7 @@ public class FuenteDinamica extends Fuente {
     public List<Hecho> updateHechos(){
         List<HechoInputDinamicaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
         this.actualizarHechos(nuevosHechos);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
@@ -53,6 +55,9 @@ public class FuenteDinamica extends Fuente {
 
     @Transient
     public List<HechoInputDinamicaDTO> getHechos() {
+        if (this.webClient == null && this.url != null) {
+            this.webClient = WebClient.builder().baseUrl(this.url).build();
+        }
         return this.webClient.get()
                 .uri(uriBuilder -> {
                     var builder = uriBuilder.path("/api/fuenteDinamica/hechos");

@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputProxyDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
@@ -33,6 +34,7 @@ public class FuenteProxy extends Fuente {
     @Transient
     @JsonIgnore
     private List<Hecho> hechos;
+    @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion = LocalDateTime.MIN;
 
     public FuenteProxy(String url) {
@@ -42,6 +44,10 @@ public class FuenteProxy extends Fuente {
 
     @Transient
     public List<Hecho> getHechos() {
+        if (this.webClient == null && this.url != null) {
+            this.webClient = WebClient.builder().baseUrl(this.url).build();
+        }
+
         return Objects.requireNonNull(this.webClient.get()
                 .uri("/api/fuenteProxy/hechos")
                 .retrieve()

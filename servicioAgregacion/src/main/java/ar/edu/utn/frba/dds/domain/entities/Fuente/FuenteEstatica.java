@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
@@ -33,7 +34,8 @@ public class FuenteEstatica extends Fuente {
     private WebClient webClient;
     @Transient
     @JsonIgnore
-    private Map<Long, Hecho> mapHechos;
+    private Map<Long, Hecho> mapHechos = new HashMap<>();
+    @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteEstatica(String url) {
@@ -45,7 +47,7 @@ public class FuenteEstatica extends Fuente {
     public List<Hecho> updateHechos(){
         List<HechoInputEstaticaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
         this.actualizarHechos(nuevosHechos);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
@@ -53,6 +55,10 @@ public class FuenteEstatica extends Fuente {
 
     @Transient
     public List<HechoInputEstaticaDTO> getHechos() {
+        if (this.webClient == null && this.url != null) {
+            this.webClient = WebClient.builder().baseUrl(this.url).build();
+        }
+
         return this.webClient.get()
                 .uri(uriBuilder -> {
                     var builder = uriBuilder.path("/api/fuenteEstatica/hechos");

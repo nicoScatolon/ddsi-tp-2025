@@ -26,7 +26,7 @@ public class Hecho {
     //Contenido del Hecho
     @Column(nullable = false, name = "titulo")
     private String titulo;
-    @Column(nullable = false, name = "descripcion")
+    @Column(nullable = false, name = "descripcion", unique = true)
     private String descripcion;
     @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
@@ -54,7 +54,10 @@ public class Hecho {
             @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
     })
     private Contribuyente contribuyente; // el ususario que lo carga
+
+    @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido

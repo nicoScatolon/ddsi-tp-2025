@@ -22,7 +22,9 @@ public class CategoriaService implements ICategoriaService {
     }
 
     public Categoria findByNombre(String nombreCategoria) {
-        return categoriasRepository.findByNombre(nombreCategoria);}
+        String key = normalizarNombre(nombreCategoria);
+        return categoriasRepository.findByNombre(key);
+    }
 
     @Override
     public Categoria agregarCategoria(Categoria nuevaCategoria) {
@@ -47,11 +49,14 @@ public class CategoriaService implements ICategoriaService {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre no puede ser nulo ni vacío.");
         }
+        String sinAcentos = java.text.Normalizer
+                .normalize(nombre, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
 
-        return nombre
+        return sinAcentos
                 .trim()
-                .toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
-                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
+                .toLowerCase(java.util.Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-+|-+$", "");
     }
 }

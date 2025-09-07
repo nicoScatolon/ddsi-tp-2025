@@ -133,6 +133,7 @@ public class HechosService implements IHechosService {
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
                 .esAnonimo(hecho.getEsAnonimo())
                 .contribuyente(hecho.getContribuyente())
+                .estadoHecho(hecho.getEstado())
                 .build();
     }
 

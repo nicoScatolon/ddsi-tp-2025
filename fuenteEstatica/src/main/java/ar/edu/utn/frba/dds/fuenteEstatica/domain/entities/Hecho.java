@@ -16,20 +16,22 @@ import java.time.LocalDateTime;
 @Table(name= "hechos")
 public class Hecho {
     //Datos
-    @Column (nullable = false)
+    @Column (name = "titulo", nullable = false)
     private String titulo;
-    @Column(columnDefinition = "TEXT", unique = true)
+    @Column(name = "descripcion", columnDefinition = "TEXT", unique = true)
     private String descripcion;
     @Embedded
     private Ubicacion ubicacion;
-    @Column
+    @Column(name = "categoria")
     private String categoria;
-    @Column
+    @Column (name = "fechaDeOcurrencia")
     private LocalDate fechaDeOcurrencia;
 
     //Metadata
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "fechaDeCarga", nullable = false)
     private LocalDateTime fechaDeCarga;
 }
