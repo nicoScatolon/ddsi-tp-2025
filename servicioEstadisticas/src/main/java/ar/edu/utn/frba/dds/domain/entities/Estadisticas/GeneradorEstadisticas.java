@@ -22,13 +22,14 @@ public class GeneradorEstadisticas {
 
         if (maxProvincia == null) { return null;}
 
-        return E_MayorProvinciaPorCategoria.builder()
+        var estadistica = E_MayorProvinciaPorCategoria.builder()
                 .categoria(categoria)
                 .provincia(maxProvincia.getKey())
                 .cantHechosProvincia(maxProvincia.getValue().intValue())
                 .cantHechosTotales(hechos.size())
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     public E_MayorProvinciaPorColeccion mayorProvinciaPorColeccion (Coleccion coleccion, List<Hecho> hechos) {
@@ -36,13 +37,14 @@ public class GeneradorEstadisticas {
 
         if (maxProvincia == null) { return null;}
 
-        return E_MayorProvinciaPorColeccion.builder()
+        var estadistica = E_MayorProvinciaPorColeccion.builder()
                 .coleccion(coleccion)
                 .provincia(maxProvincia.getKey())
                 .cantHechosProvincia(maxProvincia.getValue().intValue())
                 .cantHechosTotales(hechos.size())
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     public E_HoraOcurrenciaPorCategoria horaDiaPorCategoria (Categoria categoria, List<Hecho> hechos) {
@@ -53,13 +55,15 @@ public class GeneradorEstadisticas {
 
         var maxHora = conteoHoras.entrySet().stream().max(Map.Entry.comparingByValue()).get();
 
-        return E_HoraOcurrenciaPorCategoria.builder()
+        var estadistica = E_HoraOcurrenciaPorCategoria.builder()
                 .categoria(categoria)
                 .horaDia(maxHora.getKey())
                 .cantHechosHora(maxHora.getValue().intValue())
                 .cantHechosTotales(hechos.size())
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     public E_SolicitudesSpam solicitudesSpam (List<SolicitudEliminacion> solicitudes) {
@@ -69,11 +73,13 @@ public class GeneradorEstadisticas {
 
         Integer cantSolicitudesNoSpam = solicitudes.size() - cantSolicitudesSpam;
 
-        return E_SolicitudesSpam.builder()
+        var estadistica = E_SolicitudesSpam.builder()
                 .solicitudesSpam(cantSolicitudesSpam)
                 .solicitudesNoSpam(cantSolicitudesNoSpam)
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     public E_MayorCategoria mayorCategoria (List<Hecho> hechos) {
@@ -84,12 +90,14 @@ public class GeneradorEstadisticas {
 
         var maxCategoria = hechosPorCategoria.entrySet().stream().max(Map.Entry.comparingByValue()).get();
 
-        return E_MayorCategoria.builder()
+        var estadistica = E_MayorCategoria.builder()
                 .categoria(maxCategoria.getKey())
                 .cantHechosCategoria(maxCategoria.getValue().intValue())
                 .cantHechosTotales(hechos.size())
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     public E_MayorCategoria mayorCategoria (Map<Categoria, List<Hecho>> hechosPorCategoria) {
@@ -99,12 +107,14 @@ public class GeneradorEstadisticas {
                 .mapToInt(List::size)
                 .sum();
 
-        return E_MayorCategoria.builder()
+        var estadistica = E_MayorCategoria.builder()
                 .categoria(maxCategoria.getKey())
                 .cantHechosCategoria(maxCategoria.getValue().size())
                 .cantHechosTotales(cantidadTotalHechos)
-                .fechaDeCalculo(LocalDateTime.now())
                 .build();
+
+        estadistica.setFechaDeCalculo(LocalDateTime.now());
+        return estadistica;
     }
 
     //Metodos privados

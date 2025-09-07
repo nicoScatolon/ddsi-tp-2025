@@ -6,9 +6,11 @@ import ar.edu.utn.frba.dds.domain.entities.Estadisticas.E_MayorProvinciaPorCateg
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface IE_MayorProvinciaPorCategoriaRepository extends JpaRepository<E_MayorProvinciaPorCategoria, Long> {
     List<E_MayorProvinciaPorCategoria> findByCategoria(Categoria categoria);
+    void deleteByFechaDeCalculoBefore(LocalDateTime fechaLimite);
 }

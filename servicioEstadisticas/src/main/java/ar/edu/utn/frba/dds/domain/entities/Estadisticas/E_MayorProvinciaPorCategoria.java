@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "MayorProvinciaPorCategoria")
-public class E_MayorProvinciaPorCategoria {
+public class E_MayorProvinciaPorCategoria extends EstadisticaBase {
     // "La provincia con la mayor cantidad de hechos por cada categoria";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,5 @@ public class E_MayorProvinciaPorCategoria {
 
     @Column(name = "cant-hechos-totales")
     private Integer cantHechosTotales;
-
-    @Column(name = "fecha-calculo")
-    private LocalDateTime fechaDeCalculo;
 }
 

@@ -64,7 +64,11 @@ public class EstadisticasService implements IEstadisticasService {
 
     public void eliminarEstadisticasAntiguas() {
         LocalDateTime fechaLimite = LocalDateTime.now().minusDays(cantDiasPersistenciaEstaditicas);
-        //TODO eliminar hechos anteriores a esta fecha
+        this.solicitudesSpamRepository.deleteByFechaDeCalculoBefore(fechaLimite);
+        this.mayorCategoriaRepository.deleteByFechaDeCalculoBefore(fechaLimite);
+        this.horaOcuPorCategoriaRepository.deleteByFechaDeCalculoBefore(fechaLimite);
+        this.mayorProvinciaPorCategoriaRepository.deleteByFechaDeCalculoBefore(fechaLimite);
+        this.mayorProvinciaPorColeccionRepository.deleteByFechaDeCalculoBefore(fechaLimite);
     }
 
 
