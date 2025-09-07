@@ -64,5 +64,4 @@ public class SolicitudEliminarHecho {
         this.nombreAdministrador = nombreAdministrador;
         this.apellidoAdministrador = apellidoAdministrador;
     }
-
 }

@@ -1,16 +1,17 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 public class Categoria {
     private String id;
     private String nombre;
+    private LocalDateTime fechaActualizacion; //para la base de datos
 }

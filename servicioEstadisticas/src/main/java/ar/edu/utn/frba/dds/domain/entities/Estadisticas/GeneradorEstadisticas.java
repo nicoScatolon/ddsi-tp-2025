@@ -1,6 +1,6 @@
-package ar.edu.utn.frba.dds.domain.entities;
+package ar.edu.utn.frba.dds.domain.entities.Estadisticas;
 
-import ar.edu.utn.frba.dds.domain.entities.Estadisticas.*;
+import ar.edu.utn.frba.dds.domain.entities.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 @Getter
 public class GeneradorEstadisticas {
     private static final GeneradorEstadisticas INSTANCE = new GeneradorEstadisticas();
+
+    public static GeneradorEstadisticas getInstance() {
+        return INSTANCE;
+    }
 
     public E_MayorProvinciaPorCategoria mayorProvinciaPorCategoria (Categoria categoria, List<Hecho> hechos) {
         var maxProvincia = this.conteoMaxProvincia(hechos);

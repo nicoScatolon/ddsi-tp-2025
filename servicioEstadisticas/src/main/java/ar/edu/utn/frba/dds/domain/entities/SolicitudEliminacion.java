@@ -1,9 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +8,13 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 public class SolicitudEliminacion {
     private Long id;
-    private Hecho hecho;
+    //private Hecho hecho; - por ahora no es necesario
     private EstadoDeSolicitud estado;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaGestion;
-    private Boolean eliminada;
+    //private Boolean eliminada;
 }

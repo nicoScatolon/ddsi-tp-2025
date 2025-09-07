@@ -1,4 +1,4 @@
 package ar.edu.utn.frba.dds.services;
 
-public interface IServiceEstadisticas {
+public interface IEstadisticasService {
 }

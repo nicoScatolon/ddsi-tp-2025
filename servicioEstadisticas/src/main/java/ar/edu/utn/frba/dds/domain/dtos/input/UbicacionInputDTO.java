@@ -1,14 +1,9 @@
-package ar.edu.utn.frba.dds.domain.entities;
+package ar.edu.utn.frba.dds.domain.dtos.input;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-
-public class Ubicacion {
+@Data
+public class UbicacionInputDTO {
     private String provincia;
     private String localidad;
     private String calle;

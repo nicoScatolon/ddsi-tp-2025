@@ -41,7 +41,7 @@ public class Hecho {
     private Ubicacion ubicacion;
 
     @Column (nullable = false, name = "fecha-ocurrencia")
-    private LocalDate fechaDeOcurrencia;
+    private LocalDate fechaDeOcurrencia;  //Todo, debería ser localdatetime, modificar en todo el dominio
 
     @Column (nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;

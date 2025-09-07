@@ -48,8 +48,8 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) {
-        if (detectorDeSpam.esSpam(razon)){
+    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) { //Todo: debería ser responseEntity
+        if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
         }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
