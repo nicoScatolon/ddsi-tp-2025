@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
-import ar.edu.utn.frba.dds.domain.dtos.output.E_HoraOcuPorCategoriaOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.estadisticas.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
-import ar.edu.utn.frba.dds.domain.entities.Estadisticas.E_HoraOcurrenciaPorCategoria;
+import ar.edu.utn.frba.dds.domain.entities.Estadisticas.*;
 import lombok.Getter;
 
 import java.util.List;
@@ -64,10 +66,25 @@ public class DTOconverter {
 
     // --- OUTPUTS --- //
 
+    public static CategoriaOutputDTO categoriaOutputDTO (Categoria categoria) {
+        return CategoriaOutputDTO.builder()
+                .id(categoria.getId())
+                .nombre(categoria.getNombre())
+                .build();
+    }
+
+    public static ColeccionOutputDTO coleccionOutputDTO (Coleccion coleccion) {
+        return ColeccionOutputDTO.builder()
+                .handle(coleccion.getHandle())
+                .titulo(coleccion.getTitulo())
+                .build();
+    }
+
+
     public static E_HoraOcuPorCategoriaOutputDTO eHoraOcuPorCategoriaOutputDTO(E_HoraOcurrenciaPorCategoria estadistica) {
         return E_HoraOcuPorCategoriaOutputDTO.builder()
                 .id(estadistica.getId())
-                .categoria(estadistica.getCategoria())
+                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
                 .horaDia(estadistica.getHoraDia())
                 .cantHechosHora(estadistica.getCantHechosHora())
                 .cantHechosTotales(estadistica.getCantHechosTotales())
@@ -75,6 +92,43 @@ public class DTOconverter {
                 .build();
     }
 
+    public static E_MayorCategoriaOutputDTO eMayorCategoriaOutputDTO(E_MayorCategoria estadistica) {
+        return E_MayorCategoriaOutputDTO.builder()
+                .id(estadistica.getId())
+                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
+                .cantHechosCategoria(estadistica.getCantHechosCategoria())
+                .cantHechosTotales(estadistica.getCantHechosTotales())
+                .fechaDeCalculo(estadistica.getFechaDeCalculo())
+                .build();
+    }
+    public static E_MayorProvPorCategoriaOutputDTO eMayorProvinciaPorCategoriaOutputDTO(E_MayorProvinciaPorCategoria estadistica) {
+        return E_MayorProvPorCategoriaOutputDTO.builder()
+                .id(estadistica.getId())
+                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
+                .provincia(estadistica.getProvincia())
+                .cantHechosProvincia(estadistica.getCantHechosProvincia())
+                .cantHechosTotales(estadistica.getCantHechosTotales())
+                .fechaDeCalculo(estadistica.getFechaDeCalculo())
+                .build();
+    }
 
+    public static E_MayorProvPorColeccionOutputDTO eMayorProvinciaPorColeccionOutputDTO(E_MayorProvinciaPorColeccion estadistica) {
+        return E_MayorProvPorColeccionOutputDTO.builder()
+                .id(estadistica.getId())
+                .coleccionDTO(DTOconverter.coleccionOutputDTO(estadistica.getColeccion()))
+                .provincia(estadistica.getProvincia())
+                .cantHechosProvincia(estadistica.getCantHechosProvincia())
+                .cantHechosTotales(estadistica.getCantHechosTotales())
+                .fechaDeCalculo(estadistica.getFechaDeCalculo())
+                .build();
+    }
 
+    public static E_SolicitudesSpamOutputDTO eSolicitudesSpamOutputDTO(E_SolicitudesSpam estadistica) {
+        return E_SolicitudesSpamOutputDTO.builder()
+                .id(estadistica.getId())
+                .solicitudesSpam(estadistica.getSolicitudesSpam())
+                .solicitudesNoSpam(estadistica.getSolicitudesNoSpam())
+                .fechaDeCalculo(estadistica.getFechaDeCalculo())
+                .build();
+    }
 }

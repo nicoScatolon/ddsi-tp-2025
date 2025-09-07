@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +27,13 @@ public class CategoriasService implements ICategoriasService {
     public CategoriasService(ICategoriasRepository categoriasRepository) {
         this.categoriasRepository = categoriasRepository;
         this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
+    }
+
+    public Categoria findById(CategoriaInputDTO categoriaDTO) {
+        Categoria categoria = categoriasRepository.findById(categoriaDTO.getId()).orElse(null);
+        if (categoria == null) {return null;}
+        if (!Objects.equals(categoriaDTO.getNombre(), categoria.getNombre())) {return null;}
+        return categoria;
     }
 
     @Transactional

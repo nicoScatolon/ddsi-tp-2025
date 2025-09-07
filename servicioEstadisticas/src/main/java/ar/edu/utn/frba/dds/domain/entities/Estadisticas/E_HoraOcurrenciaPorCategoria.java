@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.Estadisticas;
 
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,11 +12,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 
+@Entity
+@Table(name = "HoraOcurrenciaPorCategoria")
 public class E_HoraOcurrenciaPorCategoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Categoria categoria; //la condicion
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria; //la condicion del calculo
+
+    @Column(name = "HoraDia")
     private Integer horaDia; //el resultado
+
+    @Column(name = "cant-hechos-hora")
     private Integer cantHechosHora;
+
+    @Column(name = "cant-hechos-totales")
     private Integer cantHechosTotales;
+
+    @Column(name = "fecha-calculo")
     private LocalDateTime fechaDeCalculo;
 }
