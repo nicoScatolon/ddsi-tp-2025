@@ -7,12 +7,19 @@ import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IEquivalenteCatRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
+import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorCategoria.configurarRepositorios;
 
 
+@Setter
+@Getter
 @Service
 public class CategoriaService implements ICategoriaService {
 
@@ -22,6 +29,8 @@ public class CategoriaService implements ICategoriaService {
     public CategoriaService(ICategoriasRepository categoriasRepository, IEquivalenteCatRepository equivalenteCatRepository) {
         this.categoriasRepository = categoriasRepository;
         this.equivalenteCatRepository = equivalenteCatRepository;
+
+        configurarRepositorios(categoriasRepository, equivalenteCatRepository);
     }
 
     public Categoria findById(Long idCategoria) {
@@ -54,11 +63,7 @@ public class CategoriaService implements ICategoriaService {
 
         // Buscar si ya existe por nombre
         Categoria existente = findByNombre(normalizado);
-        if (existente == null) {
-            return categoriasRepository.save(nuevaCategoria);
-        } else {
-            return existente;
-        }
+        return Objects.requireNonNullElseGet(existente, () -> categoriasRepository.save(nuevaCategoria));
     }
 
 
@@ -76,6 +81,7 @@ public class CategoriaService implements ICategoriaService {
     public void eliminarEquivalentes(String equivalente){
         equivalenteCatRepository.deleteByEquivalente(equivalente);
     }
+
 
     private String normalizarNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {

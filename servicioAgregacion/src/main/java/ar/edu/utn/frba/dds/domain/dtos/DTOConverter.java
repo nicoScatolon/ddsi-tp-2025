@@ -7,16 +7,17 @@ import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorCategoria.normalizarCategoria;
 import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
@@ -158,6 +159,7 @@ public class DTOConverter {
     }
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
+        normalizarCategoria(categoriaInputDTO);
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
                 .id(categoriaInputDTO.getId())

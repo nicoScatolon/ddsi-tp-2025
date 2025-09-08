@@ -21,9 +21,9 @@ public class CategoriasController {
 
     // GET /categorias
     @GetMapping
-    public ResponseEntity<List<CategoriaOutputDTO>> listar() {
-        List<CategoriaOutputDTO> out = categoriaService.findAll();
-        return ResponseEntity.ok(out);
+    public ResponseEntity<List<CategoriaOutputDTO>> findAll() {
+        List<CategoriaOutputDTO> listaCategorias = categoriaService.findAll();
+        return ResponseEntity.ok(listaCategorias);
     }
 
     @PostMapping("/equivalentes")
