@@ -1,68 +1,50 @@
 @startuml
+skinparam classAttributeIconSize 0
 
-enum TipoFuenteProxy {
-  EXTERNA
-  METAMAPA
-}
+package entities {
 
-' Interfaz principal
-interface IFuente {
-  +Long getId()
-  +void setId(Long id)
-  +TipoFuenteProxy getTipoFuenteProxy()
-}
+  enum TipoFuenteProxy {
+    EXTERNA
+    METAMAPA
+  }
 
-' Interfaces de capacidad
-interface ServidoraDeHechos extends IFuente {
-  +Mono<List<HechoExternoDTO>> getHechos()
-}
+  ' ===== Interfaz base =====
+  interface IFuente {
+    +Long getId()
+    +void setId(Long id)
+    +TipoFuenteProxy getTipo()
+    +void setNombre(String nombre)
+    +String getBaseUrl()
+  }
 
-interface ServidoraDeHechosPorId extends ServidoraDeHechos {
-  +Mono<HechoExternoDTO> getHechoPorId(Long id)
-}
+  ' ===== Interfaces de capacidad =====
+  interface ServidoraDeHechos extends IFuente {
+    +Mono<List<HechoInputDTO>> getHechos()
+  }
 
-interface ServidoraDeHechosConFiltros extends ServidoraDeHechos {
-  +Mono<List<HechoExternoDTO>> buscarHechos(...)
-}
+  interface ServidoraDeHechosPorId extends ServidoraDeHechos {
+    +Mono<HechoInputDTO> getHechoPorId(Long id)
+  }
 
-interface ServidoraDeEliminaciones extends IFuente {
-  +Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud)
-}
+  interface ServidoraDeHechosConFiltros extends ServidoraDeHechos {
+    +Mono<List<HechoInputDTO>> buscarHechos(HechosFilterDTO filtros)
+  }
 
-interface ServidoraDeColecciones extends IFuente {
-  +Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones()
-  +Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(...)
-}
+  interface ServidoraDeEliminaciones extends IFuente {
+    +Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud)
+  }
 
-' FuenteMetaMapa
-class FuenteMetaMapa {
-  -Long id
-  -TipoFuenteProxy tipoFuenteProxy = METAMAPA
-  -WebClient webClient
-  -String baseUrl
-  +Mono<List<HechoExternoDTO>> getHechos()
-}
+  interface ServidoraDeColecciones extends IFuente {
+    +Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones()
+    +Mono<List<HechoInputDTO>> buscarHechosPorColeccion(String handle, Boolean curado, HechosFilterDTO filtros)
+  }
 
-' FuenteDDS
-class FuenteDDS {
-  -Long id
-  -TipoFuenteProxy tipoFuenteProxy = EXTERNA
-  -WebClient webClient
-  -String baseUrl
-  -String token
-}
+  ' ===== Clase base (abstracta) =====
+  abstract class Fuente {
+    #Long id
+    #String nombre
+    #String baseUrl
+    #boolean habilitada
+  }
 
-' Relaciones
-FuenteMetaMapa ..|> ServidoraDeHechosConFiltros
-FuenteMetaMapa ..|> ServidoraDeColecciones
-FuenteMetaMapa ..|> ServidoraDeEliminaciones
-FuenteMetaMapa ..|> ServidoraDeHechos
-
-FuenteDDS ..|> ServidoraDeHechosPorId
-
-' Herencia de interfaces
-ServidoraDeHechosPorId -|> ServidoraDeHechos
-ServidoraDeHechosConFiltros -|> ServidoraDeHechos
-
-@enduml
-
+  ' ===== Implementaciones ====

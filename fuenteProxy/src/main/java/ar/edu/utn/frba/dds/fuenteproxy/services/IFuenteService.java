@@ -9,4 +9,7 @@ public interface IFuenteService {
     IFuente buscarPorId(Long id);
     List<IFuente> obtenerPorTipo(TipoFuenteProxy tipo);
     List<IFuente> obtenerTodas();
+    void agregarFuenteDDS(String nombre);
+    void agregarFuenteMetamapa(String nombre);
+    void eliminarFuente(String nombre);
 }

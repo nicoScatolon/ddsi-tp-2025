@@ -33,7 +33,9 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
     private String token;
 
 
-    public FuenteDDS(String baseUrl, String token) {
+    public FuenteDDS(String nombre,String baseUrl, String token) {
+        this.setNombre(nombre);
+        this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
         this.token = token;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();

@@ -21,7 +21,7 @@ public abstract class Fuente {
     @EqualsAndHashCode.Include
     protected Long id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre", nullable = false, unique = true)
     protected String nombre;
 
 
@@ -30,6 +30,7 @@ public abstract class Fuente {
 
     @Column(name = "habilitada", nullable = false)
     protected boolean habilitada = true;
+
 
 
 }

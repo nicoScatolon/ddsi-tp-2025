@@ -35,7 +35,9 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
     private WebClient webClient;
 
 
-    public FuenteMetaMapa(String baseUrl) {
+    public FuenteMetaMapa(String nombre, String baseUrl) {
+        this.setNombre(nombre);
+        this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
