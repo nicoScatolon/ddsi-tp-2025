@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class HechosPaginadosDTO {
-    private List<HechoExternoDTO> hechos;
+    private List<HechoInputDTO> hechos;
     private int page;
     private int totalPages;
 

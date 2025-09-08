@@ -8,4 +8,6 @@ import java.util.List;
 public interface IFuentesRepositoryJPA extends JpaRepository<Fuente, Long> {
 
     List<Fuente> findByHabilitadaTrue();
+
+    void deleteByNombre(String nombre);
 }

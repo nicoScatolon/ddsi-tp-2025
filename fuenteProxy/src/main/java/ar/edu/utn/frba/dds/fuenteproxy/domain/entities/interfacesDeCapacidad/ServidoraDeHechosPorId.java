@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import reactor.core.publisher.Mono;
 
 public interface ServidoraDeHechosPorId extends ServidoraDeHechos{
-    Mono<HechoExternoDTO> getHechoPorId(Long id);
+    Mono<HechoInputDTO> getHechoPorId(Long id);
 }

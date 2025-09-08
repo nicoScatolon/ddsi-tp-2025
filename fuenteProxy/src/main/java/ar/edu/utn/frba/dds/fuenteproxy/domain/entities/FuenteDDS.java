@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosPorId;
 import jakarta.persistence.DiscriminatorValue;
@@ -33,7 +33,9 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
     private String token;
 
 
-    public FuenteDDS(String baseUrl, String token) {
+    public FuenteDDS(String nombre,String baseUrl, String token) {
+        this.setNombre(nombre);
+        this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
         this.token = token;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
@@ -43,7 +45,7 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
 
     @Override
     @Transient
-    public Mono<List<HechoExternoDTO>> getHechos() {
+    public Mono<List<HechoInputDTO>> getHechos() {
         return webClient.get()
                 .uri("/api/desastres?page=1")
                 .headers(h -> h.setBearerAuth(token))
@@ -51,7 +53,7 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
                 .bodyToMono(PaginaHechosResponseDdsDTO.class)
                 .flatMap(primerPagina -> {
                     int lastPage = primerPagina.getLastPage();
-                    List<HechoExternoDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
+                    List<HechoInputDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
 
                     if (lastPage <= 1) {
                         return Mono.just(hechosTotales);
@@ -80,14 +82,14 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
 
 
 
-    public Mono<HechoExternoDTO> getHechoPorId(Long id) {
+    public Mono<HechoInputDTO> getHechoPorId(Long id) {
         return webClient.get()
                 .uri("/api/desastres/{id}", id)
                 .headers(h-> h.setBearerAuth(token))
                 .retrieve()
                 .onStatus(status -> status.value() == 404,
                         response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
-                .bodyToMono(HechoExternoDTO.class);
+                .bodyToMono(HechoInputDTO.class);
 
     }
 

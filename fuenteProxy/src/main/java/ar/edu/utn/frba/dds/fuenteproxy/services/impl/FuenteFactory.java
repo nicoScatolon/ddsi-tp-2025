@@ -16,12 +16,13 @@ public class FuenteFactory {
     @Value("${api.ddsi.token}")
     private String ddsToken;
 
-    public FuenteMetaMapa nuevaFuenteMetaMapa() {
-        return new FuenteMetaMapa(metamapaBaseUrl);
+    public FuenteMetaMapa nuevaFuenteMetaMapa(String nombre) {
+
+        return new FuenteMetaMapa(nombre,metamapaBaseUrl);
     }
 
-    public FuenteDDS nuevaFuenteDDS() {
-        return new FuenteDDS(ddsBaseUrl, ddsToken);
+    public FuenteDDS nuevaFuenteDDS(String nombre) {
+        return new FuenteDDS(nombre, ddsBaseUrl, ddsToken);
     }
 
 }
