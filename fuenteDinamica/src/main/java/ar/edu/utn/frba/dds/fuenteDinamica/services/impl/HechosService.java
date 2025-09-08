@@ -5,10 +5,8 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Categoria;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.UbicacionOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.*;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
@@ -127,13 +125,26 @@ public class HechosService implements IHechosService {
                 .titulo(hecho.getTitulo())
                 .descripcion(hecho.getDescripcion())
                 .categoriaOutputDTO(this.categoriaOutputDTO(hecho.getCategoria()))
-                .ubicacion(hecho.getUbicacion())
+                .ubicacionOutputDTO(this.ubicacionOutputDTO(hecho.getUbicacion()))
                 .fechaOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
                 .esAnonimo(hecho.getEsAnonimo())
                 .contribuyente(hecho.getContribuyente())
-                .estadoHecho(hecho.getEstado())
+                .estado(hecho.getEstado())
+                .build();
+    }
+
+    private UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion) {
+        if (ubicacion == null) return null;
+        return UbicacionOutputDTO.builder()
+                .id(ubicacion.getId())
+                .provincia(ubicacion.getProvincia())
+                .localidad(ubicacion.getLocalidad())
+                .calle(ubicacion.getCalle())
+                .numero(ubicacion.getNumero())
+                .latitud(ubicacion.getLatitud())
+                .longitud(ubicacion.getLongitud())
                 .build();
     }
 

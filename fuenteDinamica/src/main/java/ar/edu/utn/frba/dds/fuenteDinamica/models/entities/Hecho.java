@@ -30,7 +30,7 @@ public class Hecho {
     private String descripcion;
     @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
     @Column(nullable = false, name = "fecha-ocurrencia")
@@ -58,7 +58,7 @@ public class Hecho {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
+    private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
     @Column(name = "sugerencia")

@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface IHechosRepository extends JpaRepository<Hecho, Long> {
-
     List<Hecho> findByEstado(EstadoSolicitudEliminacion estado);
 }

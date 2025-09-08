@@ -22,11 +22,11 @@ public class HechoOutputDTO {
     private String titulo;
     private String descripcion;
     private CategoriaOutputDTO categoriaOutputDTO;
-    private Ubicacion ubicacion;
+    private UbicacionOutputDTO ubicacionOutputDTO;
     private LocalDate fechaOcurrencia;
     private LocalDateTime fechaCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
     private Contribuyente contribuyente;
-    private EstadoHecho estadoHecho;
+    private EstadoHecho estado;
     private Boolean esAnonimo;
 }
