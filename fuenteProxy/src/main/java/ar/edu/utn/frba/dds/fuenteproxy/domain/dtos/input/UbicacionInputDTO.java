@@ -1,12 +1,15 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UbicacionOutputDTO {
+public class UbicacionInputDTO {
     private String provincia;
     private String localidad;
     private String calle;

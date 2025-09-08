@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoExternoDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
@@ -45,11 +45,11 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
     @Override
     @Transient
-    public Mono<List<HechoExternoDTO>> getHechos(){
+    public Mono<List<HechoInputDTO>> getHechos(){
         return webClient.get()
                 .uri("/api/hechos/publica")
                 .retrieve()
-                .bodyToFlux(HechoExternoDTO.class)
+                .bodyToFlux(HechoInputDTO.class)
                 .collectList();
 
     }
@@ -57,7 +57,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarHechos(HechosFilterDTO filtros) {
+    public Mono<List<HechoInputDTO>> buscarHechos(HechosFilterDTO filtros) {
         return webClient.get()
                 .uri(uriBuilder -> {
                     uriBuilder.path("/api/hechos/publica");
@@ -65,7 +65,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
                     return uriBuilder.build();
                 })
                 .retrieve()
-                .bodyToFlux(HechoExternoDTO.class)
+                .bodyToFlux(HechoInputDTO.class)
                 .collectList();
     }
 
@@ -84,7 +84,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
 
     @Override
-    public Mono<List<HechoExternoDTO>> buscarHechosPorColeccion(
+    public Mono<List<HechoInputDTO>> buscarHechosPorColeccion(
             String handle, Boolean curado, HechosFilterDTO filtros) {
 
         return webClient.get()
@@ -95,7 +95,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
                     return uriBuilder.build(handle);
                 })
                 .retrieve()
-                .bodyToFlux(HechoExternoDTO.class)
+                .bodyToFlux(HechoInputDTO.class)
                 .collectList();
     }
 

@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class PaginaHechosResponseDdsDTO {
     private int currentPage;
-    private List<HechoExternoDTO> data;
+    private List<HechoInputDTO> data;
     private int lastPage;
 }
