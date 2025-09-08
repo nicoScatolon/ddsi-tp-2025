@@ -3,10 +3,15 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-public class CriterioUbicacion implements ICriterio {
+@NoArgsConstructor
+@Entity
+public class CriterioUbicacion extends Criterio {
+
     private Ubicacion ubicacion;
 
     public CriterioUbicacion(Ubicacion ubicacion) {

@@ -2,12 +2,19 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-public class CriterioCargaEntreFechas implements ICriterio {
-    private final LocalDateTime primeraFecha;
-    private final LocalDateTime segundaFecha;
+
+@Entity
+@NoArgsConstructor
+
+public class CriterioCargaEntreFechas extends Criterio {
+    private LocalDateTime primeraFecha;
+    private LocalDateTime segundaFecha;
 
     public CriterioCargaEntreFechas(LocalDateTime primeraFecha, LocalDateTime segundaFecha) {
         this.primeraFecha = primeraFecha;

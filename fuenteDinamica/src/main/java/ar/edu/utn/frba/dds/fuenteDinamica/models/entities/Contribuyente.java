@@ -1,20 +1,22 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
+@Embeddable
 public class Contribuyente {
+    @Transient
     private Long id;
-    // no tiene id -> no esta cargado en la base de datos de usuarios -> no esta registrado
+    // consideramos que el id nos viene de el sistema de autenticacion de sesiones
+    @Column(name = "nombre", nullable = false)
     private String nombre;
+    @Column(name = "apellido", nullable = false)
     private String apellido;
-    private LocalDate fechaNacimiento;
-    private Boolean esAnonimo;
-    // si estan estos datos cargados significa que inicio sesion y por ende es un "contribuyente" anonimo o no
+    // si se carga un hecho de forma anonima, no se va a poder cargar, 
 }

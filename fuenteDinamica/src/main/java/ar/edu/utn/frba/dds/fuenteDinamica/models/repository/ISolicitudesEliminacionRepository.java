@@ -1,13 +1,11 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.repository;
 
-
-
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.SolicitudEliminacion;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface ISolicitudesEliminacionRepository {
-    SolicitudEliminacion save(SolicitudEliminacion solicitud);
-    List<SolicitudEliminacion> findAll();
-    SolicitudEliminacion remove(SolicitudEliminacion solicitud);
+@Repository
+public interface ISolicitudesEliminacionRepository extends JpaRepository<SolicitudEliminacion, Long> {
 }

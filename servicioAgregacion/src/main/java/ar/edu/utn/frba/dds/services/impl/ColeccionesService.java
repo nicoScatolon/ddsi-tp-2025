@@ -8,31 +8,28 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.repository.IColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ColeccionesService implements IColeccionesService {
-    private final ColeccionesRepository coleccionesRepository;
+    private final IColeccionesRepository coleccionesRepository;
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
@@ -40,10 +37,10 @@ public class ColeccionesService implements IColeccionesService {
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
-    public ColeccionesService(ColeccionesRepository coleccionesRepository,
+    public ColeccionesService(IColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
                               CriterioFactory criterioFactory,
-                              FuentesRepository fuentesRepository,
+                              IFuentesRepository fuentesRepository,
                               ICategoriaService categoriaService) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
@@ -74,7 +71,7 @@ public class ColeccionesService implements IColeccionesService {
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
         // extra
         if ( coleccionInputDTO.getListaIdsFuentes() != null) {
-            coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.findById( fuente ))); }
+            coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.getById( fuente ))); }
         if (coleccionInputDTO.getListaCriterios() != null) {
             coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
         }
@@ -103,7 +100,7 @@ public class ColeccionesService implements IColeccionesService {
             return ResponseEntity.notFound().build();
         }
 
-        Set<ICriterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
+        Set<Criterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
         coleccion.setListaCriterios(nuevos);
         coleccionesRepository.save(coleccion);
 
@@ -123,10 +120,10 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public List<IFuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
+    public List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
-        List<IFuente> nuevasFuentes = new ArrayList<>();
-        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById( f.getId()) ) );
+        List<Fuente> nuevasFuentes = new ArrayList<>();
+        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.getById( f.getId()) ) );
         coleccion.setListaFuentes(nuevasFuentes);
         coleccionesRepository.save(coleccion);
 
@@ -165,7 +162,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void notificarActualizacionFuentes(List<IFuente> fuentes){
+    public void notificarActualizacionFuentes(List<Fuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
         colecciones = colecciones.stream()
                 .filter( c -> c.getListaFuentes().stream().anyMatch( fuentes::contains) )
@@ -174,7 +171,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void notificarFuenteEliminada(IFuente fuente){
+    public void notificarFuenteEliminada(Fuente fuente){
         List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
                 .filter(c -> c.getListaFuentes().contains(fuente)).toList();
         colecciones.forEach(c -> c.eliminarFuente(fuente));
@@ -192,7 +189,7 @@ public class ColeccionesService implements IColeccionesService {
         return coleccion.getHechos();
     }
 
-    public List<Hecho> getHechosColeccionFiltrados(String handle,List<ICriterio> criterios, Boolean visualizarCurado){
+    public List<Hecho> getHechosColeccionFiltrados(String handle, List<Criterio> criterios, Boolean visualizarCurado){
         Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
         if (visualizarCurado) {
             return coleccion.getHechosCuradosYFiltrados(criterios);
@@ -237,7 +234,7 @@ public class ColeccionesService implements IColeccionesService {
         }
 
         // Generar criterios con la factory
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
+        List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
 
         // btener hechos según haya o no criterios
         List<Hecho> hechos;

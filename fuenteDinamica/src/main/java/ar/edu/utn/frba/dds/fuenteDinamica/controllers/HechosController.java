@@ -1,10 +1,9 @@
-
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
-
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ModificarHechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/fuenteDinamica/hechos")
 public class HechosController {
@@ -37,15 +37,24 @@ public class HechosController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> crearHecho(@RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
-        CompletableFuture.runAsync(() -> hechosService.cargarHecho(modificarHechoInputDTO), executorHechos);
+    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
+        CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
+                    if (ex != null) {
+                        log.error("Fallo al cargar hecho", ex);}});
         return ResponseEntity.accepted().build();
     }
 
+    @PostMapping("/pruebas")
+    public ResponseEntity<Void> crearHechoPrueba(@RequestBody HechoInputDTO dto) {
+        hechosService.cargarHecho(dto);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/{id}")
-    public void modificarHecho(@PathVariable Long id, @RequestBody ModificarHechoInputDTO modificarHechoInputDTO) {
-        modificarHechoInputDTO.getHechoInputDTO().setId(id);
-        this.hechosService.modificarHecho(modificarHechoInputDTO);
+    public void modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
+        if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
+        if (!id.equals(hechoInputDTO.getId())) {throw new IllegalArgumentException("Id del hecho no matchea con la url utilizada");}
+        this.hechosService.modificarHecho(hechoInputDTO);
     }
 }
 

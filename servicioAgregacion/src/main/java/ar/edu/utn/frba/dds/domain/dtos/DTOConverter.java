@@ -4,7 +4,9 @@ import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
@@ -150,7 +152,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
+    public static AlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
         if (dto == null) { return null;}
         return dto.getTipo().obtenerConsenso();
     }
@@ -186,8 +188,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IFuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
-        IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
+    public static Fuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
+        Fuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
         fuente.setNombre(fuenteDTO.getNombre());
         return fuente;
     }

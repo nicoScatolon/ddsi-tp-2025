@@ -5,7 +5,13 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,15 +21,21 @@ import java.util.*;
 
 @Getter
 @Setter
-public class FuenteEstatica implements IFuente {
-    private Long id;
-    private String url;
-    private String nombre;
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@DiscriminatorValue("ESTATICA")
+public class FuenteEstatica extends Fuente {
     private TipoFuente tipo = TipoFuente.ESTATICA;
 
+    @Transient
     @JsonIgnore
     private WebClient webClient;
-    private Map<Long, Hecho> mapHechos;
+    @Transient
+    @JsonIgnore
+    private Map<Long, Hecho> mapHechos = new HashMap<>();
+    @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteEstatica(String url) {
@@ -35,20 +47,24 @@ public class FuenteEstatica implements IFuente {
     public List<Hecho> updateHechos(){
         List<HechoInputEstaticaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
         this.actualizarHechos(nuevosHechos);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
 
+    @Transient
     public List<HechoInputEstaticaDTO> getHechos() {
+        if (this.webClient == null && this.url != null) {
+            this.webClient = WebClient.builder().baseUrl(this.url).build();
+        }
+
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    var builder = uriBuilder.path("/api/fuenteEstatica/hechos");
                     if (ultimaActualizacion != null) {
-                        builder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
+                        return uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME)).build();
                     }
-                    return builder.build();
+                    return uriBuilder.build();
                 })
                 .retrieve()
                 .bodyToFlux(HechoInputEstaticaDTO.class)

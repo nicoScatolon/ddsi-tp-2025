@@ -1,12 +1,13 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -16,23 +17,52 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "coleccion")
 public class Coleccion {
+    @Id
     @Setter private String handle;
+
+    @Column(nullable = false, name = "titulo")
     @Setter private String titulo;
+    @Column(nullable = false, columnDefinition = "TEXT", name = "descripcion")
     @Setter private String descripcion;
 
-    private final List<IFuente> listaFuentes = new ArrayList<>();
-    private final Set<ICriterio> listaCriterios = new HashSet<>();
-    private IAlgoritmoConsenso algoritmoConsenso = null;
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_fuente",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "fuente_id")
+    )
+    private final List<Fuente> listaFuentes = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_criterios",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "criterio_id")
+    )
+    private final Set<Criterio> listaCriterios = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "algoritmoConsenso_id")
+    private AlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
+    @Transient
     private List<Hecho> listaHechos = new ArrayList<>();
+    @Transient
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
-    @Setter private Boolean actualizarHechos;
-    @Setter private Boolean curarHechos;
+    //Ahora que persistimos en BD, no harían falta esas listas en memoria
 
-    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
+    @Setter private Boolean actualizarHechos = true;
+    @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
+
+    public Coleccion(String handle, String titulo, String descripcion, AlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -41,27 +71,27 @@ public class Coleccion {
         }
     }
 
-    public void agregarCriterio(ICriterio criterio) {
+    public void agregarCriterio(Criterio criterio) {
         this.listaCriterios.add(criterio);
         actualizarHechos = true;
     }
 
-    public void eliminarCriterio(ICriterio criterio) {
+    public void eliminarCriterio(Criterio criterio) {
         this.listaCriterios.remove(criterio);
         actualizarHechos = true;
     }
 
-    public void setListaCriterios(Set<ICriterio> criterios){
+    public void setListaCriterios(Set<Criterio> criterios){
         this.listaCriterios.clear();
         this.listaCriterios.addAll(criterios);
     }
 
-    public void agregarFuente(IFuente fuente) {
+    public void agregarFuente(Fuente fuente) {
         this.listaFuentes.add(fuente);
         actualizarHechos = true;
     }
 
-    public void eliminarFuente(IFuente fuente) {
+    public void eliminarFuente(Fuente fuente) {
         FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
         List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
         this.listaHechos.removeAll(hechosFuenteEliminada);
@@ -71,13 +101,13 @@ public class Coleccion {
         curarHechos = true;
     }
 
-    public void setListaFuentes(List<IFuente> nuevasFuentes) {
+    public void setListaFuentes(List<Fuente> nuevasFuentes) {
         //con las fuentes comunes no hago nada
-        List<IFuente> fuentesNuevas = nuevasFuentes.stream()
+        List<Fuente> fuentesNuevas = nuevasFuentes.stream()
                 .filter(f2 -> !listaFuentes.contains(f2))
                 .toList();
 
-        List<IFuente> fuentesEliminadas = listaFuentes.stream()
+        List<Fuente> fuentesEliminadas = listaFuentes.stream()
                 .filter(f1 -> !nuevasFuentes.contains(f1))
                 .toList();
         if ( !fuentesNuevas.isEmpty() ) {
@@ -89,7 +119,7 @@ public class Coleccion {
         }
     }
 
-    public void setAlgoritmoConsenso(IAlgoritmoConsenso algoritmoConsenso) {
+    public void setAlgoritmoConsenso(AlgoritmoConsenso algoritmoConsenso) {
         this.algoritmoConsenso = algoritmoConsenso;
         curarHechos = true;
     }
@@ -108,7 +138,7 @@ public class Coleccion {
         // por eso obtener Hechos Cargados devuelve null si es proxy
         List<Hecho> listaAuxiliar = new ArrayList<>();
         //cargamos todos los hechos de las fuentes
-        for (IFuente fuente : listaFuentes) {
+        for (Fuente fuente : listaFuentes) {
             FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
             List<Hecho> hechosFuente = adapter.obtenerHechos();
             if (hechosFuente != null) {
@@ -146,13 +176,13 @@ public class Coleccion {
         return listaHechosCurados.stream().filter(h -> !h.getFueEliminado()).toList();
     }
 
-    public List<Hecho> getHechosConFiltro(List<ICriterio> filtros) {
+    public List<Hecho> getHechosConFiltro(List<Criterio> filtros) {
         return this.filtrarHechos(listaHechos).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();
     }
 
-    public List<Hecho> getHechosCuradosYFiltrados(List<ICriterio> filtros){
+    public List<Hecho> getHechosCuradosYFiltrados(List<Criterio> filtros){
         return this.filtrarHechos(listaHechosCurados).stream()
                 .filter(h -> filtros.stream().allMatch(f -> f.pertenece(h)) && !h.getFueEliminado() )
                 .toList();

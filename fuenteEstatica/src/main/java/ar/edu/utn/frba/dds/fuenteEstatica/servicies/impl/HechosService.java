@@ -37,7 +37,7 @@ public class HechosService implements IHechosService {
             throw new IllegalArgumentException("Formato no soportado: ." + ext);
         }
         List<Hecho> hechos = imp.importarHechosArchivo(path);
-        hechos.forEach(hechosRepository::save);
+        hechosRepository.saveAll(hechos);
         return hechos;
     }
 
@@ -48,7 +48,7 @@ public class HechosService implements IHechosService {
         if(fechaDeCarga == null){
             hechos = hechosRepository.findAll();
         } else {
-            hechos = hechosRepository.findByFechaDeCarga(fechaDeCarga);
+            hechos = hechosRepository.findByFechaDeCargaAfter(fechaDeCarga);
         }
 
         return hechos.stream().map(this::hechoToDTO).toList();

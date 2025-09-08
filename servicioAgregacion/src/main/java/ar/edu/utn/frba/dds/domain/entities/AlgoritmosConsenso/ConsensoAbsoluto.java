@@ -1,13 +1,19 @@
 package ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso;
 
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import java.util.List;
 
-public class ConsensoAbsoluto implements IAlgoritmoConsenso {
+@Entity
+@DiscriminatorValue(("ABSOLUTO"))
+
+public class ConsensoAbsoluto extends AlgoritmoConsenso {
     private TipoAlgoritmoConsenso tipo = TipoAlgoritmoConsenso.ABSOLUTO;
 
     @Override
@@ -16,7 +22,7 @@ public class ConsensoAbsoluto implements IAlgoritmoConsenso {
     }
 
     @Override
-    public List<Hecho> curar(List<Hecho> listaHechos, List<IFuente> listaFuentes) {
+    public List<Hecho> curar(List<Hecho> listaHechos, List<Fuente> listaFuentes) {
         List<Hecho> listaHechosCurados = listaHechos;
 
         for (IFuente fuente : listaFuentes) {
