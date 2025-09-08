@@ -1,0 +1,127 @@
+html, body {
+  height: 100%;      
+  margin: 0;
+  padding: 0;
+  background: #E5ECFF;
+}
+
+body {
+  display: flex;
+  flex-direction: column; 
+  font-family: 'Poppins', sans-serif;
+  color: #2c3e50;
+}
+
+main {
+  flex: 1;                      
+  display: flex;
+  justify-content: center;     
+  padding: 2rem;
+  box-sizing: border-box;
+  min-height: 100%;            
+}
+
+/* --- Formulario --- */
+.form-container {
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 700px;
+  margin: 5rem auto; 
+}
+
+.form-container h1 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #34495e;
+}
+
+/* --- Inputs y grupos --- */
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-inline {
+  display: flex;
+  gap: 1rem;
+}
+
+label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input,
+textarea,
+select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.form-group.checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* --- Botones --- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-local-primary {
+  background: #2F60F4;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold; 
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.btn-local-primary:hover {
+  background: #1746D2;
+}
+
+.btn-local-secondary {
+  background: #fff;
+  padding: 0.8rem 1.5rem;
+  color: #1746D2;
+  border: 2px solid #1746D2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold; 
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.btn-local-secondary:hover {
+  background: #1746D2;
+  color: #fff;
+}
+

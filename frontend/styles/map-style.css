@@ -1,0 +1,30 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Mapa ocupa toda la pantalla (debajo de navbar) */
+#map {
+  position: absolute;
+  top: 60px; /* ajusta según la altura de tu navbar */
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Estilo botón "Ver más" dentro del popup */
+.leaflet-popup-content a.btn-popup {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #2F60F4;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.leaflet-popup-content a.btn-popup:hover {
+  background: #1746D2;
+}
