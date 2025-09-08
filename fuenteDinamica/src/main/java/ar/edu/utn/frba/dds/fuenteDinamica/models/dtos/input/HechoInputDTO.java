@@ -20,7 +20,7 @@ public class HechoInputDTO {
     private String titulo;
     private String descripcion;
     private CategoriaInputDTO categoriaInputDTO;
-    private Ubicacion ubicacion; //posible dto tambien para ubicacion para desacoplar, pero puedo usarlos directamente asi
+    private UbicacionInputDTO ubicacionInputDTO;
     private LocalDate fechaDeOcurrencia;
     private Boolean esAnonimo;
 

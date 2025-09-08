@@ -149,8 +149,8 @@ public class ColeccionesService implements IColeccionesService {
 
     public void actualizarColeccionesScheduler(){
         logger.info("Actualizando Colecciones Scheduler");
-        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
-        coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
+/*aca esta*/List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+/*el error */coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 

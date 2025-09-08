@@ -4,6 +4,9 @@ import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
@@ -12,7 +15,14 @@ import java.util.Objects;
 @Entity
 public class CriterioUbicacion extends Criterio {
 
+
+    @ManyToOne
+    @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
+
+    public Ubicacion getUbicacion() {
+        return ubicacion;
+    }
 
     public CriterioUbicacion(Ubicacion ubicacion) {
         this.ubicacion = ubicacion;

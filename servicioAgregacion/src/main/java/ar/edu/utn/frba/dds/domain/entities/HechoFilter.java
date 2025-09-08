@@ -20,6 +20,5 @@ public class HechoFilter {
 
     private LocalDate fAconHasta;
 
-    private Double latitud;
-    private Double longitud;
+    private Ubicacion ubicacion;
 }

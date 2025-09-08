@@ -37,7 +37,8 @@ public class Hecho {
             inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private List<Etiqueta> etiquetas = new ArrayList<>();
 
-    @Embedded
+    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
 
     @Column (nullable = false, name = "fecha-ocurrencia")
