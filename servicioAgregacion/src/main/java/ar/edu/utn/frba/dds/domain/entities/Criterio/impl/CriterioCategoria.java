@@ -1,8 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

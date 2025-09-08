@@ -1,19 +1,27 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
+import ar.edu.utn.frba.dds.domain.repository.IEquivalenteCatRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
 
 @Service
 public class CategoriaService implements ICategoriaService {
 
     private final ICategoriasRepository categoriasRepository;
+    private final IEquivalenteCatRepository equivalenteCatRepository;
 
-    public CategoriaService(ICategoriasRepository categoriasRepository) {
+    public CategoriaService(ICategoriasRepository categoriasRepository, IEquivalenteCatRepository equivalenteCatRepository) {
         this.categoriasRepository = categoriasRepository;
+        this.equivalenteCatRepository = equivalenteCatRepository;
     }
 
     public Categoria findById(Long idCategoria) {
@@ -22,7 +30,17 @@ public class CategoriaService implements ICategoriaService {
     }
 
     public Categoria findByNombre(String nombreCategoria) {
-        return categoriasRepository.findByNombre(nombreCategoria);}
+        return categoriasRepository.findByNombre(nombreCategoria)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada con nombre " + nombreCategoria));
+    }
+
+    @Override
+    public List<CategoriaOutputDTO> findAll() {
+        return categoriasRepository.findAll()
+                .stream()
+                .map(DTOConverter::convertirCategoriaOutputDTO)
+                .toList();
+    }
 
     @Override
     public Categoria agregarCategoria(Categoria nuevaCategoria) {
@@ -35,12 +53,28 @@ public class CategoriaService implements ICategoriaService {
         nuevaCategoria.setNombre(normalizado);
 
         // Buscar si ya existe por nombre
-        Categoria existente = categoriasRepository.findByNombre(normalizado);
+        Categoria existente = findByNombre(normalizado);
         if (existente == null) {
             return categoriasRepository.save(nuevaCategoria);
         } else {
             return existente;
         }
+    }
+
+
+    @Override
+    public void agregarEquivalentes(Long idCategoria, String equivalente){
+        Categoria categoria = categoriasRepository.findById(idCategoria)
+                .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada: " + idCategoria));
+
+        EquivalenteCategoria equivalenteEntidad = new EquivalenteCategoria(equivalente, categoria);
+
+        equivalenteCatRepository.save(equivalenteEntidad);
+    }
+
+    @Override
+    public void eliminarEquivalentes(String equivalente){
+        equivalenteCatRepository.deleteByEquivalente(equivalente);
     }
 
     private String normalizarNombre(String nombre) {

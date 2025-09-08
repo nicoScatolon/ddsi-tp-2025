@@ -1,8 +1,7 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
@@ -67,7 +66,7 @@ public class CriterioFactory {
             criterios.add(this.crearCriterioOcurrenciaEntreFechas(filter.getFAconDesde(),filter.getFAconHasta()));
         }
         if(filter.getLatitud() != null && filter.getLongitud()!= null){
-            criterios.add(new CriterioUbicacion(new Ubicacion(filter.getLatitud(),filter.getLongitud())));
+            criterios.add(new CriterioUbicacion(new Ubicacion(null, null,null,null,null,filter.getLatitud(),filter.getLongitud())));
         }
         return criterios;
     }

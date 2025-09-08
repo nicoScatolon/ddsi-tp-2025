@@ -6,8 +6,9 @@ import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
@@ -15,6 +16,8 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudElimi
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -84,7 +87,13 @@ public class DTOConverter {
 
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
+        normalizarUbicacion(dto);
         return Ubicacion.builder()
+                .id(dto.getId())
+                .provincia(dto.getProvincia())
+                .localidad(dto.getLocalidad())
+                .calle(dto.getCalle())
+                .numero(dto.getNumero())
                 .latitud(dto.getLatitud())
                 .longitud(dto.getLongitud())
                 .build();
@@ -99,6 +108,10 @@ public class DTOConverter {
 
     public static UbicacionOutputDTO convertirUbicacionOutputDTO(Ubicacion ubicacion) {
         return UbicacionOutputDTO.builder()
+                .id(ubicacion.getId())
+                .provincia(ubicacion.getProvincia())
+                .calle(ubicacion.getCalle())
+                .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())
                 .longitud(ubicacion.getLongitud())
                 .build();
@@ -109,7 +122,6 @@ public class DTOConverter {
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .fechaNacimiento(dto.getFechaNacimiento())
-                .esAnonimo(dto.getEsAnonimo())
                 .build();
     }
 
@@ -205,4 +217,6 @@ public class DTOConverter {
                 .longitud(filterDTO.getLongitud())
                 .build();
     }
+
+
 }

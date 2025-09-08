@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -7,16 +8,18 @@ import lombok.*;
 @Setter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 
-@Embeddable
 public class Ubicacion {
+    private Long id;
+
+    private String provincia;
+    private String localidad;
+    private String calle;
+    private Integer numero;
+
+
     private Double latitud;
     private Double longitud;
 
-    public Ubicacion(Double latitud , Double longitud) {
-        this.latitud = latitud;
-        this.longitud = longitud;
-    }
-
-    //Ver como compara sin que sea por exactamente la misma latitud o longitud, quiza con un rango de cercania o por paises
 }

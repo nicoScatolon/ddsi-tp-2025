@@ -10,6 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UbicacionInputDTO {
+    private Long id;
+
+    private String provincia;
+    private String localidad;
+    private String calle;
+    private Integer numero;
+
+
     private Double latitud;
     private Double longitud;
 }
