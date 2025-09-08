@@ -66,8 +66,16 @@ public class CriterioFactory {
         if(filter.getFAconDesde() != null || filter.getFAconHasta() != null){
             criterios.add(this.crearCriterioOcurrenciaEntreFechas(filter.getFAconDesde(),filter.getFAconHasta()));
         }
-        if(filter.getLatitud() != null && filter.getLongitud()!= null){
-            criterios.add(new CriterioUbicacion(new Ubicacion(filter.getLatitud(),filter.getLongitud())));
+        if(filter.getUbicacion() != null){
+            criterios.add(new CriterioUbicacion(Ubicacion.builder()
+                    .provincia(filter.getUbicacion().getProvincia())
+                    .localidad(filter.getUbicacion().getLocalidad())
+                    .calle(filter.getUbicacion().getCalle())
+                    .numero(filter.getUbicacion().getNumero())
+                    .latitud(filter.getUbicacion().getLatitud())
+                    .longitud(filter.getUbicacion().getLongitud())
+                    .build())
+            );
         }
         return criterios;
     }

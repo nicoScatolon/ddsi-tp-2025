@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.UbicacionOutputDTO;
@@ -94,7 +95,7 @@ public class HechosService implements IHechosService {
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
                 .categoria(this.categoriaInputDTO(hechoDTO.getCategoriaInputDTO()))
-                .ubicacion(hechoDTO.getUbicacion())
+                .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacionInputDTO()))
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
                 .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyenteInputDTO()))
@@ -132,6 +133,18 @@ public class HechosService implements IHechosService {
                 .esAnonimo(hecho.getEsAnonimo())
                 .contribuyente(hecho.getContribuyente())
                 .estado(hecho.getEstado())
+                .build();
+    }
+
+    private Ubicacion ubicacionInputDTO(UbicacionInputDTO ubicacionDTO){
+        if(ubicacionDTO == null) return null;
+        return Ubicacion.builder()
+                .provincia(ubicacionDTO.getProvincia())
+                .localidad(ubicacionDTO.getLocalidad())
+                .calle(ubicacionDTO.getCalle())
+                .numero(ubicacionDTO.getNumero())
+                .latitud(ubicacionDTO.getLatitud())
+                .longitud(ubicacionDTO.getLongitud())
                 .build();
     }
 

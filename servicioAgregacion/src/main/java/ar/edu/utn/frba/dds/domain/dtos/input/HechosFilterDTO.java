@@ -28,6 +28,5 @@ public class HechosFilterDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fAconHasta;
 
-    private Double latitud;
-    private Double longitud;
+    private UbicacionInputDTO ubicacionInputDTO;
 }
