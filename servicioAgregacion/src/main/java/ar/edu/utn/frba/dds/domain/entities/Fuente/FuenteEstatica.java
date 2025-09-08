@@ -61,11 +61,10 @@ public class FuenteEstatica extends Fuente {
 
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    var builder = uriBuilder.path("/api/fuenteEstatica/hechos");
                     if (ultimaActualizacion != null) {
-                        builder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
+                        return uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME)).build();
                     }
-                    return builder.build();
+                    return uriBuilder.build();
                 })
                 .retrieve()
                 .bodyToFlux(HechoInputEstaticaDTO.class)
