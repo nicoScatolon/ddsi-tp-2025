@@ -30,8 +30,7 @@ public class Hecho {
     private String descripcion;
     @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "ubicacion_id")
+    @Embedded
     private Ubicacion ubicacion;
     @Column(nullable = false, name = "fecha-ocurrencia")
     private LocalDate fechaDeOcurrencia;
