@@ -22,4 +22,6 @@ public class Categoria {
     @Column(nullable = false)
     private String nombre;
 
+    public Categoria(String codigoCategoria) { this.codigoCategoria = codigoCategoria; }
+
 }

@@ -83,6 +83,12 @@ class Categoria{
     - nombre: String
 }
 
+class EquivalenteCategoria{
+    - id: Long
+    - equivalente: String
+    - categoria: Categoria
+}
+
 class Contribuyente {
     - id: Long
     - nombre: String
@@ -93,8 +99,13 @@ class Contribuyente {
 }
 
 class Ubicacion {
+    - id: Long
+    - provincia: String
+    - localidad: String
+    - calle: String
+    - numero: Integer
     - latitud: Double
-    - longitud: Double
+    - longitud:Double
 }
 
 interface IContenidoMultimedia{
@@ -148,12 +159,87 @@ class SolicitudEliminarHecho {
 enum EstadoDeSolicitud {
     ACEPTADA,
     RECHAZADA,
-    PENDIENTE
+    PENDIENTE,
+    SPAM
 }
 
 class ConstructorSolicitudesEliminacion {
     + constructorSolicitud (Hecho hecho, String razonDeEliminacion, String nombreContribuyente, String apellidoContribuyente): SolicitudEliminarHecho
 }
+
+class HechoFilter {
+    - categoria: String
+    - fReporteDesde: LocalDateTime
+    - fReporteHasta: LocalDateTime
+    - fAconDesde:LocalDate
+    - fAconHasta: LocalDate
+    - ubicacion: Ubicacion
+}
+
+interface IComandComparator {
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+}
+class HechoComparator{
+    - listaComandos: List<IComandComparator>
+    + agregarComando(IComandComparator comando): void
+    + eliminarComando(IComandComparator comando): void
+    + compararHechos(Hecho h1, Hecho h2): Boolean
+}
+class CompararUbicacion{
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+}
+class CompararTitulo{
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+    - normalizarTitulo(String titulo): String
+}
+class COmpararFechaDeOcurrencia{
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+}
+class CompararDescripcion{
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+    - normalizarDescripcion(String descripcion): String
+}
+class CompararCategoria{
+    + comparar(Hecho hecho1, Hecho hecho2): Boolean
+}
+
+interface IDetectorDeSpam{
+    + esSpam(String texto): Boolean
+}
+class DetectorDeSpam{
+    + esSpam(String texto): Boolean
+
+
+    private String stringToHandle(String string) {
+
+
+
+    private boolean contienePalabrasSpam(String texto) {
+
+
+        private boolean contienePalabrasRepetidas(String texto) {
+
+        private boolean contieneExcesoDeSignos(String texto) {
+
+        private boolean esMayormenteMayusculas(String texto) {
+
+
+        private boolean contieneMuchasUrls(String texto) {
+
+        private boolean contieneMuchosCaracteresNoAlfabeticos(String texto)
+}
+
+class NormalizadorTexto{}
+class NormalizadorUbicacion
+
+class Georef{
+-webClient : WebClient
++geolocalizar(Ubicacion ubi): Ubicacion
++obtenerDireccion(Ubicacion ubicacion): Ubicacion
++obtenerCoordenadas(Ubicacion ubicacion): Ubicacion
+}
+interface IGeoLocalizador
+
 
 Hecho -> TipoHecho
 Hecho -> IFuente
@@ -177,11 +263,25 @@ Coleccion -> IAlgoritmoConsenso
 
 IAlgoritmoConsenso -> TipoAlgoritmoConsenso
 
+HechoFilter -> Ubicacion
+
+IComandComparator <|.. HechoComparator
+IComandComparator <|.. CompararCategoria
+IComandComparator <|.. CompararDescripcion
+IComandComparator <|.. COmpararFechaDeOcurrencia
+IComandComparator <|.. CompararTitulo
+IComandComparator <|.. CompararUbicacion
+
 IAlgoritmoConsenso <|.. ConcensoAbsoluto
 IAlgoritmoConsenso <|.. ConsensoMayoriaSimple
 IAlgoritmoConsenso <|.. ConsensoMultipleMencion
 
+IGeoLocalizador <|.. Georef
+
+
+
 SolicitudEliminarHecho -> EstadoDeSolicitud
+SolicitudEliminarHecho -> Hecho
 ConstructorSolicitudesEliminacion -> SolicitudEliminarHecho
 
 @enduml

@@ -8,7 +8,6 @@ import ar.edu.utn.frba.dds.fuenteEstatica.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteEstatica.servicies.IHechosService;
 import org.springframework.stereotype.Service;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;

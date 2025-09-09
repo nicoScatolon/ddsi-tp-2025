@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ISolicitudesEliminacionRepository extends JpaRepository<SolicitudEliminarHecho, Long> {
-    SolicitudEliminarHecho getById(Long id);
     @Query("SELECT s FROM SolicitudEliminarHecho s WHERE s.eliminada = false")
     List<SolicitudEliminarHecho> findActives();
 }
