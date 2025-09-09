@@ -6,6 +6,8 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
+import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
+import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.IComandComparator;
@@ -29,9 +31,14 @@ public class HechosService implements IHechosService {
     private final CriterioFactory criterioFactory;
     private final IEtiquetasService etiquetaService;
 
+    private IGeoLocalizador geolocalizador = new Georef();
+
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    public HechosService(IHechosRepository hechosRepository, ICategoriaService categoriaService, CriterioFactory criterioFactory, IEtiquetasService etiquetaService) {
+    public HechosService(IHechosRepository hechosRepository,
+                         ICategoriaService categoriaService,
+                         CriterioFactory criterioFactory,
+                         IEtiquetasService etiquetaService) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
         this.criterioFactory = criterioFactory;
@@ -63,6 +70,8 @@ public class HechosService implements IHechosService {
     @Override
     public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
+        //TODO DEBE DEVOLVER LOS HECHOS DE PROXY ADEMAS DE LOS PERSISTIDOS
+        // OSEA IR POR CADA FUENTE PROXY PIDIENDO LOS HECHOS ALMACENADOS EN SU CACHE
 
         Categoria categoriaEntidad = null; //la inicializo en null
 
@@ -78,7 +87,7 @@ public class HechosService implements IHechosService {
 
         // Si no hay criterios, devolver todos los hechos
         if (criterios.isEmpty()){
-            return findAllOutput();
+            return this.findAllOutput();
         } else {
             //Filtrar por criterios
             return this.findAll().stream()
@@ -93,6 +102,7 @@ public class HechosService implements IHechosService {
         // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
         // la idea es enviarla
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
+        hechosActualizados.forEach(h -> h.setUbicacion( geolocalizador.geolocalizar(h.getUbicacion()) ));
         this.hechosRepository.saveAll(hechosActualizados);
     }
 
