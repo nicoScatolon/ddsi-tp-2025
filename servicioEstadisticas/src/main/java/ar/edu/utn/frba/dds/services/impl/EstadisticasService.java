@@ -140,6 +140,7 @@ public class EstadisticasService implements IEstadisticasService {
         this.mayorProvinciaPorColeccionRepository.saveAll(e_provinciaPorColeccion);
     }
 
+
     private void generarEstadisticasHecho() {
         List<Hecho> hechos = this.obtenerHechosAgregador();
         if (hechos == null || hechos.isEmpty()) {
@@ -211,4 +212,12 @@ public class EstadisticasService implements IEstadisticasService {
         if (solicitudesInputDTO == null) {return null;}
         return solicitudesInputDTO.stream().map(DTOconverter::solicitudEliminacionInputDTO).toList();
     }
+
+    // TEST
+
+    public void generarEstadisticasTest(){
+        categoriasService.actualizarCategorias();
+        this.generarEstadisticasHecho();
+    }
+
 }

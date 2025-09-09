@@ -52,14 +52,27 @@ public class Coleccion {
     private AlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
-    @Transient
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_hechos",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "hecho_id")
+    )
     private List<Hecho> listaHechos = new ArrayList<>();
-    @Transient
+
+    @ManyToMany
+    @JoinTable(
+            name = "coleccion_hechosCurados",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "hecho_id")
+    )
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
     //Ahora que persistimos en BD, no harían falta esas listas en memoria
-
+    @Transient
     @Setter private Boolean actualizarHechos = true;
+
+    @Transient
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
     public Coleccion(String handle, String titulo, String descripcion, AlgoritmoConsenso algoritmoConsenso) {

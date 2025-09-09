@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UbicacionInputDTO {
     private String provincia;
-    private String localidad;
+    private String departamento;
     private String calle;
     private Integer numero;
 

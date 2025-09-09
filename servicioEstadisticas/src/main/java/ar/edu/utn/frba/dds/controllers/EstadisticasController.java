@@ -29,14 +29,8 @@ public class EstadisticasController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<byte[]> test() {
-        List<E_HoraOcuPorCategoriaOutputDTO> listaDTO = this.getMockHoraOcuPorCategoria();
-        String csv = ExportadorCSV.exportHoraOcurrenciaPorCategoria(listaDTO);
-        byte[] output = csv.getBytes(StandardCharsets.UTF_8);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=hora_ocurrencia_por_categoria.csv")
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(output);
+    public void test() {
+        serviceEstadisticas.generarEstadisticasTest();
     }
 
     @GetMapping("/hora_por_categoria")

@@ -140,7 +140,7 @@ public class HechosService implements IHechosService {
         if(ubicacionDTO == null) return null;
         return Ubicacion.builder()
                 .provincia(ubicacionDTO.getProvincia())
-                .localidad(ubicacionDTO.getLocalidad())
+                .departamento(ubicacionDTO.getDepartamento())
                 .calle(ubicacionDTO.getCalle())
                 .numero(ubicacionDTO.getNumero())
                 .latitud(ubicacionDTO.getLatitud())
@@ -151,9 +151,8 @@ public class HechosService implements IHechosService {
     private UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion) {
         if (ubicacion == null) return null;
         return UbicacionOutputDTO.builder()
-                .id(ubicacion.getId())
                 .provincia(ubicacion.getProvincia())
-                .localidad(ubicacion.getLocalidad())
+                .departamento(ubicacion.getDepartamento())
                 .calle(ubicacion.getCalle())
                 .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())

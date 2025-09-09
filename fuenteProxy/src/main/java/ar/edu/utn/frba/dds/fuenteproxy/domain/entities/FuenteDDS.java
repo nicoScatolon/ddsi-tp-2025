@@ -27,7 +27,7 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
     @Transient
     private WebClient webClient;
 
-    @Column(name = "token")
+    @Transient
     private String token;
 
 

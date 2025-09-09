@@ -17,4 +17,7 @@ public interface IEstadisticasService {
     List<E_SolicitudesSpamOutputDTO> obtenerEstadisticasSolicitudesSpam();
     List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(CategoriaInputDTO categoriaDTO);
     List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(ColeccionInputDTO colInputDTO);
+
+    //test
+    void generarEstadisticasTest();
 }

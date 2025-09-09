@@ -17,8 +17,8 @@ public class Ubicacion {
     private Long id;
     @Column(name = "provincia")
     private String provincia;
-    @Column(name = "localidad")
-    private String localidad;
+    @Column(name = "departamento")
+    private String departamento;
     @Column(name = "calle")
     private String calle;
     @Column(name = "numero")

@@ -45,7 +45,7 @@ public final class DTOConverter {
         if(dto == null) return null;
         return UbicacionOutputDTO.builder()
                 .provincia(dto.getProvincia())
-                .localidad(dto.getLocalidad())
+                .departamento(dto.getDepartamento())
                 .calle(dto.getCalle())
                 .numero(dto.getNumero())
                 .latitud(dto.getLatitud())
