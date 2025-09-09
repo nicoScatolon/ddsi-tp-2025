@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorCategoria.normalizarCategoria;
 import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
@@ -102,7 +101,7 @@ public class DTOConverter {
 
     public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
         return CategoriaOutputDTO.builder()
-                .id(categoria.getId())
+                .id(categoria.getCodigoCategoria())
                 .nombre(categoria.getNombre())
                 .build();
     }
@@ -159,10 +158,9 @@ public class DTOConverter {
     }
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
-        normalizarCategoria(categoriaInputDTO);
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
-                .id(categoriaInputDTO.getId())
+                .codigoCategoria(categoriaInputDTO.getCodigoCat())
                 .build();
     }
 
