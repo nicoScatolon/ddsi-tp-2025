@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorCategoria.normalizarCategoria;
-import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
+import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorCategoria.normalizarCategoria;
+import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {

@@ -3,7 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Categoria;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static ar.edu.utn.frba.dds.domain.normalizadores.NormalizadorTexto.normalizarTexto;
+import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto.normalizarTexto;
 
 
 @Setter
@@ -22,7 +22,7 @@ public class EquivalenteCategoria {
     @Column(name = "equivalente", nullable = false)
     String equivalente;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "categoria_id", nullable = false)
     Categoria categoria;
 
@@ -31,13 +31,4 @@ public class EquivalenteCategoria {
        this.categoria = categoria;
     }
 
-
-
-    @PrePersist
-    @PreUpdate
-    private void normalizarEquivalente() {
-        if (equivalente != null) {
-            this.equivalente = normalizarTexto(this.equivalente);
-        }
-    }
 }

@@ -5,19 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaInputDTO {
-
-    private String CodigoCat;
-    private String nombre;
-
-
-    public CategoriaInputDTO(String nombre) {
-        this.nombre = nombre;
-    }
-
+public class EquivalenteInputDTO {
+    String codCategoria;
+    String equivalente;
 }

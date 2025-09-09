@@ -94,14 +94,17 @@ public class FuentesService implements IFuentesService {
         List<Fuente> fuentes = this.buscarFuentePorTipo(listaTipos);
 
         List<Fuente> fuentesActualizadas = new ArrayList<>();
+        List<Hecho> hechosAActualizar = new ArrayList<>();
         for (Fuente fuente : fuentes){
             List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
             logger.info("Fuente actualizada {}", fuente.getTipo());
-            if (!hechosFuente.isEmpty()){
-                this.hechosService.actualizarHechosRepository(hechosFuente);
+            if (hechosFuente != null && !hechosFuente.isEmpty()){
+                //this.hechosService.actualizarHechosRepository(hechosFuente);
+                hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }
         }
+        this.hechosService.actualizarHechosRepository(hechosAActualizar);
 
         coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
     }

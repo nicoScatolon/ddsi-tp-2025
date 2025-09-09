@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.controllers;
 
+import ar.edu.utn.frba.dds.domain.dtos.input.EquivalenteInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.services.impl.CategoriaService;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categorias")
+@RequestMapping("/api/privada/categorias")
 public class CategoriasController {
 
     private final CategoriaService categoriaService;
@@ -27,11 +28,8 @@ public class CategoriasController {
     }
 
     @PostMapping("/equivalentes")
-    public ResponseEntity<Void> agregarEquivalentes(
-            @RequestParam Long idCategoria,
-            @RequestParam String equivalente
-    ) {
-        categoriaService.agregarEquivalentes(idCategoria, equivalente);
+    public ResponseEntity<Void> agregarEquivalentes( @RequestParam EquivalenteInputDTO equivalenteInputDTO) {
+        categoriaService.agregarEquivalentes(equivalenteInputDTO.getCodCategoria(), equivalenteInputDTO.getEquivalente());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

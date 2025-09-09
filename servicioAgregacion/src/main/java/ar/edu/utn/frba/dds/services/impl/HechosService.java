@@ -92,8 +92,7 @@ public class HechosService implements IHechosService {
     public void actualizarHechosRepository(List<Hecho> hechosActualizados){
         // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
         // la idea es enviarla
-
-        hechosActualizados.forEach(n -> n.setCategoria(categoriaService.agregarCategoria(n.getCategoria())) );
+        this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         this.hechosRepository.saveAll(hechosActualizados);
     }
 
