@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FuenteInputDTO {
     private String nombre;
+    private String baseUrl;
 }

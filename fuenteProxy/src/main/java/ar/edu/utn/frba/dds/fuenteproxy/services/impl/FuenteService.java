@@ -53,7 +53,7 @@ public class FuenteService implements IFuenteService {
     @Override
     public FuenteOutputDTO agregarFuenteMetamapa(FuenteInputDTO dto) {
         return DTOConverter.mapToFuenteOutputDTO(
-                fuenteRepository.save(fuenteFactory.nuevaFuenteMetaMapa(dto.getNombre())));
+                fuenteRepository.save(fuenteFactory.nuevaFuenteMetaMapa(dto.getNombre(), dto.getBaseUrl())));
     }
 
     @Override

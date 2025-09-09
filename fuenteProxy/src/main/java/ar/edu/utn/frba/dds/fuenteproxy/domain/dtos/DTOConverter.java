@@ -63,7 +63,7 @@ public final class DTOConverter {
     }
 
     public static FuenteMetaMapa mapToFuenteMetaMapa(FuenteInputDTO dto, FuenteFactory factory) {
-        return factory.nuevaFuenteMetaMapa(dto.getNombre());
+        return factory.nuevaFuenteMetaMapa(dto.getNombre(), dto.getBaseUrl());
     }
 
     public static FuenteDDS mapToFuenteDDS(FuenteInputDTO dto, FuenteFactory factory) {

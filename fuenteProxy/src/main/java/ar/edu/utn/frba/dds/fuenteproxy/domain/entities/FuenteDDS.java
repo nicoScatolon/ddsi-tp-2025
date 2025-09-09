@@ -2,14 +2,18 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.LoginRequestDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosPorId;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
@@ -31,22 +35,41 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
     private String token;
 
 
-    public FuenteDDS(String nombre,String baseUrl, String token) {
+    public FuenteDDS(String nombre,String baseUrl) {
         this.setNombre(nombre);
         this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
-        this.token = token;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+        this.token = this.login("ddsi@gmail.com", "ddsi2025*")
+                .blockOptional()
+                .orElseThrow(() -> new RuntimeException("No se pudo obtener el token de login"));
     }
 
-    // Inicializa el webClient cada vez que se carga o se persiste
-    @PostLoad
-    @PostPersist
-    private void initWebClient() {
-        if (this.getBaseUrl() != null && this.webClient == null) {
-            this.webClient = WebClient.builder().baseUrl(this.getBaseUrl()).build();
-        }
+
+
+    private Mono<String> login(String email, String password) {
+        LoginRequestDTO request = new LoginRequestDTO(email, password);
+
+        return webClient.post()
+                .uri("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .flatMap(json -> {
+
+                    if (json.path("error").asBoolean(false)) {
+                        return Mono.error(new RuntimeException("Login fallido: " + json.path("message").asText()));
+                    }
+                    String accessToken = json.path("data").path("access_token").asText(null);
+                    if (accessToken == null || accessToken.isBlank()) {
+                        return Mono.error(new RuntimeException("No se recibió access_token en la respuesta"));
+                    }
+                    return Mono.just(accessToken);
+                });
     }
+
+
 
 
 

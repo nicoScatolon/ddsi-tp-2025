@@ -7,22 +7,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FuenteFactory {
-    @Value("${api.metamapa.base-url}")
-    private String metamapaBaseUrl;
+
 
     @Value("${api.ddsi.base-url}")
     private String ddsBaseUrl;
 
-    @Value("${api.ddsi.token}")
-    private String ddsToken;
 
-    public FuenteMetaMapa nuevaFuenteMetaMapa(String nombre) {
 
-        return new FuenteMetaMapa(nombre,metamapaBaseUrl);
+    public FuenteMetaMapa nuevaFuenteMetaMapa(String nombre, String baseUrl) {
+
+        return new FuenteMetaMapa(nombre,baseUrl);
     }
 
     public FuenteDDS nuevaFuenteDDS(String nombre) {
-        return new FuenteDDS(nombre, ddsBaseUrl, ddsToken);
+        return new FuenteDDS(nombre, ddsBaseUrl);
     }
 
 }
