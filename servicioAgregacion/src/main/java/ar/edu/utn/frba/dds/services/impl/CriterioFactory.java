@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
@@ -69,7 +69,7 @@ public class CriterioFactory {
         if(filter.getUbicacion() != null){
             criterios.add(new CriterioUbicacion(Ubicacion.builder()
                     .provincia(filter.getUbicacion().getProvincia())
-                    .localidad(filter.getUbicacion().getLocalidad())
+                    .departamento(filter.getUbicacion().getDepartamento())
                     .calle(filter.getUbicacion().getCalle())
                     .numero(filter.getUbicacion().getNumero())
                     .latitud(filter.getUbicacion().getLatitud())

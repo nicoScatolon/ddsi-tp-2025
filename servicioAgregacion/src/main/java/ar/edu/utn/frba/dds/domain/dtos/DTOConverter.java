@@ -89,9 +89,8 @@ public class DTOConverter {
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
         normalizarUbicacion(dto);
         return Ubicacion.builder()
-                .id(dto.getId())
                 .provincia(dto.getProvincia())
-                .localidad(dto.getLocalidad())
+                .departamento(dto.getDepartamento())
                 .calle(dto.getCalle())
                 .numero(dto.getNumero())
                 .latitud(dto.getLatitud())
@@ -213,8 +212,6 @@ public class DTOConverter {
                 .fReporteHasta(filterDTO.getFReporteHasta())
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
-                .latitud(filterDTO.getLatitud())
-                .longitud(filterDTO.getLongitud())
                 .build();
     }
 

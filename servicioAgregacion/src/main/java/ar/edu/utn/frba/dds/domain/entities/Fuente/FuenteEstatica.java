@@ -73,9 +73,9 @@ public class FuenteEstatica extends Fuente {
                 .orElse(Collections.emptyList());
     }
 
-    public void actualizarHechos(List<Hecho> hechosNuevos){
-        for (Hecho hechoActual : hechosNuevos){
-            Hecho hechoExistente = mapHechos.get( hechoActual.getOrigenId() );
+    public void actualizarHechos(List<Hecho> hechosNuevos) {
+        for (Hecho hechoActual : hechosNuevos) {
+            Hecho hechoExistente = mapHechos.get(hechoActual.getOrigenId());
 
             if (hechoExistente == null) {
                 mapHechos.put(hechoActual.getOrigenId(), hechoActual);
