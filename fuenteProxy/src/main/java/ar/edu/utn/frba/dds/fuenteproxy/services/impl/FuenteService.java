@@ -1,5 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.FuenteDDS;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.FuenteMetaMapa;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.IFuente;
@@ -19,8 +22,12 @@ public class FuenteService implements IFuenteService {
     private final IFuentesSelector fuentesRepository;
     private FuenteFactory fuenteFactory;
 
-    public FuenteService(IFuentesSelector fuentesRepository) {
-        this.fuentesRepository = fuentesRepository;
+    public FuenteService(IFuentesRepositoryJPA fuenteRepository,
+                         IFuentesSelector fuentesSelector,
+                         FuenteFactory fuenteFactory) {
+        this.fuenteRepository = fuenteRepository;
+        this.fuentesRepository = fuentesSelector;
+        this.fuenteFactory = fuenteFactory;
     }
 
     @Override
@@ -44,15 +51,15 @@ public class FuenteService implements IFuenteService {
     }
 
     @Override
-    public void agregarFuenteDDS(String nombre) {
-        FuenteDDS fuenteDDS = fuenteFactory.nuevaFuenteDDS(nombre);
-        fuenteRepository.save(fuenteDDS);
+    public FuenteOutputDTO agregarFuenteMetamapa(FuenteInputDTO dto) {
+        return DTOConverter.mapToFuenteOutputDTO(
+                fuenteRepository.save(fuenteFactory.nuevaFuenteMetaMapa(dto.getNombre())));
     }
 
     @Override
-    public void agregarFuenteMetamapa(String nombre) {
-        FuenteMetaMapa fuenteMetaMapa = fuenteFactory.nuevaFuenteMetaMapa(nombre);
-        fuenteRepository.save(fuenteMetaMapa);
+    public FuenteOutputDTO agregarFuenteDDS(FuenteInputDTO dto) {
+        return DTOConverter.mapToFuenteOutputDTO(
+                fuenteRepository.save(fuenteFactory.nuevaFuenteDDS(dto.getNombre())));
     }
 
     @Override

@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 import jakarta.persistence.*;
 
 import lombok.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 
 @Getter

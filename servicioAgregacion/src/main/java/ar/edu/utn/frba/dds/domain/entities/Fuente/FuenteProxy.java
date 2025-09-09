@@ -35,7 +35,7 @@ public class FuenteProxy extends Fuente {
     @JsonIgnore
     private List<Hecho> hechos;
     @Column(name = "ultimaActualizacion")
-    private LocalDateTime ultimaActualizacion = LocalDateTime.MIN;
+    private LocalDateTime ultimaActualizacion;
 
     public FuenteProxy(String url) {
         this.url = url;

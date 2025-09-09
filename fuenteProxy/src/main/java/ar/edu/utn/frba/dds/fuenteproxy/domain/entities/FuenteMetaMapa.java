@@ -7,9 +7,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHecho
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeEliminaciones;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosConFiltros;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -42,8 +40,14 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
-
-
+    // Inicializa el webClient cada vez que se carga o se persiste
+    @PostLoad
+    @PostPersist
+    private void initWebClient() {
+        if (this.getBaseUrl() != null && this.webClient == null) {
+            this.webClient = WebClient.builder().baseUrl(this.getBaseUrl()).build();
+        }
+    }
 
     @Override
     @Transient

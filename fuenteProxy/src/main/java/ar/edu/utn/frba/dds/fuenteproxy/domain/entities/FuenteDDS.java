@@ -3,9 +3,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosPorId;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -29,7 +27,7 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
     @Transient
     private WebClient webClient;
 
-    @Transient
+    @Column(name = "token")
     private String token;
 
 
@@ -39,6 +37,15 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
         this.setBaseUrl(baseUrl);
         this.token = token;
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+    }
+
+    // Inicializa el webClient cada vez que se carga o se persiste
+    @PostLoad
+    @PostPersist
+    private void initWebClient() {
+        if (this.getBaseUrl() != null && this.webClient == null) {
+            this.webClient = WebClient.builder().baseUrl(this.getBaseUrl()).build();
+        }
     }
 
 
