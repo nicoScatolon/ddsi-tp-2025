@@ -53,7 +53,7 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(categoriaInputDTO(dto.getCategoria()))
+                .categoria(new Categoria(null, dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
     }
