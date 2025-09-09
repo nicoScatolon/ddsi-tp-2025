@@ -1,0 +1,160 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Categoria{
+    - id: String
+    - nombre: String
+    - fechaActualizacion: LocalDateTime
+}
+
+class Coleccion{
+    - handle: String
+    - titulo: String
+    - descripcion: String
+    - hechos: List<Hecho>
+}
+
+class ContenidoMultimedia{
+    - Id: Long
+    - url: String
+    - descripcion: String
+}
+class Contribuyente{
+    - id: Long
+    - nombre: String
+    - apellido: String
+    - fechaNacimiento: LocalDate
+}
+
+enum EstadoDeSolicitud{
+    ACEPTADA,
+    RECHAZADA,
+    PENDIENTE,
+    SPAM
+}
+
+class Etiqueta{
+    - id: String
+    - nombre: String
+}
+
+class Fuente{
+    - id: Long
+    - nombre: String
+    - url: String
+}
+
+class Hecho{
+    - id: Long
+    - titulo: String
+    - descripcion: String
+    - categoria: Categoria
+    - ubicacion: Ubicacion
+    - fechaDeOcurrencia: LocalDateTime
+    - fechaDeCarga: LocalDateTime
+}
+
+class SolicitudEliminacion{
+    - id: Long
+    - estado: EstadoDeSolicitud
+    - fechaCreacion: LocalDateTime
+    - fechaGestion: LocalDateTime
+}
+
+class Ubicacion {
+    - provincia: String
+    - localidad: String
+    - calle: String
+    - numero: Integer
+
+    - latitud: Double
+    - longitud: Double
+}
+
+abstract class EstadisticaBase {
+    - fechaDeCalculo: LocalDateTime
+}
+
+class E_HoraOcurrenciaPorCategoria {
+    - id: Long
+    - categoria: Categoria
+    - horaDia: Integer
+    - cantHechosHora: Integer
+    - cantHechosTotales: Integer
+}
+
+class E_HoraOcurrenciaPorCategoria {
+    - id: Long
+    - categoria: Categoria
+    - horaDia: Integer
+    - cantHechosHora: Integer
+    - cantHechosTotales: Integer
+}
+
+class E_MayorCategoria {
+    - id: Long
+    - categoria: Categoria
+    - cantHechosCategoria: Integer
+    - cantHechosTotales: Integer
+}
+
+class E_MayorProvinciaPorCategoria {
+    - id: Long
+    - categoria: Categoria
+    - provincia: String
+    - cantHechosProvincia: Integer
+    - cantHechosTotales: Integer
+}
+
+class E_MayorProvinciaPorColeccion {
+    - id: Long
+    - coleccion: Coleccion
+    - provincia: String
+    - cantHechosProvincia: Integer
+    - cantHechosTotales: Integer
+}
+
+class E_SolicitudesSpam {
+    - id: Long
+    - solicitudesSpam: Integer
+    - solicitudesNoSpam: Integer
+}
+
+class GeneradorEstadisticas {
+    + mayorProvinciaPorCategoria (Categoria categoria, List<Hecho> hechos): E_MayorProvinciaPorCategoria
+    + mayorProvinciaPorColeccion (Coleccion coleccion, List<Hecho> hechos): E_MayorProvinciaPorColeccion
+    + horaDiaPorCategoria (Categoria categoria, List<Hecho> hechos): E_HoraOcurrenciaPorCategoria
+    + solicitudesSpam (List<SolicitudEliminacion> solicitudes): E_SolicitudesSpam
+    + mayorCategoria (List<Hecho> hechos): E_MayorCategoria
+    + mayorCategoria (Map<Categoria, List<Hecho>> hechosPorCategoria): E_MayorCategoria
+}
+
+Coleccion -> Hecho
+Hecho -> Categoria
+Hecho -> Ubicacion
+
+SolicitudEliminacion->EstadoDeSolicitud
+
+GeneradorEstadisticas ..> Categoria
+GeneradorEstadisticas ..> Hecho
+GeneradorEstadisticas ..> Coleccion
+GeneradorEstadisticas ..> SolicitudEliminacion
+GeneradorEstadisticas ..> E_MayorProvinciaPorCategoria
+GeneradorEstadisticas ..> E_MayorProvinciaPorColeccion
+GeneradorEstadisticas ..> E_HoraOcurrenciaPorCategoria
+GeneradorEstadisticas ..> E_SolicitudesSpam
+GeneradorEstadisticas ..> E_MayorCategoria
+
+E_HoraOcurrenciaPorCategoria --|> EstadisticaBase
+E_MayorCategoria --|> EstadisticaBase
+E_MayorProvinciaPorCategoria --|> EstadisticaBase
+E_MayorProvinciaPorColeccion --|> EstadisticaBase
+E_SolicitudesSpam --|> EstadisticaBase
+
+E_HoraOcurrenciaPorCategoria --> Categoria
+E_MayorCategoria --> Categoria
+E_MayorProvinciaPorCategoria --> Categoria
+E_MayorProvinciaPorColeccion --> Coleccion
+
+
+@enduml

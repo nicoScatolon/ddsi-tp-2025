@@ -4,10 +4,8 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class HechoComparator {
     private static final HechoComparator INSTANCE = new HechoComparator();

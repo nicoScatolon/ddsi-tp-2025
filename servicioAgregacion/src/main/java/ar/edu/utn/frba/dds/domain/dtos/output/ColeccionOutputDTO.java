@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Data
 @Builder
@@ -16,4 +18,5 @@ public class ColeccionOutputDTO {
     private String titulo;
     private String descripcion;
     private AlgoritmoConsensoDTO algoritmoConsenso;
+    private List<HechoOutputDTO> hechos; //depende la peticion va nulo o no
 }
