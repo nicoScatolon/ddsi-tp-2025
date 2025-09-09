@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UbicacionOutputDTO {
     private Long id;
+
     private String provincia;
     private String localidad;
     private String calle;
     private Integer numero;
+
+
     private Double latitud;
     private Double longitud;
 }

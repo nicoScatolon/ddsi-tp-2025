@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho;
 
 import ar.edu.utn.frba.dds.domain.entities.*;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import jakarta.persistence.*;
 import lombok.*;
 

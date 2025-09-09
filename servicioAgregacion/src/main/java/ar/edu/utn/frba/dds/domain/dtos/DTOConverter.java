@@ -6,15 +6,18 @@ import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -82,21 +85,11 @@ public class DTOConverter {
         }
     }
 
-    public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
-        return CategoriaOutputDTO.builder()
-                .id(categoria.getId())
-                .nombre(categoria.getNombre())
-                .build();
-    }
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
-        if(dto==null){return null;}
-        if (dto.getLatitud() == null && dto.getLongitud() == null
-                && dto.getProvincia() == null && dto.getLocalidad() == null
-                && dto.getCalle() == null && dto.getNumero() == null) {
-            return null; // no armo una ubicacion vacía
-        }
+        normalizarUbicacion(dto);
         return Ubicacion.builder()
+                .id(dto.getId())
                 .provincia(dto.getProvincia())
                 .localidad(dto.getLocalidad())
                 .calle(dto.getCalle())
@@ -106,11 +99,17 @@ public class DTOConverter {
                 .build();
     }
 
+    public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
+        return CategoriaOutputDTO.builder()
+                .id(categoria.getCodigoCategoria())
+                .nombre(categoria.getNombre())
+                .build();
+    }
+
     public static UbicacionOutputDTO convertirUbicacionOutputDTO(Ubicacion ubicacion) {
         return UbicacionOutputDTO.builder()
                 .id(ubicacion.getId())
                 .provincia(ubicacion.getProvincia())
-                .localidad(ubicacion.getLocalidad())
                 .calle(ubicacion.getCalle())
                 .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())
@@ -123,7 +122,6 @@ public class DTOConverter {
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .fechaNacimiento(dto.getFechaNacimiento())
-                .esAnonimo(dto.getEsAnonimo())
                 .build();
     }
 
@@ -160,11 +158,9 @@ public class DTOConverter {
     }
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
-        if(categoriaInputDTO==null){return null;}
-        if(categoriaInputDTO.getNombre()==null){return null;}
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
-                .id(categoriaInputDTO.getId())
+                .codigoCategoria(categoriaInputDTO.getCodigoCat())
                 .build();
     }
 
@@ -217,7 +213,10 @@ public class DTOConverter {
                 .fReporteHasta(filterDTO.getFReporteHasta())
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
-                .ubicacion(convertirUbicacion(filterDTO.getUbicacionInputDTO()))
+                .latitud(filterDTO.getLatitud())
+                .longitud(filterDTO.getLongitud())
                 .build();
     }
+
+
 }

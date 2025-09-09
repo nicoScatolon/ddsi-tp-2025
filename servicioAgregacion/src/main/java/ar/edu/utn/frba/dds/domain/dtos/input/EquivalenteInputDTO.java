@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.domain.dtos.output;
+package ar.edu.utn.frba.dds.domain.dtos.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaOutputDTO {
-    private String nombre;
-    private String id;
+public class EquivalenteInputDTO {
+    String codCategoria;
+    String equivalente;
 }
