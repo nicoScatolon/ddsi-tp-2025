@@ -45,6 +45,7 @@ public class Hecho {
 
     @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
+
     @Column(nullable = false, name = "anonimo")
     private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
 

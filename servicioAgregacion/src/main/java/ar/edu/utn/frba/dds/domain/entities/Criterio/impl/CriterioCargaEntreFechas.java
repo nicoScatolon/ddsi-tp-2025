@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 public class CriterioCargaEntreFechas extends Criterio {
+    @Column(name = "primeraFecha")
     private LocalDateTime primeraFecha;
+
+    @Column(name = "segundaFecha")
     private LocalDateTime segundaFecha;
 
     public CriterioCargaEntreFechas(LocalDateTime primeraFecha, LocalDateTime segundaFecha) {

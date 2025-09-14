@@ -209,36 +209,33 @@ interface IDetectorDeSpam{
 class DetectorDeSpam{
     + esSpam(String texto): Boolean
 
-
-    private String stringToHandle(String string) {
-
-
-
-    private boolean contienePalabrasSpam(String texto) {
-
-
-        private boolean contienePalabrasRepetidas(String texto) {
-
-        private boolean contieneExcesoDeSignos(String texto) {
-
-        private boolean esMayormenteMayusculas(String texto) {
-
-
-        private boolean contieneMuchasUrls(String texto) {
-
-        private boolean contieneMuchosCaracteresNoAlfabeticos(String texto)
+    - stringToHandle(String string): String
+    - contienePalabrasSpam(String texto): Boolean
+    - contienePalabrasRepetidas(String texto): Boolean
+    - contieneExcesoDeSignos(String texto): Boolean
+    - esMayormenteMayusculas(String texto): Boolean
+    - contieneMuchasUrls(String texto): Boolean
+    - contieneMuchosCaracteresNoAlfabeticos(String texto): Boolean
 }
 
-class NormalizadorTexto{}
-class NormalizadorUbicacion
+class NormalizadorTexto{
+    + normalizarTexto(String input): String
+}
+class NormalizadorUbicacion{
+    - PROVINCIAS_EQUIVALENTES: Map<String, List<String>>
+    - ALIAS_A_OFICIAL: Map<String, String>
+    + normalizarUbicacion(Ubicacion ubicacion)): void
+}
 
 class Georef{
--webClient : WebClient
-+geolocalizar(Ubicacion ubi): Ubicacion
-+obtenerDireccion(Ubicacion ubicacion): Ubicacion
-+obtenerCoordenadas(Ubicacion ubicacion): Ubicacion
+    + geolocalizar(Ubicacion ubi): Ubicacion
+    + obtenerDireccion(Ubicacion ubicacion): Ubicacion
+    + obtenerCoordenadas(Ubicacion ubicacion): Ubicacion
 }
-interface IGeoLocalizador
+
+interface IGeoLocalizador{
+    + geolocalizar(Ubicacion ubicacion): Ubicacion
+}
 
 
 Hecho -> TipoHecho
@@ -277,8 +274,9 @@ IAlgoritmoConsenso <|.. ConsensoMayoriaSimple
 IAlgoritmoConsenso <|.. ConsensoMultipleMencion
 
 IGeoLocalizador <|.. Georef
+Georef ..> Ubicacion
 
-
+NormalizadorUbicacion ..> Ubicacion
 
 SolicitudEliminarHecho -> EstadoDeSolicitud
 SolicitudEliminarHecho -> Hecho

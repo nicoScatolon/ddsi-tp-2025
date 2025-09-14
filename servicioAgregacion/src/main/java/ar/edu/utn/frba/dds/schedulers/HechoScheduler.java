@@ -21,6 +21,7 @@ public class HechoScheduler {
     public void actualizarHechos() {
         fuentesService.actualizarHechosFuentesScheduler();
     }
+
     @Scheduled(cron = "${cron.expression.prueba}")
     public void actualizarColecciones() {
         coleccionesService.actualizarColeccionesScheduler();
