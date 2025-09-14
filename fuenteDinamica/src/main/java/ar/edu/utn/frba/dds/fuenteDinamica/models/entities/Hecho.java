@@ -53,6 +53,8 @@ public class Hecho {
     @Column(name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
 
+
+    //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
