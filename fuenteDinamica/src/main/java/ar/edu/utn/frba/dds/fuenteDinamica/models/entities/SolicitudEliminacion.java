@@ -17,15 +17,19 @@ public class SolicitudEliminacion {
 
     @Column(name = "razonDeEliminacion", nullable = false)
     private String razonDeEliminacion;
+
     @Embedded
     private Contribuyente creador;
+
     @Column(name = "fechaCreacion")
     private LocalDateTime fechaCreacion;
 
     @Column(name = "idAdmin")
     private Long idAdmin;
+
     @Column(name = "fechaGestion")
     private LocalDateTime fechaGestion = null;
+
     @Enumerated(EnumType.STRING)
     private EstadoSolicitudEliminacion estado;
 

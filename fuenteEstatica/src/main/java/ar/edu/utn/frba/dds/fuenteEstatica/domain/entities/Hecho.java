@@ -18,14 +18,25 @@ public class Hecho {
     //Datos
     @Column (name = "titulo", nullable = false)
     private String titulo;
+
     @Column(name = "descripcion", columnDefinition = "TEXT", unique = true)
     private String descripcion;
+
     @Embedded
     private Ubicacion ubicacion;
+
     @Column(name = "categoria")
     private String categoria;
+
     @Column (name = "fechaDeOcurrencia")
     private LocalDate fechaDeOcurrencia;
+
+    @Column (name = "archivoOrigen")
+    private String archivoOrigen;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fuente_id")
+    private Fuente fuente;
 
     //Metadata
     @Id

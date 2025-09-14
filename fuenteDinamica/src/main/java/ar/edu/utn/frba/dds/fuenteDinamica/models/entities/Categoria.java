@@ -17,6 +17,7 @@ import lombok.Setter;
 public class Categoria {
     @Column(name = "id_categoria")
     private String id;
+
     @Column(name = "nombre")
     private String nombre;
 }

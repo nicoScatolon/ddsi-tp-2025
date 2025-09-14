@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Entity
 
 @NoArgsConstructor
-
 public class CriterioOcurrenciaEntreFechas extends Criterio {
     private  LocalDate primeraFecha;
     private  LocalDate segundaFecha;

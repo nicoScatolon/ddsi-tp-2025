@@ -32,7 +32,7 @@ public class HechosService implements IHechosService {
     @Value("${hecho.diasModificacion}")
     private Long diasValidosModificacion;
 
-
+    //TODO: VER PARA ACTUALIZAR CON JPA
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
         List<Hecho> hechosAEnviar = this.hechosRepository.findAll().stream().filter(h -> h.getEstado().equals(EstadoHecho.ACEPTADO)).toList();

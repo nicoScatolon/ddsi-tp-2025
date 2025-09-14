@@ -17,9 +17,8 @@ import org.springframework.stereotype.Component;
 public class ImportadorHechosCSV implements ImportadorHechos {
 
     @Override
-    public String getFormato(){
-        return "csv";
-    }
+
+    public FormatoFuente getFormato() { return FormatoFuente.CSV; }
 
     @Override
     public List<Hecho> importarHechosArchivo(String path) {

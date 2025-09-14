@@ -17,8 +17,10 @@ public class ContenidoMultimedia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "url", nullable = false)
     private String url;
+
     @Column(name = "descripcion")
     private String descripcion;
 

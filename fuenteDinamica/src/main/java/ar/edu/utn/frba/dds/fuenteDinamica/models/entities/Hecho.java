@@ -26,12 +26,16 @@ public class Hecho {
     //Contenido del Hecho
     @Column(nullable = false, name = "titulo")
     private String titulo;
+
     @Column(nullable = false, name = "descripcion", unique = true)
     private String descripcion;
+
     @Embedded
     private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
+
     @Embedded
     private Ubicacion ubicacion;
+
     @Column(nullable = false, name = "fecha-ocurrencia")
     private LocalDate fechaDeOcurrencia;
 
@@ -47,6 +51,7 @@ public class Hecho {
     //Metadata
     @Column(name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
@@ -58,8 +63,10 @@ public class Hecho {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
+
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
+
     @Column(name = "sugerencia")
     private String sugerencia = null;
 

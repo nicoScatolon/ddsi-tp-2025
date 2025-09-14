@@ -20,10 +20,13 @@ public class Contribuyente {
 
     @Id
     private Long id;
+
     @Column(nullable = false)
     private String nombre;
+
     @Column(nullable = false)
     private String apellido;
+
     @Column(nullable = false)
     private LocalDate fechaNacimiento;
 }

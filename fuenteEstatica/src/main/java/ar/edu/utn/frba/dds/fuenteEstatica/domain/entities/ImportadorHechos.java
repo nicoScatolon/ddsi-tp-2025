@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface ImportadorHechos {
     public List<Hecho> importarHechosArchivo(String path);
-    public String getFormato();
+    public FormatoFuente getFormato();
+    default boolean supports(FormatoFuente f) { return getFormato() == f; }
 }
