@@ -39,12 +39,7 @@ public class Coleccion {
     )
     private final List<Fuente> listaFuentes = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "coleccion_criterios",
-            joinColumns = @JoinColumn(name = "coleccion_id"),
-            inverseJoinColumns = @JoinColumn(name = "criterio_id")
-    )
+    @OneToMany(mappedBy = "coleccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Criterio> listaCriterios = new HashSet<>();
 
     @ManyToOne

@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Entity
 
 @NoArgsConstructor
+@DiscriminatorValue("OcurrenciaEntreFechas")
 public class CriterioOcurrenciaEntreFechas extends Criterio {
     @Column(name = "primeraFecha")
     private  LocalDate primeraFecha;

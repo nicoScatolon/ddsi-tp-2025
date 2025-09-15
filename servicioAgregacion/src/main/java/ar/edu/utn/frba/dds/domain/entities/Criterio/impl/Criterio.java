@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
+import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import jakarta.persistence.*;
 
@@ -8,11 +9,15 @@ import jakarta.persistence.*;
 // para editar los criterios de una
 
 @Entity
-@Inheritance (strategy = InheritanceType.JOINED)
+@Inheritance (strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Criterio implements ICriterio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre; // algo común, si aplica
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coleccion_id", nullable = false)
+    private Coleccion coleccion;
 }

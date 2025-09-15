@@ -3,16 +3,14 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @NoArgsConstructor
 @Entity
+@DiscriminatorValue("Ubicacion")
 public class CriterioUbicacion extends Criterio {
 
 

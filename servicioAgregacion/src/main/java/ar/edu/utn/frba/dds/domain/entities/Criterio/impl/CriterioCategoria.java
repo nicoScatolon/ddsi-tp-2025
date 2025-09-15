@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-
+@DiscriminatorValue("Categoria")
 @NoArgsConstructor
 
 public class CriterioCategoria extends Criterio {
