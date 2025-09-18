@@ -142,8 +142,6 @@ public class Coleccion {
     }
 
     public void actualizarHechos() {
-        // solamente actualizo los hechos que vengan de fuentes ALMACENADAS, no de las consumidas
-        // por eso obtener Hechos Cargados devuelve null si es proxy
         List<Hecho> listaAuxiliar = new ArrayList<>();
         //cargamos todos los hechos de las fuentes
         for (Fuente fuente : listaFuentes) {
@@ -155,11 +153,8 @@ public class Coleccion {
         }
         // filtramos estos hechos
         this.listaHechos = this.filtrarHechos(listaAuxiliar);
-        //recordar que proxy no se almacena, asi que al consumir sus hechos hay que filtrarlos
         this.setCurarHechos(true);
     }
-    // no sabemos que pasa si arrancamos el programa de 0, que datos de la coleccion salen del repo y cuales se obtienen en el momento
-    // porque si los proxy no se guardan asociados a la coleccion, al correr el sistema de 0, no van a haber hechos proxy almacenados en la lista local de hechos
 
     public void curarHechos() {
         if (algoritmoConsenso == null) {
@@ -169,18 +164,12 @@ public class Coleccion {
             this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
         setCurarHechos(false);
     }
-    //ver que pasa con proxy, que si se actualiza una proxy sola quiza no nos enteramos
 
     public List<Hecho> getHechos() {
-        //if (listaHechos.isEmpty()) {this.actualizarHechos();} //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
         return listaHechos.stream().filter(h -> !h.getFueEliminado()).toList();
     }
-    //NOTA: actualmente estamos guardando proxy dentro de la lista hechos, entonces estos se actualizan cada 1 hora (segun scheduler)
-    // si necesitamos que proxy, al ser consumidas, se actualize mas rapido, habria que hacer peticiones a proxy de sus hechos cada x tiempo / en cada peticion
-    // (solo le pedimos sus hechos cargados, no que haga un get, la fuente sabe cuando debe pedirlos nuevamente)
 
     public List<Hecho> getHechosCurados() {
-        //if (listaHechosCurados.isEmpty()) { this.curarHechos(); } //esto es asi considerando que no hay un inicio de aplicacion que calcule t0do y lo tenga listo
         return listaHechosCurados.stream().filter(h -> !h.getFueEliminado()).toList();
     }
 

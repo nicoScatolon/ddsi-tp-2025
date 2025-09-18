@@ -63,16 +63,6 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public List<Fuente> buscarFuentePorTipo(TipoFuente tipoFuente){
-        return this.buscarFuentes().stream().filter(fuente -> fuente.getTipo().equals(tipoFuente)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Fuente> buscarFuentePorTipo(List<TipoFuente> tiposFuente){
-        return this.buscarFuentes().stream().filter(fuente -> tiposFuente.contains(fuente.getTipo())).collect(Collectors.toList());
-    }
-
-    @Override
     public void notificarEliminaciones (List<Hecho> hechosAEliminar){
         //TODO
         /*
@@ -88,10 +78,7 @@ public class FuentesService implements IFuentesService {
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");
-        List<TipoFuente> listaTipos = new ArrayList<>();
-        listaTipos.add(TipoFuente.DINAMICA);
-        listaTipos.add(TipoFuente.ESTATICA);
-        List<Fuente> fuentes = this.buscarFuentePorTipo(listaTipos);
+        List<Fuente> fuentes = this.fuentesRepository.findAll();
 
         List<Fuente> fuentesActualizadas = new ArrayList<>();
         List<Hecho> hechosAActualizar = new ArrayList<>();

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "MayorCategoria")
-public class E_MayorCategoria extends EstadisticaBase {
+public class E_MayorCategoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,4 +28,7 @@ public class E_MayorCategoria extends EstadisticaBase {
 
     @Column(name = "cant-hechos-totales")
     private Integer cantHechosTotales;
+
+    @Column(name = "fecha-calculo", nullable = false)
+    protected LocalDateTime fechaDeCalculo;
 }

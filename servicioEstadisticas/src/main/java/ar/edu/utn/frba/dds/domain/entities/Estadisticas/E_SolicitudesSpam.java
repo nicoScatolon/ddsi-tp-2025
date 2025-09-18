@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SolicitudesSpam")
-public class E_SolicitudesSpam extends EstadisticaBase {
+public class E_SolicitudesSpam {
     // "la cantidad de solicitudes que son spam";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +24,7 @@ public class E_SolicitudesSpam extends EstadisticaBase {
 
     @Column(name = "cant-solicitudes-no-spam")
     private Integer solicitudesNoSpam;
+
+    @Column(name = "fecha-calculo", nullable = false)
+    protected LocalDateTime fechaDeCalculo;
 }
