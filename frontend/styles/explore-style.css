@@ -4,7 +4,6 @@ main {
   padding: 0;
 }
 
-
 html, body {
   margin: 0;
   padding: 0;
@@ -73,13 +72,26 @@ html, body {
   background: #1746D2;
 }
 
-/* --- CARDS --- */
+/* --- CARDS: contenedor y separación --- */
 .cards-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem; /* más espacio vertical entre bloques (rows) */
 }
 
+/* Row que contiene las cards de la página actual (paginación) */
+.cards-row-explore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;              /* espacio horizontal y vertical entre cards */
+  align-items: stretch;
+  justify-content: flex-start;
+  margin: 0.1rem 0;
+}
+
+
+
+/* --- CARD --- */
 a {
   all: unset;
   display: block;
@@ -90,7 +102,7 @@ a {
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
   display: grid;
   grid-template-columns: 150px 1fr 250px 150px;
   align-items: stretch;
@@ -99,9 +111,15 @@ a {
   gap: 0;
   height: 150px;
   overflow: hidden;
-  grid-auto-rows: 1fr;  
 }
 
+/* un padding interior uniforme para cada celda */
+.card > * {
+  padding: 0 0.6rem;
+  box-sizing: border-box;
+}
+
+/* Título */
 .card-title {
   display: flex;
   align-items: center;
@@ -110,37 +128,37 @@ a {
   font-weight: bold;
   font-size: 1.1rem;
   color: #333;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #eee;
+  text-align: center;
 }
 
+/* Descripción */
 .card-description {
-  display: -webkit-box;   /* para limitar líneas */
-  -webkit-line-clamp: 3;  /* máximo 3 líneas visibles */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  flex-direction: column;    /* apila verticalmente */
-  justify-content: center;   /* centra verticalmente */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 0 0.5rem;
   font-size: 0.95rem;
   color: #555;
-  border-right: 1px solid #ccc;
-  overflow: hidden;          /* evita que se salga */
+  border-right: 1px solid #eee;
+  overflow: hidden;
 }
 
 .card-description p {
-  margin: 0;                 
-  display: -webkit-box;      
-  -webkit-line-clamp: 3;     /* líneas visibles en WebKit */
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  
-  line-clamp: 3;             /* estándar moderno */
+  line-clamp: 3;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.2rem;       /* ajustar según tu diseño */
+  line-height: 1.2rem;
 }
 
-
-
-
+/* Datos extra */
 .card-data {
   display: flex;
   flex-direction: column;
@@ -148,13 +166,17 @@ a {
   padding: 0 0.5rem;
   font-size: 0.9rem;
   color: #666;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #eee;
 }
 
 .card-data p {
   margin: 0.2rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
+/* Imagen / Color de fondo */
 .card-img {
   width: 150px;
   height: 150px;
@@ -164,6 +186,7 @@ a {
   justify-content: center;
   align-items: center;
   background: #444;
+  overflow: hidden;
 }
 
 .card-img img {
@@ -175,13 +198,82 @@ a {
 
 /* Hover effects */
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
 }
 
 .card:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* --- PAGINATION CONTROLS --- */
+#pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  width: 100%;
+  padding: 0.6rem 0;
+}
+
+/* Botones flecha discretos */
+.pagination-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(47,96,244,0.08);
+  color: #2F60F4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.14s, transform 0.08s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  padding: 0;
+}
+
+/* indicador de página (texto) */
+#pagination-controls .page-indicator {
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+/* deshabilitado */
+.pagination-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination-arrow:not(:disabled):hover {
+  background: rgba(47,96,244,0.16);
+  transform: translateY(-2px);
+}
+
+/* si en el futuro agregás botones numerados, estilo base */
+.pagination-page-number {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #333;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pagination-page-number.active {
+  background: #2F60F4;
+  color: #fff;
 }
 
 /* --- RESPONSIVE --- */
@@ -197,15 +289,26 @@ a {
     margin-bottom: 1.5rem;
   }
 
+  /* en tablet pasamos a 1 columna de cards (una por fila) */
+  .cards-row-explore {
+    gap: 1.2rem;
+  }
+  .cards-row-explore .card {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .card {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto;
+    height: auto;
   }
 
   .card-title, .card-description, .card-data, .card-img {
     width: 100%;
     border-right: none;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
   }
 
   .card-img {
@@ -227,6 +330,12 @@ a {
   .card-title, .card-description, .card-data {
     padding: 0.5rem 0.5rem;
   }
+
+  .pagination-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
 }
 
 /* Celulares chicos */
@@ -237,5 +346,9 @@ a {
 
   .card-title, .card-description, .card-data {
     font-size: 0.9rem;
+  }
+
+  .cards-row-explore {
+    gap: 0.9rem;
   }
 }

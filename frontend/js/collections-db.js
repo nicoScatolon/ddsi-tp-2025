@@ -66,6 +66,303 @@ window.coleccionesDB = [
       { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
     ],
     algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
+  },
+  {
+    id: 104,
+    titulo: "Sucesos Policiales Destacados",
+    descripcion: "Colección de hechos policiales relevantes, desde allanamientos hasta secuestros y estafas. Analiza patrones de criminalidad y respuestas institucionales.",
+    ultimaActualizacion: "2025-09-02",
+    tipo: "Mayoría Simple",
+    hechos: [1, 4, 5, 8, 11, 13, 15, 16, 18, 21, 22, 24],
+    listaFuentes: ["fuente2", "fuente5"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Gran Buenos Aires" } }
+    ],
+    algoritmoConsenso: "MayoríaSimple"
+  },
+  {
+    id: 105,
+    titulo: "Tránsito y Transporte",
+    descripcion: "Registra accidentes y choques en rutas y avenidas principales, incluyendo estadísticas de heridos y medidas de prevención vial.",
+    ultimaActualizacion: "2025-09-03",
+    tipo: "MultipleMencion",
+    hechos: [2, 6, 9, 12, 20, 25],
+    listaFuentes: ["fuente1", "fuente6"],
+    listaCriterios: [
+      { id: "CriterioUbicacion", baseId: "CriterioUbicacion", name: "Ubicación", values: { region: "Todo el país" } },
+      { id: "CriterioTitulo", baseId: "CriterioTitulo", name: "Título", values: { match: "Tránsito" } }
+    ],
+    algoritmoConsenso: "MultipleMencion"
   }
 ];
 

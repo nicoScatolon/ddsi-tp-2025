@@ -208,11 +208,19 @@ section h2 {
     background: rgba(0,0,0,0.6);
     border-radius: 14px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    padding: 1.2rem;
+    /* en vez de padding uniforme, definimos más controlado */
+    padding: 1.2rem 1.2rem 0.6rem 1.2rem; /* menos padding abajo */
     color: #fff;
     transition: transform 0.2s, background 0.3s;
     text-align: center;
 }
+
+/* separación extra entre imagen y título */
+.card-media {
+    margin-bottom: 0.8rem; /* agrega espacio entre la img y el título */
+}
+
+
 
 .card:hover {
     transform: translateY(-6px);
@@ -223,7 +231,7 @@ section h2 {
 .scroll-btn {
     position: absolute;
     background: #1746D2;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     width: 50px;
     height: 50px;
@@ -338,3 +346,4 @@ section h2 {
     font-size: 2.6em;
     text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.85); /* sombra más marcada y difusa */
 }
+
