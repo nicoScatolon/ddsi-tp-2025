@@ -29,10 +29,8 @@ public class CategoriasService implements ICategoriasService {
         this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
     }
 
-    public Categoria findById(CategoriaInputDTO categoriaDTO) {
-        Categoria categoria = categoriasRepository.findById(categoriaDTO.getId()).orElse(null);
-        if (categoria == null) {return null;}
-        if (!Objects.equals(categoriaDTO.getNombre(), categoria.getNombre())) {return null;}
+    public Categoria findById(String idCategoria) {
+        Categoria categoria = categoriasRepository.findById(idCategoria).orElse(null);
         return categoria;
     }
 
@@ -67,6 +65,7 @@ public class CategoriasService implements ICategoriasService {
             , () -> {
                 //si no existe la creo
                         Categoria nuevaCategoria = DTOconverter.categoriaInputDTO(categoriaDTO);
+                        nuevaCategoria.setFechaActualizacion(LocalDateTime.now());
                         this.categoriasRepository.save(nuevaCategoria);
                     }
             );
@@ -74,6 +73,45 @@ public class CategoriasService implements ICategoriasService {
 
         //ahora busco las que fueron eliminadas -> no me llegaron cuando las pedi
         List<String> idsDTOs = categoriasDTO.stream().map(CategoriaInputDTO::getId).toList();
+
+        categoriasExistentes.stream()
+                .filter( c -> ! idsDTOs.contains(c.getId()) )
+                .forEach(categoriasRepository::delete);
+    }
+
+    // test
+
+    @Override
+    public void actualizarCategoriasTest(List<Categoria> categorias) {
+        if (categorias == null) return; //no consegui categorias
+
+        List<Categoria> categoriasExistentes = categoriasRepository.findAll();
+
+        // Busco por cambios y nuevas categorias
+        for (Categoria categoriaInput : categorias) {
+            var categoriaExistente = categoriasExistentes.stream()
+                    .filter(c -> c.getId().equals(categoriaInput.getId()))
+                    .findFirst();
+
+            categoriaExistente.ifPresentOrElse(categoria -> {
+                        //si existe pero no matchean los datos la actualizo
+                        if (!categoria.getNombre().equals(categoriaInput.getNombre())) {
+                            categoria.setNombre(categoriaInput.getNombre());
+                            categoria.setFechaActualizacion(LocalDateTime.now());
+                            this.categoriasRepository.save(categoria);
+                        }
+                    }
+                    , () -> {
+                        //si no existe la creo
+                        Categoria nuevaCategoria = categoriaInput;
+                        nuevaCategoria.setFechaActualizacion(LocalDateTime.now());
+                        this.categoriasRepository.save(nuevaCategoria);
+                    }
+            );
+        }
+
+        //ahora busco las que fueron eliminadas -> no me llegaron cuando las pedi
+        List<String> idsDTOs = categorias.stream().map(Categoria::getId).toList();
 
         categoriasExistentes.stream()
                 .filter( c -> ! idsDTOs.contains(c.getId()) )

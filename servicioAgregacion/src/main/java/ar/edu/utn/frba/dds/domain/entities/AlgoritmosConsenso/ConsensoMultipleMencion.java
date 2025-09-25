@@ -5,18 +5,14 @@ import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Entity
-@DiscriminatorValue(("MULTIPLEMENCION"))
 
-public class ConsensoMultipleMencion extends AlgoritmoConsenso {
+public class ConsensoMultipleMencion implements IAlgoritmoConsenso {
     private TipoAlgoritmoConsenso tipo = TipoAlgoritmoConsenso.MULTIPLEMENCION;
 
     @Override

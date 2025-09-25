@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.domain.entities.normalizadores;
+package ar.edu.utn.frba.dds.domain.entities.Normalizadores;
 
 
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto.normalizarTexto;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto.normalizarTexto;
 
 
 public final class NormalizadorUbicacion {

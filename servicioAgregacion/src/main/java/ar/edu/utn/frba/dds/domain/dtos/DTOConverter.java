@@ -4,7 +4,6 @@ import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -71,18 +70,6 @@ public class DTOConverter {
                 .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
-    }
-
-    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto) {
-        if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy);
-        } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica);
-        } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica);
-        } else {
-            throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
-        }
     }
 
 
@@ -163,7 +150,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static AlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
+    public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
         if (dto == null) { return null;}
         return dto.getTipo().obtenerConsenso();
     }

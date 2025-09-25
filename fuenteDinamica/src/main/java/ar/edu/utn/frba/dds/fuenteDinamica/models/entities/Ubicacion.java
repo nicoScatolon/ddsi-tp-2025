@@ -11,10 +11,6 @@ import lombok.*;
 
 @Embeddable
 public class Ubicacion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "provincia")
     private String provincia;
 

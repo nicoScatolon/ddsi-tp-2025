@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto;
+import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IEquivalenteCatRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
@@ -23,7 +23,6 @@ import java.util.Objects;
 @Getter
 @Service
 public class CategoriaService implements ICategoriaService {
-
     private final ICategoriasRepository categoriasRepository;
     private final IEquivalenteCatRepository equivalenteCatRepository;
 

@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.domain.entities.normalizadores;
+package ar.edu.utn.frba.dds.domain.entities.Normalizadores;
 
 import java.text.Normalizer;
 

@@ -20,7 +20,7 @@ public class DTOconverter {
                 .id(hechoInputDTO.getId())
                 .titulo(hechoInputDTO.getTitulo())
                 .descripcion(hechoInputDTO.getDescripcion())
-                .categoria(DTOconverter.categoriaInputDTO( hechoInputDTO.getCategoriaDTO()))
+                .categoria(DTOconverter.categoriaInputDTO( hechoInputDTO.getCategoria()))
                 .ubicacion(DTOconverter.ubicacionInputDTO(hechoInputDTO.getUbicacion()))
                 .fechaDeOcurrencia(hechoInputDTO.getFechaDeOcurrencia())
                 .fechaDeCarga(hechoInputDTO.getFechaDeCarga())
