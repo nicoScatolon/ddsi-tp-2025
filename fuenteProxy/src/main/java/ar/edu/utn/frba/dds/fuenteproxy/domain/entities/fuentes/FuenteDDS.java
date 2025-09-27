@@ -1,9 +1,8 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.LoginRequestDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosPorId;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Getter
@@ -23,10 +21,8 @@ import java.util.Map;
 
 @Entity
 @DiscriminatorValue("EXTERNA")
-public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
+public class FuenteDDS extends Fuente {
 
-    @Transient
-    private TipoFuenteProxy tipo = TipoFuenteProxy.EXTERNA;
 
     @Transient
     private WebClient webClient;
@@ -39,7 +35,19 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
         this.setNombre(nombre);
         this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
-        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+        this.iniciarFuente();
+
+    }
+
+    @PostLoad
+    private void initAfterLoad() {
+        this.iniciarFuente();
+    }
+
+
+    private void iniciarFuente(){
+        this.setTipo(TipoFuenteProxy.EXTERNA);
+        this.webClient = WebClient.builder().baseUrl(getBaseUrl()).build();
         this.token = this.login("ddsi@gmail.com", "ddsi2025*")
                 .blockOptional()
                 .orElseThrow(() -> new RuntimeException("No se pudo obtener el token de login"));
@@ -73,7 +81,7 @@ public class FuenteDDS extends Fuente implements ServidoraDeHechosPorId {
 
 
 
-    @Override
+
     @Transient
     public Mono<List<HechoInputDTO>> getHechos() {
         return webClient.get()

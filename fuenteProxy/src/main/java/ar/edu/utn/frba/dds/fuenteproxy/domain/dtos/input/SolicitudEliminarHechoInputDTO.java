@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class SolicitudEliminarHechoOutputDTO {
+public class SolicitudEliminarHechoInputDTO {
         private Long idHecho;
         private String razonDeEliminacion;
         private LocalDateTime fechaCreacion;

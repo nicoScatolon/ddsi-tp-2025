@@ -1,7 +1,9 @@
 package ar.edu.utn.frba.dds.fuenteproxy.controllers;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +15,13 @@ import java.util.List;
 @RequestMapping("/api/fuenteProxy/hechos")
 public class HechosController {
     private final IHechosService hechosService;
+    private final IFuenteService fuenteService;
 
 
     @Autowired
-    public HechosController(IHechosService hechosService) {
+    public HechosController(IHechosService hechosService, IFuenteService fuenteService) {
         this.hechosService = hechosService;
+        this.fuenteService = fuenteService;
     }
 
     @GetMapping
@@ -26,8 +30,8 @@ public class HechosController {
     }
 
     @GetMapping("/{id}")
-    public Mono<HechoOutputDTO> buscarHechoPorId(@PathVariable Long id) {
-        return hechosService.buscarPorId(id);
+    public Mono<HechoOutputDTO> buscarHechoPorId(@PathVariable Long id, @RequestBody FuenteInputDTO fuente) {
+        return hechosService.buscarPorId(id, fuente);
     }
 
     @GetMapping("/filtrados")

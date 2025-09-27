@@ -1,12 +1,16 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.FuenteDDS;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteDDS;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class FuenteFactory {
+    private final IFuentesRepositoryJPA fuenteRepository;
 
 
     @Value("${api.ddsi.base-url}")
@@ -15,12 +19,17 @@ public class FuenteFactory {
 
 
     public FuenteMetaMapa nuevaFuenteMetaMapa(String nombre, String baseUrl) {
-
-        return new FuenteMetaMapa(nombre,baseUrl);
+        return fuenteRepository.findMetaMapaByBaseUrl(baseUrl)
+                .orElseGet(() -> fuenteRepository.save(new FuenteMetaMapa(nombre, baseUrl)));
     }
 
     public FuenteDDS nuevaFuenteDDS(String nombre) {
-        return new FuenteDDS(nombre, ddsBaseUrl);
+        return fuenteRepository.findExternaByBaseUrl(ddsBaseUrl)
+                .orElseGet(() -> fuenteRepository.save(new FuenteDDS(nombre, ddsBaseUrl)));
     }
 
+
+
 }
+
+
