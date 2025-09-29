@@ -15,7 +15,7 @@ public interface IHechoInputDTO {
         Long getId();
         String getTitulo();
         String getDescripcion();
-        CategoriaInputDTO getCategoria();
+        String getCategoria();
         UbicacionInputDTO getUbicacion();
         LocalDate getFechaDeOcurrencia();
         LocalDateTime getFechaDeCarga();

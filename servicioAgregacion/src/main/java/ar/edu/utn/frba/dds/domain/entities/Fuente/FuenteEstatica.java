@@ -61,8 +61,10 @@ public class FuenteEstatica extends Fuente {
 
         return this.webClient.get()
                 .uri(uriBuilder -> {
+                    uriBuilder.path("/api/fuenteEstatica/hechos");
                     if (ultimaActualizacion != null) {
-                        return uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME)).build();
+                        uriBuilder.queryParam("fechaDeCarga",
+                                ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
                     }
                     return uriBuilder.build();
                 })
@@ -71,6 +73,8 @@ public class FuenteEstatica extends Fuente {
                 .collectList()
                 .blockOptional()
                 .orElse(Collections.emptyList());
+
+
     }
 
     public void actualizarHechos(List<Hecho> hechosNuevos) {

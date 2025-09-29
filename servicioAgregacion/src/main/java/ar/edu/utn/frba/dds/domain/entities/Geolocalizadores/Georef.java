@@ -3,10 +3,14 @@ package ar.edu.utn.frba.dds.domain.entities.Geolocalizadores;
 import ar.edu.utn.frba.dds.domain.dtos.input.geolocalizador.GeorefCoordenadasInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.geolocalizador.GeorefDireccionInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import ar.edu.utn.frba.dds.services.impl.HechosService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class Georef implements IGeoLocalizador {
 
+    private static final Logger logger = LoggerFactory.getLogger(Georef.class);
     private final WebClient webClient;
 
     public Georef() {
@@ -41,6 +45,9 @@ public class Georef implements IGeoLocalizador {
     }
 
     public Ubicacion obtenerDireccion(Ubicacion ubicacion) {
+        if (ubicacion.getLatitud() == null || ubicacion.getLongitud() == null) {
+            throw new IllegalArgumentException("Latitud o longitud nulas en Ubicacion: " + ubicacion);
+        }
         GeorefDireccionInputDTO georefDireccionDTO =  this.webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/ubicacion")
@@ -51,11 +58,19 @@ public class Georef implements IGeoLocalizador {
                 .bodyToMono(GeorefDireccionInputDTO.class)
                 .block();
 
-        if (georefDireccionDTO.getProvincia() == null || georefDireccionDTO.getDepartamento() == null){
-            throw new RuntimeException("Latitud y longitud no validos");
+        if (georefDireccionDTO == null) {
+            throw new RuntimeException("No se pudo obtener respuesta del servicio Georef");
         }
 
-        ubicacion.setProvincia( georefDireccionDTO.getProvincia() );
+        if (georefDireccionDTO.getProvincia() == null) {
+            ubicacion.setProvincia("DESCONOCIDA");
+            ubicacion.setDepartamento(null);
+            ubicacion.setCalle(null);
+            ubicacion.setNumero(null);
+        } else {
+            ubicacion.setProvincia(georefDireccionDTO.getProvincia());
+        }
+
         ubicacion.setDepartamento( georefDireccionDTO.getDepartamento() );
         return ubicacion;
     }

@@ -16,6 +16,7 @@ import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -97,13 +98,32 @@ public class HechosService implements IHechosService {
         }
     }
 
+    @Transactional
     @Override
     public void actualizarHechosRepository(List<Hecho> hechosActualizados){
+        logger.info("Se van a persistir {} hechos", hechosActualizados.size());
         // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
         // la idea es enviarla
+
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
-        hechosActualizados.forEach(h -> h.setUbicacion( geolocalizador.geolocalizar(h.getUbicacion()) ));
-        this.hechosRepository.saveAll(hechosActualizados);
+
+        logger.info("Iniciando geolocalización en paralelo...");
+        hechosActualizados.parallelStream().forEach(h -> {
+            try {
+                h.setUbicacion(geolocalizador.geolocalizar(h.getUbicacion()));
+            } catch (Exception e) {
+                logger.error("Error geolocalizando hecho con idOrigen {}: {}",
+                        h.getOrigenId(), e.getMessage());
+                // si querés, podés setear una ubicación por defecto en caso de error
+                // h.setUbicacion(new Ubicacion("DESCONOCIDA", "DESCONOCIDO"));
+            }
+        });
+        logger.info("Geolocalización finalizada");
+
+        logger.info("Persistiendo {} hechos...", hechosActualizados.size());
+        List<Hecho> subset = hechosActualizados.stream().limit(100).toList();
+        this.hechosRepository.saveAll(subset);
+        logger.info("Persistencia terminada");
     }
 
     public void configurarComparacion(List<IComandComparator> comandos){

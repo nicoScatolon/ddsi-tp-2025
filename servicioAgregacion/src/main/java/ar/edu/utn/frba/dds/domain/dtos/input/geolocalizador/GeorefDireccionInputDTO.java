@@ -24,7 +24,9 @@ public class GeorefDireccionInputDTO {
         Map<String, Object> departamentoMap = (Map<String, Object>) ubicacion.get("departamento");
         this.departamento = (String) departamentoMap.get("nombre");
 
-        this.municipio = (String) ubicacion.get("municipio");
+        Map<String, Object> municipioMap = (Map<String, Object>) ubicacion.get("municipio");
+        this.municipio = (String) municipioMap.get("nombre");
+
     }
 
 }
