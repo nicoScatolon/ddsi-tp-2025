@@ -12,6 +12,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.IComandComparator;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -100,30 +102,46 @@ public class HechosService implements IHechosService {
 
     @Transactional
     @Override
-    public void actualizarHechosRepository(List<Hecho> hechosActualizados){
+    public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
+        final long t0 = System.currentTimeMillis();
         logger.info("Se van a persistir {} hechos", hechosActualizados.size());
-        // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
-        // la idea es enviarla
 
+        // 1) categorías
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
+        logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-        logger.info("Iniciando geolocalización en paralelo...");
-        hechosActualizados.parallelStream().forEach(h -> {
-            try {
-                h.setUbicacion(geolocalizador.geolocalizar(h.getUbicacion()));
-            } catch (Exception e) {
-                logger.error("Error geolocalizando hecho con idOrigen {}: {}",
-                        h.getOrigenId(), e.getMessage());
-                // si querés, podés setear una ubicación por defecto en caso de error
-                // h.setUbicacion(new Ubicacion("DESCONOCIDA", "DESCONOCIDO"));
-            }
-        });
-        logger.info("Geolocalización finalizada");
+        // 2) preparar ubicaciones y filtrar nulos
+        List<Ubicacion> ubicaciones = hechosActualizados.stream()
+                .map(Hecho::getUbicacion)
+                .filter(Objects::nonNull)        // evitá NPE
+                .toList();
 
+        // 3) geolocalización por lotes
+        logger.info("Geolocalizando {} ubicaciones en batch...", ubicaciones.size());
+        long tg0 = System.currentTimeMillis();
+        try {
+            // bloqueamos aquí para tener todo georreferenciado antes de persistir
+            geolocalizador.geolocalizarBatchAsync(ubicaciones).block();
+        } catch (Exception e) {
+            logger.error("Fallo geolocalizando en batch: {}", e.getMessage(), e);
+            // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
+        }
+        logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
+
+        // 4) persistir en batches para no saturar la BD
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());
-        List<Hecho> subset = hechosActualizados.stream().limit(100).toList();
-        this.hechosRepository.saveAll(subset);
-        logger.info("Persistencia terminada");
+        final int BATCH_DB = 1000;
+        int from = 0;
+        while (from < hechosActualizados.size()) {
+            int to = Math.min(from + BATCH_DB, hechosActualizados.size());
+            List<Hecho> slice = hechosActualizados.subList(from, to);
+            this.hechosRepository.saveAll(slice);
+            from = to;
+            logger.info("Persistidos {}/{}", to, hechosActualizados.size());
+        }
+        logger.info("Persistencia terminada en {} ms (total {} ms)",
+                (System.currentTimeMillis() - tg0),
+                (System.currentTimeMillis() - t0));
     }
 
     public void configurarComparacion(List<IComandComparator> comandos){
