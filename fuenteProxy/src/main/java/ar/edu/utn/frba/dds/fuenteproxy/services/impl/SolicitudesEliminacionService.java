@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ISolicitudesEliminacionService;
 import org.springframework.stereotype.Service;
@@ -18,10 +20,12 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoInputDTO solicitud) {
-        return Mono.fromCallable(fuentesRepository::findAllMetaMapa)
+        return Mono.fromCallable(() -> fuentesRepository.findByTipo(TipoFuenteProxy.METAMAPA))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapMany(Flux::fromIterable)
+                .ofType(FuenteMetaMapa.class)
                 .concatMap(f -> f.crearSolicitudEliminacion(solicitud).onErrorResume(e -> Mono.empty()))
                 .then();
     }
+
 }

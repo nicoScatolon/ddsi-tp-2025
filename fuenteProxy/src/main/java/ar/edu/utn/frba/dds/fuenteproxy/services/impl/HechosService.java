@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.*;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.Fuente;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
 
@@ -16,7 +17,6 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IHechosRepositoryJPA;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
-import ar.edu.utn.frba.dds.services.IFuentesService;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -36,25 +36,24 @@ public class HechosService implements IHechosService {
     private final IFuentesRepositoryJPA fuentesRepository;
     private final ICategoriaService categoriaService;
     private final IHechosRepositoryJPA hechosRepository;
-    private final IFuentesService fuentesService;
 
-    public HechosService(IFuentesRepositoryJPA fuentesRepository, ICategoriaService categoriaService, IHechosRepositoryJPA hechosRepository, IFuentesService fuentesService) {
+
+    public HechosService(IFuentesRepositoryJPA fuentesRepository, ICategoriaService categoriaService, IHechosRepositoryJPA hechosRepository) {
         this.fuentesRepository = fuentesRepository;
         this.categoriaService = categoriaService;
         this.hechosRepository = hechosRepository;
-        this.fuentesService = fuentesService;
     }
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarTodos() {
         Flux<HechoOutputDTO> desdeMetaMapa =
-                Mono.fromCallable(fuentesRepository::findAllMetaMapa)
+                Mono.fromCallable(() -> fuentesRepository.findByTipo(TipoFuenteProxy.METAMAPA))
                         .subscribeOn(Schedulers.boundedElastic())
                         .flatMapMany(Flux::fromIterable)
-                        .flatMap(Fuente::getHechos)
+                        .ofType(FuenteMetaMapa.class)
+                        .flatMap(FuenteMetaMapa::getHechos)
                         .flatMapIterable(list -> list)
                         .map(dto -> DTOConverter.mapHechoInputToHechoOutput(dto, categoriaService));
-
 
         Flux<HechoOutputDTO> desdeDb =
                 Mono.fromCallable(hechosRepository::findAll)
@@ -64,6 +63,7 @@ public class HechosService implements IHechosService {
 
         return Flux.concat(desdeMetaMapa, desdeDb).collectList();
     }
+
 
 
 
@@ -87,14 +87,16 @@ public class HechosService implements IHechosService {
 
     @Override
     public Mono<List<HechoOutputDTO>> buscarConFiltros(HechosFilterDTO filtros) {
-        return Mono.fromCallable(fuentesRepository::findAllMetaMapa)
+        return Mono.fromCallable(() -> fuentesRepository.findByTipo(TipoFuenteProxy.METAMAPA))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapMany(Flux::fromIterable)
+                .ofType(FuenteMetaMapa.class)
                 .flatMap(f -> f.buscarHechos(filtros))
                 .flatMapIterable(list -> list)
                 .map(dto -> DTOConverter.mapHechoInputToHechoOutput(dto, categoriaService))
                 .collectList();
     }
+
 
 
     @Override
@@ -113,7 +115,7 @@ public class HechosService implements IHechosService {
 
     @Override
     public void actualizarHechosScheduler() {
-        List<Fuente> externas = fuentesRepository.findAllExternas();
+        List<Fuente> externas = fuentesRepository.findByTipo(TipoFuenteProxy.EXTERNA);
         if (externas.isEmpty()) return;
 
         for (Fuente fuente : externas) {

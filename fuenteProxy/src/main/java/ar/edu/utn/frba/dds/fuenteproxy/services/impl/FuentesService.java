@@ -1,34 +1,31 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.Fuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteDDS;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.IFuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
+import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
+import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
 @Data
 @Service
-public class FuenteService implements IFuenteService {
+public class FuentesService implements IFuentesService {
     private IFuentesRepositoryJPA fuentesRepository;
     private FuenteFactory fuenteFactory;
-    private HechosService hechosService;
+    private IHechosService hechosService;
 
-    public FuenteService(IFuentesRepositoryJPA fuentesRepository,
-                         FuenteFactory fuenteFactory,
-                         HechosService hechosService) {
+    public FuentesService(IFuentesRepositoryJPA fuentesRepository,
+                          FuenteFactory fuenteFactory,
+                          IHechosService hechosService) {
         this.fuentesRepository = fuentesRepository;
         this.fuenteFactory = fuenteFactory;
         this.hechosService = hechosService;
@@ -68,4 +65,6 @@ public class FuenteService implements IFuenteService {
     public void eliminarFuente(String nombre) {
         fuentesRepository.deleteByNombre(nombre);
     }
+
+
 }

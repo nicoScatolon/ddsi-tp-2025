@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteDDS;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +20,14 @@ public class FuenteFactory {
 
 
     public FuenteMetaMapa nuevaFuenteMetaMapa(String nombre, String baseUrl) {
-        return fuenteRepository.findMetaMapaByBaseUrl(baseUrl)
+        return fuenteRepository.findByTipoAndBaseUrl(TipoFuenteProxy.METAMAPA, baseUrl)
+                .map(FuenteMetaMapa.class::cast)
                 .orElseGet(() -> fuenteRepository.save(new FuenteMetaMapa(nombre, baseUrl)));
     }
 
     public FuenteDDS nuevaFuenteDDS(String nombre) {
-        return fuenteRepository.findExternaByBaseUrl(ddsBaseUrl)
+        return fuenteRepository.findByTipoAndBaseUrl(TipoFuenteProxy.EXTERNA,ddsBaseUrl)
+                .map(FuenteDDS.class::cast)
                 .orElseGet(() -> fuenteRepository.save(new FuenteDDS(nombre, ddsBaseUrl)));
     }
 

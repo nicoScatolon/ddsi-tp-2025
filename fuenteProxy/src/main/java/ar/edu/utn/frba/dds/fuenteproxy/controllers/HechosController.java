@@ -3,7 +3,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.controllers;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.services.IFuenteService;
+import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +15,11 @@ import java.util.List;
 @RequestMapping("/api/fuenteProxy/hechos")
 public class HechosController {
     private final IHechosService hechosService;
-    private final IFuenteService fuenteService;
+    private final IFuentesService fuenteService;
 
 
     @Autowired
-    public HechosController(IHechosService hechosService, IFuenteService fuenteService) {
+    public HechosController(IHechosService hechosService, IFuentesService fuenteService) {
         this.hechosService = hechosService;
         this.fuenteService = fuenteService;
     }

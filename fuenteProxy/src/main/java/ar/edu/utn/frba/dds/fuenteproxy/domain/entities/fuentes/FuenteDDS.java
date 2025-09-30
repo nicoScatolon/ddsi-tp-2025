@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.LoginRequestDTO;
@@ -20,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 
 @Entity
-@DiscriminatorValue("EXTERNA")
+@DiscriminatorValue("DDS")
 public class FuenteDDS extends Fuente {
 
 
@@ -91,31 +92,36 @@ public class FuenteDDS extends Fuente {
                 .bodyToMono(PaginaHechosResponseDdsDTO.class)
                 .flatMap(primerPagina -> {
                     int lastPage = primerPagina.getLastPage();
-                    List<HechoInputDTO> hechosTotales = new ArrayList<>(primerPagina.getData());
+                    List<HechoInputDTO> hechosTotales = primerPagina.getData().stream()
+                            .map(DTOConverter::mapDdsToHechoInput)
+                            .toList();
 
                     if (lastPage <= 1) {
                         return Mono.just(hechosTotales);
                     }
 
-                    List<Mono<PaginaHechosResponseDdsDTO>> llamadasRestantes = new ArrayList<>();
+                    List<Mono<PaginaHechosResponseDdsDTO>> llamadas = new ArrayList<>();
                     for (int page = 2; page <= lastPage; page++) {
-                        Mono<PaginaHechosResponseDdsDTO> llamada = webClient.get()
+                        llamadas.add(webClient.get()
                                 .uri("/api/desastres?page=" + page)
                                 .headers(h -> h.setBearerAuth(token))
                                 .retrieve()
-                                .bodyToMono(PaginaHechosResponseDdsDTO.class);
-                        llamadasRestantes.add(llamada);
+                                .bodyToMono(PaginaHechosResponseDdsDTO.class));
                     }
 
-                    return Mono.zip(llamadasRestantes, resultados -> {
+                    return Mono.zip(llamadas, resultados -> {
                         for (Object resultado : resultados) {
                             PaginaHechosResponseDdsDTO pagina = (PaginaHechosResponseDdsDTO) resultado;
-                            hechosTotales.addAll(pagina.getData());
+                            pagina.getData().stream()
+                                    .map(DTOConverter::mapDdsToHechoInput)
+                                    .forEach(hechosTotales::add);
                         }
                         return hechosTotales;
                     });
                 });
     }
+
+
 
 
 

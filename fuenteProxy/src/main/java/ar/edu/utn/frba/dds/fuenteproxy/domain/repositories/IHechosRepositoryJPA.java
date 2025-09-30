@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IHechosRepositoryJPA extends JpaRepository<Hecho, Long> {
-    Optional<Hecho> findById_original(String idOriginal);
+    Optional<Hecho> findByIdOriginal(String idOriginal);
     Optional<Hecho> findByIdOriginalAndFuente(String idOriginal, Fuente fuente);
 
     List<String> findAllIdOriginalByFuente(Fuente fuente);

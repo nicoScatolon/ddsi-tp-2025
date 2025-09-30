@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.dtos;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.DdsHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.UbicacionInputDTO;
@@ -14,6 +15,11 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteDDS;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.impl.FuenteFactory;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 
 public final class DTOConverter {
@@ -97,29 +103,43 @@ public final class DTOConverter {
 
     public static Hecho mapToHecho(HechoInputDTO dto, Fuente fuente) {
         Hecho h = new Hecho();
-        h.setId_original(String.valueOf(dto.getId()));
-        h.setNombre(dto.getTitulo());
-        h.setDescripcion(dto.getDescripcion());
-        h.setCategoria(dto.getCategoria());
+        h.setIdOriginal(dto != null && dto.getId() != null ? String.valueOf(dto.getId()) : null);
+        h.setNombre(dto != null ? dto.getTitulo() : null);
+        h.setDescripcion(dto != null ? dto.getDescripcion() : null);
+        h.setCategoria(dto != null ? dto.getCategoria() : null);
 
-        Ubicacion u = new Ubicacion();
-        u.setProvincia(dto.getUbicacion().getProvincia());
-        u.setDepartamento(dto.getUbicacion().getDepartamento());
-        u.setCalle(dto.getUbicacion().getCalle());
-        u.setNumero(dto.getUbicacion().getNumero());
-        u.setLatitud(dto.getUbicacion().getLatitud());
-        u.setLongitud(dto.getUbicacion().getLongitud());
-        h.setUbicacion(u);
+        if (dto != null && dto.getUbicacion() != null) {
+            UbicacionInputDTO ubicacionDto = dto.getUbicacion();
+            Ubicacion u = new Ubicacion();
+            u.setProvincia(ubicacionDto.getProvincia());
+            u.setDepartamento(ubicacionDto.getDepartamento());
+            u.setCalle(ubicacionDto.getCalle());
+            u.setNumero(ubicacionDto.getNumero());
+            u.setLatitud(ubicacionDto.getLatitud());
+            u.setLongitud(ubicacionDto.getLongitud());
+            h.setUbicacion(u);
+        } else {
+            h.setUbicacion(null);
+        }
 
-        h.setFechaDeOcurrencia(dto.getFechaDeOcurrencia());
-        h.setFechaDeCarga(dto.getFechaDeCarga());
+        h.setFechaDeCarga(dto != null && dto.getFechaDeCarga() != null
+                ? dto.getFechaDeCarga()
+                : java.time.LocalDateTime.now());
+
+        h.setFechaDeOcurrencia(dto != null && dto.getFechaDeOcurrencia() != null
+                ? dto.getFechaDeOcurrencia()
+                : null);
+
+
         h.setEliminado(false);
         h.setFuente(fuente);
+
         return h;
     }
 
 
     public static UbicacionOutputDTO mapUbicacionToUbicacionOutput(Ubicacion u) {
+        if (u == null) return null;
         return UbicacionOutputDTO.builder()
                 .provincia(u.getProvincia())
                 .departamento(u.getDepartamento())
@@ -127,6 +147,43 @@ public final class DTOConverter {
                 .numero(u.getNumero())
                 .latitud(u.getLatitud())
                 .longitud(u.getLongitud())
+                .build();
+    }
+
+
+
+
+    public static HechoInputDTO mapDdsToHechoInput(DdsHechoInputDTO dds) {
+        if (dds == null) return null;
+
+        UbicacionInputDTO ubi = null;
+        if (dds.getLatitud() != null || dds.getLongitud() != null) {
+            ubi = UbicacionInputDTO.builder()
+                    .latitud(dds.getLatitud())
+                    .longitud(dds.getLongitud())
+                    .build();
+        }
+
+        ZoneId BA = ZoneId.of("America/Argentina/Buenos_Aires");
+
+        LocalDateTime fechaOcur = dds.getFechaHecho()
+                .atZoneSameInstant(BA)
+                .toLocalDateTime();
+
+        LocalDateTime fechaCarga = (dds.getCreatedAt() != null
+                ? dds.getCreatedAt()
+                : OffsetDateTime.now(ZoneOffset.UTC))
+                .atZoneSameInstant(BA)
+                .toLocalDateTime();
+
+        return HechoInputDTO.builder()
+                .id(dds.getId())
+                .titulo(dds.getTitulo())
+                .descripcion(dds.getDescripcion())
+                .categoria(dds.getCategoria())
+                .ubicacion(ubi)
+                .fechaDeOcurrencia(fechaOcur)
+                .fechaDeCarga(fechaCarga)
                 .build();
     }
 

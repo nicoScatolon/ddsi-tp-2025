@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo_fuente")
+@DiscriminatorColumn(name = "fuente")
 @Table(name = "fuentes")
 public abstract class Fuente implements IFuente {
 
@@ -35,7 +35,8 @@ public abstract class Fuente implements IFuente {
     @Column(name = "habilitada", nullable = false)
     private boolean habilitada = true;
 
-    @Transient
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false)
     private TipoFuenteProxy tipo;
 
     public abstract Mono<List<HechoInputDTO>> getHechos();

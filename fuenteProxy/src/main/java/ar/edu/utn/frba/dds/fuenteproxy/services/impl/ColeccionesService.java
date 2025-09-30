@@ -5,8 +5,8 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteMetaMapa;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.TipoFuenteProxy;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesSelector;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICollecionesService;
 import lombok.Data;
@@ -27,25 +27,32 @@ public class ColeccionesService implements ICollecionesService {
 
     @Override
     public Mono<List<ColeccionInputDTO>> traerTodasLasColecciones() {
-        return Mono.fromCallable(fuentesRepository::findAllMetaMapa)
+        return Flux.defer(() -> Flux.fromIterable(
+                        fuentesRepository.findByTipo(TipoFuenteProxy.METAMAPA)
+                ))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMapMany(Flux::fromIterable)
+                .ofType(FuenteMetaMapa.class)
                 .flatMap(FuenteMetaMapa::buscarTodasLasColecciones)
-                .flatMapIterable(lista -> lista)
+                .flatMapIterable(list -> list)
                 .collectList();
     }
+
+
 
     @Override
     public Mono<List<HechoOutputDTO>> traerHechosDeColeccion(String handleColeccion) {
         HechosFilterDTO filtros = new HechosFilterDTO();
 
-        return Mono.fromCallable(fuentesRepository::findAllMetaMapa)
+        return Flux.defer(() -> Flux.fromIterable(
+                        fuentesRepository.findByTipo(TipoFuenteProxy.METAMAPA)
+                ))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMapMany(Flux::fromIterable)
+                .ofType(FuenteMetaMapa.class)
                 .concatMap(f -> f.buscarHechosPorColeccion(handleColeccion, false, filtros))
-                .flatMapIterable(lista -> lista)
+                .flatMapIterable(list -> list)
                 .map(dto -> DTOConverter.mapHechoInputToHechoOutput(dto, categoriaService))
                 .collectList();
     }
+
 }
 
