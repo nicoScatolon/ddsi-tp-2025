@@ -70,8 +70,6 @@ public class HechosService implements IHechosService {
     @Override
     public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
-        //TODO DEBE DEVOLVER LOS HECHOS DE PROXY ADEMAS DE LOS PERSISTIDOS
-        // OSEA IR POR CADA FUENTE PROXY PIDIENDO LOS HECHOS ALMACENADOS EN SU CACHE
 
         Categoria categoriaEntidad = null; //la inicializo en null
 
@@ -102,7 +100,7 @@ public class HechosService implements IHechosService {
         // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
         // la idea es enviarla
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
-        hechosActualizados.forEach(h -> h.setUbicacion( geolocalizador.geolocalizar(h.getUbicacion()) ));
+        //hechosActualizados.forEach(h -> h.setUbicacion( geolocalizador.geolocalizar(h.getUbicacion()) ));
         this.hechosRepository.saveAll(hechosActualizados);
     }
 
@@ -111,6 +109,7 @@ public class HechosService implements IHechosService {
         comparator.setListaComandos(comandos);
         //TODO para conectarse a front deberiamos asociar enums/strings con cada comando para que se puedan ver por pantalla,
         //  y recibiriamos eso por la conexion no el comando en si
+        //TODO hacerlo por properties y listo
     }
 
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
