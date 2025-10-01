@@ -17,7 +17,6 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA
 import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IHechosRepositoryJPA;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
-import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -98,18 +97,17 @@ public class HechosService implements IHechosService {
     }
 
 
-
     @Override
-    @Transactional
-    public void cargarHechosFuente(Fuente fuente) {
-        if (fuente.getTipo() != TipoFuenteProxy.EXTERNA) return;
+    public Mono<Void> cargarHechosFuente(Fuente fuente) {
+        if (fuente.getTipo() != TipoFuenteProxy.EXTERNA) return Mono.empty();
 
-        fuente.getHechos()
+        return fuente.getHechos()
                 .flatMapMany(Flux::fromIterable)
                 .map(dto -> DTOConverter.mapToHecho(dto, fuente))
-                .doOnNext(hechosRepository::save)
-                .then()
-                .block();
+                .buffer(50)
+                .doOnNext(hechosRepository::saveAll)
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
 
 

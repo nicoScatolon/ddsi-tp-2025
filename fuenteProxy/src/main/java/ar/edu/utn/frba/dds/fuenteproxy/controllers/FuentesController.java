@@ -28,11 +28,12 @@ public class FuentesController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/dds")
+    @PostMapping("/fuentes/dds")
     public ResponseEntity<Void> agregarFuenteDDS(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteDDS(dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.accepted().build();
     }
+
 
     @DeleteMapping
     public void eliminarFuente(@RequestBody FuenteInputDTO dto) {

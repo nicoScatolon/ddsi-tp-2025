@@ -55,11 +55,14 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public void agregarFuenteDDS(FuenteInputDTO dto) {
+        boolean existsFuenteByBaseUrl = fuentesRepository.existsFuenteByBaseUrl(dto.getBaseUrl());
         FuenteDDS nuevaFuente = fuenteFactory.nuevaFuenteDDS(dto.getNombre());
-
-        hechosService.cargarHechosFuente(nuevaFuente);
-
+        if(!existsFuenteByBaseUrl) {
+            hechosService.cargarHechosFuente(nuevaFuente).subscribe();
+        }
     }
+
+
 
     @Override
     public void eliminarFuente(String nombre) {

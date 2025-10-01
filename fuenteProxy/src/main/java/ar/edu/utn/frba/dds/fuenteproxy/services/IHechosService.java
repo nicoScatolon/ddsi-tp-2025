@@ -20,7 +20,7 @@ public interface IHechosService {
 
     Mono<List<HechoOutputDTO>> buscarConFiltros(HechosFilterDTO filtros);
 
-    public void cargarHechosFuente(Fuente fuente);
+    Mono<Void> cargarHechosFuente(Fuente fuente);
 
     void actualizarHechosScheduler();
 }
