@@ -4,8 +4,10 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

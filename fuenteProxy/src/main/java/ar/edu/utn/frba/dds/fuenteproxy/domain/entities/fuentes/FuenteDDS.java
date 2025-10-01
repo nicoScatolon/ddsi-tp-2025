@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.DdsHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.PaginaHechosResponseDdsDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.LoginRequestDTO;
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -49,15 +51,15 @@ public class FuenteDDS extends Fuente {
     private void iniciarFuente(){
         this.setTipo(TipoFuenteProxy.EXTERNA);
         this.webClient = WebClient.builder().baseUrl(getBaseUrl()).build();
-        this.token = this.login("ddsi@gmail.com", "ddsi2025*")
+        this.token = this.login()
                 .blockOptional()
                 .orElseThrow(() -> new RuntimeException("No se pudo obtener el token de login"));
     }
 
 
 
-    private Mono<String> login(String email, String password) {
-        LoginRequestDTO request = new LoginRequestDTO(email, password);
+    private Mono<String> login() {
+        LoginRequestDTO request = new LoginRequestDTO("ddsi@gmail.com", "ddsi2025*");
 
         return webClient.post()
                 .uri("/api/login")
@@ -80,50 +82,44 @@ public class FuenteDDS extends Fuente {
 
 
 
-
-
-
     @Transient
     public Mono<List<HechoInputDTO>> getHechos() {
         return webClient.get()
-                .uri("/api/desastres?page=1")
+                .uri(ub -> ub.path("/api/desastres").queryParam("page", 1).build())
                 .headers(h -> h.setBearerAuth(token))
                 .retrieve()
+                .onStatus(s -> s.value() == 401 || s.value() == 403,
+                        r -> Mono.error(new RuntimeException("No autorizado al listar desastres (página 1)")))
                 .bodyToMono(PaginaHechosResponseDdsDTO.class)
-                .flatMap(primerPagina -> {
-                    int lastPage = primerPagina.getLastPage();
-                    List<HechoInputDTO> hechosTotales = primerPagina.getData().stream()
+                .flatMap(p1 -> {
+                    List<HechoInputDTO> acumulado = p1.getData().stream()
                             .map(DTOConverter::mapDdsToHechoInput)
                             .toList();
 
-                    if (lastPage <= 1) {
-                        return Mono.just(hechosTotales);
-                    }
+                    int last = p1.getLastPage();
+                    if (last <= 1) return Mono.just(acumulado);
 
-                    List<Mono<PaginaHechosResponseDdsDTO>> llamadas = new ArrayList<>();
-                    for (int page = 2; page <= lastPage; page++) {
-                        llamadas.add(webClient.get()
-                                .uri("/api/desastres?page=" + page)
-                                .headers(h -> h.setBearerAuth(token))
-                                .retrieve()
-                                .bodyToMono(PaginaHechosResponseDdsDTO.class));
-                    }
-
-                    return Mono.zip(llamadas, resultados -> {
-                        for (Object resultado : resultados) {
-                            PaginaHechosResponseDdsDTO pagina = (PaginaHechosResponseDdsDTO) resultado;
-                            pagina.getData().stream()
-                                    .map(DTOConverter::mapDdsToHechoInput)
-                                    .forEach(hechosTotales::add);
-                        }
-                        return hechosTotales;
-                    });
+                    return Flux.range(2, last - 1)
+                            .concatMap(page ->
+                                    webClient.get()
+                                            .uri(ub -> ub.path("/api/desastres").queryParam("page", page).build())
+                                            .headers(h -> h.setBearerAuth(token))
+                                            .retrieve()
+                                            .onStatus(s -> s.value() == 401 || s.value() == 403,
+                                                    r -> Mono.error(new RuntimeException("No autorizado al listar desastres (página " + page + ")")))
+                                            .bodyToMono(PaginaHechosResponseDdsDTO.class)
+                                            .map(resp -> resp.getData().stream()
+                                                    .map(DTOConverter::mapDdsToHechoInput)
+                                                    .toList())
+                            )
+                            .collectList()
+                            .map(listas -> {
+                                List<HechoInputDTO> todos = new ArrayList<>(acumulado);
+                                listas.forEach(todos::addAll);
+                                return todos;
+                            });
                 });
     }
-
-
-
-
 
 
     public Mono<HechoInputDTO> getHechoPorId(Long id) {
@@ -133,7 +129,8 @@ public class FuenteDDS extends Fuente {
                 .retrieve()
                 .onStatus(status -> status.value() == 404,
                         response-> Mono.error(new RuntimeException("Desastre no encontrado con ID " + id)))
-                .bodyToMono(HechoInputDTO.class);
+                .bodyToMono(DdsHechoInputDTO.class)
+                .map(DTOConverter::mapDdsToHechoInput);
 
     }
 
