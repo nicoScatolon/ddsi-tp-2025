@@ -11,6 +11,19 @@ public class HomeController {
         return "redirect:/index";
     }
 
+    @GetMapping("/index")
+    public String index(Model model) {
+        model.addAttribute("titulo", "Home");
+        return "index";
+    }
+
+
+    @GetMapping("/legales")
+    public String legales(Model model) {
+        model.addAttribute("titulo", "Información legal y Privacidad");
+        return "legales";
+    }
+
     @GetMapping("/404")
     public String notFound(Model model) {
         model.addAttribute("titulo", "No encontrado");
