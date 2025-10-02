@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
@@ -147,6 +148,13 @@ public class DTOConverter {
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
                 .codigoCategoria(categoriaInputDTO.getCodigoCat())
+                .build();
+    }
+
+    public static Categoria categoriaInputDTO(String categoriaInputDTO) {
+        return Categoria.builder()
+                .nombre(categoriaInputDTO)
+                .codigoCategoria(NormalizadorTexto.normalizarTexto(categoriaInputDTO))
                 .build();
     }
 
