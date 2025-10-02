@@ -19,11 +19,11 @@ public class HechoInputDTO {
     private Long id;
     private String titulo;
     private String descripcion;
-    private CategoriaInputDTO categoriaInputDTO;
-    private UbicacionInputDTO ubicacionInputDTO;
+    private CategoriaInputDTO categoria;
+    private UbicacionInputDTO ubicacion;
     private LocalDate fechaDeOcurrencia;
     private Boolean esAnonimo;
 
     private List<ContenidoMultimedia> contenidoMultimedia;
-    private ContribuyenteInputDTO contribuyenteInputDTO;
+    private ContribuyenteInputDTO contribuyente;
 }

@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.impl.FuentesService;
@@ -32,5 +33,10 @@ public class FuentesController {
     @DeleteMapping("/privada/{fuenteId}")
     public ResponseEntity<Void> eliminarUnaFuente (@RequestParam long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
+    }
+
+    @GetMapping("/test/fuente")
+    public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
+        return fuenteService.testActualizarFuente(fuenteId);
     }
 }

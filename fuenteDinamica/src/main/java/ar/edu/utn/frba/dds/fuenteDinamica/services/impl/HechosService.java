@@ -93,11 +93,11 @@ public class HechosService implements IHechosService {
         return Hecho.builder()
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
-                .categoria(this.categoriaInputDTO(hechoDTO.getCategoriaInputDTO()))
-                .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacionInputDTO()))
+                .categoria(this.categoriaInputDTO(hechoDTO.getCategoria()))
+                .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacion()))
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyenteInputDTO()))
+                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyente()))
                 .esAnonimo(hechoDTO.getEsAnonimo())
                 .build();
     }

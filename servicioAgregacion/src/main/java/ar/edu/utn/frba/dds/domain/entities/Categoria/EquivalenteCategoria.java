@@ -3,7 +3,7 @@ package ar.edu.utn.frba.dds.domain.entities.Categoria;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto.normalizarTexto;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto.normalizarTexto;
 
 
 @Setter

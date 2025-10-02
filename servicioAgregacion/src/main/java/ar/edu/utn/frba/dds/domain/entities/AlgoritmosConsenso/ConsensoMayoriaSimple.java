@@ -12,10 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Entity
-@DiscriminatorValue(("MAYORIASIMPLE"))
 
-public class ConsensoMayoriaSimple extends AlgoritmoConsenso{
+public class ConsensoMayoriaSimple implements IAlgoritmoConsenso {
     private TipoAlgoritmoConsenso tipo = TipoAlgoritmoConsenso.MAYORIASIMPLE;
 
     @Override

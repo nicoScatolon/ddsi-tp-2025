@@ -3,20 +3,20 @@ package ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso;
 
 public enum TipoAlgoritmoConsenso {
     ABSOLUTO {
-        public AlgoritmoConsenso obtenerConsenso(){
+        public IAlgoritmoConsenso obtenerConsenso(){
             return new ConsensoAbsoluto();
         }
     },
     MAYORIASIMPLE {
-        public AlgoritmoConsenso obtenerConsenso(){
+        public IAlgoritmoConsenso obtenerConsenso(){
             return new ConsensoMayoriaSimple();
         }
     },
     MULTIPLEMENCION {
-        public AlgoritmoConsenso obtenerConsenso(){
+        public IAlgoritmoConsenso obtenerConsenso(){
             return new ConsensoMultipleMencion();
         }
     };
 
-    public abstract AlgoritmoConsenso obtenerConsenso();
+    public abstract IAlgoritmoConsenso obtenerConsenso();
 }

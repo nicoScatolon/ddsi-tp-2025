@@ -11,7 +11,6 @@ import lombok.*;
 
 @Embeddable
 public class Ubicacion {
-
     @Column(name = "provincia")
     private String provincia;
 

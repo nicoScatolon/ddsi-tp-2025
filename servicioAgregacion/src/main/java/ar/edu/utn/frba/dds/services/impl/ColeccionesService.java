@@ -113,7 +113,7 @@ public class ColeccionesService implements IColeccionesService {
             return ResponseEntity.notFound().build();
         }
 
-        coleccion.setAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
+        coleccion.setIAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
         coleccionesRepository.save(coleccion);
         return ResponseEntity.ok().build();
     }

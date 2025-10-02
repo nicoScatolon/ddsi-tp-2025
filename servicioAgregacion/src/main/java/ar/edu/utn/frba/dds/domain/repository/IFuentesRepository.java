@@ -5,7 +5,9 @@ import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface IFuentesRepository extends JpaRepository<Fuente, Long> {
+    Optional<Fuente> findById(Long aLong);
 }

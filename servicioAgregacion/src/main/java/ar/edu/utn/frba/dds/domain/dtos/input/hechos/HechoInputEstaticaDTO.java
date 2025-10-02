@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HechoInputEstaticaDTO implements IHechoInputDTO{
+public class HechoInputEstaticaDTO{
     private Long id;
     private String titulo;
     private String descripcion;

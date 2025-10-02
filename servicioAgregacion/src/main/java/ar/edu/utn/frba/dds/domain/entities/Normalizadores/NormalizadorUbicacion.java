@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.domain.entities.normalizadores;
+package ar.edu.utn.frba.dds.domain.entities.Normalizadores;
 
 
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto.normalizarTexto;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto.normalizarTexto;
 
 
 public final class NormalizadorUbicacion {
@@ -57,7 +57,7 @@ public final class NormalizadorUbicacion {
 
     public static void normalizarUbicacion(UbicacionInputDTO dto) {
         if (dto == null || dto.getProvincia() == null || dto.getProvincia().isBlank()) {
-            throw new IllegalArgumentException("La provincia no puede ser nula o vacía.");
+            return; // puede pasar que no tenga provincia y esta bien, cuando es input puede llegar asi
         }
 
         String originalTrim = dto.getProvincia().trim();

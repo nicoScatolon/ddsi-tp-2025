@@ -1,10 +1,9 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.converters.AlgoritmoConcensoConverter;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.adapters.FuenteAdapter;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.*;
@@ -42,9 +41,8 @@ public class Coleccion {
     @OneToMany(mappedBy = "coleccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Criterio> listaCriterios = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "algoritmoConsenso_id")
-    private AlgoritmoConsenso algoritmoConsenso = null;
+    @Convert(converter = AlgoritmoConcensoConverter.class)
+    private IAlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
     @ManyToMany
@@ -70,7 +68,7 @@ public class Coleccion {
     @Transient
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
-    public Coleccion(String handle, String titulo, String descripcion, AlgoritmoConsenso algoritmoConsenso) {
+    public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -104,7 +102,6 @@ public class Coleccion {
         List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
         this.listaHechos.removeAll(hechosFuenteEliminada);
         this.listaHechosCurados.removeAll(hechosFuenteEliminada);
-        //funciona incluso para proxy porque son el mismo objeto, ambos estan cargados en memoria.
         this.listaFuentes.remove(fuente);
         curarHechos = true;
     }
@@ -127,8 +124,8 @@ public class Coleccion {
         }
     }
 
-    public void setAlgoritmoConsenso(AlgoritmoConsenso algoritmoConsenso) {
-        this.algoritmoConsenso = algoritmoConsenso;
+    public void setIAlgoritmoConsenso(IAlgoritmoConsenso IAlgoritmoConsenso) {
+        this.algoritmoConsenso = IAlgoritmoConsenso;
         curarHechos = true;
     }
 

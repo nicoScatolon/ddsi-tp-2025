@@ -37,7 +37,7 @@ public class EstadisticasService implements IEstadisticasService {
 
     @Value("agregador.base-url")
     private String urlAgregador;
-    @Value("diasPersistentesEstadisticas")
+    @Value("${estadisticas.cantDiasPersistencia}")
     private Integer cantDiasPersistenciaEstaditicas;
 
     public EstadisticasService(ICategoriasService categoriasService,
@@ -83,13 +83,13 @@ public class EstadisticasService implements IEstadisticasService {
         return this.solicitudesSpamRepository.findAll().stream().map(DTOconverter::eSolicitudesSpamOutputDTO).toList();
     }
 
-    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(CategoriaInputDTO categoriaDTO) {
-        if ( categoriaDTO == null || (categoriaDTO.getId() == null && categoriaDTO.getNombre() == null) ) {
+    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String idCategoria) {
+        if ( idCategoria == null) {
             return this.mayorProvinciaPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eMayorProvinciaPorCategoriaOutputDTO)
                     .toList();
         }
-        Categoria categoria = this.categoriasService.findById(categoriaDTO);
+        Categoria categoria = this.categoriasService.findById(idCategoria);
         if (categoria == null) {return null;} // TODO deberia ser un response entity
 
         return this.mayorProvinciaPorCategoriaRepository.findByCategoria(categoria).stream()
@@ -97,13 +97,13 @@ public class EstadisticasService implements IEstadisticasService {
                 .toList();
     }
 
-    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(CategoriaInputDTO categoriaDTO) {
-        if ( categoriaDTO == null || (categoriaDTO.getId() == null && categoriaDTO.getNombre() == null) ) {
+    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String idCategoria) {
+        if ( idCategoria == null ) {
             return this.horaOcuPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eHoraOcuPorCategoriaOutputDTO)
                     .toList();
         }
-        Categoria categoria = this.categoriasService.findById(categoriaDTO);
+        Categoria categoria = this.categoriasService.findById(idCategoria);
         if (categoria == null) {return null;} // TODO deberia ser un response entity
 
         return this.horaOcuPorCategoriaRepository.findByCategoria(categoria).stream()
@@ -111,14 +111,14 @@ public class EstadisticasService implements IEstadisticasService {
                 .toList();
     }
 
-    public List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(ColeccionInputDTO coleccionInputDTO) {
-        if ( coleccionInputDTO == null || coleccionInputDTO.getHandle() == null) {
+    public List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion) {
+        if ( handleColeccion == null) {
             return this.mayorProvinciaPorColeccionRepository.findAll().stream()
                     .map(DTOconverter::eMayorProvinciaPorColeccionOutputDTO)
                     .toList();
         }
 
-        return this.mayorProvinciaPorColeccionRepository.findByColeccion_Handle(coleccionInputDTO.getHandle()).stream()
+        return this.mayorProvinciaPorColeccionRepository.findByColeccion_Handle(handleColeccion).stream()
                 .map(DTOconverter::eMayorProvinciaPorColeccionOutputDTO)
                 .toList();
     }
@@ -215,9 +215,32 @@ public class EstadisticasService implements IEstadisticasService {
 
     // TEST
 
-    public void generarEstadisticasTest(){
-        categoriasService.actualizarCategorias();
-        this.generarEstadisticasHecho();
-    }
 
+    @Override
+    public void generarEstadisticasTest(List<HechoInputDTO> hechosDTO){
+        List<Hecho> hechos = hechosDTO.stream().map(DTOconverter::hechoInputDTO).toList();
+        if (hechos == null || hechos.isEmpty()) {
+            throw new RuntimeException("No se recibieron correctamente las solicitudes");
+        }
+
+        Map< Categoria, List<Hecho> > hechosPorCategoria = hechos.stream().collect(Collectors.groupingBy(Hecho::getCategoria));
+        GeneradorEstadisticas generador  = GeneradorEstadisticas.getInstance();
+
+        categoriasService.actualizarCategoriasTest( hechosPorCategoria.keySet().stream().toList() );
+
+        List<E_MayorProvinciaPorCategoria> e_provinciaPorCategoria = hechosPorCategoria.entrySet().stream()
+                .map(e -> generador.mayorProvinciaPorCategoria(e.getKey(), e.getValue()))
+                .toList();
+        this.mayorProvinciaPorCategoriaRepository.saveAll(e_provinciaPorCategoria);
+
+        // -- Estadistica hora de ocurrencia del dia con mas hechos por categoria -- //
+        List<E_HoraOcurrenciaPorCategoria> e_horaPorCategorias = hechosPorCategoria.entrySet().stream()
+                .map(e -> generador.horaDiaPorCategoria(e.getKey(), e.getValue()))
+                .toList();
+        this.horaOcuPorCategoriaRepository.saveAll(e_horaPorCategorias);
+
+        // -- Estadistica categoria con mas hechos -- //
+        E_MayorCategoria e_mayorCategoria = generador.mayorCategoria(hechosPorCategoria);
+        this.mayorCategoriaRepository.save(e_mayorCategoria);
+    }
 }

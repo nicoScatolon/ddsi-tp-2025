@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HechoInputDinamicaDTO implements IHechoInputDTO {
+public class HechoInputDinamicaDTO {
     private Long id;
     private String titulo;
     private String descripcion;

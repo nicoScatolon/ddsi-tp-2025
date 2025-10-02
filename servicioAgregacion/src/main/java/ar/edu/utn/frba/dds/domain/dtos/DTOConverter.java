@@ -1,11 +1,9 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
-import ar.edu.utn.frba.dds.domain.dtos.input.geolocalizador.GeorefDireccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
-import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.AlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
@@ -18,8 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorTexto.normalizarTexto;
-import static ar.edu.utn.frba.dds.domain.entities.normalizadores.NormalizadorUbicacion.normalizarUbicacion;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -42,21 +39,12 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(new Categoria(null, dto.getCategoria()))
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
     }
 
     public static Hecho convertirHechoInputDTO(HechoInputEstaticaDTO dto) {
-        String nombreCat = dto.getCategoria();
-        if (nombreCat == null || nombreCat.isBlank()) {
-            throw new IllegalArgumentException("Hecho sin categoría: " + dto.getTitulo());
-        }
-
-        String codigoNormalizado = normalizarTexto(nombreCat);
-
-        Categoria categoria = new Categoria(codigoNormalizado, nombreCat);
-
         return Hecho.builder()
                 .origenId(dto.getId())
                 .titulo(dto.getTitulo())
@@ -64,7 +52,7 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(categoria)
+                .categoria(new Categoria(null, dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
     }
@@ -79,35 +67,14 @@ public class DTOConverter {
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contenidoMultimedia(dto.getContenidoMultimedia())
                 .contribuyente(convertirUsuario(dto.getContribuyente()))
-                .categoria(new Categoria(null, dto.getCategoria()))
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto) {
-        if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy);
-        } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica);
-        } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica);
-        } else {
-            throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
-        }
-    }
-
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        if (dto.getProvincia() == null || dto.getProvincia().isBlank()) {
-            dto.setProvincia("DESCONOCIDA");
-        } else {
-            normalizarUbicacion(dto);
-        }
-
+        normalizarUbicacion(dto);
         return Ubicacion.builder()
                 .provincia(dto.getProvincia())
                 .departamento(dto.getDepartamento())
@@ -183,7 +150,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static AlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
+    public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
         if (dto == null) { return null;}
         return dto.getTipo().obtenerConsenso();
     }
