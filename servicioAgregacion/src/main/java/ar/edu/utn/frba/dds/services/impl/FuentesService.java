@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FuentesService implements IFuentesService {
@@ -86,6 +86,7 @@ public class FuentesService implements IFuentesService {
             List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
             logger.info("Fuente actualizada {}", fuente.getTipo());
             if (hechosFuente != null && !hechosFuente.isEmpty()){
+                //this.hechosService.actualizarHechosRepository(hechosFuente);
                 hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }
@@ -98,16 +99,5 @@ public class FuentesService implements IFuentesService {
     private void loguearFuenteCargada(IFuente fuente){
         logger.info("Fuente cargada - ID: {} - URL: {} - Tipo de Fuente: {}"
                     ,fuente.getId(), fuente.getUrl(), fuente.getUrl());
-    }
-
-    public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
-        Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
-        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
-        logger.info("Fuente actualizada {}", fuente.getTipo());
-
-        if (hechosFuente != null && !hechosFuente.isEmpty()){
-            this.hechosService.actualizarHechosRepository(hechosFuente);
-        }
-        return DTOConverter.hechoOutputDTO(hechosFuente);
     }
 }

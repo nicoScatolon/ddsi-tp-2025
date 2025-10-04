@@ -12,16 +12,19 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.IComandComparator;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -70,6 +73,8 @@ public class HechosService implements IHechosService {
     @Override
     public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
+        //TODO DEBE DEVOLVER LOS HECHOS DE PROXY ADEMAS DE LOS PERSISTIDOS
+        // OSEA IR POR CADA FUENTE PROXY PIDIENDO LOS HECHOS ALMACENADOS EN SU CACHE
 
         Categoria categoriaEntidad = null; //la inicializo en null
 
@@ -95,13 +100,48 @@ public class HechosService implements IHechosService {
         }
     }
 
+    @Transactional
     @Override
-    public void actualizarHechosRepository(List<Hecho> hechosActualizados){
-        // el hecho ya viene con una categoria que puede o no existir -> es temporal y no esta asociada al repo
-        // la idea es enviarla
+    public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
+        final long t0 = System.currentTimeMillis();
+        logger.info("Se van a persistir {} hechos", hechosActualizados.size());
+
+        // 1) categorías
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
-        //hechosActualizados.forEach(h -> h.setUbicacion( geolocalizador.geolocalizar(h.getUbicacion()) ));
-        this.hechosRepository.saveAll(hechosActualizados);
+        logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
+
+        // 2) preparar ubicaciones y filtrar nulos
+        List<Ubicacion> ubicaciones = hechosActualizados.stream()
+                .map(Hecho::getUbicacion)
+                .filter(Objects::nonNull)        // evitá NPE
+                .toList();
+
+        // 3) geolocalización por lotes
+        logger.info("Geolocalizando {} ubicaciones en batch...", ubicaciones.size());
+        long tg0 = System.currentTimeMillis();
+        try {
+            // bloqueamos aquí para tener todo georreferenciado antes de persistir
+            geolocalizador.geolocalizarBatchAsync(ubicaciones).block();
+        } catch (Exception e) {
+            logger.error("Fallo geolocalizando en batch: {}", e.getMessage(), e);
+            // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
+        }
+        logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
+
+        // 4) persistir en batches para no saturar la BD
+        logger.info("Persistiendo {} hechos...", hechosActualizados.size());
+        final int BATCH_DB = 1000;
+        int from = 0;
+        while (from < hechosActualizados.size()) {
+            int to = Math.min(from + BATCH_DB, hechosActualizados.size());
+            List<Hecho> slice = hechosActualizados.subList(from, to);
+            this.hechosRepository.saveAll(slice);
+            from = to;
+            logger.info("Persistidos {}/{}", to, hechosActualizados.size());
+        }
+        logger.info("Persistencia terminada en {} ms (total {} ms)",
+                (System.currentTimeMillis() - tg0),
+                (System.currentTimeMillis() - t0));
     }
 
     public void configurarComparacion(List<IComandComparator> comandos){
@@ -109,7 +149,6 @@ public class HechosService implements IHechosService {
         comparator.setListaComandos(comandos);
         //TODO para conectarse a front deberiamos asociar enums/strings con cada comando para que se puedan ver por pantalla,
         //  y recibiriamos eso por la conexion no el comando en si
-        //TODO hacerlo por properties y listo
     }
 
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
