@@ -20,9 +20,12 @@ import ar.edu.utn.frba.dds.services.IHechosService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,6 +40,9 @@ public class HechosService implements IHechosService {
     private IGeoLocalizador geolocalizador = new Georef();
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
+
+    @Value("${app.pagination.size}") // 20 es el valor por defecto si no está definido
+    private int defaultPageSize;
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaService categoriaService,
@@ -73,11 +79,7 @@ public class HechosService implements IHechosService {
     @Override
     public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
-        //TODO DEBE DEVOLVER LOS HECHOS DE PROXY ADEMAS DE LOS PERSISTIDOS
-        // OSEA IR POR CADA FUENTE PROXY PIDIENDO LOS HECHOS ALMACENADOS EN SU CACHE
-
         Categoria categoriaEntidad = null; //la inicializo en null
-
         //Verifico si la categoria existe
         if (hechosFilter.getCategoria() != null){
             categoriaEntidad = categoriaService.findByNombre(hechosFilter.getCategoria());
@@ -85,15 +87,29 @@ public class HechosService implements IHechosService {
                 hechosFilter.setCategoria(null);
             }
         }
-
         List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad, hechosFilter);
 
-        // Si no hay criterios, devolver todos los hechos
-        if (criterios.isEmpty()){
-            return this.findAllOutput();
+        if (filterDTO.getPage() == null) { // no tiene pagina -> devuelvo tod0s los hechos
+            if (criterios.isEmpty()) {
+                return this.findAllOutput();
+            } else {
+                return this.findAll().stream()
+                        .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
+                        .map(DTOConverter::convertirHechoOutputDTO)
+                        .toList();
+            }
+        }
+
+        Pageable pageable = PageRequest.of(filterDTO.getPage(), defaultPageSize);
+
+        Page<Hecho> hechosPagina = hechosRepository.findAll(pageable);
+
+        if (criterios.isEmpty()) {
+            return hechosPagina.getContent().stream()
+                    .map(DTOConverter::convertirHechoOutputDTO)
+                    .toList();
         } else {
-            //Filtrar por criterios
-            return this.findAll().stream()
+            return hechosPagina.getContent().stream()
                     .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
                     .map(DTOConverter::convertirHechoOutputDTO)
                     .toList();
@@ -120,7 +136,7 @@ public class HechosService implements IHechosService {
         logger.info("Geolocalizando {} ubicaciones en batch...", ubicaciones.size());
         long tg0 = System.currentTimeMillis();
         try {
-            // bloqueamos aquí para tener todo georreferenciado antes de persistir
+            // bloqueamos aquí para tener tod0 georreferenciado antes de persistir
             geolocalizador.geolocalizarBatchAsync(ubicaciones).block();
         } catch (Exception e) {
             logger.error("Fallo geolocalizando en batch: {}", e.getMessage(), e);

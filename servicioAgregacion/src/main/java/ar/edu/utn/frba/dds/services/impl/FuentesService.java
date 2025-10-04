@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
@@ -59,7 +60,7 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public Fuente buscarFuentePorId(Long id) {
-        return fuentesRepository.getById(id);
+        return fuentesRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -94,6 +95,17 @@ public class FuentesService implements IFuentesService {
         this.hechosService.actualizarHechosRepository(hechosAActualizar);
 
         coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
+    }
+
+    public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
+        Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
+        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
+        logger.info("Fuente actualizada {}", fuente.getTipo());
+
+        if (hechosFuente != null && !hechosFuente.isEmpty()){
+            this.hechosService.actualizarHechosRepository(hechosFuente);
+        }
+        return DTOConverter.hechoOutputDTO(hechosFuente);
     }
 
     private void loguearFuenteCargada(IFuente fuente){

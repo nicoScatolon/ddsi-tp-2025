@@ -17,12 +17,12 @@ public class HechoScheduler {
         this.coleccionesService = coleccionesService;
     }
 
-    @Scheduled(cron = "${cron.expression.prueba}")
+    @Scheduled(cron = "${cron.fuentes.actualizar}")
     public void actualizarHechos() {
         fuentesService.actualizarHechosFuentesScheduler();
     }
 
-    @Scheduled(cron = "${cron.expression.prueba}")
+    @Scheduled(cron = "${cron.colecciones.actualizar}")
     public void actualizarColecciones() {
         coleccionesService.actualizarColeccionesScheduler();
     }
