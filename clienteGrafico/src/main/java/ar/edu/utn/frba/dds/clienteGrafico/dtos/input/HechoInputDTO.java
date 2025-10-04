@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.input;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 public class HechoInputDTO {
     private Long id;
     private String titulo;

@@ -33,7 +33,7 @@ public class HechosController {
     @GetMapping("/{id}")
     public String hecho(@PathVariable("id") Long id, Model model) {
         try {
-            HechoOutputDTO hecho = agregadorService.getHechoById(id);
+            HechoInputDTO hecho = agregadorService.getHechoById(id);
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios

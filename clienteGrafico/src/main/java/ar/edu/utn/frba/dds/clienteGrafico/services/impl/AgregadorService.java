@@ -1,7 +1,9 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
