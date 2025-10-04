@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +20,24 @@ public class HechosController {
 
     @GetMapping
     public String listarHechos(Model model) {
-        List<HechoOutputDTO> hechos = agregadorService.obtenerHechos(1);
+        List<HechoInputDTO> hechos = agregadorService.obtenerHechos(1);
+        int paginaActual = 1;
+        model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual));
         model.addAttribute("hechos", hechos);
-        model.addAttribute("paginaActual", 1);
+        model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "/hechos/explore";
     }
 
     @GetMapping("/{id}")
-    public String hecho(@PathVariable Long id, Model model) {
+    public String hecho(@PathVariable("id") Long id, Model model) {
         try {
             HechoOutputDTO hecho = agregadorService.getHechoById(id);
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
+            model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
+            model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {
             model.addAttribute("hecho", null);
         }

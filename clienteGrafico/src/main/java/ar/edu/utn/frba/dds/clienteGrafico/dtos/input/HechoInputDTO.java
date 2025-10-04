@@ -15,7 +15,7 @@ public class HechoInputDTO {
     private UbicacionInputDTO ubicacion;
     private List<EtiquetaInputDTO> etiquetas; //posible DTO
     private List<ContenidoMultimediaInputDTO> contenidoMultimedia; //posible DTO
-    private LocalDateTime fechaDeOcurrencia;
+    private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
     private ContribuyenteInputDTO contribuyente; //posible DTO
     private Boolean cargadoAninimamente;

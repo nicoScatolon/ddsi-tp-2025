@@ -5,7 +5,9 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class DTOConverter {
     public static HechoOutputDTO convertirHechoInputDTO(HechoInputDTO hechoDTO) {
@@ -13,21 +15,29 @@ public class DTOConverter {
                 .id(hechoDTO.getId())
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
-                .categoria(DTOConverter.convertirCategoriaInputDTO(hechoDTO.getCategoria()))
-                .ubicacion(DTOConverter.convertirUbicacionInputDTO(hechoDTO.getUbicacion()))
+                .categoria(convertirCategoriaInputDTO(hechoDTO.getCategoria()))
+                .ubicacion(convertirUbicacionInputDTO(hechoDTO.getUbicacion()))
                 .etiquetas(
-                        hechoDTO.getEtiquetas().stream()
+                        hechoDTO.getEtiquetas() != null
+                                ? hechoDTO.getEtiquetas().stream()
                                 .map(DTOConverter::convertirEtiquetaInputDTO)
                                 .toList()
+                                : List.of()
                 )
                 .contenidoMultimedia(
-                        hechoDTO.getContenidoMultimedia().stream()
+                        hechoDTO.getContenidoMultimedia() != null
+                                ? hechoDTO.getContenidoMultimedia().stream()
                                 .map(DTOConverter::convertirContenidoMultimediaInputDTO)
                                 .toList()
+                                : List.of()
                 )
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .fechaDeCarga(hechoDTO.getFechaDeCarga())
-                .contribuyente(DTOConverter.convertirContribuyenteInputDTO(hechoDTO.getContribuyente()))
+                .contribuyente(
+                        hechoDTO.getContribuyente() != null
+                                ? convertirContribuyenteInputDTO(hechoDTO.getContribuyente())
+                                : null
+                )
                 .cargadoAninimamente(hechoDTO.getCargadoAninimamente())
                 .build();
     }

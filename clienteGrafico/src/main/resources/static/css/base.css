@@ -34,7 +34,11 @@ button { font-family: inherit; cursor: pointer; }
 :focus { outline: 3px solid rgba(47,96,244,0.18); outline-offset: 2px; }
 
 /* Container helpers */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.container {
+    max-width: none;
+    width: 100%;
+    padding: 0 1rem;
+}
 
 nav {
     font-weight: 500;

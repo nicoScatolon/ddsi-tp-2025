@@ -26,54 +26,57 @@ public class AgregadorService implements IAgregadorService {
         this.webClient = webClient;
     }
 
-    public List<HechoOutputDTO> obtenerHechos(Integer paginaActual) {
+
+    public HechoInputDTO getHechoById(Long id) {
+        return webClient.get()
+                .uri("/api/hechos/publica/{id}", id)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        response -> Mono.error(new NotFoundException("hecho", id.toString())))
+                .bodyToMono(HechoInputDTO.class)
+                .block();
+    }
+
+    public List<HechoInputDTO> getAllHechos() {
+        return webClient.get()
+                .uri("/api/hechos")
+                .retrieve()
+                .bodyToFlux(HechoInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    // --- TEST --- //
+
+    public List<HechoInputDTO> obtenerHechos(Integer paginaActual) {
         //TODO temporal para test
-        List<HechoOutputDTO> hechos = new ArrayList<>();
+        List<HechoInputDTO> hechos = new ArrayList<>();
         hechos.add(this.crearHecho1());
         hechos.add(this.crearHecho1());
         hechos.add(this.crearHecho1());
         return hechos;
     }
 
-    public HechoOutputDTO getHechoById(Long id) {
-        return webClient.get()
-                .uri("/api/hecho/pubica/{id}", id)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new NotFoundException("hecho", id.toString())))
-                .bodyToMono(HechoInputDTO.class)
-                .map(DTOConverter::convertirHechoInputDTO)
-                .block();
-    }
-
-    public List<HechoOutputDTO> getAllHechos() {
-        return webClient.get()
-                .uri("/api/hechos")
-                .retrieve()
-                .bodyToFlux(HechoInputDTO.class)
-                .map(DTOConverter::convertirHechoInputDTO)
-                .collectList()
-                .block();
-    }
-
-    private HechoOutputDTO crearHecho1 (){
-        HechoOutputDTO hecho = HechoOutputDTO.builder()
+    private HechoInputDTO crearHecho1 (){
+        return HechoInputDTO.builder()
                 .id(Long.valueOf(1))
                 .titulo("titulo 1")
                 .descripcion("descripcion 1")
-                .categoria(CategoriaOutputDTO.builder()
+                .categoria(CategoriaInputDTO.builder()
                         .id("cat1")
                         .nombre("categoria 1")
                         .build())
-                .ubicacion(UbicacionOutputDTO.builder()
-                        .provincia("provincia 1")
-                        .calle("calle 1")
-                        .numero(124)
+                .ubicacion(UbicacionInputDTO.builder()
+                        .provincia("Buenos Aires")
+                        .localidad("CABA")                // Ciudad Autónoma de Buenos Aires
+                        .calle("Av. Corrientes")          // Calle conocida
+                        .numero(1234)
+                        .latitud(-34.6037)                // Coordenadas aproximadas
+                        .longitud(-58.3816)
                         .build())
                 .fechaDeCarga(LocalDateTime.now())
-                .fechaDeOcurrencia(LocalDateTime.now())
+                .fechaDeOcurrencia(LocalDate.now())
                 .cargadoAninimamente(true)
                 .build();
-        return hecho;
     }
 }

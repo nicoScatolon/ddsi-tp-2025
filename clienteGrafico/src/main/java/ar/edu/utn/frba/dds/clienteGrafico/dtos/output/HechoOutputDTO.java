@@ -21,7 +21,7 @@ public class HechoOutputDTO {
     private UbicacionOutputDTO ubicacion;
     private List<EtiquetaOutputDTO> etiquetas; //posible DTO
     private List<ContenidoMultimediaOutputDTO> contenidoMultimedia; //posible DTO
-    private LocalDateTime fechaDeOcurrencia;
+    private LocalDate fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
     private ContribuyenteOutputDTO contribuyente; //posible DTO
     private Boolean cargadoAninimamente;
