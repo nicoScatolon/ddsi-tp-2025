@@ -39,9 +39,15 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    public List<HechoInputDTO> getAllHechos() {
+    //TODO posiblemente debamos agregar la capacidad de recibir los filtros aca tambien
+    public List<HechoInputDTO> getAllHechos(Integer paginaActual) {
         return webClient.get()
-                .uri("/api/hechos")
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/hechos/publica")
+                        .queryParam("page", paginaActual)
+                        // .queryParam("categoria", "ejemplo") // para cuando necesitemos agregar filtros
+                        .build()
+                )
                 .retrieve()
                 .bodyToFlux(HechoInputDTO.class)
                 .collectList()

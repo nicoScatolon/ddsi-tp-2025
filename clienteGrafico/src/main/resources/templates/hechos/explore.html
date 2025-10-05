@@ -103,6 +103,30 @@
                     </div>
 
                 </a>
+
+                <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">
+
+                    <!-- Botón Anterior -->
+                    <a class="pagination-arrow"
+                       th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+                       th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+                       th:href="@{/hechos(page=${paginaActual - 1})}">
+                        ◀
+                    </a>
+
+                    <!-- Número de página actual -->
+                    <div class="pagination-page-number" th:text="${paginaActual+1}"> Numero Pagina </div>
+
+                    <!-- Botón Siguiente -->
+                    <a class="pagination-arrow"
+                       th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
+                       th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
+                       th:href="@{/hechos(page=${paginaActual + 1})}">
+                        ▶
+                    </a>
+
+                </div>
+
             </div>
         </div>
     </section>

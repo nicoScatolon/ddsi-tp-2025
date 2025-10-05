@@ -4,11 +4,13 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,13 +20,16 @@ import java.util.List;
 public class HechosController {
     private final AgregadorService agregadorService;
 
+    @Value("${app.hechos.page.size}")
+    Integer pageSize;
+
     @GetMapping
-    public String listarHechos(Model model) {
-        List<HechoInputDTO> hechos = agregadorService.obtenerHechos(1);
-        int paginaActual = 1;
-        model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual));
+    public String listarHechos(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
+        List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual);
+        model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
         model.addAttribute("hechos", hechos);
         model.addAttribute("paginaActual", paginaActual);
+        model.addAttribute("pageSize", pageSize);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "/hechos/explore";
