@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.controllers;
 
 
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.ISeederService;
@@ -32,6 +33,12 @@ public class HechosController {
         return hechosService.findByID(id);
     }
 
+    @GetMapping("/publica/mapa")
+    public List<HechoMapaOutputDTO> getHechosMapa() {
+        //TODO quiza ver como hacer para agregar filtros que reduzcan la cantidad de hechos, ya que son muchos
+        return hechosService.getHechosMapa();
+    }
+
     @PutMapping("/privada/{id}/etiquetas")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.agregarEtiquetaHecho(id, etiqueta);
@@ -42,6 +49,8 @@ public class HechosController {
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 
     }
+
+    // --- TEST --- //
 
     @GetMapping("/pruebas")
     public List<HechoOutputDTO> getHechosPrueba() {

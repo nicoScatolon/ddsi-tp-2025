@@ -32,6 +32,16 @@ public class DTOConverter {
                 .build();
     }
 
+    public static HechoMapaOutputDTO convertirHechoMapaOutputDTO(Hecho hecho) {
+        return HechoMapaOutputDTO.builder()
+                .id(hecho.getId())
+                .titulo(hecho.getTitulo())
+                .categoria(hecho.getCategoria().getNombre())
+                .latitud(hecho.getUbicacion().getLatitud())
+                .longitud(hecho.getUbicacion().getLongitud())
+                .build();
+    }
+
     public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
@@ -53,7 +63,7 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(new Categoria(null, dto.getCategoria()))
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
     }
@@ -68,11 +78,10 @@ public class DTOConverter {
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contenidoMultimedia(dto.getContenidoMultimedia())
                 .contribuyente(convertirUsuario(dto.getContribuyente()))
-                .categoria(categoriaInputDTO(dto.getCategoria()))
+                .categoria( categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
     }
-
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
         normalizarUbicacion(dto);

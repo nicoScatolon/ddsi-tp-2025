@@ -29,4 +29,6 @@ public class HechosFilterDTO {
     private LocalDate fAconHasta;
 
     private UbicacionInputDTO ubicacionInputDTO;
+
+    private Integer page;
 }

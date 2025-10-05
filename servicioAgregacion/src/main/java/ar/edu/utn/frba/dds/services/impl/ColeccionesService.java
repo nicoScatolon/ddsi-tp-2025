@@ -70,7 +70,9 @@ public class ColeccionesService implements IColeccionesService {
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
         // extra
         if ( coleccionInputDTO.getListaIdsFuentes() != null) {
-            coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.getById( fuente ))); }
+            coleccionInputDTO.getListaIdsFuentes().
+                    forEach(fuente -> coleccion.agregarFuente( fuentesRepository.findById(fuente).orElse(null)  ) );
+        }
         if (coleccionInputDTO.getListaCriterios() != null) {
             coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
         }
@@ -122,7 +124,7 @@ public class ColeccionesService implements IColeccionesService {
     public List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
         List<Fuente> nuevasFuentes = new ArrayList<>();
-        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.getById( f.getId()) ) );
+        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById(f.getId()).orElse(null) ) );
         coleccion.setListaFuentes(nuevasFuentes);
         coleccionesRepository.save(coleccion);
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FuentesService implements IFuentesService {
@@ -59,7 +60,7 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public Fuente buscarFuentePorId(Long id) {
-        return fuentesRepository.getById(id);
+        return fuentesRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -95,11 +96,6 @@ public class FuentesService implements IFuentesService {
         coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
     }
 
-    private void loguearFuenteCargada(IFuente fuente){
-        logger.info("Fuente cargada - ID: {} - URL: {} - Tipo de Fuente: {}"
-                    ,fuente.getId(), fuente.getUrl(), fuente.getUrl());
-    }
-
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
         Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
         List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
@@ -109,5 +105,10 @@ public class FuentesService implements IFuentesService {
             this.hechosService.actualizarHechosRepository(hechosFuente);
         }
         return DTOConverter.hechoOutputDTO(hechosFuente);
+    }
+
+    private void loguearFuenteCargada(IFuente fuente){
+        logger.info("Fuente cargada - ID: {} - URL: {} - Tipo de Fuente: {}"
+                    ,fuente.getId(), fuente.getUrl(), fuente.getUrl());
     }
 }

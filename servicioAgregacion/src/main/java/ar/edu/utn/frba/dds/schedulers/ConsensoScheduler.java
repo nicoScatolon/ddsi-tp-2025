@@ -12,7 +12,7 @@ public class ConsensoScheduler {
         this.coleccionesService = coleccionesService;
     }
 
-    @Scheduled(cron = "${cron.curacionColecciones}")
+    @Scheduled(cron = "${cron.colecciones.curar}")
     public void actualizarHechos() {
         coleccionesService.curarColeccionesScheduler();
     }
