@@ -31,6 +31,16 @@ public class DTOConverter {
                 .build();
     }
 
+    public static HechoMapaOutputDTO convertirHechoMapaOutputDTO(Hecho hecho) {
+        return HechoMapaOutputDTO.builder()
+                .id(hecho.getId())
+                .titulo(hecho.getTitulo())
+                .categoria(hecho.getCategoria().getNombre())
+                .latitud(hecho.getUbicacion().getLatitud())
+                .longitud(hecho.getUbicacion().getLongitud())
+                .build();
+    }
+
     public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())

@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
@@ -116,6 +117,13 @@ public class HechosService implements IHechosService {
         }
     }
 
+    @Override
+    public List<HechoMapaOutputDTO> getHechosMapa () {
+        return this.findAll().stream()
+                .map(DTOConverter::convertirHechoMapaOutputDTO)
+                .toList();
+    }
+
     @Transactional
     @Override
     public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
@@ -160,12 +168,7 @@ public class HechosService implements IHechosService {
                 (System.currentTimeMillis() - t0));
     }
 
-    public void configurarComparacion(List<IComandComparator> comandos){
-        HechoComparator comparator = HechoComparator.getInstance();
-        comparator.setListaComandos(comandos);
-        //TODO para conectarse a front deberiamos asociar enums/strings con cada comando para que se puedan ver por pantalla,
-        //  y recibiriamos eso por la conexion no el comando en si
-    }
+    //TODO hacer configuracion del comparator por datos del properties
 
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
         if (etiqueta == null || etiqueta.isBlank()) {
