@@ -37,7 +37,7 @@ public class Hecho {
     private Ubicacion ubicacion;
 
     @Column(nullable = false, name = "fecha-ocurrencia")
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "hecho_id", nullable = false) // esto crea/escribe la FK en la tabla del hijo

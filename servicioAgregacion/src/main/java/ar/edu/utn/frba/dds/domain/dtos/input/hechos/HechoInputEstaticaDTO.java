@@ -20,6 +20,6 @@ public class HechoInputEstaticaDTO{
     private String descripcion;
     private String categoria;
     private UbicacionInputDTO ubicacion;
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 }

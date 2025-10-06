@@ -16,6 +16,6 @@ public class HechoOutputDTO {
     private String descripcion;
     private String categoria;
     private Ubicacion ubicacion;
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 }

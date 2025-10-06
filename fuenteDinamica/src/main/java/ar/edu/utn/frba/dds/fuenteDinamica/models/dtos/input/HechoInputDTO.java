@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -21,7 +22,7 @@ public class HechoInputDTO {
     private String descripcion;
     private CategoriaInputDTO categoria;
     private UbicacionInputDTO ubicacion;
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
     private Boolean esAnonimo;
 
     private List<ContenidoMultimedia> contenidoMultimedia;

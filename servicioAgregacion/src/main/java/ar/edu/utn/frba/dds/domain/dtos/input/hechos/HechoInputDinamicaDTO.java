@@ -24,7 +24,7 @@ public class HechoInputDinamicaDTO {
     private String descripcion;
     private String categoria;
     private UbicacionInputDTO ubicacion;
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 
     private List<ContenidoMultimedia> contenidoMultimedia;
