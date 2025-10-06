@@ -48,7 +48,7 @@
                         <div style="max-width: 200px;">
                             <strong>${h.titulo}</strong><br>
                             <p>${h.categoria ?? ''}</p>
-                            <a href="/hecho?id=${h.id}" class="btn-popup">Ver más</a>
+                            <a href="/hechos/${h.id}" class="btn-popup">Ver más</a>
                         </div>
                     `;
                     const marker = L.marker([h.latitud, h.longitud]);

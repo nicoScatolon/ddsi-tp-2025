@@ -64,8 +64,11 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    // --- TEST --- //
+    public HechoInputDTO obtenerUnHecho(Long id){
+        return crearHecho1();
+    }
 
+    // --- TEST --- //
     public List<HechoInputDTO> obtenerHechos(Integer paginaActual) {
         //TODO temporal para test
         List<HechoInputDTO> hechos = new ArrayList<>();
@@ -79,7 +82,7 @@ public class AgregadorService implements IAgregadorService {
         return HechoInputDTO.builder()
                 .id(Long.valueOf(1))
                 .titulo("titulo 1")
-                .descripcion("descripcion 1")
+                .descripcion("Lorem  vel nobis")
                 .categoria(CategoriaInputDTO.builder()
                         .id("cat1")
                         .nombre("categoria 1")

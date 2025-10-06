@@ -1,0 +1,114 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/create.css}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+</th:block>
+
+<div th:fragment="contenido">
+    <section class="form-container">
+        <h1>Crear Hecho</h1>
+        <form th:action="@{/hechos/create}" th:object="${hechoDTO}" method="post" id="hechoForm">
+            <!-- Datos básicos -->
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incendio Forestal" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" th:field="*{descripcion}" rows="3" required placeholder="Escribí aquí la descripción..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoría</label>
+                <div class="categoria-wrapper">
+                    <select id="categoria" th:field="*{categoria.nombre}" required>
+                        <option value="" disabled selected>Seleccione una categoría</option>
+                        <option value="Ambiental">Ambiental</option>
+                        <option value="Social">Social</option>
+                        <option value="Política">Política</option>
+                        <option value="other">Otra...</option>
+                    </select>
+                    <input type="text" th:field="*{categoria.nombre}" placeholder="Escriba nueva categoría" style="display:none; margin-top:0.5rem;">
+                </div>
+            </div>
+
+            <!-- Fecha -->
+            <div class="form-group">
+                <label for="fechaDeOcurrencia">Fecha de Ocurrencia</label>
+                <input type="date" id="fechaDeOcurrencia" th:field="*{fechaDeOcurrencia}" required>
+            </div>
+
+            <!-- Ubicación -->
+            <h2>Ubicación</h2>
+            <div class="form-group">
+                <label for="tipoUbicacion">Tipo de ubicación:</label>
+                <select id="tipoUbicacion" name="tipoUbicacion" required>
+                    <option value="">-- Seleccione --</option>
+                    <option value="direccion">Provincia, Localidad, Calle y Número</option>
+                    <option value="mapa">Seleccionar en el Mapa</option>
+                </select>
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-group" id="provinciaGroup" style="display:none;">
+                <label for="provincia">Provincia</label>
+                <input type="text" id="provincia" th:field="*{ubicacion.provincia}" placeholder="Ej: Buenos Aires">
+            </div>
+            <div class="form-group" id="localidadGroup" style="display:none;">
+                <label for="localidad">Localidad</label>
+                <input type="text" id="localidad" th:field="*{ubicacion.localidad}" placeholder="Ej: La Plata">
+            </div>
+            <div class="form-group" id="calleGroup" style="display:none;">
+                <label for="calle">Calle</label>
+                <input type="text" id="calle" th:field="*{ubicacion.calle}" placeholder="Ej: 7">
+            </div>
+            <div class="form-group" id="numeroGroup" style="display:none;">
+                <label for="numero">Número</label>
+                <input type="text" id="numero" th:field="*{ubicacion.numero}" placeholder="Ej: 1234">
+            </div>
+
+            <!-- Mapa Leaflet -->
+            <div class="form-group" id="mapaGroup" style="display:none;">
+                <label>📍 Seleccione la ubicación en el mapa</label>
+                <div id="mapContainer"></div>
+                <div class="coordenadas-display" id="coordenadasDisplay" style="display:none;">
+                    <p><strong>✓ Coordenadas seleccionadas:</strong></p>
+                    <p>Latitud: <span id="latDisplay">-</span></p>
+                    <p>Longitud: <span id="lngDisplay">-</span></p>
+                </div>
+            </div>
+
+            <!-- Campos ocultos para coordenadas -->
+            <input type="hidden" th:field="*{ubicacion.latitud}" id="latitudUbicacion">
+            <input type="hidden" th:field="*{ubicacion.longitud}" id="longitudUbicacion">
+
+            <!-- Multimedia Todo ver porq se debería guardar la url no el archivo
+            <h2>Contenido Multimedia</h2>
+            <div class="form-group">
+                <label for="contenidoMultimedia">Subir archivo</label>
+                <input type="file" id="contenidoMultimedia" name="contenidoMultimedia" accept="image/*,video/*">
+            </div>-->
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="esAnonimo" th:field="*{cargadoAninimamente}">
+                <label for="esAnonimo">Publicar como anónimo</label>
+            </div>
+
+            <!-- Botones -->
+            <div class="form-actions">
+                <button type="submit" class="btn-local-primary">Guardar</button>
+                <button type="reset" class="btn-local-secondary">Cancelar</button>
+            </div>
+        </form>
+    </section>
+    <br>
+</div>
+
+<th:block th:fragment="jsExtra">
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script th:src="@{/js/form.js}"></script>
+</th:block>
+</html>

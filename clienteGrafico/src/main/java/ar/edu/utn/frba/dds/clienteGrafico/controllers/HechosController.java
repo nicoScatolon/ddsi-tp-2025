@@ -1,18 +1,17 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoMapaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,8 @@ import java.util.List;
 @RequestMapping("/hechos")
 @RequiredArgsConstructor
 public class HechosController {
-    private final AgregadorService agregadorService;
+    private final IAgregadorService agregadorService;
+    private final IFuenteDinamicaService fuenteDinamicaService;
 
     @Value("${app.hechos.page.size}")
     Integer pageSize;
@@ -36,6 +36,32 @@ public class HechosController {
         model.addAttribute("logeado", 1);
         return "/hechos/explore";
     }
+
+    @GetMapping("/create")
+    public String crearHecho(Model model) {
+        HechoInputDTO hechoInputDTO = this.instanciarHecho();
+        model.addAttribute("hechoDTO", hechoInputDTO);
+        //Todo Deberiamos pasarle un top de las categorias mas usadas, y sino q la escriba
+        model.addAttribute("titulo", "Crear Hecho");
+        return "/hechos/create";
+    }
+
+    @PostMapping("/create") // path coincide con el form
+    public String guardarHecho(@ModelAttribute("hechoDTO") HechoInputDTO hechoDTO, Model model) {
+        try {
+            ContribuyenteInputDTO contribuyenteInputDTO = this.obtenerUsuarioPrueba();
+            hechoDTO.setContribuyente(contribuyenteInputDTO);
+            fuenteDinamicaService.crearHecho(hechoDTO);
+
+            return "redirect:/hechos";
+
+        } catch (Exception e) {
+            // Loguear error si quieres
+            model.addAttribute("error", "No se pudo crear el hecho.");
+            return "/hechos/create"; // Volver al form con mensaje de error
+        }
+    }
+
 
     @GetMapping("/{id}")
     public String hecho(@PathVariable("id") Long id, Model model) {
@@ -78,5 +104,33 @@ public class HechosController {
         dto.setLatitud(lat);
         dto.setLongitud(lng);
         return dto;
+    }
+
+    public HechoInputDTO instanciarHecho(){
+        ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
+        List<EtiquetaInputDTO> etiquetas = new ArrayList<>();
+        CategoriaInputDTO categoria = new CategoriaInputDTO();
+        List<ContenidoMultimediaInputDTO> contenidosMultimedia = new ArrayList<>();
+        UbicacionInputDTO ubicacion = new UbicacionInputDTO();
+
+        HechoInputDTO hecho = new HechoInputDTO();
+
+        hecho.setContribuyente(contribuyente);
+        hecho.setCategoria(categoria);
+        hecho.setEtiquetas(etiquetas);
+        hecho.setContenidoMultimedia(contenidosMultimedia);
+        hecho.setUbicacion(ubicacion);
+
+        return hecho;
+    }
+
+
+    private  ContribuyenteInputDTO obtenerUsuarioPrueba() {
+        return ContribuyenteInputDTO.builder()
+                .nombre("Santiago")
+                .apellido("Rodriguez")
+                .fechaNacimiento(LocalDate.now())
+                .id(17L)
+                .build();
     }
 }
