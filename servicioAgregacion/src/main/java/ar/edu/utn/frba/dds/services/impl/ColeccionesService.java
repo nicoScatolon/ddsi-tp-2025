@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
@@ -19,6 +20,10 @@ import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +40,9 @@ public class ColeccionesService implements IColeccionesService {
     private final ICategoriaService categoriaService;
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
+
+    @Value("${app.pagination.colecciones.size}")
+    private int pageSize;
 
     public ColeccionesService(IColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
@@ -58,6 +66,16 @@ public class ColeccionesService implements IColeccionesService {
         return coleccionesRepository.findAll().stream()
                 .map(DTOConverter::coleccionOutputDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<ColeccionPreviewOutputDTO> findAllPreview(Integer page) {
+        if (page == null) {
+            return coleccionesRepository.findAll().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+        } else {
+            Pageable pageable = PageRequest.of(page, pageSize);
+            Page<Coleccion> coleccionesPagina = coleccionesRepository.findAll(pageable);
+            return coleccionesPagina.getContent().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+        }
     }
 
     //-------------------------- OPERACIONES CRUD --------------------------

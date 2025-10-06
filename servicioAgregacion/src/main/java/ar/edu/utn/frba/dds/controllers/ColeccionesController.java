@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
@@ -73,11 +74,23 @@ public class ColeccionesController {
     // ------------------------------------------- API PÚBLICA -------------------------------------------
 
     @GetMapping("/publica")
-    public List<ColeccionOutputDTO> obtenerColeccionesPublica() {return coleccionesService.findAll();}
+    public List<ColeccionOutputDTO> obtenerColeccionesPublica() {
+        return coleccionesService.findAll();
+    }
+
+    @GetMapping("/publica/{handle}")
+    public ColeccionOutputDTO obtenerColeccionPublica(@PathVariable String handle) {
+        return coleccionesService.findByHandle(handle);
+    }
 
 
     @GetMapping("publica/{handle}/hechos")
     public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
         return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
+    }
+
+    @GetMapping("/publica/preview")
+    public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
+        return this.coleccionesService.findAllPreview(page);
     }
 }
