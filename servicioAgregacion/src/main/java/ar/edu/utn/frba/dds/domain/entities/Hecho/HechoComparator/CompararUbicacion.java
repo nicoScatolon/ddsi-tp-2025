@@ -2,9 +2,11 @@ package ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+@Component
 public class CompararUbicacion implements IComandComparator{
     @Override
     public boolean comparar(Hecho hecho1, Hecho hecho2) {

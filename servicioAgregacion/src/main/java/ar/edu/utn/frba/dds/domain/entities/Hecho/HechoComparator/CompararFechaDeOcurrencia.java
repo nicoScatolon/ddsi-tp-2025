@@ -1,10 +1,12 @@
 package ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Component
 public class CompararFechaDeOcurrencia implements IComandComparator{
     @Override
     public boolean comparar(Hecho hecho1, Hecho hecho2) {
