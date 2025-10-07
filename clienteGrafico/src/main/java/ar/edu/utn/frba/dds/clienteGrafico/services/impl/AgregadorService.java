@@ -1,10 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoMapaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UbicacionInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
@@ -66,6 +63,20 @@ public class AgregadorService implements IAgregadorService {
 
     public HechoInputDTO obtenerUnHecho(Long id){
         return crearHecho1();
+    }
+
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/publica/preview")
+                        .queryParam("page", paginaActual)
+                        // .queryParam("categoria", "ejemplo") // para cuando necesitemos agregar filtros
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(ColeccionPreviewInputDTO.class)
+                .collectList()
+                .block();
     }
 
     // --- TEST --- //

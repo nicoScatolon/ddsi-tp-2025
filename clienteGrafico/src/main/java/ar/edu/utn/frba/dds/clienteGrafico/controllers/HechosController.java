@@ -23,7 +23,7 @@ public class HechosController {
     private final IFuenteDinamicaService fuenteDinamicaService;
 
     @Value("${app.hechos.page.size}")
-    Integer pageSize;
+    private Integer pageSize;
 
     @GetMapping
     public String listarHechos(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
