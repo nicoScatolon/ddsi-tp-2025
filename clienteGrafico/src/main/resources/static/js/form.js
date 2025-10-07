@@ -23,60 +23,71 @@ document.addEventListener('DOMContentLoaded', function() {
     const latDisplay = document.getElementById('latDisplay');
     const lngDisplay = document.getElementById('lngDisplay');
 
-    // Botones / acciones
     const submitBtn = form.querySelector('button[type="submit"]');
 
     // Variable para el mapa de Leaflet
     let map = null;
     let marker = null;
 
-    // Mostrar/ocultar campo de nueva categoría
+    // Guardamos el name original (establecido por Thymeleaf con th:field)
+    const categoriaFieldName = categoriaSelect.getAttribute('name') || categoriaSelect.name || 'categoria.nombre';
+
+    // Inicialización: mostramos el input oculto pero NO le dejamos el name para que no se envíe.
+    categoriaNuevaInput.style.display = 'none';
+    // removemos el name del input para que no llegue duplicado al servidor
+    categoriaNuevaInput.removeAttribute('name');
+    categoriaNuevaInput.required = false;
+
+    // Cuando cambia el select: si es 'other' mostramos el input y transferimos el name; si no, aseguramos que solo se envie el select.
     categoriaSelect.addEventListener('change', function() {
         if (this.value === 'other') {
+            // Mostrar input para nueva categoría y que sea el que se envíe
             categoriaNuevaInput.style.display = 'block';
             categoriaNuevaInput.required = true;
+            categoriaNuevaInput.value = '';
+            categoriaNuevaInput.focus();
+
+            // Hacer que el input tenga el name que espera Thymeleaf, y quitarle el name al select
+            categoriaNuevaInput.setAttribute('name', categoriaFieldName);
+            categoriaSelect.removeAttribute('name');
         } else {
+            // Ocultar input, quitarle el name y dejar el select con el name
             categoriaNuevaInput.style.display = 'none';
             categoriaNuevaInput.required = false;
             categoriaNuevaInput.value = '';
+            categoriaNuevaInput.removeAttribute('name');
+
+            // Restaurar el name del select (por si antes lo habíamos removido)
+            categoriaSelect.setAttribute('name', categoriaFieldName);
         }
     });
 
     // Inicializar el mapa de Leaflet
     function initMap() {
         if (!map) {
-            // Centrar el mapa en Argentina (Buenos Aires)
             map = L.map('mapContainer').setView([-34.6037, -58.3816], 13);
 
-            // Agregar capa de OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
 
-            // Evento de clic en el mapa
             map.on('click', function(e) {
                 const lat = e.latlng.lat.toFixed(7);
                 const lng = e.latlng.lng.toFixed(7);
 
-                // Actualizar coordenadas
                 latitudInput.value = lat;
                 longitudInput.value = lng;
 
-                // Mostrar coordenadas
                 latDisplay.textContent = lat;
                 lngDisplay.textContent = lng;
                 coordenadasDisplay.style.display = 'block';
 
-                // Agregar o mover el marcador
                 if (marker) {
                     marker.setLatLng(e.latlng);
                 } else {
-                    marker = L.marker(e.latlng, {
-                        draggable: true
-                    }).addTo(map);
+                    marker = L.marker(e.latlng, { draggable: true }).addTo(map);
 
-                    // Evento cuando se arrastra el marcador
                     marker.on('dragend', function() {
                         const position = marker.getLatLng();
                         const newLat = position.lat.toFixed(7);
@@ -93,21 +104,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Forzar actualización del tamaño del mapa
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 100);
+        setTimeout(() => map.invalidateSize(), 100);
     }
 
     // Manejar campos de ubicación según el tipo seleccionado
     tipoUbicacionSelect.addEventListener('change', function() {
         const tipo = this.value;
-
-        // Resetear todos los campos
         resetUbicacionFields();
 
         if (tipo === 'direccion') {
-            // Mostrar y requerir campos de dirección
             provinciaInput.required = true;
             localidadInput.required = true;
             calleInput.required = true;
@@ -119,19 +124,15 @@ document.addEventListener('DOMContentLoaded', function() {
             numeroGroup.style.display = 'flex';
 
         } else if (tipo === 'mapa') {
-            // Mostrar el mapa
             mapaGroup.style.display = 'flex';
             latitudInput.required = true;
             longitudInput.required = true;
-
-            // Inicializar el mapa
             initMap();
         }
     });
 
     // Función para resetear campos de ubicación
     function resetUbicacionFields() {
-        // Ocultar todos los grupos
         provinciaGroup.style.display = 'none';
         localidadGroup.style.display = 'none';
         calleGroup.style.display = 'none';
@@ -139,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mapaGroup.style.display = 'none';
         coordenadasDisplay.style.display = 'none';
 
-        // Quitar requeridos
         provinciaInput.required = false;
         localidadInput.required = false;
         calleInput.required = false;
@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
         latitudInput.required = false;
         longitudInput.required = false;
 
-        // Limpiar valores
         provinciaInput.value = '';
         localidadInput.value = '';
         calleInput.value = '';
@@ -155,95 +154,85 @@ document.addEventListener('DOMContentLoaded', function() {
         latitudInput.value = '';
         longitudInput.value = '';
 
-        // Limpiar marcador del mapa
         if (marker && map) {
-            try { map.removeLayer(marker); } catch (err) { /* ignore */ }
+            try { map.removeLayer(marker); } catch (err) {}
             marker = null;
         }
     }
 
-    // Ocultar todos los campos de ubicación al inicio
     resetUbicacionFields();
 
-    // Manejar envío del formulario (AJAX con FormData)
+    // Manejar envío del formulario
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Validar categoría "other"
-        if (categoriaSelect.value === 'other' && !categoriaNuevaInput.value.trim()) {
-            alert('Por favor escribí la nueva categoría.');
-            categoriaNuevaInput.focus();
-            return;
-        }
-
-        // Validar que si es tipo "mapa", se haya seleccionado una ubicación
+        // Validación: si usuario eligió Mapa, asegurarse que haya coordenadas
         if (tipoUbicacionSelect.value === 'mapa' && (!latitudInput.value || !longitudInput.value)) {
             alert('Por favor, seleccione una ubicación en el mapa haciendo clic sobre él.');
             return;
         }
 
-        // Desactivar botón para evitar envíos múltiples
-        const originalBtnText = submitBtn ? submitBtn.textContent : null;
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Enviando...';
+        // Si select indica "other" pero el input (que debe enviar) está vacío -> pedir valor
+        const sendingCategoriaIsInput = !!categoriaNuevaInput.getAttribute('name');
+        if (sendingCategoriaIsInput && !categoriaNuevaInput.value.trim()) {
+            alert('Por favor, ingrese la nueva categoría.');
+            categoriaNuevaInput.focus();
+            return;
         }
 
-        // Tomar la acción del form (th:action en el HTML)
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+
         const actionUrl = form.getAttribute('action') || '/hechos/create';
-        // Construir FormData desde el form (incluye file input)
         const fd = new FormData(form);
 
-        // Si la categoria es 'other' reemplazo el campo por la nueva categoria
-        if (categoriaSelect.value === 'other') {
-            fd.set('categoria', categoriaNuevaInput.value.trim());
-        }
-
-        // Asegurarse de enviar lat/lng si tipoUbicacion=mapa (ya están en campos hidden)
-        // No setear Content-Type: fetch lo manejará automáticamente
         try {
             const response = await fetch(actionUrl, {
                 method: 'POST',
                 body: fd,
-                credentials: 'same-origin' // útil si usás sesiones/csrf
+                credentials: 'same-origin'
             });
 
             if (response.ok) {
-                // Suponemos que el backend creó el hecho correctamente.
-                // Redirigimos al listado o detalle según tu flujo
                 window.location.href = '/hechos/list';
                 return;
             } else {
-                // Intentar leer mensaje de error del cuerpo (si lo devuelve)
                 let text = '';
-                try { text = await response.text(); } catch (err) { /* ignore */ }
+                try { text = await response.text(); } catch (err) {}
                 console.error('Error al crear hecho:', response.status, text);
                 alert('No se pudo crear el hecho. Estado: ' + response.status);
             }
         } catch (err) {
-            console.error('Fetch error al crear hecho:', err);
-            // Fallback: intentar enviar el form de manera tradicional
-            const doFallback = confirm('No se pudo conectar con el servidor vía AJAX. Intentar envío tradicional (recarga de página)?');
+            console.error('Fetch error:', err);
+            const doFallback = confirm('No se pudo conectar con el servidor vía AJAX. ¿Intentar envío tradicional?');
             if (doFallback) {
-                // quitar el preventDefault y enviar normalmente
+                // retirar este listener y hacer submit clásico
                 form.removeEventListener('submit', arguments.callee);
                 form.submit();
                 return;
             }
         } finally {
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalBtnText;
-            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
         }
     });
 
-    // Manejar botón cancelar / reset
+    // Manejar botón reset
     form.addEventListener('reset', function() {
         setTimeout(() => {
             resetUbicacionFields();
+
+            // Restaurar categoría a estado inicial:
             categoriaNuevaInput.style.display = 'none';
+            categoriaNuevaInput.removeAttribute('name');
             categoriaNuevaInput.required = false;
+            categoriaNuevaInput.value = '';
+
+            // Restaurar name del select
+            categoriaSelect.setAttribute('name', categoriaFieldName);
+            categoriaSelect.value = '';
+
             tipoUbicacionSelect.value = '';
         }, 0);
     });

@@ -107,8 +107,8 @@ public class AgregadorService implements IAgregadorService {
                         .longitud(-58.3816)
                         .build())
                 .fechaDeCarga(LocalDateTime.now())
-                .fechaDeOcurrencia(LocalDate.now())
-                .cargadoAninimamente(true)
+                .fechaDeOcurrencia(LocalDateTime.now())
+                .cargadoAnonimamente(true)
                 .build();
     }
 }
