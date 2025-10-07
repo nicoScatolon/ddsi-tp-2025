@@ -82,7 +82,7 @@ public class ColeccionesService implements IColeccionesService {
     @Override
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
-                null,
+                this.generarHandleUnico(coleccionInputDTO.getTitulo()),
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion(),
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
@@ -222,25 +222,6 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-    /*public HechosPaginadosResponseDTO paginarHechos(List<Hecho> hechos, int page, int size){
-        if (page < 0 || size <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parámetros de paginación inválidos");
-        }
-
-        if (hechos == null || hechos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada o sin hechos");
-        }
-
-        int fromIndex = Math.min(page * size, hechos.size());
-        int toIndex = Math.min(fromIndex + size, hechos.size());
-        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex).stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .toList();
-
-        return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
-
-    }*/
-
     @Override
     public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO filterDTO) {
         // Convertir el DTO en objeto de dominio
@@ -264,6 +245,20 @@ public class ColeccionesService implements IColeccionesService {
         }
 
         return DTOConverter.hechoOutputDTO(hechos);
+    }
+
+    private String generarHandleUnico(String titulo) {
+        // Normalizar título: quitar espacios, acentos, etc.
+        String baseHandle = titulo.toLowerCase().replaceAll("[^a-z0-9]", "-");
+
+        String handle = baseHandle;
+        int contador = 1;
+
+        while (coleccionesRepository.existsColeccionByHandle(handle)) {
+            handle = baseHandle + "-" + contador++;
+        }
+
+        return handle;
     }
 }
 
