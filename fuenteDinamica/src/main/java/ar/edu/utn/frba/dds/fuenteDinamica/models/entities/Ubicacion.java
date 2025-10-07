@@ -24,9 +24,9 @@ public class Ubicacion {
     @Column(name = "numero")
     private Integer numero;
 
-    @Column(name = "latitud", nullable = false)
+    @Column(name = "latitud")
     private Double latitud;
 
-    @Column(name = "longitud", nullable = false)
+    @Column(name = "longitud") //Todo latitud y longitud estaban nullable = false, esta mal porq puede venir en cualquiera de las dos
     private Double longitud;
 }
