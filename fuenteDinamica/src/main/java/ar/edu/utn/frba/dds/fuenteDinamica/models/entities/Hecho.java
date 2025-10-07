@@ -27,7 +27,7 @@ public class Hecho {
     @Column(nullable = false, name = "titulo")
     private String titulo;
 
-    @Column(nullable = false, name = "descripcion", unique = true)
+    @Column(nullable = false, name = "descripcion") //todo estaba como unique = true
     private String descripcion;
 
     @Embedded
