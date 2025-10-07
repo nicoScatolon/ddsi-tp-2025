@@ -47,7 +47,7 @@ public class Hecho {
     private LocalDateTime fechaDeCarga;
 
     @Column(nullable = false, name = "anonimo")
-    private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
+    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true
 
     //Metadata
     @Column(name = "fecha-modificacion")

@@ -28,5 +28,5 @@ public class HechoOutputDTO {
     private List<ContenidoMultimedia> contenidoMultimedia;
     private Contribuyente contribuyente;
     private EstadoHecho estado;
-    private Boolean esAnonimo;
+    private Boolean cargadoAnonimamente;
 }

@@ -26,6 +26,7 @@ public class HechoInputDinamicaDTO {
     private UbicacionInputDTO ubicacion;
     private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
+    private Boolean cargadoAnonimamente;
 
     private List<ContenidoMultimedia> contenidoMultimedia;
     private UsuarioInputDTO contribuyente;

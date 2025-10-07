@@ -19,14 +19,14 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class HechoInputDTO {
-    //@JsonSetter(nulls = Nulls.SKIP)
+    @JsonSetter(nulls = Nulls.SKIP)
     private Long id;
     private String titulo;
     private String descripcion;
     private CategoriaInputDTO categoria;
     private UbicacionInputDTO ubicacion;
     private LocalDateTime fechaDeOcurrencia;
-    private Boolean esAnonimo;
+    private Boolean cargadoAnonimamente;
 
     private List<ContenidoMultimedia> contenidoMultimedia;
     private ContribuyenteInputDTO contribuyente;

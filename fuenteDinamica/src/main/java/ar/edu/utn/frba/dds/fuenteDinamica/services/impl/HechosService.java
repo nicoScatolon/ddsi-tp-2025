@@ -98,7 +98,7 @@ public class HechosService implements IHechosService {
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
                 .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyente()))
-                .esAnonimo(hechoDTO.getEsAnonimo())
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente())
                 .build();
     }
 
@@ -112,8 +112,8 @@ public class HechosService implements IHechosService {
 
     private Categoria categoriaInputDTO(CategoriaInputDTO categoriaDTO){
         Categoria categoria = new Categoria();
-        if(categoriaDTO.getNombreCategoria() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
-        categoria.setNombre(categoriaDTO.getNombreCategoria());
+        if(categoriaDTO.getNombre() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
+        categoria.setNombre(categoriaDTO.getNombre());
         if (categoriaDTO.getId() != null) {categoria.setId(categoriaDTO.getId());}
         else {categoria.setId(categoriaService.obtenerIdCategoria(categoria.getNombre()));}
         return categoria;
@@ -129,7 +129,7 @@ public class HechosService implements IHechosService {
                 .fechaOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
-                .esAnonimo(hecho.getEsAnonimo())
+                .cargadoAnonimamente(hecho.getCargadoAnonimamente())
                 .contribuyente(hecho.getContribuyente())
                 .estado(hecho.getEstado())
                 .build();
@@ -162,7 +162,7 @@ public class HechosService implements IHechosService {
     private CategoriaOutputDTO categoriaOutputDTO(Categoria categoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
         categoriaOutputDTO.setId(categoria.getId());
-        categoriaOutputDTO.setNombreCategoria(categoria.getNombre());
+        categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
     }
 }
