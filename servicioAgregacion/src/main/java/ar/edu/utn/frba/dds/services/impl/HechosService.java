@@ -42,8 +42,8 @@ public class HechosService implements IHechosService {
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
-    @Value("${app.pagination.size}") // 20 es el valor por defecto si no está definido
-    private int defaultPageSize;
+    @Value("${app.pagination.hechos.size}") // 20 es el valor por defecto si no está definido
+    private int pageSize;
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaService categoriaService,
@@ -101,7 +101,7 @@ public class HechosService implements IHechosService {
             }
         }
 
-        Pageable pageable = PageRequest.of(filterDTO.getPage(), defaultPageSize);
+        Pageable pageable = PageRequest.of(filterDTO.getPage(), pageSize);
 
         Page<Hecho> hechosPagina = hechosRepository.findAll(pageable);
 

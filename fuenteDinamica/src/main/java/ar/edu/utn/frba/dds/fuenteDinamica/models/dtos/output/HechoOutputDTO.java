@@ -23,7 +23,7 @@ public class HechoOutputDTO {
     private String descripcion;
     private CategoriaOutputDTO categoriaOutputDTO;
     private UbicacionOutputDTO ubicacionOutputDTO;
-    private LocalDate fechaOcurrencia;
+    private LocalDateTime fechaOcurrencia;
     private LocalDateTime fechaCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
     private Contribuyente contribuyente;

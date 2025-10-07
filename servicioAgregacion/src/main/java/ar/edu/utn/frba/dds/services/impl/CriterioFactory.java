@@ -28,8 +28,8 @@ public class CriterioFactory {
                 return new CriterioCargaEntreFechas(primera, segunda);
             }
             case "ocurrenciaEntreFechas": {
-                LocalDate primera = LocalDate.parse(p.get("primeraFecha"));
-                LocalDate segunda = LocalDate.parse(p.get("segundaFecha"));
+                LocalDateTime primera = LocalDateTime.parse(p.get("primeraFecha"));
+                LocalDateTime segunda = LocalDateTime.parse(p.get("segundaFecha"));
                 return new CriterioOcurrenciaEntreFechas(primera, segunda);
             }
             case "categoria": {
@@ -91,13 +91,13 @@ public class CriterioFactory {
         }
     }
 
-    private Criterio crearCriterioOcurrenciaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
+    private Criterio crearCriterioOcurrenciaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
         if (fecha1 == null && fecha2 == null) {
             return null;
         }
         else {
-            if (fecha1 == null) {fecha1 = LocalDate.MIN;}
-            if (fecha2 == null) {fecha2 = LocalDate.MAX;}
+            if (fecha1 == null) {fecha1 = LocalDateTime.MIN;}
+            if (fecha2 == null) {fecha2 = LocalDateTime.MAX;}
             return new CriterioOcurrenciaEntreFechas(fecha1, fecha2);
         }
     }

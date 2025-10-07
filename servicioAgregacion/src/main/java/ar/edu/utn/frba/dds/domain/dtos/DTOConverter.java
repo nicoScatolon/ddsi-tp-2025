@@ -187,6 +187,14 @@ public class DTOConverter {
                 .build();
     }
 
+    public static ColeccionPreviewOutputDTO coleccionPreviewOutputDTO(Coleccion coleccion) {
+        return ColeccionPreviewOutputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .build();
+    }
+
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
         return new Coleccion(
                 input.getHandle(),

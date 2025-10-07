@@ -16,7 +16,7 @@ import lombok.Setter;
 public class ContenidoMultimedia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "url", nullable = false)
     private String url;

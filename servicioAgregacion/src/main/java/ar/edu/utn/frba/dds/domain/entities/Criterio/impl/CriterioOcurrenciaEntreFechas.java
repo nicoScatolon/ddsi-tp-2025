@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 
@@ -15,19 +16,19 @@ import java.time.LocalDate;
 @DiscriminatorValue("OcurrenciaEntreFechas")
 public class CriterioOcurrenciaEntreFechas extends Criterio {
     @Column(name = "primeraFecha")
-    private  LocalDate primeraFecha;
+    private LocalDateTime primeraFecha;
 
     @Column(name = "segundaFecha")
-    private  LocalDate segundaFecha;
+    private  LocalDateTime segundaFecha;
 
-    public CriterioOcurrenciaEntreFechas(LocalDate primeraFecha, LocalDate segundaFecha) {
+    public CriterioOcurrenciaEntreFechas(LocalDateTime primeraFecha, LocalDateTime segundaFecha) {
         this.primeraFecha = primeraFecha;
         this.segundaFecha = segundaFecha;
     }
 
     @Override
     public Boolean pertenece(Hecho hecho) {
-        LocalDate fecha = hecho.getFechaDeOcurrencia();
+        LocalDateTime fecha = hecho.getFechaDeOcurrencia();
         return fecha.isAfter(primeraFecha) && fecha.isBefore(segundaFecha);
     }
 

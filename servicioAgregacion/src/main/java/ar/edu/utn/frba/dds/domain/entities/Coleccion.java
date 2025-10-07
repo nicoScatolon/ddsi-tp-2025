@@ -30,7 +30,7 @@ public class Coleccion {
     @Column(nullable = false, columnDefinition = "TEXT", name = "descripcion")
     @Setter private String descripcion;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "coleccion_fuente",
             joinColumns = @JoinColumn(name = "coleccion_id"),
@@ -45,7 +45,7 @@ public class Coleccion {
     private IAlgoritmoConsenso algoritmoConsenso = null;
 
     //cada vez que se inicia el sistema los hechos consumidos no van a estar dentro de estas listas porque no se persisten
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "coleccion_hechos",
             joinColumns = @JoinColumn(name = "coleccion_id"),
@@ -53,7 +53,7 @@ public class Coleccion {
     )
     private List<Hecho> listaHechos = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "coleccion_hechosCurados",
             joinColumns = @JoinColumn(name = "coleccion_id"),

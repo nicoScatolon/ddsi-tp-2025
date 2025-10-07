@@ -3,7 +3,6 @@ package ar.edu.utn.frba.dds.fuenteEstatica.domain.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -29,7 +28,7 @@ public class Hecho {
     private String categoria;
 
     @Column (name = "fechaDeOcurrencia")
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
 
     @Column (name = "archivoOrigen")
     private String archivoOrigen;
