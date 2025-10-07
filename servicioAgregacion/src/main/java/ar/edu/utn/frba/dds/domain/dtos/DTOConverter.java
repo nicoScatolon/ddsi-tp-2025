@@ -5,14 +5,19 @@ import ar.edu.utn.frba.dds.domain.dtos.input.hechos.*;
 import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSolicitudesEliminacion;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
+
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -27,6 +32,16 @@ public class DTOConverter {
                 .build();
     }
 
+    public static HechoMapaOutputDTO convertirHechoMapaOutputDTO(Hecho hecho) {
+        return HechoMapaOutputDTO.builder()
+                .id(hecho.getId())
+                .titulo(hecho.getTitulo())
+                .categoria(hecho.getCategoria().getNombre())
+                .latitud(hecho.getUbicacion().getLatitud())
+                .longitud(hecho.getUbicacion().getLongitud())
+                .build();
+    }
+
     public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
@@ -35,7 +50,7 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(categoriaInputDTO(dto.getCategoria()))
+                .categoria(categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
     }
@@ -63,26 +78,18 @@ public class DTOConverter {
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contenidoMultimedia(dto.getContenidoMultimedia())
                 .contribuyente(convertirUsuario(dto.getContribuyente()))
-                .categoria(categoriaInputDTO(dto.getCategoria()))
+                .categoria( categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
     }
 
-    public static Hecho convertirHechoInputDTO(IHechoInputDTO dto) {
-        if (dto instanceof HechoInputProxyDTO proxy) {
-            return convertirHechoInputDTO(proxy);
-        } else if (dto instanceof HechoInputEstaticaDTO estatica) {
-            return convertirHechoInputDTO(estatica);
-        } else if (dto instanceof HechoInputDinamicaDTO dinamica) {
-            return convertirHechoInputDTO(dinamica);
-        } else {
-            throw new IllegalArgumentException("Tipo de DTO no soportado: " + dto.getClass());
-        }
-    }
-
-
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
+        normalizarUbicacion(dto);
         return Ubicacion.builder()
+                .provincia(dto.getProvincia())
+                .departamento(dto.getDepartamento())
+                .calle(dto.getCalle())
+                .numero(dto.getNumero())
                 .latitud(dto.getLatitud())
                 .longitud(dto.getLongitud())
                 .build();
@@ -90,13 +97,17 @@ public class DTOConverter {
 
     public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
         return CategoriaOutputDTO.builder()
-                .id(categoria.getId())
+                .id(categoria.getCodigoCategoria())
                 .nombre(categoria.getNombre())
                 .build();
     }
 
     public static UbicacionOutputDTO convertirUbicacionOutputDTO(Ubicacion ubicacion) {
         return UbicacionOutputDTO.builder()
+                .id(ubicacion.getId())
+                .provincia(ubicacion.getProvincia())
+                .calle(ubicacion.getCalle())
+                .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())
                 .longitud(ubicacion.getLongitud())
                 .build();
@@ -107,7 +118,6 @@ public class DTOConverter {
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .fechaNacimiento(dto.getFechaNacimiento())
-                .esAnonimo(dto.getEsAnonimo())
                 .build();
     }
 
@@ -146,7 +156,14 @@ public class DTOConverter {
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
-                .id(categoriaInputDTO.getId())
+                .codigoCategoria(categoriaInputDTO.getCodigoCat())
+                .build();
+    }
+
+    public static Categoria categoriaInputDTO(String categoriaInputDTO) {
+        return Categoria.builder()
+                .nombre(categoriaInputDTO)
+                .codigoCategoria(NormalizadorTexto.normalizarTexto(categoriaInputDTO))
                 .build();
     }
 
@@ -170,6 +187,14 @@ public class DTOConverter {
                 .build();
     }
 
+    public static ColeccionPreviewOutputDTO coleccionPreviewOutputDTO(Coleccion coleccion) {
+        return ColeccionPreviewOutputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .build();
+    }
+
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
         return new Coleccion(
                 input.getHandle(),
@@ -186,8 +211,8 @@ public class DTOConverter {
                 .build();
     }
 
-    public static IFuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
-        IFuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
+    public static Fuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
+        Fuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
         fuente.setNombre(fuenteDTO.getNombre());
         return fuente;
     }
@@ -199,8 +224,8 @@ public class DTOConverter {
                 .fReporteHasta(filterDTO.getFReporteHasta())
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
-                .latitud(filterDTO.getLatitud())
-                .longitud(filterDTO.getLongitud())
                 .build();
     }
+
+
 }

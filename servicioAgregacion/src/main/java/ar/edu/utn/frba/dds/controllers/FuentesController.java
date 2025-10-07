@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ public class FuentesController {
     }
 
     @GetMapping("/privada")
-    public List<IFuente> getFuentes() {return this.fuenteService.buscarFuentes();}
+    public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
     public ResponseEntity<Void> agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
@@ -31,5 +33,10 @@ public class FuentesController {
     @DeleteMapping("/privada/{fuenteId}")
     public ResponseEntity<Void> eliminarUnaFuente (@RequestParam long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
+    }
+
+    @GetMapping("/test/fuente")
+    public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
+        return fuenteService.testActualizarFuente(fuenteId);
     }
 }

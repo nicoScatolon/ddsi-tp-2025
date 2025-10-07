@@ -48,8 +48,8 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) {
-        if (detectorDeSpam.esSpam(razon)){
+    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) { //Todo: debería ser responseEntity
+        if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
         }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
@@ -80,7 +80,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.findById(solicitudDTO.getSolicitud().getHechoId());
+        SolicitudEliminarHecho solicitud = repository.getById(solicitudDTO.getSolicitud().getHechoId());
         if (solicitud == null) {
             solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
         }
@@ -106,7 +106,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public SolicitudEliminarHecho findByID(Long id) {
-        return repository.findById(id);
+        return repository.getById(id);
     }
 
     @Override

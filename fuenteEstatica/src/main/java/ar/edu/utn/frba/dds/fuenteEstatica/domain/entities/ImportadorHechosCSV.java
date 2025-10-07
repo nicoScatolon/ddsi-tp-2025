@@ -17,9 +17,8 @@ import org.springframework.stereotype.Component;
 public class ImportadorHechosCSV implements ImportadorHechos {
 
     @Override
-    public String getFormato(){
-        return "csv";
-    }
+
+    public FormatoFuente getFormato() { return FormatoFuente.CSV; }
 
     @Override
     public List<Hecho> importarHechosArchivo(String path) {
@@ -55,7 +54,7 @@ public class ImportadorHechosCSV implements ImportadorHechos {
         ubicacionHecho.setLongitud(Double.parseDouble(fila[4]));
         hecho.setUbicacion(ubicacionHecho);
 
-        hecho.setFechaDeOcurrencia(LocalDate.parse(fila[5], formatoFecha));
+        hecho.setFechaDeOcurrencia( LocalDate.parse(fila[5], formatoFecha).atStartOfDay() ); // La seteo a las 00:00 por no tener hora asociada
         hecho.setFechaDeCarga(fechaDeCarga);
 
         return hecho;

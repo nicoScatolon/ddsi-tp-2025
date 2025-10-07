@@ -24,7 +24,7 @@ public class ColeccionesController {
 
     @GetMapping
     public Mono<List<ColeccionInputDTO>> todasLasColecciones(){
-        coleccionesService.traerTodasLasColecciones();
+        return coleccionesService.traerTodasLasColecciones();
     }
 
     @GetMapping("/hechos")

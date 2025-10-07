@@ -2,12 +2,17 @@ package ar.edu.utn.frba.dds.domain.entities.Fuente;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputDinamicaDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.hechos.HechoInputEstaticaDTO;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,15 +20,22 @@ import java.util.*;
 
 @Getter
 @Setter
-public class FuenteDinamica implements IFuente {
-    private Long id;
-    private String url;
-    private String nombre;
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@DiscriminatorValue("DINAMICA")
+public class FuenteDinamica extends Fuente {
     private TipoFuente tipo = TipoFuente.DINAMICA;
 
+    @Transient
     @JsonIgnore
     private WebClient webClient;
-    private Map<Long, Hecho> mapHechos;
+
+    @Transient
+    @JsonIgnore
+    private Map<Long, Hecho> mapHechos = new HashMap<>();
+    @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteDinamica(String url) {
@@ -35,20 +47,24 @@ public class FuenteDinamica implements IFuente {
     public List<Hecho> updateHechos(){
         List<HechoInputDinamicaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).toList();
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
         this.actualizarHechos(nuevosHechos);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
 
+    @Transient
     public List<HechoInputDinamicaDTO> getHechos() {
+        if (this.webClient == null && this.url != null) {
+            this.webClient = WebClient.builder().baseUrl(this.url).build();
+        }
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    var builder = uriBuilder.path("/api/fuenteDinamica/hechos");
+                    //var builder = uriBuilder.path("/api/fuenteDinamica/hechos");
                     if (ultimaActualizacion != null) {
-                        builder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME));
+                        return uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME)).build();
                     }
-                    return builder.build();
+                    return uriBuilder.build();
                 })
                 .retrieve()
                 .bodyToFlux(HechoInputDinamicaDTO.class)

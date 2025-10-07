@@ -5,9 +5,17 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
-public class CriterioTitulo implements ICriterio {
-    private final String titulo;
+@NoArgsConstructor
+@DiscriminatorValue("Titulo")
+@Entity
+public class CriterioTitulo extends Criterio {
+    @Column(name = "titulo")
+    private  String titulo;
 
     public CriterioTitulo(String titulo) {
         this.titulo = titulo;

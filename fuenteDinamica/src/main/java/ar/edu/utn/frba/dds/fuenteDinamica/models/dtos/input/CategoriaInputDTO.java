@@ -1,8 +1,5 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input;
 
-
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

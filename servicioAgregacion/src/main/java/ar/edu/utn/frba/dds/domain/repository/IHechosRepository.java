@@ -2,13 +2,11 @@ package ar.edu.utn.frba.dds.domain.repository;
 
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface IHechosRepository {
-    List<Hecho> findAll();
-    Hecho findById(Long id);
-    void saveAll(List<Hecho> hechos);
-    void delete(Hecho hecho);
+public interface IHechosRepository extends JpaRepository<Hecho, Long> {
+    Hecho getHechoById(Long id);
 }

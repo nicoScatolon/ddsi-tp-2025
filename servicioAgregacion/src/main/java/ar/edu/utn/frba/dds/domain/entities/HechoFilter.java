@@ -16,10 +16,9 @@ public class HechoFilter {
 
     private LocalDateTime fReporteHasta;
 
-    private LocalDate fAconDesde;
+    private LocalDateTime fAconDesde;
 
-    private LocalDate fAconHasta;
+    private LocalDateTime fAconHasta;
 
-    private Double latitud;
-    private Double longitud;
+    private Ubicacion ubicacion;
 }

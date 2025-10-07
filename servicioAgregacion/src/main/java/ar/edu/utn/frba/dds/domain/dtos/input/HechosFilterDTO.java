@@ -22,12 +22,13 @@ public class HechosFilterDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime fReporteHasta;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate fAconDesde;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime fAconDesde;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate fAconHasta;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime fAconHasta;
 
-    private Double latitud;
-    private Double longitud;
+    private UbicacionInputDTO ubicacionInputDTO;
+
+    private Integer page;
 }

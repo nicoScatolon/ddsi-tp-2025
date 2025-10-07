@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HechoInputProxyDTO implements IHechoInputDTO{
+public class HechoInputProxyDTO{
     private Long id;
     private String titulo;
     private String descripcion;
     private CategoriaInputDTO categoria;
     private UbicacionInputDTO ubicacion;
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
 }

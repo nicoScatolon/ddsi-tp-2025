@@ -5,34 +5,35 @@ import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.repository.IColeccionesRepository;
 import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.ColeccionesRepository;
-import ar.edu.utn.frba.dds.domain.repository.impl.FuentesRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ColeccionesService implements IColeccionesService {
-    private final ColeccionesRepository coleccionesRepository;
+    private final IColeccionesRepository coleccionesRepository;
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
@@ -40,10 +41,13 @@ public class ColeccionesService implements IColeccionesService {
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
-    public ColeccionesService(ColeccionesRepository coleccionesRepository,
+    @Value("${app.pagination.colecciones.size}")
+    private int pageSize;
+
+    public ColeccionesService(IColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
                               CriterioFactory criterioFactory,
-                              FuentesRepository fuentesRepository,
+                              IFuentesRepository fuentesRepository,
                               ICategoriaService categoriaService) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
@@ -64,17 +68,29 @@ public class ColeccionesService implements IColeccionesService {
                 .collect(Collectors.toList());
     }
 
+    public List<ColeccionPreviewOutputDTO> findAllPreview(Integer page) {
+        if (page == null) {
+            return coleccionesRepository.findAll().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+        } else {
+            Pageable pageable = PageRequest.of(page, pageSize);
+            Page<Coleccion> coleccionesPagina = coleccionesRepository.findAll(pageable);
+            return coleccionesPagina.getContent().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+        }
+    }
+
     //-------------------------- OPERACIONES CRUD --------------------------
     @Override
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
-                null,
+                this.generarHandleUnico(coleccionInputDTO.getTitulo()),
                 coleccionInputDTO.getTitulo(),
                 coleccionInputDTO.getDescripcion(),
                 DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso() ));
         // extra
         if ( coleccionInputDTO.getListaIdsFuentes() != null) {
-            coleccionInputDTO.getListaIdsFuentes().forEach(fuente -> coleccion.agregarFuente(fuentesRepository.findById( fuente ))); }
+            coleccionInputDTO.getListaIdsFuentes().
+                    forEach(fuente -> coleccion.agregarFuente( fuentesRepository.findById(fuente).orElse(null)  ) );
+        }
         if (coleccionInputDTO.getListaCriterios() != null) {
             coleccionInputDTO.getListaCriterios().forEach(n->coleccion.agregarCriterio(criterioFactory.crear(n)));
         }
@@ -103,7 +119,7 @@ public class ColeccionesService implements IColeccionesService {
             return ResponseEntity.notFound().build();
         }
 
-        Set<ICriterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
+        Set<Criterio> nuevos = new HashSet<>(criterioFactory.crearVarios(listaCriterioInputDTO));
         coleccion.setListaCriterios(nuevos);
         coleccionesRepository.save(coleccion);
 
@@ -117,16 +133,16 @@ public class ColeccionesService implements IColeccionesService {
             return ResponseEntity.notFound().build();
         }
 
-        coleccion.setAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
+        coleccion.setIAlgoritmoConsenso( DTOConverter.algoritmoConsensoFromDTO(consensoDTO) );
         coleccionesRepository.save(coleccion);
         return ResponseEntity.ok().build();
     }
 
     @Override
-    public List<IFuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
+    public List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
-        List<IFuente> nuevasFuentes = new ArrayList<>();
-        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById( f.getId()) ) );
+        List<Fuente> nuevasFuentes = new ArrayList<>();
+        fuenteInputDTO.forEach(f -> nuevasFuentes.add( fuentesRepository.findById(f.getId()).orElse(null) ) );
         coleccion.setListaFuentes(nuevasFuentes);
         coleccionesRepository.save(coleccion);
 
@@ -152,8 +168,8 @@ public class ColeccionesService implements IColeccionesService {
 
     public void actualizarColeccionesScheduler(){
         logger.info("Actualizando Colecciones Scheduler");
-        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
-        coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
+/*aca esta*/List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+/*el error */coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 
@@ -165,7 +181,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void notificarActualizacionFuentes(List<IFuente> fuentes){
+    public void notificarActualizacionFuentes(List<Fuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
         colecciones = colecciones.stream()
                 .filter( c -> c.getListaFuentes().stream().anyMatch( fuentes::contains) )
@@ -174,7 +190,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public void notificarFuenteEliminada(IFuente fuente){
+    public void notificarFuenteEliminada(Fuente fuente){
         List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
                 .filter(c -> c.getListaFuentes().contains(fuente)).toList();
         colecciones.forEach(c -> c.eliminarFuente(fuente));
@@ -192,7 +208,7 @@ public class ColeccionesService implements IColeccionesService {
         return coleccion.getHechos();
     }
 
-    public List<Hecho> getHechosColeccionFiltrados(String handle,List<ICriterio> criterios, Boolean visualizarCurado){
+    public List<Hecho> getHechosColeccionFiltrados(String handle, List<Criterio> criterios, Boolean visualizarCurado){
         Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
         if (visualizarCurado) {
             return coleccion.getHechosCuradosYFiltrados(criterios);
@@ -206,25 +222,6 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-    /*public HechosPaginadosResponseDTO paginarHechos(List<Hecho> hechos, int page, int size){
-        if (page < 0 || size <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parámetros de paginación inválidos");
-        }
-
-        if (hechos == null || hechos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada o sin hechos");
-        }
-
-        int fromIndex = Math.min(page * size, hechos.size());
-        int toIndex = Math.min(fromIndex + size, hechos.size());
-        List<HechoOutputDTO> hechosPaginados = hechos.subList(fromIndex, toIndex).stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .toList();
-
-        return new HechosPaginadosResponseDTO(hechosPaginados, page, size, hechos.size());
-
-    }*/
-
     @Override
     public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO filterDTO) {
         // Convertir el DTO en objeto de dominio
@@ -237,7 +234,7 @@ public class ColeccionesService implements IColeccionesService {
         }
 
         // Generar criterios con la factory
-        List<ICriterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
+        List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
 
         // btener hechos según haya o no criterios
         List<Hecho> hechos;
@@ -248,6 +245,20 @@ public class ColeccionesService implements IColeccionesService {
         }
 
         return DTOConverter.hechoOutputDTO(hechos);
+    }
+
+    private String generarHandleUnico(String titulo) {
+        // Normalizar título: quitar espacios, acentos, etc.
+        String baseHandle = titulo.toLowerCase().replaceAll("[^a-z0-9]", "-");
+
+        String handle = baseHandle;
+        int contador = 1;
+
+        while (coleccionesRepository.existsColeccionByHandle(handle)) {
+            handle = baseHandle + "-" + contador++;
+        }
+
+        return handle;
     }
 }
 

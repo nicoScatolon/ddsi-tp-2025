@@ -1,20 +1,38 @@
 package ar.edu.utn.frba.dds.domain.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
-public class Ubicacion {
-    private Double latitud;
-    private Double longitud;
+@AllArgsConstructor
+@NoArgsConstructor
 
-    public Ubicacion(Double latitud , Double longitud) {
-        this.latitud = latitud;
-        this.longitud = longitud;
-    }
+@Entity
+@Table(name = "ubicacion")
+public class Ubicacion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "provincia")
+    private String provincia;
+
+    @Column(name = "departamento")
+    private String departamento;
+
+    @Column(name = "calle")
+    private String calle;
+
+    @Column(name = "numero")
+    private Integer numero;
+
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
 
     //Ver como compara sin que sea por exactamente la misma latitud o longitud, quiza con un rango de cercania o por paises
 }

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities.Fuente.adapters;
 
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.FuenteEstatica;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;

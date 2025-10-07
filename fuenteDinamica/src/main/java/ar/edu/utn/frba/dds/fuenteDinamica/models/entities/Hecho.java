@@ -1,32 +1,76 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.entities;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
+@Access(AccessType.FIELD)
+@Entity
+@Table(name = "Hechos")
 public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     //Contenido del Hecho
+    @Column(nullable = false, name = "titulo")
     private String titulo;
+
+    @Column(nullable = false, name = "descripcion") //todo estaba como unique = true
     private String descripcion;
-    private String categoria;
+
+    @Embedded
+    private Categoria categoria; //no la persisto en este sistema pero me interesa guardar su id para facilitar su mapeo
+
+    @Embedded
     private Ubicacion ubicacion;
-    private LocalDate fechaDeOcurrencia;
-    private IContenidoMultimedia contenidoMultimedia;
+
+    @Column(nullable = false, name = "fecha-ocurrencia")
+    private LocalDateTime fechaDeOcurrencia;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "hecho_id", nullable = false) // esto crea/escribe la FK en la tabla del hijo
+    private List<ContenidoMultimedia> contenidoMultimedia;
+
+    @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
 
+    @Column(nullable = false, name = "anonimo")
+    private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
+
     //Metadata
-    private Long id;
+    @Column(name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
+
+
+    //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
+            @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
+    })
     private Contribuyente contribuyente; // el ususario que lo carga
-    private EstadoHecho estado = EstadoHecho.PENDIENTE; // para la respuesta del administrador
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
+
+    @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
+
+    @Column(name = "sugerencia")
     private String sugerencia = null;
 
     public void verificarModificacionValida(Long diasMaximos, LocalDateTime fechaModificacion) {

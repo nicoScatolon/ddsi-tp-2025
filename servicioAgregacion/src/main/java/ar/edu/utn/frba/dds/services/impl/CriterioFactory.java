@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class CriterioFactory {
 
-    public ICriterio crear(CriterioInputDTO criterioInputDTO) {
+    public Criterio crear(CriterioInputDTO criterioInputDTO) {
         String tipo = criterioInputDTO.getTipo();
         Map<String, String> p = criterioInputDTO.getParametros();
 
@@ -28,8 +28,8 @@ public class CriterioFactory {
                 return new CriterioCargaEntreFechas(primera, segunda);
             }
             case "ocurrenciaEntreFechas": {
-                LocalDate primera = LocalDate.parse(p.get("primeraFecha"));
-                LocalDate segunda = LocalDate.parse(p.get("segundaFecha"));
+                LocalDateTime primera = LocalDateTime.parse(p.get("primeraFecha"));
+                LocalDateTime segunda = LocalDateTime.parse(p.get("segundaFecha"));
                 return new CriterioOcurrenciaEntreFechas(primera, segunda);
             }
             case "categoria": {
@@ -49,14 +49,14 @@ public class CriterioFactory {
         }
     }
 
-    public List<ICriterio> crearVarios(List<CriterioInputDTO> criterios){
+    public List<Criterio> crearVarios(List<CriterioInputDTO> criterios){
         return criterios.stream()
                 .map(this::crear)
                 .toList();
     }
 
-    public List<ICriterio> crearCriteriosParametros(Categoria cat, HechoFilter filter){
-        List<ICriterio> criterios = new ArrayList<>();
+    public List<Criterio> crearCriteriosParametros(Categoria cat, HechoFilter filter){
+        List<Criterio> criterios = new ArrayList<>();
         if (cat != null) {
             criterios.add(new CriterioCategoria(cat));
         }
@@ -66,13 +66,21 @@ public class CriterioFactory {
         if(filter.getFAconDesde() != null || filter.getFAconHasta() != null){
             criterios.add(this.crearCriterioOcurrenciaEntreFechas(filter.getFAconDesde(),filter.getFAconHasta()));
         }
-        if(filter.getLatitud() != null && filter.getLongitud()!= null){
-            criterios.add(new CriterioUbicacion(new Ubicacion(filter.getLatitud(),filter.getLongitud())));
+        if(filter.getUbicacion() != null){
+            criterios.add(new CriterioUbicacion(Ubicacion.builder()
+                    .provincia(filter.getUbicacion().getProvincia())
+                    .departamento(filter.getUbicacion().getDepartamento())
+                    .calle(filter.getUbicacion().getCalle())
+                    .numero(filter.getUbicacion().getNumero())
+                    .latitud(filter.getUbicacion().getLatitud())
+                    .longitud(filter.getUbicacion().getLongitud())
+                    .build())
+            );
         }
         return criterios;
     }
 
-    private ICriterio crearCriterioCargaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
+    private Criterio crearCriterioCargaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
         if (fecha1 == null && fecha2 == null) {
             return null;
         }
@@ -83,13 +91,13 @@ public class CriterioFactory {
         }
     }
 
-    private ICriterio crearCriterioOcurrenciaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
+    private Criterio crearCriterioOcurrenciaEntreFechas(LocalDateTime fecha1, LocalDateTime fecha2) {
         if (fecha1 == null && fecha2 == null) {
             return null;
         }
         else {
-            if (fecha1 == null) {fecha1 = LocalDate.MIN;}
-            if (fecha2 == null) {fecha2 = LocalDate.MAX;}
+            if (fecha1 == null) {fecha1 = LocalDateTime.MIN;}
+            if (fecha2 == null) {fecha2 = LocalDateTime.MAX;}
             return new CriterioOcurrenciaEntreFechas(fecha1, fecha2);
         }
     }
