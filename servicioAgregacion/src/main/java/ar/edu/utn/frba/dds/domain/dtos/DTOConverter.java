@@ -118,8 +118,7 @@ public class DTOConverter {
                 .builder()
                 .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .nombreCreador(solicitud.getNombreCreador())
-                .apellidoCreador(solicitud.getApellidoCreador())
+                .idAdministrador(solicitud.getIdAdministrador())
                 .fechaCreacion(solicitud.getFechaCreacion())
                 .build();
     }
@@ -129,8 +128,7 @@ public class DTOConverter {
                 .constructorSolicitud(
                         hecho,
                         dto.getRazonDeEliminacion(),
-                        dto.getNombreCreador(),
-                        dto.getApellidoCreador());
+                        dto.getIdCreador());
     }
 
     public static List<HechoOutputDTO> hechoOutputDTO(Set<Hecho> hechos) {
