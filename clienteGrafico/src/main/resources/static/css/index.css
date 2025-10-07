@@ -1,0 +1,349 @@
+:root {
+    --desktop-navbar-height: 80px;
+    --zoom-navbar-height: 60px;
+}
+
+/* --- RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    color: #fff;
+    background: url("../img/background-home.jpg") center/cover no-repeat fixed;
+}
+
+/* --- HEADER --- */
+header {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 1em 2em;
+}
+
+nav {
+    font-weight: 500;
+}
+
+
+/* --- HERO / HOME --- */
+#home {
+    position: relative;
+    z-index: 5;
+    min-height: calc(100vh - var(--desktop-navbar-height));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    padding-top: calc(var(--desktop-navbar-height) + 2rem);
+    padding-bottom: 2rem;
+}
+
+#home .content h1 {
+    font-size: 5.5em;
+    margin-bottom: 0.4em;
+    font-weight: 700;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+#home .content h3 {
+    font-size: 2.6em;
+    margin-bottom: 0.3em;
+    font-weight: 500;
+}
+
+#home .content h5 {
+    font-size: 1.5em;
+    font-weight: 400;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* --- HOME BUTTONS --- */
+.home-buttons {
+    margin: 30px 0;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    padding-bottom: 40px;
+    font-weight: 600;
+}
+
+.home-buttons .btn {
+    font-size: 1.4em;
+    padding: 18px 40px 20px 40px;
+}
+
+
+
+
+/* --- RESPONSIVE HERO --- */
+@media (max-width: 1024px) {
+    #home { padding-top: calc(var(--zoom-navbar-height) + 1.5rem); padding-bottom: 1.5rem; }
+    #home .content h1 { font-size: 4em; }
+    #home .content h3 { font-size: 2em; }
+    #home .content h5 { font-size: 1.2em; max-width: 700px; }
+    .home-buttons .btn { font-size: 1.2em; padding: 15px 30px 25px 30px; }
+}
+
+@media (max-width: 768px) {
+    #home { padding-left: 1rem; padding-right: 1rem; }
+    #home .content h1 { font-size: 3em; }
+    #home .content h3 { font-size: 1.6em; }
+    #home .content h5 { font-size: 1em; max-width: 500px; }
+    .home-buttons { flex-direction: column; gap: 20px; align-items: center;}
+    .home-buttons .btn { width: 70%; font-size: 1.1em; padding: 14px 20px 24px 20px; }
+}
+
+@media (max-width: 480px) {
+    #home .content h1 { font-size: 2.2em; }
+    #home .content h3 { font-size: 1.4em; }
+    #home .content h5 { font-size: 0.95em; max-width: 100%; }
+    .home-buttons .btn { font-size: 1em; padding: 12px 18px 20px 18px; }
+}
+
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    background: #0000003f;
+    border: 2px solid #2F60F4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.26s ease, top 0.26s ease, bottom 0.26s ease, background 0.3s;
+    pointer-events: auto;
+    z-index: 4001;
+    /* no will-change agresivo para evitar issues móviles */
+}
+.scroll-indicator svg {
+    width: 24px;
+    height: 24px;
+    stroke: #2F60F4;
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.3s;
+}
+
+/* clase visual cuando el indicador se "eleva" (ya estás en la parte baja) */
+.scroll-indicator.up {
+    transform: translateX(-50%) translateY(10px);
+    top: calc(var(--desktop-navbar-height) + 40px); /* ajusta según prefieras */
+}
+
+.scroll-indicator:hover {
+    background: #2F60F4;
+}
+
+.scroll-indicator:hover svg {
+    stroke: #fff;
+}
+
+/* ===== SECCIÓN INFERIOR: HECHOS + COLECCIONES + FOOTER ===== */
+#lower-content {
+    display: flex;
+    flex-direction: column;
+
+}
+
+#hechos, #colecciones {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+
+section h2 {
+    margin-left: 2rem;
+    text-align: left;
+    font-size: 2.6em;
+    margin-bottom: 1rem; /* antes 2rem */
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+.cards-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 1rem;
+    margin: 0 5rem;
+    gap: 1.5rem;
+    scrollbar-width: none;
+    border-radius: 28px;
+    border: none;
+}
+
+.cards-row::-webkit-scrollbar { display: none; }
+
+.card {
+    flex: 0 0 350px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    /* en vez de padding uniforme, definimos más controlado */
+    padding: 1.2rem 1.2rem 0.6rem 1.2rem; /* menos padding abajo */
+    color: #fff;
+    transition: transform 0.2s, background 0.3s;
+    text-align: center;
+}
+
+/* separación extra entre imagen y título */
+.card-media {
+    margin-bottom: 0.8rem; /* agrega espacio entre la img y el título */
+}
+
+
+
+.card:hover {
+    transform: translateY(-6px);
+    background: rgba(0,0,0,0.75);
+}
+
+/* --- SCROLL BUTTONS --- */
+.scroll-btn {
+    position: absolute;
+    background: #1746D2;
+    color: rgb(255, 255, 255);
+    border: none;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    /* centra verticalmente respecto a la fila de cards */
+    top: 50%; /* ya tenías */
+    transform: translateY(-50%); /* asegura que quede centrado */
+}
+
+.scroll-btn:hover {
+    background: #0f2c82;
+}
+
+.scroll-btn.left { left: 5px; }
+.scroll-btn.right { right: 5px; }
+
+@media (max-width: 768px) {
+    .card { flex: 0 0 260px; }
+}
+
+#colecciones .card {
+    margin-bottom: 4rem;
+}
+
+#mi-boton {
+    position: relative;
+    z-index: 10;
+}
+/* ===== Scroll Indicator Animación (doble rebote cada 6s) ===== */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    /* Primer rebote */
+    4% {
+        transform: translateX(-50%) translateY(8px);
+    }
+    8% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* Segundo rebote (seguido) */
+    12% {
+        transform: translateX(-50%) translateY(8px);
+    }
+    16% {
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Normal (abajo) */
+.scroll-indicator:not(.up) {
+    animation: bounce 6s infinite;
+}
+
+/* Rebote hacia arriba (doble también) */
+@keyframes bounce-up {
+    0%, 100% {
+        transform: translateX(-50%) translateY(10px);
+    }
+    /* Primer rebote */
+    4% {
+        transform: translateX(-50%) translateY(2px);
+    }
+    8% {
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    /* Segundo rebote */
+    12% {
+        transform: translateX(-50%) translateY(2px);
+    }
+    16% {
+        transform: translateX(-50%) translateY(10px);
+    }
+}
+
+.scroll-indicator.up {
+    animation: bounce-up 6s infinite;
+}
+
+.card-title {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.card-description p {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 1.4rem;
+    margin: 0;
+}
+
+#colecciones {
+    margin-top: -4rem;
+}
+
+#hechos h2, #colecciones h2 {
+    margin: 0 0 1rem 2rem;
+    font-size: 2.6em;
+    text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.85); /* sombra más marcada y difusa */
+}
+

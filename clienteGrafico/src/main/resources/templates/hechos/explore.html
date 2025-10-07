@@ -1,0 +1,137 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<div th:fragment="contenido">
+
+    <th:block th:fragment="cssExtra">
+        <link rel="stylesheet" th:href="@{/css/hechosExplore.css}">
+    </th:block>
+
+    <section id="explore">
+        <div class="explore-layout">
+            <!-- BOX FILTROS -->
+            <aside class="filter-box">
+                <h2>Filtros</h2>
+                <!-- 🔽 Nuevo filtro de modo -->
+                <div class="filter-group">
+                    <label for="filter-modo">Modo de navegación:</label>
+                    <select id="filter-modo">
+                        <option value="irrestricto">Irrestricto</option>
+                        <option value="curados">Curados</option>
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <label for="filter-fecha">Fecha:</label>
+                    <input type="text" id="filter-fecha" placeholder="YYYY-MM-DD">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-ubicacion">Ubicación:</label>
+                    <input type="text" id="filter-ubicacion" placeholder="Ej: Buenos Aires">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-categoria">Categoría:</label>
+                    <input type="text" id="filter-categoria">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-etiqueta">Etiqueta:</label>
+                    <input type="text" id="filter-etiqueta">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-fuente">Fuente:</label>
+                    <input type="text" id="filter-fuente">
+                </div>
+
+                <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
+
+            </aside>
+
+            <!-- CARDS -->
+            <div id="hechos-container" class="cards-container">
+                <a class="card" th:each="hecho : ${hechos}"
+                   th:href="@{/hechos/{id}(id=${hecho.id})}"
+                   th:aria-label="${hecho.titulo}">
+
+                    <!-- 1️⃣ Título -->
+                    <div class="card-title" th:text="${hecho.titulo}">
+                        Título de ejemplo
+                    </div>
+
+                    <!-- 2️⃣ Descripción -->
+                    <div class="card-description">
+                        <p th:text="${#strings.abbreviate(hecho.descripcion, 150)}">
+                            Descripción de ejemplo
+                        </p>
+                    </div>
+
+                    <!-- 3️⃣ Datos extra -->
+                    <div class="card-data">
+                        <p>
+                            <strong>📍</strong>
+                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : '-'}">Ubicación</span>
+                        </p>
+                        <p>
+                            <strong>🏷️</strong>
+                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : '-'}">Categoría</span>
+                        </p>
+                        <p>
+                            <strong>🔖</strong>
+                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? '-' : hecho.etiquetas[0].nombre}">Etiqueta</span>
+                        </p>
+                        <p>
+                            <strong>📅</strong>
+                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'yyyy-MM-dd')}">Fecha</span>
+                        </p>
+                        <!--
+                        Podemos cambiarlo agregando un fuente Nombre para mostrar la fuente de origen
+                        <p th:if="${hecho.url != null && hecho.url != ''}">
+                            <strong>🌐</strong> <a th:href="${hecho.url}" th:text="${hecho.url}">Enlace</a>
+                        </p>
+                        -->
+                    </div>
+
+                    <!-- 4️⃣ Imagen -->
+                    <div class="card-img"
+                         th:if="${hecho.contenidoMultimedia != null and #lists.isNotEmpty(hecho.contenidoMultimedia)}"
+                         aria-hidden="true">
+                        <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
+                             th:alt="${hecho.titulo}"/>
+                    </div>
+
+                </a>
+
+                <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">
+
+                    <!-- Botón Anterior -->
+                    <a class="pagination-arrow"
+                       th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+                       th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+                       th:href="@{/hechos(page=${paginaActual - 1})}">
+                        ◀
+                    </a>
+
+                    <!-- Número de página actual -->
+                    <div class="pagination-page-number" th:text="${paginaActual+1}"> Numero Pagina </div>
+
+                    <!-- Botón Siguiente -->
+                    <a class="pagination-arrow"
+                       th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
+                       th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
+                       th:href="@{/hechos(page=${paginaActual + 1})}">
+                        ▶
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+<th:block th:fragment="jsExtra">
+</th:block>
+</html>

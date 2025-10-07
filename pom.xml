@@ -30,6 +30,7 @@
 		<module>fuenteDinamica</module>
 		<module>fuenteProxy</module>
 		<module>servicioEstadisticas</module>
+        <module>ClienteGrafico</module>
 	</modules>
 
 	<dependencies>

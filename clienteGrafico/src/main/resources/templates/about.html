@@ -1,0 +1,47 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/about-us.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <section id="about">
+        <div class="content">
+            <h1>About Us</h1>
+            <p>En <strong>MetaMapa</strong> creemos en conectar personas con información geolocalizada de manera fácil y segura. Nuestro objetivo es brindar herramientas intuitivas para explorar, crear y compartir hechos relevantes en distintos contextos.</p>
+
+            <h2>Nuestra Misión</h2>
+            <p>Facilitar el acceso a datos geográficos y multimedia, promoviendo la colaboración y la transparencia en la información.</p>
+
+            <h2>Nuestro Equipo</h2>
+            <div class="team">
+                <div class="member">
+                    <img src="/img/integrante1.jpg" alt="Integrante 1">
+                    <h3>Lucio De Goñi</h3>
+                </div>
+                <div class="member">
+                    <img src="/img/integrante2.jpg" alt="Integrante 2">
+                    <h3>Ignacio Martin Jubilla</h3>
+                </div>
+                <div class="member">
+                    <img src="/img/integrante3.jpg" alt="Integrante 3">
+                    <h3>Gonzalo Pinto Irigoyen</h3>
+                </div>
+                <div class="member">
+                    <img src="/img/integrante4.jpg" alt="Integrante 4">
+                    <h3>Nicolás Martin Scatolon</h3>
+                </div>
+                <div class="member">
+                    <img src="/img/integrante5.jpg" alt="Integrante 5">
+                    <h3>Ignacio Tomás Vila</h3>
+                </div>
+            </div>
+
+
+            <h2>Contacto</h2>
+            <p>Si querés ponerte en contacto con nosotros, envíanos un correo a <a href="mailto:contacto@metamapa.com">contacto@metamapa.com</a> o seguinos en nuestras redes sociales.</p>
+        </div>
+    </section>
+</div>
+<th:block th:fragment="jsExtra">
+</th:block>
+</html>

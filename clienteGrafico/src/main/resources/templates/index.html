@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <section id="home">
+        <div class="content">
+            <h1>MetaMapa</h1>
+            <h3>Sistema de gestión de mapeos colaborativos</h3>
+            <h5>Sumate a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva</h5>
+            <div class="home-buttons">
+                <a href="/hechos/post" class="btn btn-primary">+ Create</a>
+                <a href="/hechos" class="btn btn-secondary">Explore</a>
+            </div>
+        </div>
+        <div class="scroll-indicator" id="scrollIndicator" role="button" aria-label="Ir a contenido" tabindex="0">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+            </svg>
+        </div>
+    </section>
+    <div id="lower-content">
+        <!-- Hechos destacados -->
+        <section id="hechos">
+            <h2>Hechos destacados</h2>
+            <div class="scroll-container">
+                <button class="scroll-btn left" data-target="hechos-container" aria-label="Scroll izquierda">&#10094;</button>
+                <div id="hechos-container" class="cards-row" tabindex="0"></div>
+                <button class="scroll-btn right" data-target="hechos-container" aria-label="Scroll derecha">&#10095;</button>
+            </div>
+        </section>
+
+        <!-- Colecciones destacadas -->
+        <section id="colecciones">
+            <h2>Colecciones destacadas</h2>
+            <div class="scroll-container">
+                <button class="scroll-btn left" data-target="collections-container" aria-label="Scroll izquierda">&#10094;</button>
+                <div id="collections-container" class="cards-row" tabindex="0"></div>
+                <button class="scroll-btn right" data-target="collections-container" aria-label="Scroll derecha">&#10095;</button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<th:block th:fragment="jsExtra">
+    <script th:src="@{/js/scroll.js}"></script>
+</th:block>
+</html>

@@ -1,0 +1,65 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/hechos-map.css}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+</th:block>
+
+<div th:fragment="contenido">
+
+    <!-- MAPA -->
+    <div id="map"></div>
+
+</div>
+
+<th:block th:fragment="jsExtra">
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+    <!-- Script con los datos del backend -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const HECHOS = /*[[${hechosMapa}]]*/ [];
+        /*]]>*/
+    </script>
+
+    <!-- Script del mapa -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const map = L.map('map').setView([-34.6037, -58.3816], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Crear un grupo de marcadores con clustering
+            const markers = L.markerClusterGroup();
+
+            HECHOS.forEach(h => {
+                if (h.latitud && h.longitud) {
+                    const popupContent = `
+                        <div style="max-width: 200px;">
+                            <strong>${h.titulo}</strong><br>
+                            <p>${h.categoria ?? ''}</p>
+                            <a href="/hechos/${h.id}" class="btn-popup">Ver más</a>
+                        </div>
+                    `;
+                    const marker = L.marker([h.latitud, h.longitud]);
+                    marker.bindPopup(popupContent);
+                    markers.addLayer(marker);
+                }
+            });
+
+            // Añadir todos los marcadores al mapa
+            map.addLayer(markers);
+        });
+    </script>
+</th:block>
+
