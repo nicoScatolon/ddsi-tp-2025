@@ -1,11 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
 <th:block th:fragment="cssExtra">
     <link rel="stylesheet" th:href="@{/css/create.css}">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 </th:block>
 
-<div th:fragment="contenido">
+    <th:block th:fragment="contenido">
     <section class="form-container">
         <h1>Crear Hecho</h1>
         <form th:action="@{/hechos/create}" th:object="${hechoDTO}" method="post" id="hechoForm">
@@ -23,6 +24,7 @@
             <div class="form-group">
                 <label for="categoria">Categoría</label>
                 <div class="categoria-wrapper">
+                    <!-- select mantiene el th:field para que Thymeleaf genere el name -->
                     <select id="categoria" th:field="*{categoria.nombre}" required>
                         <option value="" disabled selected>Seleccione una categoría</option>
                         <option value="Ambiental">Ambiental</option>
@@ -30,14 +32,19 @@
                         <option value="Política">Política</option>
                         <option value="other">Otra...</option>
                     </select>
-                    <input type="text" th:field="*{categoria.nombre}" placeholder="Escriba nueva categoría" style="display:none; margin-top:0.5rem;">
+
+                    <!-- input SIN th:field: el JS le pondrá el name solo si hace falta -->
+                    <input type="text" id="categoriaNueva" placeholder="Escriba nueva categoría"
+                           style="display:none; margin-top:0.5rem;" />
                 </div>
             </div>
+
+
 
             <!-- Fecha -->
             <div class="form-group">
                 <label for="fechaDeOcurrencia">Fecha de Ocurrencia</label>
-                <input type="date" id="fechaDeOcurrencia" th:field="*{fechaDeOcurrencia}" required>
+                <input type="datetime-local" id="fechaDeOcurrencia" th:field="*{fechaDeOcurrencia}" required>
             </div>
 
             <!-- Ubicación -->
@@ -84,15 +91,8 @@
             <input type="hidden" th:field="*{ubicacion.latitud}" id="latitudUbicacion">
             <input type="hidden" th:field="*{ubicacion.longitud}" id="longitudUbicacion">
 
-            <!-- Multimedia Todo ver porq se debería guardar la url no el archivo
-            <h2>Contenido Multimedia</h2>
-            <div class="form-group">
-                <label for="contenidoMultimedia">Subir archivo</label>
-                <input type="file" id="contenidoMultimedia" name="contenidoMultimedia" accept="image/*,video/*">
-            </div>-->
-
             <div class="form-group checkbox">
-                <input type="checkbox" id="esAnonimo" th:field="*{cargadoAninimamente}">
+                <input type="checkbox" id="esAnonimo" th:field="*{cargadoAnonimamente}">
                 <label for="esAnonimo">Publicar como anónimo</label>
             </div>
 
@@ -104,7 +104,7 @@
         </form>
     </section>
     <br>
-</div>
+    </th:block>
 
 <th:block th:fragment="jsExtra">
     <!-- Leaflet JS -->

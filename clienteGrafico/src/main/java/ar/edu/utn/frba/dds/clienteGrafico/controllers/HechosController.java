@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +50,11 @@ public class HechosController {
     }
 
     @PostMapping("/create") // path coincide con el form
-    public String guardarHecho(@ModelAttribute("hechoDTO") HechoInputDTO hechoDTO, Model model) {
+    public String guardarHecho(@ModelAttribute("hechoDTO") HechoOutputDTO hechoDTO, Model model) {
         try {
-            ContribuyenteInputDTO contribuyenteInputDTO = this.obtenerUsuarioPrueba();
-            hechoDTO.setContribuyente(contribuyenteInputDTO);
+            ContribuyenteOutputDTO contribuyenteOutputDTO = this.obtenerUsuarioPrueba();
+            hechoDTO.setContribuyente(contribuyenteOutputDTO);
+            int prueba = 0;
             fuenteDinamicaService.crearHecho(hechoDTO);
 
             return "redirect:/hechos";
@@ -108,25 +112,21 @@ public class HechosController {
 
     public HechoInputDTO instanciarHecho(){
         ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
-        List<EtiquetaInputDTO> etiquetas = new ArrayList<>();
         CategoriaInputDTO categoria = new CategoriaInputDTO();
-        List<ContenidoMultimediaInputDTO> contenidosMultimedia = new ArrayList<>();
         UbicacionInputDTO ubicacion = new UbicacionInputDTO();
 
         HechoInputDTO hecho = new HechoInputDTO();
 
         hecho.setContribuyente(contribuyente);
         hecho.setCategoria(categoria);
-        hecho.setEtiquetas(etiquetas);
-        hecho.setContenidoMultimedia(contenidosMultimedia);
         hecho.setUbicacion(ubicacion);
 
         return hecho;
     }
 
 
-    private  ContribuyenteInputDTO obtenerUsuarioPrueba() {
-        return ContribuyenteInputDTO.builder()
+    private  ContribuyenteOutputDTO obtenerUsuarioPrueba() {
+        return ContribuyenteOutputDTO.builder()
                 .nombre("Santiago")
                 .apellido("Rodriguez")
                 .fechaNacimiento(LocalDate.now())

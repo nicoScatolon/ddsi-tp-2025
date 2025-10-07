@@ -3,11 +3,8 @@ package ar.edu.utn.frba.dds.clienteGrafico.dtos;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
 
 public class DTOConverter {
     public static HechoOutputDTO convertirHechoInputDTO(HechoInputDTO hechoDTO) {
@@ -38,7 +35,7 @@ public class DTOConverter {
                                 ? convertirContribuyenteInputDTO(hechoDTO.getContribuyente())
                                 : null
                 )
-                .cargadoAninimamente(hechoDTO.getCargadoAninimamente())
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente())
                 .build();
     }
 

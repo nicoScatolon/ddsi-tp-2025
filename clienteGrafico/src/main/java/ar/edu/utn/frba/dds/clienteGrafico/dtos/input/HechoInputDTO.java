@@ -19,10 +19,10 @@ public class HechoInputDTO {
     private String descripcion;
     private CategoriaInputDTO categoria;
     private UbicacionInputDTO ubicacion;
-    private List<EtiquetaInputDTO> etiquetas; //posible DTO
-    private List<ContenidoMultimediaInputDTO> contenidoMultimedia; //posible DTO
-    private LocalDate fechaDeOcurrencia;
+    private LocalDateTime fechaDeOcurrencia;
+    private List<EtiquetaInputDTO> etiquetas;
+    private List<ContenidoMultimediaInputDTO> contenidoMultimedia;
     private LocalDateTime fechaDeCarga;
-    private ContribuyenteInputDTO contribuyente; //posible DTO
-    private Boolean cargadoAninimamente;
+    private ContribuyenteInputDTO contribuyente;
+    private Boolean cargadoAnonimamente;
 }
