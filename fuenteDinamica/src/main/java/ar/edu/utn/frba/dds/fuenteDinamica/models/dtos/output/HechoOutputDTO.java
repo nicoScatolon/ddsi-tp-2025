@@ -23,10 +23,10 @@ public class HechoOutputDTO {
     private String descripcion;
     private CategoriaOutputDTO categoria;
     private UbicacionOutputDTO ubicacion;
-    private LocalDateTime fechaOcurrencia;
-    private LocalDateTime fechaCarga;
+    private LocalDateTime fechaDeOcurrencia;
+    private LocalDateTime fechaDeCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
-    private Contribuyente contribuyente;
+    private Long contribuyenteId;
     private EstadoHecho estado;
     private Boolean cargadoAnonimamente;
 }

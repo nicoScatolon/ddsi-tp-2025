@@ -76,8 +76,8 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .contenidoMultimedia(dto.getContenidoMultimedia())
-                .contribuyente(convertirUsuario(dto.getContribuyente()))
+                .contenidoMultimedia( contenidoMultimediaSinId(dto.getContenidoMultimedia()) )
+                .contribuyenteId(dto.getContribuyenteId())
                 .categoria( categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
@@ -110,14 +110,6 @@ public class DTOConverter {
                 .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())
                 .longitud(ubicacion.getLongitud())
-                .build();
-    }
-
-    public static Contribuyente convertirUsuario(UsuarioInputDTO dto) {
-        return Contribuyente.builder()
-                .nombre(dto.getNombre())
-                .apellido(dto.getApellido())
-                .fechaNacimiento(dto.getFechaNacimiento())
                 .build();
     }
 
@@ -225,6 +217,16 @@ public class DTOConverter {
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
                 .build();
+    }
+
+    public static List<ContenidoMultimedia> contenidoMultimediaSinId (List<ContenidoMultimedia> contenidoMultimediaDTO) {
+        return contenidoMultimediaDTO.stream()
+                .map(cm -> {
+                    cm.setId(null);          // para no tener id de la base de origen, da problemas con Hibernate
+                    cm.setHecho(null);       // por las dudas
+                    return cm;
+                })
+                .toList();
     }
 
 

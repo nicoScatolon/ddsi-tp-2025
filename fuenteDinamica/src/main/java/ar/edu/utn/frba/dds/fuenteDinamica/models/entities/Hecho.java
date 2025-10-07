@@ -55,12 +55,8 @@ public class Hecho {
 
 
     //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
-            @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
-    })
-    private Contribuyente contribuyente; // el ususario que lo carga
+    @Column(name = "contribuyenteId")
+    private Long contribuyenteId; // el ususario que lo carga
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -77,7 +73,7 @@ public class Hecho {
         if ( getFechaDeCarga().plusDays(diasMaximos).isBefore(fechaModificacion) ) {
             throw new ModificacionNoPermitidaException( String.format("Pasaron los %d dias permitidos para serModificado el hecho", diasMaximos) );
         }
-        if ( contribuyente.getId() == null ) { // si no tiene id no esta registrado
+        if ( contribuyenteId == null ) { // si no tiene id no esta registrado
             throw new ModificacionNoPermitidaException( "El contribuyente no esta registrado, modificacion no permitida" );
         }
     }

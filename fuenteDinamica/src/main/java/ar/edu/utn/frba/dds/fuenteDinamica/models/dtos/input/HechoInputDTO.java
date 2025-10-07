@@ -29,5 +29,5 @@ public class HechoInputDTO {
     private Boolean cargadoAnonimamente;
 
     private List<ContenidoMultimedia> contenidoMultimedia;
-    private ContribuyenteInputDTO contribuyente;
+    private Long contribuyenteId;
 }

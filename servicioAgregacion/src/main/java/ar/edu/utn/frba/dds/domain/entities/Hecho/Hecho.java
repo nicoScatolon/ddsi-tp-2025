@@ -63,11 +63,11 @@ public class Hecho {
     @Enumerated(EnumType.STRING)
     private TipoHecho tipoHecho;
 
-    @ManyToOne
-    private Contribuyente contribuyente = null;
+    @Column (name = "contribuyenteId")
+    private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios
 
     @Column (name= "cargado-anonimamente")
-    private Boolean cargadoAnonimamente = null; //TODO MODIFICAR DINAMICA PARA que tenga esto
+    private Boolean cargadoAnonimamente = null;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "fuente_id")

@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
@@ -34,13 +33,14 @@ public class HechosService implements IHechosService {
 
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
-        List<Hecho> hechosAEnviar = this.hechosRepository.findByEstadoOrderByFechaDeCargaDesc(EstadoHecho.ACEPTADO);
-
-        if (fechaDeCarga !=null){
-            hechosAEnviar = hechosAEnviar.stream().filter(h -> h.getFechaDeCarga().isAfter(fechaDeCarga)).toList();
+        if (fechaDeCarga == null) {
+            return this.hechosRepository.findHechoByEstado(EstadoHecho.ACEPTADO).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
         }
-
-        return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
+        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(EstadoHecho.ACEPTADO, fechaDeCarga).stream()
+                .map(this::hechoOutputDTO)
+                .toList();
     }
 
     @Transactional
@@ -58,8 +58,8 @@ public class HechosService implements IHechosService {
             Hecho hechoGuardado = optionalHechoGuardado.get();
 
             if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
-            if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-            if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
+            if (hechoNuevo.getContribuyenteId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
+            if (!hechoNuevo.getContribuyenteId().equals(hechoGuardado.getContribuyenteId()))
             { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
             hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
@@ -94,16 +94,8 @@ public class HechosService implements IHechosService {
                 .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacion()))
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyente()))
-                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente())
-                .build();
-    }
-
-    private Contribuyente contribuyenteDTO(ContribuyenteInputDTO contribuyenteDTO) {
-        return Contribuyente.builder()
-                .id(contribuyenteDTO.getId())
-                .nombre(contribuyenteDTO.getNombre())
-                .apellido(contribuyenteDTO.getApellido())
+                .contribuyenteId(hechoDTO.getContribuyenteId())
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : false )
                 .build();
     }
 
@@ -123,11 +115,11 @@ public class HechosService implements IHechosService {
                 .descripcion(hecho.getDescripcion())
                 .categoria(this.categoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
-                .fechaOcurrencia(hecho.getFechaDeOcurrencia())
-                .fechaCarga(hecho.getFechaDeCarga())
+                .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
+                .fechaDeCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
                 .cargadoAnonimamente(hecho.getCargadoAnonimamente())
-                .contribuyente(hecho.getContribuyente())
+                .contribuyenteId(hecho.getContribuyenteId())
                 .estado(hecho.getEstado())
                 .build();
     }

@@ -18,8 +18,8 @@ public class SolicitudEliminacion {
     @Column(name = "razonDeEliminacion", nullable = false)
     private String razonDeEliminacion;
 
-    @Embedded
-    private Contribuyente creador;
+    @Column(name = "creadorId")
+    private Long creadorId;
 
     @Column(name = "fechaCreacion")
     private LocalDateTime fechaCreacion;

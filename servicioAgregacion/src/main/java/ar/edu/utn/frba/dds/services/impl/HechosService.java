@@ -168,7 +168,6 @@ public class HechosService implements IHechosService {
                 (System.currentTimeMillis() - t0));
     }
 
-    //TODO hacer configuracion del comparator por datos del properties
 
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
         if (etiqueta == null || etiqueta.isBlank()) {
