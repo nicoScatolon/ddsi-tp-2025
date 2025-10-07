@@ -1,12 +1,9 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeColecciones;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeEliminaciones;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.interfacesDeCapacidad.ServidoraDeHechosConFiltros;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,10 +21,8 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("METAMAPA")
-public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltros, ServidoraDeColecciones, ServidoraDeEliminaciones{
+public class FuenteMetaMapa extends Fuente {
 
-    @Transient
-    private TipoFuenteProxy tipo = TipoFuenteProxy.METAMAPA;
 
     @Transient
     private WebClient webClient;
@@ -37,19 +32,23 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
         this.setNombre(nombre);
         this.setHabilitada(true);
         this.setBaseUrl(baseUrl);
-        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+        this.iniciarFuente();
     }
 
-    // Inicializa el webClient cada vez que se carga o se persiste
     @PostLoad
-    @PostPersist
-    private void initWebClient() {
-        if (this.getBaseUrl() != null && this.webClient == null) {
-            this.webClient = WebClient.builder().baseUrl(this.getBaseUrl()).build();
-        }
+    private void initAfterLoad() {
+        this.iniciarFuente();
     }
 
-    @Override
+
+    private void iniciarFuente() {
+        this.setTipo(TipoFuenteProxy.METAMAPA);
+        this.webClient = WebClient.builder().baseUrl(getBaseUrl()).build();
+    }
+
+
+
+
     @Transient
     public Mono<List<HechoInputDTO>> getHechos(){
         return webClient.get()
@@ -62,7 +61,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
 
 
-    @Override
+
     public Mono<List<HechoInputDTO>> buscarHechos(HechosFilterDTO filtros) {
         return webClient.get()
                 .uri(uriBuilder -> {
@@ -79,7 +78,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
 
 
-    @Override
+
     public Mono<List<ColeccionInputDTO>> buscarTodasLasColecciones(){
         return webClient.get()
                 .uri("api/colecciones/publica/obtener-colecciones")
@@ -89,7 +88,7 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
     }
 
 
-    @Override
+
     public Mono<List<HechoInputDTO>> buscarHechosPorColeccion(
             String handle, Boolean curado, HechosFilterDTO filtros) {
 
@@ -108,8 +107,8 @@ public class FuenteMetaMapa extends Fuente implements ServidoraDeHechosConFiltro
 
 
 
-    @Override
-    public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoOutputDTO solicitud){
+
+    public Mono<Void> crearSolicitudEliminacion(SolicitudEliminarHechoInputDTO solicitud){
         return webClient.post()
                 .uri("/api/solicitudes-eliminacion/publica")
                 .bodyValue(solicitud)

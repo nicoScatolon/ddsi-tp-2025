@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteproxy.domain.entities;
+package ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes;
 
 
 public interface IFuente {

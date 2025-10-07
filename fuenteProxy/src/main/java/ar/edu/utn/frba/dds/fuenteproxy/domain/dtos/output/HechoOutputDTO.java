@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoOutputDTO {
-    private Long id;
-    private String titulo;
-    private String descripcion;
+    private Long           id;
+    private String         titulo;
+    private String         descripcion;
     private CategoriaOutputDTO categoria;
     private UbicacionOutputDTO ubicacion;
-    private LocalDate fechaDeOcurrencia;
-    private LocalDateTime fechaDeCarga;
+    private LocalDate      fechaDeOcurrencia;
+    private LocalDateTime  fechaDeCarga;
 }
