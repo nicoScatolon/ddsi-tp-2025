@@ -65,7 +65,6 @@ public class HechosService implements IHechosService {
             hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
             this.hechosRepository.save(hechoGuardado);
             return hechoGuardado;
-
         } else {
            return null;//TODO responder 404
         }
@@ -84,8 +83,6 @@ public class HechosService implements IHechosService {
             return null; //TODO responder 404
         }
     }
-
-
 
     //Metodos privados
 
@@ -121,11 +118,11 @@ public class HechosService implements IHechosService {
 
     private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
-                .idLocal(hecho.getId())
+                .id(hecho.getId())
                 .titulo(hecho.getTitulo())
                 .descripcion(hecho.getDescripcion())
-                .categoriaOutputDTO(this.categoriaOutputDTO(hecho.getCategoria()))
-                .ubicacionOutputDTO(this.ubicacionOutputDTO(hecho.getUbicacion()))
+                .categoria(this.categoriaOutputDTO(hecho.getCategoria()))
+                .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
                 .fechaOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())

@@ -18,11 +18,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class HechoOutputDTO {
-    private Long idLocal;
+    private Long id;
     private String titulo;
     private String descripcion;
-    private CategoriaOutputDTO categoriaOutputDTO;
-    private UbicacionOutputDTO ubicacionOutputDTO;
+    private CategoriaOutputDTO categoria;
+    private UbicacionOutputDTO ubicacion;
     private LocalDateTime fechaOcurrencia;
     private LocalDateTime fechaCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
