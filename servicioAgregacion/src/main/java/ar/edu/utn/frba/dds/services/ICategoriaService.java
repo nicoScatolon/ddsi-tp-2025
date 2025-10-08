@@ -9,6 +9,7 @@ import java.util.List;
 public interface ICategoriaService {
     Categoria findById(Long idCategoria);
     List<CategoriaOutputDTO> findAll();
+    List<String> findAllShort();
     Categoria findByNombre(String nombreCategoria);
     void agregarEquivalentes(String codigoCategoria, String equivalente);
     void eliminarEquivalentes(String equivalente);

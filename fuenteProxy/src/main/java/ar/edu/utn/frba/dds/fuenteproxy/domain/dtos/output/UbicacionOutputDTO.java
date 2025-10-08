@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UbicacionOutputDTO {
     private String provincia;
-    private String departamento;
+    private String localidad;
     private String calle;
     private Integer numero;
 

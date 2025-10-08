@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
@@ -29,6 +30,11 @@ public class DTOConverter {
                 .descripcion(hecho.getDescripcion())
                 .categoria(convertirCategoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(convertirUbicacionOutputDTO(hecho.getUbicacion()))
+                .contenidoMultimedia(hecho.getContenidoMultimedia()
+                        .stream()
+                        .map(DTOConverter::convertirContenidoMultimediaOutputDTO)
+                        .toList())
+                .etiquetas(hecho.getEtiquetas())
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaDeCarga(hecho.getFechaDeCarga())
                 .cargadoAninimamente(hecho.getCargadoAnonimamente())
@@ -80,17 +86,49 @@ public class DTOConverter {
     }
 
     public static Hecho convertirHechoInputDTO(HechoInputDinamicaDTO dto) {
-        return Hecho.builder()
+        Hecho hecho = Hecho.builder()
                 .origenId(dto.getId())
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .contenidoMultimedia( contenidoMultimediaSinId(dto.getContenidoMultimedia()) )
                 .contribuyenteId(dto.getContribuyenteId())
-                .categoria( categoriaInputDTO(dto.getCategoria()) )
+                .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
+                .build();
+
+        hecho.setContenidoMultimedia(DTOConverter.convertirContenidoMultimedia(dto.getContenidoMultimedia(), hecho));
+
+        return hecho;
+    }
+
+    public static List<ContenidoMultimedia> convertirContenidoMultimedia(
+            List<ContenidoMultimediaInputDTO> contenidoMultimediaInputDTO, Hecho hecho) {
+
+        if (contenidoMultimediaInputDTO == null) {
+            return List.of();
+        }
+
+        return contenidoMultimediaInputDTO.stream()
+                .map(cmDTO -> DTOConverter.convertirContenidoMultimedia(cmDTO, hecho)).toList();
+    }
+
+    public static ContenidoMultimedia convertirContenidoMultimedia(ContenidoMultimediaInputDTO contenidoMultimediaInputDTO, Hecho hecho) {
+        return ContenidoMultimedia.builder()
+                .descripcion(contenidoMultimediaInputDTO.getDescripcion())
+                .url(contenidoMultimediaInputDTO.getUrl())
+                .hecho(hecho)
+                .tipoContenido(contenidoMultimediaInputDTO.getTipo())
+                .build();
+    }
+
+    public static ContenidoMultimediaOutputDTO convertirContenidoMultimediaOutputDTO(ContenidoMultimedia contenidoMultimedia) {
+        return ContenidoMultimediaOutputDTO.builder()
+                .id(contenidoMultimedia.getId())
+                .tipo(contenidoMultimedia.getTipoContenido())
+                .descripcion(contenidoMultimedia.getDescripcion())
+                .url(contenidoMultimedia.getUrl())
                 .build();
     }
 
@@ -142,11 +180,6 @@ public class DTOConverter {
                         dto.getIdCreador());
     }
 
-    public static List<HechoOutputDTO> hechoOutputDTO(Set<Hecho> hechos) {
-        return hechos.stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .collect(Collectors.toList());
-    }
 
     public static List<HechoOutputDTO> hechoOutputDTO(List<Hecho> hechos) {
         return hechos.stream()
