@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
-
-import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -14,22 +13,22 @@ import lombok.Setter;
 import java.util.Objects;
 
 @Entity
-@DiscriminatorValue("Categoria")
+@DiscriminatorValue("Etiqueta")
 @NoArgsConstructor
+public class CriterioEtiqueta extends Criterio {
 
-public class CriterioCategoria extends Criterio {
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     @Getter
     @Setter
-    private Categoria categoria;
+    private Etiqueta etiqueta;
 
-    public CriterioCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
+    public CriterioEtiqueta(Etiqueta etiqueta) {this.etiqueta = etiqueta;}
 
     @Override
     public Boolean pertenece(Hecho hecho){
-        return Objects.equals(hecho.getCategoria().getCodigoCategoria(), this.categoria.getCodigoCategoria());
+        Long idEtiqueta = etiqueta.getId();
+        return !hecho.getEtiquetas().stream().map(e -> Objects.equals(e.getId(), idEtiqueta)).toList().isEmpty();
     }
+
 }

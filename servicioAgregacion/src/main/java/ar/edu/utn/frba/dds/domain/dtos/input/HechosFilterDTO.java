@@ -28,7 +28,11 @@ public class HechosFilterDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime fAconHasta;
 
-    private UbicacionInputDTO ubicacionInputDTO;
+    private String provincia;
+
+    private Long fuenteId;
+
+    private String etiqueta;
 
     private Integer page;
 }
