@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
+import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarProvincia;
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
@@ -29,6 +30,16 @@ public class DTOConverter {
                 .categoria(convertirCategoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(convertirUbicacionOutputDTO(hecho.getUbicacion()))
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
+                .fechaDeCarga(hecho.getFechaDeCarga())
+                .cargadoAninimamente(hecho.getCargadoAnonimamente())
+                .fuente(convertirFuenteOutputDTO(hecho.getFuente()))
+                .build();
+    }
+
+    public static FuenteOutputDTO convertirFuenteOutputDTO(Fuente fuente) {
+        return FuenteOutputDTO.builder()
+                .fuenteId(fuente.getId())
+                .nombre(fuente.getNombre())
                 .build();
     }
 
@@ -214,6 +225,9 @@ public class DTOConverter {
                 .fReporteHasta(filterDTO.getFReporteHasta())
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
+                .provincia(normalizarProvincia(filterDTO.getProvincia()))
+                .fuenteId(filterDTO.getFuenteId())
+                .etiqueta(filterDTO.getEtiqueta())
                 .build();
     }
 

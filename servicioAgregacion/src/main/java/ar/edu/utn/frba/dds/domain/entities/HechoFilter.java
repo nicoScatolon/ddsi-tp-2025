@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 public class HechoFilter {
     private String categoria;
+
     private LocalDateTime fReporteDesde;
 
     private LocalDateTime fReporteHasta;
@@ -20,5 +21,9 @@ public class HechoFilter {
 
     private LocalDateTime fAconHasta;
 
-    private Ubicacion ubicacion;
+    private String provincia;
+
+    private Long fuenteId;
+
+    private String etiqueta;
 }
