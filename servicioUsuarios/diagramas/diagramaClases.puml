@@ -1,0 +1,37 @@
+@startuml
+title ServicioUsuarios - Modelo de Dominio (básico)
+
+class Usuario {
+  +Long id
+  +String username
+  -String passwordHash
+  +String nombre
+  +String email
+  +EstadoUsuario estado
+  +Set<Role> roles
+  +Instant createdAt
+  +Instant updatedAt
+  +Instant lastLoginAt
+}
+
+enum Rol {
+  VISUALIZADOR
+  CONTRIBUYENTE
+  CONTRIBUYENTE_ANONIMO
+  ADMIN
+}
+
+
+class RefreshToken {
+  +UUID id
+  +Long usuarioId
+  +String token
+  +Instant issuedAt
+  +Instant expiraEn
+  +boolean revocado
+  +String clientInfo
+}
+
+Usuario "1" -- "0..*" RefreshToken : posee >
+
+@enduml

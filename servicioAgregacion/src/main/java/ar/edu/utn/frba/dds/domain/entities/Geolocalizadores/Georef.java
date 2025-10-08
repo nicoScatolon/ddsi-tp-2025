@@ -24,7 +24,7 @@ public class Georef implements IGeoLocalizador {
     private static final Logger logger = LoggerFactory.getLogger(Georef.class);
     private final WebClient webClient;
 
-    private static final String BASE_URL = "https://apis.datos.gob.ar/georef/api";
+    private static final String BASE_URL = "https://apis.datos.gob.ar/georef/api/v2.0";
     private static final int BATCH_SIZE = 50;         // tamaño de lote recomendado
     private static final int MAX_MEMORY_BYTES = 4 * 1024 * 1024; // 4MB para evitar DataBufferLimit
 

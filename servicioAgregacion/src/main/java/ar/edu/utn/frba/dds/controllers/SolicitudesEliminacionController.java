@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -32,6 +33,7 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/publica")
+    @PreAuthorize("hasAuthority('SOLICITAR_ELIMINACION')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
         CompletableFuture.runAsync(() -> solicitudesEliminacionService.crearSolicitudDesdeDTO(request), solicitudesExecutor);
@@ -39,16 +41,19 @@ public class SolicitudesEliminacionController {
     }
 
     @GetMapping("/publica")
+    @PreAuthorize("hasAnyAuthority('SOLICITAR_ELIMINACION')")
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.findAll();
     }
 
     @GetMapping("/publica/{id}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
     }
 
     @PostMapping("/privada/solicitud")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
     public ResponseEntity<Void> procesarSolicitud(
             @RequestBody ProcesarSolicitudInputDTO inputDTO,
             @RequestParam EstadoDeSolicitud accion

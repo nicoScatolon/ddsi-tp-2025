@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Map;
@@ -23,19 +24,23 @@ public class FuentesController {
     }
 
     @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public ResponseEntity<Void> agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
         return fuenteService.agregarFuente(fuenteInputDTO);
     }
 
     @DeleteMapping("/privada/{fuenteId}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public ResponseEntity<Void> eliminarUnaFuente (@RequestParam long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
     }
 
     @GetMapping("/test/fuente")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
     public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
