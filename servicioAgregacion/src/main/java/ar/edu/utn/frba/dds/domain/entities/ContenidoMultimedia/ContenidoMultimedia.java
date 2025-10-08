@@ -1,11 +1,8 @@
-package ar.edu.utn.frba.dds.domain.entities;
+package ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia;
 
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -13,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
+@Builder
 public class ContenidoMultimedia  {
 
     @Id
@@ -24,6 +22,9 @@ public class ContenidoMultimedia  {
 
     @Column(columnDefinition = "VARCHAR(255)", name = "descripcion")
     private String descripcion;
+
+    @Enumerated(EnumType.STRING)
+    private TipoContenido tipoContenido;
 
     @ManyToOne
     @JoinColumn(name = "hecho_id")   // FK a la tabla hechos

@@ -2,11 +2,11 @@ package ar.edu.utn.frba.dds.domain.entities.Hecho;
 
 import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

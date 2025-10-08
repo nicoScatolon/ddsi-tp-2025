@@ -16,8 +16,8 @@ public class Ubicacion {
     @Column(name = "provincia")
     private String provincia;
 
-    @Column(name = "departamento")
-    private String departamento;
+    @Column(name = "localidad")
+    private String localidad;
 
     @Column(name = "calle")
     private String calle;

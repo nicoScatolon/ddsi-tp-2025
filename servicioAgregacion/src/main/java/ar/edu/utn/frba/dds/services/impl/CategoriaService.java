@@ -50,6 +50,11 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
+    public List<String> findAllShort(){
+        return categoriasRepository.findAllNombres();
+    }
+
+    @Override
     public List<Hecho> cargarCategoriasHechos( List<Hecho> hechosActualizados ) {
         List<Categoria> categoriasGuardadas = this.categoriasRepository.findAll();
         List<EquivalenteCategoria> equivalenteCategorias = this.equivalenteCatRepository.findAll();

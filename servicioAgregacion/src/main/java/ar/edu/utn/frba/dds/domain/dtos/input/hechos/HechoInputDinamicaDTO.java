@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.domain.dtos.input.hechos;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.UbicacionInputDTO;
-import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +23,6 @@ public class HechoInputDinamicaDTO {
     private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
     private Boolean cargadoAnonimamente;
-    private List<ContenidoMultimedia> contenidoMultimedia;
+    private List<ContenidoMultimediaInputDTO> contenidoMultimedia;
     private Long contribuyenteId;
 }
