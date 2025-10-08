@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('hechoForm');
-    const categoriaSelect = document.getElementById('categoria');
-    const categoriaNuevaInput = document.getElementById('categoriaNueva');
     const tipoUbicacionSelect = document.getElementById('tipoUbicacion');
 
     // Campos de ubicación
@@ -28,39 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variable para el mapa de Leaflet
     let map = null;
     let marker = null;
-
-    // Guardamos el name original (establecido por Thymeleaf con th:field)
-    const categoriaFieldName = categoriaSelect.getAttribute('name') || categoriaSelect.name || 'categoria.nombre';
-
-    // Inicialización: mostramos el input oculto pero NO le dejamos el name para que no se envíe.
-    categoriaNuevaInput.style.display = 'none';
-    // removemos el name del input para que no llegue duplicado al servidor
-    categoriaNuevaInput.removeAttribute('name');
-    categoriaNuevaInput.required = false;
-
-    // Cuando cambia el select: si es 'other' mostramos el input y transferimos el name; si no, aseguramos que solo se envie el select.
-    categoriaSelect.addEventListener('change', function() {
-        if (this.value === 'other') {
-            // Mostrar input para nueva categoría y que sea el que se envíe
-            categoriaNuevaInput.style.display = 'block';
-            categoriaNuevaInput.required = true;
-            categoriaNuevaInput.value = '';
-            categoriaNuevaInput.focus();
-
-            // Hacer que el input tenga el name que espera Thymeleaf, y quitarle el name al select
-            categoriaNuevaInput.setAttribute('name', categoriaFieldName);
-            categoriaSelect.removeAttribute('name');
-        } else {
-            // Ocultar input, quitarle el name y dejar el select con el name
-            categoriaNuevaInput.style.display = 'none';
-            categoriaNuevaInput.required = false;
-            categoriaNuevaInput.value = '';
-            categoriaNuevaInput.removeAttribute('name');
-
-            // Restaurar el name del select (por si antes lo habíamos removido)
-            categoriaSelect.setAttribute('name', categoriaFieldName);
-        }
-    });
 
     // Inicializar el mapa de Leaflet
     function initMap() {
@@ -172,14 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Si select indica "other" pero el input (que debe enviar) está vacío -> pedir valor
-        const sendingCategoriaIsInput = !!categoriaNuevaInput.getAttribute('name');
-        if (sendingCategoriaIsInput && !categoriaNuevaInput.value.trim()) {
-            alert('Por favor, ingrese la nueva categoría.');
-            categoriaNuevaInput.focus();
-            return;
-        }
-
         const originalBtnText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
@@ -222,17 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('reset', function() {
         setTimeout(() => {
             resetUbicacionFields();
-
-            // Restaurar categoría a estado inicial:
-            categoriaNuevaInput.style.display = 'none';
-            categoriaNuevaInput.removeAttribute('name');
-            categoriaNuevaInput.required = false;
-            categoriaNuevaInput.value = '';
-
-            // Restaurar name del select
-            categoriaSelect.setAttribute('name', categoriaFieldName);
-            categoriaSelect.value = '';
-
             tipoUbicacionSelect.value = '';
         }, 0);
     });

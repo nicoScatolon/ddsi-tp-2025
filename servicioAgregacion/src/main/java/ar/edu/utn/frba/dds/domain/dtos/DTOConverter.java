@@ -14,7 +14,9 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSol
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,10 +32,13 @@ public class DTOConverter {
                 .descripcion(hecho.getDescripcion())
                 .categoria(convertirCategoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(convertirUbicacionOutputDTO(hecho.getUbicacion()))
-                .contenidoMultimedia(hecho.getContenidoMultimedia()
-                        .stream()
-                        .map(DTOConverter::convertirContenidoMultimediaOutputDTO)
-                        .toList())
+                .contenidoMultimedia(
+                        Optional.ofNullable(hecho.getContenidoMultimedia())
+                                .orElse(Collections.emptyList())
+                                .stream()
+                                .map(DTOConverter::convertirContenidoMultimediaOutputDTO)
+                                .toList()
+                )
                 .etiquetas(hecho.getEtiquetas())
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaDeCarga(hecho.getFechaDeCarga())

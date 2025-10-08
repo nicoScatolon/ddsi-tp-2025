@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -62,10 +63,6 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    public HechoInputDTO obtenerUnHecho(Long id){
-        return crearHecho1();
-    }
-
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -77,6 +74,17 @@ public class AgregadorService implements IAgregadorService {
                 .retrieve()
                 .bodyToFlux(ColeccionPreviewInputDTO.class)
                 .collectList()
+                .block();
+    }
+
+    public List<String> obtenerCategoriasShort(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/privada/categorias/short")
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
                 .block();
     }
 
@@ -107,6 +115,8 @@ public class AgregadorService implements IAgregadorService {
             builder.queryParam("fAconHasta", filter.getFAconHasta());
         }
     }
+
+
 
     // --- TEST --- //
     public List<HechoInputDTO> obtenerHechos(Integer paginaActual) {

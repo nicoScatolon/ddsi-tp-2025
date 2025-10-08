@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -48,9 +49,10 @@ public class HechosController {
     @GetMapping("/create")
     public String crearHecho(Model model) {
         HechoInputDTO hechoInputDTO = this.instanciarHecho();
-        model.addAttribute("hechoDTO", hechoInputDTO);
-        //Todo Deberiamos pasarle un top de las categorias mas usadas, y sino q la escriba
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
         model.addAttribute("titulo", "Crear Hecho");
+        model.addAttribute("hechoDTO", hechoInputDTO);
+        model.addAttribute("categorias", categorias);
         return "/hechos/create";
     }
 

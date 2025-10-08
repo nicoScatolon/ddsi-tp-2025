@@ -121,7 +121,7 @@
 
                     <!-- 4️⃣ Imagen -->
                     <div class="card-img"
-                         th:if="${hecho.contenidoMultimedia != null and #lists.isNotEmpty(hecho.contenidoMultimedia)}"
+                         th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
                          aria-hidden="true">
                         <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
                              th:alt="${hecho.titulo}"/>

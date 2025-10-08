@@ -13,4 +13,5 @@ public interface IAgregadorService {
     List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filter);
     List<HechoMapaInputDTO> getHechosMapa();
     List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual);
+    List<String> obtenerCategoriasShort();
 }
