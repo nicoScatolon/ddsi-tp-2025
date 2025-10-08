@@ -3,10 +3,10 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -14,8 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,12 +27,19 @@ public class HechosController {
     private Integer pageSize;
 
     @GetMapping
-    public String listarHechos(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
-        List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual);
+    public String listarHechos(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
+        if (filtros == null) {
+            filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
+        }
+
+        List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
+
+
         model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
         model.addAttribute("hechos", hechos);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
+        model.addAttribute("filtros", filtros);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "/hechos/explore";

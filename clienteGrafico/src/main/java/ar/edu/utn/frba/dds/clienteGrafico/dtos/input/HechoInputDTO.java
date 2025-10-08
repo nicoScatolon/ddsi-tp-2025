@@ -25,4 +25,5 @@ public class HechoInputDTO {
     private LocalDateTime fechaDeCarga;
     private ContribuyenteInputDTO contribuyente;
     private Boolean cargadoAnonimamente;
+    private FuenteInputDTO fuente;
 }

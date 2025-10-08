@@ -80,4 +80,17 @@ public class DTOConverter {
                 .id(contribuyenteInputDTO.getId())
                 .build();
     }
+
+    public static HechosFilterOutputDTO convertirHechosFilterInputDTO(HechosFilterInputDTO filterInputDTO) {
+        return HechosFilterOutputDTO.builder()
+                .categoria(filterInputDTO.getCategoria())
+                .provincia(filterInputDTO.getProvincia())
+                .etiqueta(filterInputDTO.getEtiqueta())
+                .fuenteId(filterInputDTO.getFuenteId())
+                .fAconDesde( filterInputDTO.getFAconDesde() != null ? filterInputDTO.getFAconDesde().atStartOfDay() : null )
+                .fAconHasta( filterInputDTO.getFAconHasta() != null ? filterInputDTO.getFAconHasta().atStartOfDay() : null )
+                .fReporteDesde( filterInputDTO.getFReporteDesde() != null ? filterInputDTO.getFReporteDesde().atStartOfDay() : null )
+                .fReporteHasta( filterInputDTO.getFReporteHasta() != null ? filterInputDTO.getFReporteHasta().atStartOfDay() : null )
+                .build();
+    }
 }

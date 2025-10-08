@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +37,16 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    //TODO posiblemente debamos agregar la capacidad de recibir los filtros aca tambien
-    public List<HechoInputDTO> getAllHechos(Integer paginaActual) {
+    public List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filterInputDTO) {
+        HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filterInputDTO);
+
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/hechos/publica")
-                        .queryParam("page", paginaActual)
-                        // .queryParam("categoria", "ejemplo") // para cuando necesitemos agregar filtros
-                        .build()
-                )
+                .uri(uriBuilder -> {
+                    UriBuilder builder = uriBuilder.path("/api/hechos/publica")
+                            .queryParam("page", paginaActual);
+                    aplicarFiltrosHecho(builder, filter);
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToFlux(HechoInputDTO.class)
                 .collectList()
@@ -77,6 +78,34 @@ public class AgregadorService implements IAgregadorService {
                 .bodyToFlux(ColeccionPreviewInputDTO.class)
                 .collectList()
                 .block();
+    }
+
+    private void aplicarFiltrosHecho(UriBuilder builder, HechosFilterOutputDTO filter) {
+        if (filter.getCategoria() != null && !filter.getCategoria().isEmpty()) {
+            builder.queryParam("categoria", filter.getCategoria());
+        }
+        if (filter.getProvincia() != null && !filter.getProvincia().isEmpty()) {
+            builder.queryParam("provincia", filter.getProvincia());
+        }
+        if (filter.getEtiqueta() != null && !filter.getEtiqueta().isEmpty()) {
+            builder.queryParam("etiqueta", filter.getEtiqueta());
+        }
+        if (filter.getFuenteId() != null) {
+            builder.queryParam("fuenteId", filter.getFuenteId());
+        }
+
+        if (filter.getFReporteDesde() != null) {
+            builder.queryParam("fReporteDesde", filter.getFReporteDesde());
+        }
+        if (filter.getFReporteHasta() != null) {
+            builder.queryParam("fReporteHasta", filter.getFReporteHasta());
+        }
+        if (filter.getFAconDesde() != null) {
+            builder.queryParam("fAconDesde", filter.getFAconDesde());
+        }
+        if (filter.getFAconHasta() != null) {
+            builder.queryParam("fAconHasta", filter.getFAconHasta());
+        }
     }
 
     // --- TEST --- //
