@@ -48,12 +48,12 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) { //Todo: debería ser responseEntity
+    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) { //Todo: debería ser responseEntity
         if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
         }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
-                .constructorSolicitud(hecho, razon, nombre, apellido);
+                .constructorSolicitud(hecho, razon, idCreador);
         repository.save(solicitud);
     }
 
@@ -68,8 +68,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         this.crearSolicitudDesdeEntidad(
                 hecho,
                 solicitud.getRazonDeEliminacion(),
-                solicitud.getNombreCreador(),
-                solicitud.getApellidoCreador()
+                solicitud.getIdCreador()
         );
     }
 
@@ -90,14 +89,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        if (solicitudDTO.getAdministrador().getNombre() == null || solicitudDTO.getAdministrador().getApellido() == null) {
+        if (solicitudDTO.getAdministradorId() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         if (aceptar) {
-            solicitud.serAceptada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serAceptada(solicitudDTO.getAdministradorId());
         } else {
-            solicitud.serRechazada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serRechazada(solicitudDTO.getAdministradorId());
         }
 
         repository.save(solicitud);
@@ -114,11 +113,10 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         logger.info("Solicitudes de eliminación cargadas - Cantidad: {}", solicitudes.size());
         solicitudes.forEach(solicitud ->
                 logger.info(
-                        "Solicitud ID: {} - Hecho ID: {} - Nombre: {} {} - Razón: {} - Fecha: {}",
+                        "Solicitud ID: {} - Hecho ID: {} - Admin ID: {} - Razón: {} - Fecha: {}",
                         solicitud.getId(),
                         solicitud.getHecho() != null ? solicitud.getHecho().getId() : "N/A",
-                        solicitud.getNombreCreador(),
-                        solicitud.getApellidoCreador(),
+                        solicitud.getIdAdministrador(),
                         acortarTexto(solicitud.getRazonDeEliminacion()),
                         solicitud.getFechaCreacion()
                 )

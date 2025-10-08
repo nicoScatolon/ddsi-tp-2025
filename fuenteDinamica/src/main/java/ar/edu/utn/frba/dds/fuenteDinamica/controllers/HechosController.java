@@ -33,6 +33,7 @@ public class HechosController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga)
     {
+        // formato fecha: YYYY-MM-DDThh:mm:ss --> ejemplo: 2025-10-07T18:37:00
         return hechosService.getHechos(fechaDeCarga);
     }
 

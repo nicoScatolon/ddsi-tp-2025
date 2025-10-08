@@ -76,8 +76,8 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .contenidoMultimedia(dto.getContenidoMultimedia())
-                .contribuyente(convertirUsuario(dto.getContribuyente()))
+                .contenidoMultimedia( contenidoMultimediaSinId(dto.getContenidoMultimedia()) )
+                .contribuyenteId(dto.getContribuyenteId())
                 .categoria( categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
@@ -113,21 +113,12 @@ public class DTOConverter {
                 .build();
     }
 
-    public static Contribuyente convertirUsuario(UsuarioInputDTO dto) {
-        return Contribuyente.builder()
-                .nombre(dto.getNombre())
-                .apellido(dto.getApellido())
-                .fechaNacimiento(dto.getFechaNacimiento())
-                .build();
-    }
-
     public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
         return SolicitudEliminarHechoOutputDTO
                 .builder()
                 .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .nombreCreador(solicitud.getNombreCreador())
-                .apellidoCreador(solicitud.getApellidoCreador())
+                .idAdministrador(solicitud.getIdAdministrador())
                 .fechaCreacion(solicitud.getFechaCreacion())
                 .build();
     }
@@ -137,8 +128,7 @@ public class DTOConverter {
                 .constructorSolicitud(
                         hecho,
                         dto.getRazonDeEliminacion(),
-                        dto.getNombreCreador(),
-                        dto.getApellidoCreador());
+                        dto.getIdCreador());
     }
 
     public static List<HechoOutputDTO> hechoOutputDTO(Set<Hecho> hechos) {
@@ -225,6 +215,16 @@ public class DTOConverter {
                 .fAconDesde(filterDTO.getFAconDesde())
                 .fAconHasta(filterDTO.getFAconHasta())
                 .build();
+    }
+
+    public static List<ContenidoMultimedia> contenidoMultimediaSinId (List<ContenidoMultimedia> contenidoMultimediaDTO) {
+        return contenidoMultimediaDTO.stream()
+                .map(cm -> {
+                    cm.setId(null);          // para no tener id de la base de origen, da problemas con Hibernate
+                    cm.setHecho(null);       // por las dudas
+                    return cm;
+                })
+                .toList();
     }
 
 

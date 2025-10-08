@@ -31,12 +31,12 @@ public class FuentesController {
     }
 
     @DeleteMapping("/privada/{fuenteId}")
-    public ResponseEntity<Void> eliminarUnaFuente (@RequestParam long fuenteId) {
+    public ResponseEntity<Void> eliminarUnaFuente (@PathVariable long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
     }
 
-    @GetMapping("/test/fuente")
-    public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
+    @GetMapping("/test/{fuenteId}")
+    public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
 }

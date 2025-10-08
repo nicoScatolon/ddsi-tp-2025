@@ -13,18 +13,16 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo")
-public abstract class ContenidoMultimedia implements IContenidoMultimedia {
+public class ContenidoMultimedia  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(columnDefinition = "VARCHAR(255)", name = "url", nullable = false)
     private String url;
 
-    @Column(columnDefinition = "VARCHAR(255)", name = "descipcion")
+    @Column(columnDefinition = "VARCHAR(255)", name = "descripcion")
     private String descripcion;
 
     @ManyToOne

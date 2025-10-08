@@ -18,15 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class HechoOutputDTO {
-    private Long idLocal;
+    private Long id;
     private String titulo;
     private String descripcion;
-    private CategoriaOutputDTO categoriaOutputDTO;
-    private UbicacionOutputDTO ubicacionOutputDTO;
-    private LocalDateTime fechaOcurrencia;
-    private LocalDateTime fechaCarga;
+    private CategoriaOutputDTO categoria;
+    private UbicacionOutputDTO ubicacion;
+    private LocalDateTime fechaDeOcurrencia;
+    private LocalDateTime fechaDeCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
-    private Contribuyente contribuyente;
+    private Long contribuyenteId;
     private EstadoHecho estado;
-    private Boolean esAnonimo;
+    private Boolean cargadoAnonimamente;
 }

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoriaOutputDTO {
     private String id;
-    private String nombreCategoria;
+    private String nombre;
 }

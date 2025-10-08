@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
@@ -34,13 +33,14 @@ public class HechosService implements IHechosService {
 
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
-        List<Hecho> hechosAEnviar = this.hechosRepository.findByEstadoOrderByFechaDeCargaDesc(EstadoHecho.ACEPTADO);
-
-        if (fechaDeCarga !=null){
-            hechosAEnviar = hechosAEnviar.stream().filter(h -> h.getFechaDeCarga().isAfter(fechaDeCarga)).toList();
+        if (fechaDeCarga == null) {
+            return this.hechosRepository.findHechoByEstado(EstadoHecho.ACEPTADO).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
         }
-
-        return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
+        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(EstadoHecho.ACEPTADO, fechaDeCarga).stream()
+                .map(this::hechoOutputDTO)
+                .toList();
     }
 
     @Transactional
@@ -58,14 +58,13 @@ public class HechosService implements IHechosService {
             Hecho hechoGuardado = optionalHechoGuardado.get();
 
             if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
-            if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-            if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
+            if (hechoNuevo.getContribuyenteId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
+            if (!hechoNuevo.getContribuyenteId().equals(hechoGuardado.getContribuyenteId()))
             { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
             hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
             this.hechosRepository.save(hechoGuardado);
             return hechoGuardado;
-
         } else {
            return null;//TODO responder 404
         }
@@ -85,8 +84,6 @@ public class HechosService implements IHechosService {
         }
     }
 
-
-
     //Metodos privados
 
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO) {
@@ -97,23 +94,15 @@ public class HechosService implements IHechosService {
                 .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacion()))
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyente()))
-                .esAnonimo(hechoDTO.getEsAnonimo())
-                .build();
-    }
-
-    private Contribuyente contribuyenteDTO(ContribuyenteInputDTO contribuyenteDTO) {
-        return Contribuyente.builder()
-                .id(contribuyenteDTO.getId())
-                .nombre(contribuyenteDTO.getNombre())
-                .apellido(contribuyenteDTO.getApellido())
+                .contribuyenteId(hechoDTO.getContribuyenteId())
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : false )
                 .build();
     }
 
     private Categoria categoriaInputDTO(CategoriaInputDTO categoriaDTO){
         Categoria categoria = new Categoria();
-        if(categoriaDTO.getNombreCategoria() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
-        categoria.setNombre(categoriaDTO.getNombreCategoria());
+        if(categoriaDTO.getNombre() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
+        categoria.setNombre(categoriaDTO.getNombre());
         if (categoriaDTO.getId() != null) {categoria.setId(categoriaDTO.getId());}
         else {categoria.setId(categoriaService.obtenerIdCategoria(categoria.getNombre()));}
         return categoria;
@@ -121,16 +110,16 @@ public class HechosService implements IHechosService {
 
     private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
-                .idLocal(hecho.getId())
+                .id(hecho.getId())
                 .titulo(hecho.getTitulo())
                 .descripcion(hecho.getDescripcion())
-                .categoriaOutputDTO(this.categoriaOutputDTO(hecho.getCategoria()))
-                .ubicacionOutputDTO(this.ubicacionOutputDTO(hecho.getUbicacion()))
-                .fechaOcurrencia(hecho.getFechaDeOcurrencia())
-                .fechaCarga(hecho.getFechaDeCarga())
+                .categoria(this.categoriaOutputDTO(hecho.getCategoria()))
+                .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
+                .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
+                .fechaDeCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
-                .esAnonimo(hecho.getEsAnonimo())
-                .contribuyente(hecho.getContribuyente())
+                .cargadoAnonimamente(hecho.getCargadoAnonimamente())
+                .contribuyenteId(hecho.getContribuyenteId())
                 .estado(hecho.getEstado())
                 .build();
     }
@@ -162,7 +151,7 @@ public class HechosService implements IHechosService {
     private CategoriaOutputDTO categoriaOutputDTO(Categoria categoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
         categoriaOutputDTO.setId(categoria.getId());
-        categoriaOutputDTO.setNombreCategoria(categoria.getNombre());
+        categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
     }
 }
