@@ -24,7 +24,8 @@ public class Hecho {
     @Column (nullable = false, name = "titulo")
     private String titulo;
 
-    @Column(columnDefinition = "TEXT", unique = true, name = "descripcion")
+
+    @Column(columnDefinition = "MEDIUMTEXT", unique = true, name = "descripcion")
     private String descripcion;
 
     @ManyToOne

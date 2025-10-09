@@ -33,8 +33,8 @@ public class SolicitudesEliminacionController {
     @PostMapping("/publica")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
-        CompletableFuture.runAsync(() -> solicitudesEliminacionService.crearSolicitudDesdeDTO(request), solicitudesExecutor);
-        return ResponseEntity.accepted().build();
+        return solicitudesEliminacionService.crearSolicitudDesdeDTO(request);
+
     }
 
     @GetMapping("/publica")
