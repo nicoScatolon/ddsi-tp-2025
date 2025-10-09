@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
@@ -80,8 +81,10 @@ public class HechosController {
     public String hecho(@PathVariable("id") Long id, Model model) {
         try {
             HechoInputDTO hecho = agregadorService.getHechoById(id);
+            ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
+            model.addAttribute("usuario", usuario);
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
             model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {

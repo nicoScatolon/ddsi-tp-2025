@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechosFilterInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface IAgregadorService {
     List<HechoMapaInputDTO> getHechosMapa();
     List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual);
     List<String> obtenerCategoriasShort();
+    ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion);
 }

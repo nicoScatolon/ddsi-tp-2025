@@ -62,44 +62,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!deleteBtn || !modal) return;
 
         const closeBtn = modal.querySelector('.close');
-        const form = document.getElementById('deleteForm');
 
-        // Abrir modal solo al apretar botón
+        // Abrir modal al click
         deleteBtn.addEventListener('click', () => {
-            modal.style.display = 'flex'; // usar flex para centrar
+            modal.style.display = 'flex'; // flex para centrar
         });
 
-        // Cerrar modal
+        // Cerrar modal al click en la "X"
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 modal.style.display = 'none';
             });
         }
 
+        // Cerrar modal al hacer click fuera del contenido
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
-
-        // Enviar formulario
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const reasonEl = document.getElementById('reason');
-                const reason = reasonEl ? reasonEl.value.trim() : '';
-                if (reason && reason.length >= 500) {
-                    console.log('Solicitud de eliminación enviada:', {
-                        hechoId: HECHO_DATA.id,
-                        razon: reason
-                    });
-                    alert('Solicitud de eliminación enviada correctamente');
-                    form.reset();
-                    modal.style.display = 'none';
-                } else {
-                    alert('Por favor ingresa una razón de al menos 500 caracteres.');
-                }
-            });
-        }
     };
+
 
     // ===== MODO EDICIÓN =====
     const setupEditMode = () => {

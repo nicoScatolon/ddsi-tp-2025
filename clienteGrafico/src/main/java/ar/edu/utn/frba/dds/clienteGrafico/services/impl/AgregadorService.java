@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
@@ -93,6 +94,20 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    // --- SOLICITUDES ELIMINACION --- //
+    @Override
+    public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion){
+        SolicitudEliminarHechoOutputDTO request = DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/publica")
+                        .build()
+                )
+                .bodyValue(request)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
 
     // --- METODOS PRIVADOS --- //
 

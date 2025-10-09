@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.dtos;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -91,6 +92,15 @@ public class DTOConverter {
                 .fAconHasta( filterInputDTO.getFAconHasta() != null ? filterInputDTO.getFAconHasta().atStartOfDay() : null )
                 .fReporteDesde( filterInputDTO.getFReporteDesde() != null ? filterInputDTO.getFReporteDesde().atStartOfDay() : null )
                 .fReporteHasta( filterInputDTO.getFReporteHasta() != null ? filterInputDTO.getFReporteHasta().atStartOfDay() : null )
+                .build();
+    }
+
+    public static SolicitudEliminarHechoOutputDTO convertirSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion){
+        return SolicitudEliminarHechoOutputDTO.builder()
+                .fechaCreacion(LocalDateTime.now())
+                .razonDeEliminacion(razonEliminacion)
+                .idCreador(usuarioId)
+                .hechoId(hechoId)
                 .build();
     }
 }

@@ -17,6 +17,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
         this.webClient = webClient;
     }
 
+    @Override
     public ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO) {
         return webClient.post()
                 .uri("/api/fuenteDinamica/hechos")
@@ -27,4 +28,5 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .toBodilessEntity()
                 .block();
     }
+
 }

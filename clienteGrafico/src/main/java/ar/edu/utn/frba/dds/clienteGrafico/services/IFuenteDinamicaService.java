@@ -6,4 +6,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface IFuenteDinamicaService {
     ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO);
+
 }
