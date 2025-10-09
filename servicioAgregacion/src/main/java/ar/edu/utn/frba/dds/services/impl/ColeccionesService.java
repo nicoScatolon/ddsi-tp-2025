@@ -18,6 +18,7 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,6 +81,7 @@ public class ColeccionesService implements IColeccionesService {
 
     //-------------------------- OPERACIONES CRUD --------------------------
     @Override
+    @Transactional
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
                 this.generarHandleUnico(coleccionInputDTO.getTitulo()),
@@ -99,6 +101,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public ColeccionOutputDTO modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO) {
         // 1) Cargo la colección existente por handle
         Coleccion coleccion = coleccionesRepository.findByHandle(coleccionInputDTO.getHandle());
@@ -139,6 +142,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
         List<Fuente> nuevasFuentes = new ArrayList<>();
@@ -150,6 +154,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Void> eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
         if(coleccionInputDTO == null){
             return ResponseEntity.notFound().build();
@@ -166,6 +171,7 @@ public class ColeccionesService implements IColeccionesService {
 
     //-------------------------------------------------------------------------------
 
+    @Transactional
     public void actualizarColeccionesScheduler(){
         logger.info("Actualizando Colecciones Scheduler");
 /*aca esta*/List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
@@ -173,6 +179,7 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesActualizables.forEach(Coleccion::actualizarHechos);
     }
 
+    @Transactional
     public void curarColeccionesScheduler(){
         logger.info("Curando Colecciones Scheduler");
         List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
@@ -260,5 +267,21 @@ public class ColeccionesService implements IColeccionesService {
 
         return handle;
     }
+
+    // --- TESTEO --- //
+    @Transactional
+    public ColeccionOutputDTO actualizarColeccionManual(String handle) {
+        Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
+        coleccion.actualizarHechos();
+        return DTOConverter.coleccionOutputDTO(coleccion);
+    }
+
+    @Transactional
+    public ColeccionOutputDTO curarColeccionManual(String handle) {
+        Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
+        coleccion.curarHechos();
+        return DTOConverter.coleccionOutputDTO(coleccion);
+    }
+
 }
 

@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class CriterioContenidoMultimedia extends Criterio {
 
     @ManyToOne
-    @JoinColumn(name = "contenidoMultimedia_id")
+    @JoinColumn(name = "contenidoMultimedia_id", nullable = true)
     private ContenidoMultimedia contenido;
     @Override
     public Boolean pertenece(Hecho hecho) {
-        return false;
+        return hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty();
     }
 }

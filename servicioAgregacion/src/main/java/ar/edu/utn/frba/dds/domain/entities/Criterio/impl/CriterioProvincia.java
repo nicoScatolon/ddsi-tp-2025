@@ -3,7 +3,6 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
@@ -13,7 +12,7 @@ import java.util.Objects;
 @DiscriminatorValue("Provincia")
 public class CriterioProvincia extends Criterio {
 
-    @Column(name="provincia", nullable = false)
+    @Column(name="provincia", nullable = true)
     private String provincia;
 
     public String getProvincia() {

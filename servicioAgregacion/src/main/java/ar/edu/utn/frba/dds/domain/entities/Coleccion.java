@@ -62,10 +62,10 @@ public class Coleccion {
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
     //Ahora que persistimos en BD, no harían falta esas listas en memoria
-    @Transient
+    @Column(nullable = false, name = "actualizarHechos")
     @Setter private Boolean actualizarHechos = true;
 
-    @Transient
+    @Column(nullable = false, name = "curarHechos")
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
@@ -79,11 +79,13 @@ public class Coleccion {
 
     public void agregarCriterio(Criterio criterio) {
         this.listaCriterios.add(criterio);
+        criterio.setColeccion(this);
         actualizarHechos = true;
     }
 
     public void eliminarCriterio(Criterio criterio) {
         this.listaCriterios.remove(criterio);
+        criterio.setColeccion(null);
         actualizarHechos = true;
     }
 

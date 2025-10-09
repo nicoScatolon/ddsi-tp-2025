@@ -18,7 +18,7 @@ import java.util.Objects;
 public class CriterioEtiqueta extends Criterio {
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = true)
     @Getter
     @Setter
     private Etiqueta etiqueta;

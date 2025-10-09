@@ -10,6 +10,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -57,6 +58,7 @@ public class Hecho {
     @Column (name= "origenId")
     private Long origenId; //id que tiene el hecho en su fuente de origen, es un dato mas que lo tenemos para poder decirle a la fuente que paso con su hecho (si se lo elimino)
 
+    @Builder.Default
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
@@ -87,6 +89,16 @@ public class Hecho {
 
     public void eliminarEtiqueta(Etiqueta etiqueta){
         etiquetas.remove(etiqueta);
+    }
+
+    public void actualizarse(Hecho hechoNuevo) {
+        if (!Objects.equals(hechoNuevo.getOrigenId(), this.origenId)) { throw new RuntimeException("no somos el mismo hecho"); }
+        titulo = hechoNuevo.getTitulo();
+        descripcion = hechoNuevo.getDescripcion();
+        categoria = hechoNuevo.getCategoria();
+        fechaDeOcurrencia = hechoNuevo.getFechaDeOcurrencia();
+        fechaDeCarga = hechoNuevo.getFechaDeCarga();
+        contenidoMultimedia = hechoNuevo.getContenidoMultimedia();
     }
 }
 
