@@ -61,7 +61,7 @@ public class Hecho {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
+    private EstadoHecho estado = EstadoHecho.PENDIENTE;
 
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
@@ -87,6 +87,9 @@ public class Hecho {
         this.setUbicacion(nuevosDatosHecho.getUbicacion());
         this.setContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
         this.setFechaDeOcurrencia(nuevosDatosHecho.getFechaDeOcurrencia());
+
+        this.setFechaDeModificacion(LocalDateTime.now());
+        this.setEstado(EstadoHecho.PENDIENTE);
     }
 
     public void serRevisado(Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
