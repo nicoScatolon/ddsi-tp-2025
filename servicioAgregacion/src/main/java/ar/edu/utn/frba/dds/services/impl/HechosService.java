@@ -4,15 +4,12 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
@@ -33,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -275,5 +271,13 @@ public class HechosService implements IHechosService {
     @Override
     public List<Hecho> findByFuente(Fuente fuente){
         return this.hechosRepository.findAllByFuente(fuente);
+    }
+
+    public List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable){
+        if (pageable == null){
+            return this.hechosRepository.findAll(spec);
+        } else {
+            return this.hechosRepository.findAll(spec, pageable).getContent();
+        }
     }
 }

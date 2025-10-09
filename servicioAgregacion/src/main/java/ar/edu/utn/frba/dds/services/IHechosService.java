@@ -7,6 +7,8 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -28,4 +30,6 @@ public interface IHechosService {
 
     ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta);
     ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta);
+
+    List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable);
 }
