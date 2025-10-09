@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FuenteOutputDTO {
+public class FuentePreviewOutputDTO {
     private Long fuenteId;
     private String nombre;
 }

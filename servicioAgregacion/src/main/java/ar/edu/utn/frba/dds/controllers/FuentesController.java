@@ -1,12 +1,11 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.FuentePreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
-import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +20,15 @@ public class FuentesController {
     public FuentesController(FuentesService fuenteService) {
         this.fuenteService = fuenteService;
     }
+
+    // --- API PUBLICA --- //
+
+    @GetMapping("/publica/preview")
+    public List<FuentePreviewOutputDTO> getFuentesPreview(){
+        return this.fuenteService.getFuentesPreview();
+    }
+
+    // --- API PRIVADA --- //
 
     @GetMapping("/privada")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}

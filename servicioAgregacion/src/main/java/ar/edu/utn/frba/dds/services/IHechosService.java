@@ -15,9 +15,15 @@ public interface IHechosService {
     List<Hecho> findAll();
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
+
     void actualizarHechosRepository(List<Hecho> hechosActualizados);
+
     List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO);
     List<HechoMapaOutputDTO> getHechosMapa();
+    List<HechoOutputDTO> getHechosDestacados();
+
+    ResponseEntity<Void> setDestacadoHecho(Long idHecho, Boolean estaDestacado);
+
     ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta);
     ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta);
 }

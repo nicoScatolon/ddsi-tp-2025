@@ -63,15 +63,21 @@ public class Hecho {
     @Enumerated(EnumType.STRING)
     private TipoHecho tipoHecho;
 
+    @Builder.Default
     @Column (name = "contribuyenteId")
     private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios
 
+    @Builder.Default
     @Column (name= "cargado-anonimamente")
     private Boolean cargadoAnonimamente = null;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "fuente_id")
     private Fuente fuente;
+
+    @Builder.Default
+    @Column (name= "destacado")
+    private Boolean destacado = false; // empieza siempre como false
 
     // metodos
 

@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.dtos.output;
 
-import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +25,7 @@ public class HechoOutputDTO {
     private LocalDateTime fechaDeCarga;
     private Long contribuyenteId;
     private Boolean cargadoAninimamente;
-    private FuenteOutputDTO fuente;
+    private FuentePreviewOutputDTO fuente;
     // NOTA los cambios agregados deben ser mostrador por el DTO converter
 }
 

@@ -10,4 +10,5 @@ import java.util.Optional;
 
 public interface IHechosRepository extends JpaRepository<Hecho, Long>, JpaSpecificationExecutor<Hecho> {
     Hecho getHechoById(Long id);
+    List<Hecho> findHechoByDestacado(Boolean destacado);
 }

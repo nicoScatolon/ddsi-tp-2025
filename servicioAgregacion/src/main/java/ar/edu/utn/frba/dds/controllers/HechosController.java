@@ -23,6 +23,8 @@ public class HechosController {
         this.seederService = seederService;
     }
 
+    // --- API Publica --- //
+
     @GetMapping("/publica")
     public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
         return hechosService.getHechos(hechosFilterDTO);
@@ -39,6 +41,13 @@ public class HechosController {
         return hechosService.getHechosMapa();
     }
 
+    @GetMapping("/publica/destacados")
+    public List<HechoOutputDTO> getHechosDestacados() {
+        return hechosService.getHechosDestacados();
+    }
+
+    // --- API Privada --- //
+
     @PutMapping("/privada/{id}/etiquetas")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.agregarEtiquetaHecho(id, etiqueta);
@@ -49,6 +58,19 @@ public class HechosController {
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 
     }
+
+    @PutMapping("/privada/destacado/{id}")
+    public ResponseEntity<Void> destacarHecho(@PathVariable Long id){
+        return hechosService.setDestacadoHecho(id, true);
+    }
+
+    @DeleteMapping ("/privada/destacado/{id}")
+    public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
+        return hechosService.setDestacadoHecho(id, false);
+
+    }
+
+
 
     // --- TEST --- //
 
