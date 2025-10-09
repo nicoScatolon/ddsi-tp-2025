@@ -62,10 +62,10 @@ public class Coleccion {
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
     //Ahora que persistimos en BD, no harían falta esas listas en memoria
-    @Transient
+    @Column(nullable = false, name = "actualizarHechos")
     @Setter private Boolean actualizarHechos = true;
 
-    @Transient
+    @Column(nullable = false, name = "curarHechos")
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
@@ -79,11 +79,13 @@ public class Coleccion {
 
     public void agregarCriterio(Criterio criterio) {
         this.listaCriterios.add(criterio);
+        criterio.setColeccion(this);
         actualizarHechos = true;
     }
 
     public void eliminarCriterio(Criterio criterio) {
         this.listaCriterios.remove(criterio);
+        criterio.setColeccion(null);
         actualizarHechos = true;
     }
 
@@ -138,27 +140,18 @@ public class Coleccion {
                 .collect(Collectors.toList());
     }
 
-    public void actualizarHechos() {
-        List<Hecho> listaAuxiliar = new ArrayList<>();
-        //cargamos todos los hechos de las fuentes
-        for (Fuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
-            if (hechosFuente != null) {
-                listaAuxiliar.addAll(hechosFuente);
-            }
-        }
+    public void actualizarHechos( List<Hecho> hechosFuentes ) {
         // filtramos estos hechos
-        this.listaHechos = this.filtrarHechos(listaAuxiliar);
+        this.listaHechos = this.filtrarHechos(hechosFuentes);
         this.setCurarHechos(true);
     }
 
-    public void curarHechos() {
+    public void curarHechos( List< List<Hecho> > listaHechosFuentes) {
         if (algoritmoConsenso == null) {
             this.listaHechosCurados = this.listaHechos;
         }
         else
-            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
+            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
         setCurarHechos(false);
     }
 

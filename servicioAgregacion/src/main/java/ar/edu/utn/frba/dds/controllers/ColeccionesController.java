@@ -83,7 +83,6 @@ public class ColeccionesController {
         return coleccionesService.findByHandle(handle);
     }
 
-
     @GetMapping("publica/{handle}/hechos")
     public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
         return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
@@ -92,5 +91,17 @@ public class ColeccionesController {
     @GetMapping("/publica/preview")
     public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
         return this.coleccionesService.findAllPreview(page);
+    }
+
+    // ------------------------------------------- TESTEO -------------------------------------------
+
+    @GetMapping("/test/actualizar/{handle}")
+    public ColeccionOutputDTO actualizarColeccionManual(@PathVariable String handle) {
+        return this.coleccionesService.actualizarColeccionManual(handle);
+    }
+
+    @GetMapping("/test/curar/{handle}")
+    public ColeccionOutputDTO curarColeccionManual(@PathVariable String handle) {
+        return this.coleccionesService.curarColeccionManual(handle);
     }
 }

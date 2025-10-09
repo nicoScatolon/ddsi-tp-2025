@@ -16,8 +16,6 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudElimi
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
@@ -25,7 +23,11 @@ import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbi
 
 //---CONVERTIDORES DE HECHOS Y DTOS---
 public class DTOConverter {
+
+    // HECHOS OUTPUT
+
     public static HechoOutputDTO convertirHechoOutputDTO(Hecho hecho) {
+
         return HechoOutputDTO.builder()
                 .id(hecho.getId())
                 .titulo(hecho.getTitulo())
@@ -33,25 +35,25 @@ public class DTOConverter {
                 .categoria(convertirCategoriaOutputDTO(hecho.getCategoria()))
                 .ubicacion(convertirUbicacionOutputDTO(hecho.getUbicacion()))
                 .contenidoMultimedia(
-                        Optional.ofNullable(hecho.getContenidoMultimedia())
-                                .orElse(Collections.emptyList())
-                                .stream()
-                                .map(DTOConverter::convertirContenidoMultimediaOutputDTO)
-                                .toList()
+                        hecho.getContenidoMultimedia() != null ?
+                                hecho.getContenidoMultimedia()
+                                        .stream()
+                                        .map(DTOConverter::convertirContenidoMultimediaOutputDTO)
+                                        .toList()
+                                : Collections.emptyList()
                 )
                 .etiquetas(hecho.getEtiquetas())
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaDeCarga(hecho.getFechaDeCarga())
                 .cargadoAninimamente(hecho.getCargadoAnonimamente())
-                .fuente(convertirFuenteOutputDTO(hecho.getFuente()))
+                .fuente(convertirFuentePreviewOutputDTO(hecho.getFuente()))
                 .build();
     }
 
-    public static FuenteOutputDTO convertirFuenteOutputDTO(Fuente fuente) {
-        return FuenteOutputDTO.builder()
-                .fuenteId(fuente.getId())
-                .nombre(fuente.getNombre())
-                .build();
+    public static List<HechoOutputDTO> hechoOutputDTO(List<Hecho> hechos) {
+        return hechos.stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .collect(Collectors.toList());
     }
 
     public static HechoMapaOutputDTO convertirHechoMapaOutputDTO(Hecho hecho) {
@@ -64,6 +66,8 @@ public class DTOConverter {
                 .build();
     }
 
+    // HECHOS INPUT
+
     public static Hecho convertirHechoInputDTO(HechoInputProxyDTO dto) {
         return Hecho.builder()
                 .origenId(dto.getId())
@@ -72,7 +76,7 @@ public class DTOConverter {
                 .ubicacion(convertirUbicacion(dto.getUbicacion()))
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
-                .categoria(categoriaInputDTO(dto.getCategoria()))
+                .categoria(categoriaInputDTO(dto.getCategoria()) )
                 .fueEliminado(false)
                 .build();
     }
@@ -104,9 +108,27 @@ public class DTOConverter {
                 .build();
 
         hecho.setContenidoMultimedia(DTOConverter.convertirContenidoMultimedia(dto.getContenidoMultimedia(), hecho));
-
         return hecho;
     }
+
+    // FUENTE OUTPUT
+
+    public static FuentePreviewOutputDTO convertirFuentePreviewOutputDTO(Fuente fuente) {
+        return FuentePreviewOutputDTO.builder()
+                .fuenteId(fuente.getId())
+                .nombre(fuente.getNombre())
+                .build();
+    }
+
+    // FUENTE INPUT
+
+    public static Fuente fuenteOutputDTOToFuente(FuenteInputDTO fuenteDTO) {
+        Fuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
+        fuente.setNombre(fuenteDTO.getNombre());
+        return fuente;
+    }
+
+    // CONTENIDO MULTIMEDIA INPUT
 
     public static List<ContenidoMultimedia> convertirContenidoMultimedia(
             List<ContenidoMultimediaInputDTO> contenidoMultimediaInputDTO, Hecho hecho) {
@@ -128,6 +150,8 @@ public class DTOConverter {
                 .build();
     }
 
+    // CONTENIDO MULTIMEDIA OUTPUT
+
     public static ContenidoMultimediaOutputDTO convertirContenidoMultimediaOutputDTO(ContenidoMultimedia contenidoMultimedia) {
         return ContenidoMultimediaOutputDTO.builder()
                 .id(contenidoMultimedia.getId())
@@ -136,6 +160,8 @@ public class DTOConverter {
                 .url(contenidoMultimedia.getUrl())
                 .build();
     }
+
+    // UBICACION INPUT
 
     public static Ubicacion convertirUbicacion(UbicacionInputDTO dto) {
         normalizarUbicacion(dto);
@@ -149,12 +175,7 @@ public class DTOConverter {
                 .build();
     }
 
-    public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
-        return CategoriaOutputDTO.builder()
-                .id(categoria.getCodigoCategoria())
-                .nombre(categoria.getNombre())
-                .build();
-    }
+    // UBICACION OUTPUT
 
     public static UbicacionOutputDTO convertirUbicacionOutputDTO(Ubicacion ubicacion) {
         return UbicacionOutputDTO.builder()
@@ -167,30 +188,16 @@ public class DTOConverter {
                 .build();
     }
 
-    public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
-        return SolicitudEliminarHechoOutputDTO
-                .builder()
-                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
-                .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .idAdministrador(solicitud.getIdAdministrador())
-                .fechaCreacion(solicitud.getFechaCreacion())
+    // CATEGORIA OUTPUT
+
+    public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
+        return CategoriaOutputDTO.builder()
+                .id(categoria.getCodigoCategoria())
+                .nombre(categoria.getNombre())
                 .build();
     }
 
-    public static SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto, Hecho hecho) {
-        return ConstructorSolicitudesEliminacion
-                .constructorSolicitud(
-                        hecho,
-                        dto.getRazonDeEliminacion(),
-                        dto.getIdCreador());
-    }
-
-
-    public static List<HechoOutputDTO> hechoOutputDTO(List<Hecho> hechos) {
-        return hechos.stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .collect(Collectors.toList());
-    }
+    // CATEGORIA INPUT
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
         return Categoria.builder()
@@ -206,6 +213,30 @@ public class DTOConverter {
                 .build();
     }
 
+    // SOLICITUD ELIMINACION OUTPUT
+
+    public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
+        return SolicitudEliminarHechoOutputDTO
+                .builder()
+                .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
+                .razonDeEliminacion(solicitud.getRazonDeEliminacion())
+                .idAdministrador(solicitud.getIdAdministrador())
+                .fechaCreacion(solicitud.getFechaCreacion())
+                .build();
+    }
+
+    // SOLICITUD ELIMINACION INPUT
+
+    public static SolicitudEliminarHecho solicitudEliminarHecho(SolicitudEliminarHechoInputDTO dto, Hecho hecho) {
+        return ConstructorSolicitudesEliminacion
+                .constructorSolicitud(
+                        hecho,
+                        dto.getRazonDeEliminacion(),
+                        dto.getIdCreador());
+    }
+
+    // ALGORITMO CONCENSO DTO
+
     public static IAlgoritmoConsenso algoritmoConsensoFromDTO(AlgoritmoConsensoDTO dto) {
         if (dto == null) { return null;}
         return dto.getTipo().obtenerConsenso();
@@ -216,6 +247,7 @@ public class DTOConverter {
         return new AlgoritmoConsensoDTO(algoritmoConsenso.getTipo());
     }
 
+    // COLECCION OUTPUT
 
     public static ColeccionOutputDTO coleccionOutputDTO(Coleccion coleccion) {
         return ColeccionOutputDTO.builder()
@@ -223,6 +255,7 @@ public class DTOConverter {
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
                 .algoritmoConsenso(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
+                .hechos( DTOConverter.hechoOutputDTO(coleccion.getListaHechos()) )
                 .build();
     }
 
@@ -234,6 +267,8 @@ public class DTOConverter {
                 .build();
     }
 
+    // COLECCION INPUT
+
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
         return new Coleccion(
                 input.getHandle(),
@@ -242,19 +277,7 @@ public class DTOConverter {
                 DTOConverter.algoritmoConsensoFromDTO(input.getAlgoritmoConsenso()));
     }
 
-    public static ColeccionInputDTO toInputDTO(Coleccion coleccion) {
-        return ColeccionInputDTO.builder()
-                .titulo(coleccion.getTitulo())
-                .descripcion(coleccion.getDescripcion())
-                .handle(coleccion.getHandle())
-                .build();
-    }
-
-    public static Fuente fuenteDTOToFuente(FuenteInputDTO fuenteDTO) {
-        Fuente fuente = fuenteDTO.getTipoFuente().crearFuente(fuenteDTO.getUrl());
-        fuente.setNombre(fuenteDTO.getNombre());
-        return fuente;
-    }
+    // HECHOS FILTER DTO
 
     public static HechoFilter convertirHechoFilterInputDTO(HechosFilterDTO filterDTO) {
         return HechoFilter.builder()
@@ -269,15 +292,6 @@ public class DTOConverter {
                 .build();
     }
 
-    public static List<ContenidoMultimedia> contenidoMultimediaSinId (List<ContenidoMultimedia> contenidoMultimediaDTO) {
-        return contenidoMultimediaDTO.stream()
-                .map(cm -> {
-                    cm.setId(null);          // para no tener id de la base de origen, da problemas con Hibernate
-                    cm.setHecho(null);       // por las dudas
-                    return cm;
-                })
-                .toList();
-    }
 
 
 }

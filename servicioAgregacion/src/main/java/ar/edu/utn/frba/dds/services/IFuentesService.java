@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.services;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.FuentePreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.TipoFuente;
@@ -16,5 +17,7 @@ public interface IFuentesService {
     IFuente buscarFuentePorId(Long id);
     void notificarEliminaciones (List<Hecho> hechosAEliminar);
     void actualizarHechosFuentesScheduler();
+
+    List<FuentePreviewOutputDTO> getFuentesPreview();
 
 }

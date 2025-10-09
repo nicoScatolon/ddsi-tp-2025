@@ -66,7 +66,7 @@ public class HechosService implements IHechosService {
             this.hechosRepository.save(hechoGuardado);
             return hechoGuardado;
         } else {
-           return null;//TODO responder 404
+           return null;//responder 404
         }
     }
 
@@ -154,4 +154,14 @@ public class HechosService implements IHechosService {
         categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
     }
+
+    // Test
+
+    public void crearHechoTest (HechoInputDTO dto) {
+        Hecho h = hechoInputDTO(dto);
+        h.setFechaDeCarga(LocalDateTime.now());
+        h.setEstado(EstadoHecho.ACEPTADO);
+        hechosRepository.save(h);
+    }
+
 }

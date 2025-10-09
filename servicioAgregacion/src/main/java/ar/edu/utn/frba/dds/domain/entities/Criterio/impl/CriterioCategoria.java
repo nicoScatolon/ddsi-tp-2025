@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class CriterioCategoria extends Criterio {
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = true)
     @Getter
     @Setter
     private Categoria categoria;

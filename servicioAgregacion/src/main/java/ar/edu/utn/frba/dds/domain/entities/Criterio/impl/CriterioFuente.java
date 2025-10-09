@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
-import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.DiscriminatorValue;
@@ -19,7 +18,7 @@ import java.util.Objects;
 public class CriterioFuente extends Criterio {
 
     @ManyToOne
-    @JoinColumn(name = "fuente_id")
+    @JoinColumn(name = "fuente_id", nullable = true)
     @Getter
     @Setter
     private Fuente fuente;

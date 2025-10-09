@@ -32,9 +32,11 @@ public class FuenteEstatica extends Fuente {
     @Transient
     @JsonIgnore
     private WebClient webClient;
+
     @Transient
     @JsonIgnore
     private Map<Long, Hecho> mapHechos = new HashMap<>();
+
     @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
