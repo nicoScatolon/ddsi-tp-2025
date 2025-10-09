@@ -99,13 +99,22 @@
             </div>
         </form>
     </section>
-    <br>
+        <div id="loginModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>¡Debes identificarte!</h2>
+                <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
+                <div class="modal-actions">
+                    <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
+                    <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
+                </div>
+            </div>
+        </div>
     </th:block>
 
 <th:block th:fragment="jsExtra">
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script th:src="@{/js/form.js}"></script>
+    <script th:src="@{/js/hecho-create.js}"></script>
 </th:block>
 
 

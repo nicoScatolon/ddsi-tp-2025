@@ -64,8 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         lngDisplay.textContent = newLng;
                     });
                 }
-
-                marker.bindPopup(`<b>Ubicación del hecho</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
             });
         }
 
@@ -152,8 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
-                window.location.href = '/hechos/list';
-                return;
+                window.location.href = '/hechos';
             } else {
                 let text = '';
                 try { text = await response.text(); } catch (err) {}
@@ -167,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // retirar este listener y hacer submit clásico
                 form.removeEventListener('submit', arguments.callee);
                 form.submit();
-                return;
             }
         } finally {
             submitBtn.disabled = false;
@@ -181,5 +177,20 @@ document.addEventListener('DOMContentLoaded', function() {
             resetUbicacionFields();
             tipoUbicacionSelect.value = '';
         }, 0);
+    });
+
+    window.addEventListener('load', function() {
+        const logeado = /*[[${logeado}]]*/ 0;
+
+        if (logeado === 0) {
+            const modal = document.getElementById("loginModal");
+            const form = document.getElementById("hechoForm");
+
+            // Esperar un pequeño retardo para asegurar que el fondo se haya renderizado
+            setTimeout(() => {
+                if (modal) modal.style.display = "flex";
+                if (form) form.style.display = "none";
+            }, 300);
+        }
     });
 });

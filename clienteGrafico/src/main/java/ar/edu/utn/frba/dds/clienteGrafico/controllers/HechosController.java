@@ -35,13 +35,12 @@ public class HechosController {
 
         List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
 
-
         model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
         model.addAttribute("hechos", hechos);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
+        model.addAttribute("rol", 1); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "/hechos/explore";
     }
@@ -53,6 +52,7 @@ public class HechosController {
         model.addAttribute("titulo", "Crear Hecho");
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("categorias", categorias);
+        model.addAttribute("logeado", 0);
         return "/hechos/create";
     }
 

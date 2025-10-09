@@ -45,12 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 marker = L.marker([lat, lng]).addTo(map);
 
-                const popupContent = `
-                    <strong>${HECHO_DATA.titulo}</strong><br>
-                    ${HECHO_DATA.ubicacion.calle || ''} ${HECHO_DATA.ubicacion.numero || ''}<br>
-                    ${HECHO_DATA.ubicacion.localidad || ''}, ${HECHO_DATA.ubicacion.provincia || ''}
-                `;
-                marker.bindPopup(popupContent).openPopup();
             } catch (error) {
                 console.error('Error al inicializar el mapa:', error);
                 mapEl.innerHTML = '<div class="placeholder">Error al cargar el mapa</div>';
@@ -192,8 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (marker) marker.setLatLng([lat, lng]);
                 else marker = L.marker([lat, lng]).addTo(map);
-
-                marker.bindPopup(`<strong>${HECHO_DATA.titulo}</strong><br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
             };
 
             map.on('click', mapClickHandler);
