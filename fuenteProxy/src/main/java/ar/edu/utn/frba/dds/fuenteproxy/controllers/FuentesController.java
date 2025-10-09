@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -23,12 +24,14 @@ public class FuentesController {
     }
 
     @PostMapping("/metamapa")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public ResponseEntity<Void> agregarFuenteMetamapa(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteMetamapa(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/fuentes/dds")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public ResponseEntity<Void> agregarFuenteDDS(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteDDS(dto);
         return ResponseEntity.accepted().build();
@@ -36,6 +39,7 @@ public class FuentesController {
 
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public void eliminarFuente(@RequestBody FuenteInputDTO dto) {
         fuenteService.eliminarFuente(dto.getNombre());
     }

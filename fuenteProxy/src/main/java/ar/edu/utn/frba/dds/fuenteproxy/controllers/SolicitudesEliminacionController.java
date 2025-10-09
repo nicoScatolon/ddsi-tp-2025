@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.controllers;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ISolicitudesEliminacionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/solicitud")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','VISUALIZADOR') and hasAuthority('SOLICITAR_ELIMINACION')")
     public Mono<Void> crearSolicitudEliminacion(@RequestBody SolicitudEliminarHechoInputDTO solicitud) {
         return solicitudesEliminacionService.crearSolicitudEliminacion(solicitud);
     }

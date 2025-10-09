@@ -55,13 +55,13 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada/{handle}/criterios")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CRITERIOS')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
     public ResponseEntity<Void> modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
         return coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
     @PutMapping("/privada/{handle}/consenso")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_CONSENSO')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
     public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
@@ -95,7 +95,7 @@ public class ColeccionesController {
 
 
     @GetMapping("publica/{handle}/hechos")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("hasAnyRole ('VISUALIZADOR','CONTRIBUYENTE') and hasAuthority('VER_HECHOS')")
     public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
         return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
     }

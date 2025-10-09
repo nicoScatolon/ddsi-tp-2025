@@ -33,7 +33,7 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/publica")
-    @PreAuthorize("hasAuthority('SOLICITAR_ELIMINACION')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','VISUALIZADOR') and hasAuthority('SOLICITAR_ELIMINACION')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
         CompletableFuture.runAsync(() -> solicitudesEliminacionService.crearSolicitudDesdeDTO(request), solicitudesExecutor);
@@ -41,7 +41,7 @@ public class SolicitudesEliminacionController {
     }
 
     @GetMapping("/publica")
-    @PreAuthorize("hasAnyAuthority('SOLICITAR_ELIMINACION')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.findAll();
     }

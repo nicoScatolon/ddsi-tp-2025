@@ -40,7 +40,6 @@ public class FuentesController {
     }
 
     @GetMapping("/test/fuente")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
     public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }

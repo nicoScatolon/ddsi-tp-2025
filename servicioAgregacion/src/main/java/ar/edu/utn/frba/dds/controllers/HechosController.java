@@ -25,32 +25,32 @@ public class HechosController {
     }
 
     @GetMapping("/publica")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
         return hechosService.getHechos(hechosFilterDTO);
     }
 
     @GetMapping("/publica/{id}")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public HechoOutputDTO buscarHechoPorId(@PathVariable Long id){
         return hechosService.findByID(id);
     }
 
     @GetMapping("/publica/mapa")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<HechoMapaOutputDTO> getHechosMapa() {
         //TODO quiza ver como hacer para agregar filtros que reduzcan la cantidad de hechos, ya que son muchos
         return hechosService.getHechosMapa();
     }
 
     @PutMapping("/privada/{id}/etiquetas")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAnyAuthority('MODERAR_HECHO','MODERAR_ETIQUETA')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.agregarEtiquetaHecho(id, etiqueta);
     }
 
     @DeleteMapping ("/privada/{id}/etiquetas")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAnyAuthority('MODERAR_HECHO','MODERAR_ETIQUETA')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 

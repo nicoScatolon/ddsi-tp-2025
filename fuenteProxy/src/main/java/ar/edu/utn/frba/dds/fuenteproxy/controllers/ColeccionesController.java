@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.ICollecionesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,11 +24,13 @@ public class ColeccionesController {
     }
 
     @GetMapping
+    @PreAuthorize("permitAll()")
     public Mono<List<ColeccionInputDTO>> todasLasColecciones(){
         return coleccionesService.traerTodasLasColecciones();
     }
 
     @GetMapping("/hechos")
+    @PreAuthorize("permitAll()")
     public Mono<List<HechoOutputDTO>> hechosDeColeccion(@RequestParam(name = "id_coleccion") String idColeccion) {
         return coleccionesService.traerHechosDeColeccion(idColeccion);
     }

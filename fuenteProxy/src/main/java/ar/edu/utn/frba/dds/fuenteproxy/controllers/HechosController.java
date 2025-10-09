@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechosFilterDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -25,16 +26,19 @@ public class HechosController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VER_HECHOS')")
     public Mono<List<HechoOutputDTO>> obtenerHechos() {
         return hechosService.buscarTodos();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('VER_HECHOS')")
     public Mono<HechoOutputDTO> buscarHechoPorId(@PathVariable Long id, @RequestBody FuenteInputDTO fuente) {
         return hechosService.buscarPorId(id, fuente);
     }
 
     @GetMapping("/filtrados")
+    @PreAuthorize("hasAuthority('VER_HECHOS')")
     public Mono<List<HechoOutputDTO>> filtrarHechos(@ModelAttribute HechosFilterDTO filtros) {
         return hechosService.buscarConFiltros(filtros);
     }

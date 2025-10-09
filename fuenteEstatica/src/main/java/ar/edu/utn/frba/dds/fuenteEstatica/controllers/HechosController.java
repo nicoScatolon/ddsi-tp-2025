@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.fuenteEstatica.servicies.impl.HechosService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
@@ -35,6 +36,7 @@ public class HechosController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VER_HECHOS')")
     public List<HechoOutputDTO> buscarTodosPorFecha(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga
@@ -43,6 +45,7 @@ public class HechosController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('IMPORTAR_CSV')")
     public ResponseEntity<String> importarArchivo(@RequestParam String filename) {
         try {
             // 1) buscamos en classpath

@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -63,6 +65,16 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
         if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean esVisualizador = auth !=null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("VISUALIZADOR"));
+        if(esVisualizador && solicitud.getRazonDeEliminacion().length() < 500){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Los visualizadores deben ingresar una justificación de al menos 500 caracteres"
+            );
         }
 
         this.crearSolicitudDesdeEntidad(

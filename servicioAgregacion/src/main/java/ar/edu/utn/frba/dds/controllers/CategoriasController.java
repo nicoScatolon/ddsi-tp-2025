@@ -23,7 +23,7 @@ public class CategoriasController {
 
     // GET /categorias
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")
+    @PreAuthorize("permitAll()")// ya que sirve para el filtrado de hechos
     public ResponseEntity<List<CategoriaOutputDTO>> findAll() {
         List<CategoriaOutputDTO> listaCategorias = categoriaService.findAll();
         return ResponseEntity.ok(listaCategorias);

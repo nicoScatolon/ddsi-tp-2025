@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class HechosController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VER_HECHOS')")
     public List<HechoOutputDTO> obtenerHechos(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga)
@@ -37,6 +39,7 @@ public class HechosController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CONTRIBUYENTE') and hasAuthority('CREAR_HECHO')")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
                     if (ex != null) {
@@ -51,6 +54,7 @@ public class HechosController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CONTRIBUYENTE') and hasAuthority('EDITAR_HECHO_PROPIO')")
     public void modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
         if (!id.equals(hechoInputDTO.getId())) {throw new IllegalArgumentException("Id del hecho no matchea con la url utilizada");}
