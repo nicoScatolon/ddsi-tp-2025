@@ -59,7 +59,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponseDTO> refresh(@RequestBody RefreshTokenDTO request) {
+    public ResponseEntity<TokenResponseDTO> refresh(@RequestBody RefreshRequestDTO request) {
         try {
             String username = JwtUtil.validarToken(request.getRefreshToken());
 
