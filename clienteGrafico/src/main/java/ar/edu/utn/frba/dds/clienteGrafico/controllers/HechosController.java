@@ -35,9 +35,11 @@ public class HechosController {
         }
 
         List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
 
         model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
         model.addAttribute("hechos", hechos);
+        model.addAttribute("fuentes", fuentes);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);

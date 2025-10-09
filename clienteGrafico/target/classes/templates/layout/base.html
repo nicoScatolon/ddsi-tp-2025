@@ -1,112 +1,105 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title th:text="${titulo} + ' - MetaMapa'"></title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - MetaMapa'"></title>
 
-        <!-- importar fuentes -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
-        <!-- importar estilos y layout-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- importar íconos-->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- importar fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- importar estilos y layout-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- importar íconos-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-        <link rel="icon" type="image/x-icon" href="/img/icon.ico">
+    <link rel="icon" type="image/x-icon" href="/img/icon.ico">
 
-        <!-- CSS base -->
-        <link rel="stylesheet" th:href="@{/css/base.css}">
-        <!-- Css reemplazable -->
-        <th:block th:replace="~{::cssExtra}"></th:block>
+    <!-- CSS base -->
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <!-- Css reemplazable -->
+    <th:block th:replace="~{::cssExtra}"></th:block>
 
-    </head>
-    <body>
-    <!-- NAVBAR DESKTOP -->
-    <header class="desktop-nav">
-        <nav>
-            <div class="brand">
-                <a th:href="@{/index}">
-                    <img src="/img/icon.ico" alt="MetaMapa Logo">
-                    <span class="site-name">MetaMapa</span>
-                </a>
+</head>
+<body>
+<!-- NAVBAR DESKTOP -->
+<header class="desktop-nav">
+    <nav>
+        <div class="brand">
+            <a th:href="@{/index}">
+                <img src="/img/icon.ico" alt="MetaMapa Logo">
+                <span class="site-name">MetaMapa</span>
+            </a>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="/hechos/create" class="btn btn-primary">+ Crear</a></li>
+            <li><a href="/hechos">Explorar</a></li>
+            <li><a href="/hechos/map">Mapa</a></li>
+            <li><a href="/colecciones">Colecciones</a></li>
+            <li><a href="/about">Nosotros</a></li>
+        </ul>
+
+        <!-- Right-side area: authButtons (guest) OR desktop single user/admin button -->
+        <div class="right-controls">
+
+            <!-- Si el usuario NO está logueado -->
+            <div th:if="${logeado == 0}" class="login">
+                <a th:href="@{/login}" class="btn btn-secondary" id="desktopLoginBtn">Ingresar</a>
+                <a th:href="@{/signup}" class="btn btn-secondary" id="desktopSignupBtn">Registrarse</a>
             </div>
 
-            <ul class="nav-links">
-                <li><a href="/hechos/create" class="btn btn-primary">+ Create</a></li>
-                <li><a href="/hechos">Explore</a></li>
-                <li><a href="/hechos/map">Map</a></li>
-                <li><a href="/colecciones">Collections</a></li>
-                <li><a href="/about">About Us</a></li>
-            </ul>
+            <!-- Si el usuario está logueado -->
+            <div th:if="${logeado == 1}" id="desktopUserContainer">
+                <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
+                    <!-- Ícono según rol -->
+                    <span id="desktopUserLabel">
+                            <i th:if="${rol == 1}" class="fas fa-user"></i>
+                            <i class="fas fa-user-cog admin-icon" th:if="${rol == 2}"></i>
+                        </span>
+                </button>
 
-            <!-- Right-side area: authButtons (guest) OR desktop single user/admin button -->
-            <div class="right-controls" style="display:flex; align-items:center; gap:8px;">
+                <div id="desktopUserDropdown">
+                    <!-- Opciones para ADMIN -->
+                    <a th:if="${rol == 2}" th:href="@{/admin-panel}" class="dropdown-admin">
+                        Panel de administrador
+                    </a>
 
-                <!-- Si el usuario NO está logueado -->
-                <div th:if="${logeado == 0}" class="login">
-                    <a th:href="@{/login}" class="btn btn-secondary" id="desktopLoginBtn">Log in</a>
-                    <a th:href="@{/signup}" class="btn btn-secondary" id="desktopSignupBtn">Sign up</a>
-                </div>
+                    <!-- Opciones para USER -->
+                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/profile}" class="dropdown-link">
+                        Mi Perfil
+                    </a>
+                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/mis-hechos}" class="dropdown-link">
+                        Mis Hechos
+                    </a>
+                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/mis-solicitudes}" class="dropdown-link">
+                        Mis Solicitudes
+                    </a>
 
-                <!-- Si el usuario está logueado -->
-                <div th:if="${logeado == 1}" id="desktopUserContainer" style="position:relative;">
-                    <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
-                        <span id="desktopUserLabel" >User</span>
-                        <img id="desktopAvatar" th:src="@{/images/user.ico}" alt="avatar" class="nav-avatar"
-                             style="vertical-align:middle; margin-left:8px;">
-                    </button>
-
-                    <!-- Dropdown -->
-                    <div id="desktopUserDropdown"
-                         style="position:absolute; right:0; top:calc(100% + 8px); min-width:220px;
-                    background:var(--color-primary); border-radius:8px; padding:6px 0; z-index:4000;
-                    box-shadow:0 6px 14px rgba(0,0,0,0.18);">
-
-                        <!-- Opciones para USER -->
-                        <a th:if="${rol == 1}" th:href="@{/profile}" style="display:block; padding:8px 12px; color:white; text-decoration:none;">
-                            Mi Perfil
-                        </a>
-                        <a th:if="${rol == 1}" th:href="@{/mis-hechos}" style="display:block; padding:8px 12px; color:white; text-decoration:none;">
-                            Mis Hechos
-                        </a>
-                        <a th:if="${rol == 1}" th:href="@{/mis-solicitudes}" style="display:block; padding:8px 12px; color:white; text-decoration:none;">
-                            Mis Solicitudes
-                        </a>
-
-                        <!-- Opciones para ADMIN -->
-                        <a th:if="${rol == 2}" th:href="@{/admin-panel}"
-                           style="display:block; padding:10px 12px; color:var(--color-accent); background:white; margin:6px; border-radius:6px;">
-                            Panel de administrador
-                        </a>
-                        <a th:if="${rol == 2}" th:href="@{/profile}"
-                           style="display:block; padding:8px 12px; color:white; text-decoration:none;">
-                            Mi Perfil
-                        </a>
-
-                        <!-- Logout -->
-                        <form th:action="@{/logout}" method="post">
-                            <button type="submit" style="display:block; padding:8px 12px; color:white; background:none; border:none; width:100%; text-align:left;">
-                                Log out
-                            </button>
-                        </form>
-                    </div>
+                    <!-- Logout -->
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="dropdown-logout">
+                            Cerrar Sesión
+                        </button>
+                    </form>
                 </div>
             </div>
+        </div>
 
 
-        </nav>
-    </header>
+    </nav>
+</header>
 
-    <!-- Contenido principal -->
-    <main class="container-fluid my-4 flex-grow-1">
-        <div th:replace="~{${contenido} :: contenido}"></div>
-    </main>
+<!-- Contenido principal -->
+<main class="container-fluid my-4 flex-grow-1">
+    <div th:replace="~{${contenido} :: contenido}"></div>
+</main>
+</body>
 
-    <footer>
-        <p>© 2025 MetaMapa - Todos los derechos reservados</p>
-        <a href="/legales">Información legal | Privacidad</a>
-    </footer>
+<footer>
+    <p>© 2025 MetaMapa - Todos los derechos reservados</p>
+    <a href="/legales">Información legal | Privacidad</a>
+</footer>
 
-    <th:block th:replace="~{::jsExtra}"></th:block>
-    </body>
+<script th:src="@{/js/navbar.js}"></script>
+<th:block th:replace="~{::jsExtra}"></th:block>
 </html>

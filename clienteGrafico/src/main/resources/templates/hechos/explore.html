@@ -17,14 +17,14 @@
                     <div class="filter-group">
                         <label for="provincia">Provincia:</label>
                         <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires"
-                               th:value="${filtros.provincia}">
+                               th:value="${filtros?.provincia}">
                     </div>
 
                     <!-- Categoría -->
                     <div class="filter-group">
                         <label for="categoria">Categoría:</label>
                         <input type="text" id="categoria" name="categoria" placeholder="Ej: Robo, Violencia..."
-                               th:value="${filtros.categoria}">
+                               th:value="${filtros?.categoria}">
                     </div>
 
                     <!-- Fechas de reporte -->
@@ -32,9 +32,9 @@
                         <label>Fecha de reporte:</label>
                         <div class="date-range">
                             <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
-                                   th:value="${#temporals.format(filtros.fReporteDesde, 'yyyy-MM-dd')}">
+                                   th:value="${#temporals.format(filtros?.fReporteDesde, 'yyyy-MM-dd')}">
                             <input type="date" id="fReporteHasta" name="fReporteHasta" placeholder="Hasta"
-                                   th:value="${#temporals.format(filtros.fReporteHasta, 'yyyy-MM-dd')}">
+                                   th:value="${#temporals.format(filtros?.fReporteHasta, 'yyyy-MM-dd')}">
                         </div>
                     </div>
 
@@ -43,9 +43,9 @@
                         <label>Fecha del acontecimiento:</label>
                         <div class="date-range">
                             <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
-                                   th:value="${#temporals.format(filtros.fAconDesde, 'yyyy-MM-dd')}">
+                                   th:value="${#temporals.format(filtros?.fAconDesde, 'yyyy-MM-dd')}">
                             <input type="date" id="fAconHasta" name="fAconHasta" placeholder="Hasta"
-                                   th:value="${#temporals.format(filtros.fAconHasta, 'yyyy-MM-dd')}">
+                                   th:value="${#temporals.format(filtros?.fAconHasta, 'yyyy-MM-dd')}">
                         </div>
                     </div>
 
@@ -54,9 +54,11 @@
                         <label for="fuenteId">Fuente:</label>
                         <select id="fuenteId" name="fuenteId">
                             <option value="">-- Seleccionar fuente --</option>
-                            <option value="1">Fuente 1</option>
-                            <option value="2">Fuente 2</option>
-                            <option value="3">Fuente 3</option>
+                            <option th:each="fuente : ${fuentes}"
+                                    th:value="${fuente.fuenteId}"
+                                    th:text="${fuente.nombre}"
+                                    th:selected="${fuente.fuenteId == filtros.fuenteId}">
+                            </option>
                         </select>
                     </div>
 
@@ -64,7 +66,7 @@
                     <div class="filter-group">
                         <label for="etiqueta">Etiqueta:</label>
                         <input type="text" id="etiqueta" name="etiqueta" placeholder="Ej: Inseguridad, Tránsito..."
-                               th:value="${filtros.etiqueta}">
+                               th:value="${filtros?.etiqueta}">
                     </div>
 
                     <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
@@ -119,13 +121,13 @@
 
                     </div>
 
-                    <!-- 4️⃣ Imagen -->
+                    <!-- 4️⃣ Imagen
                     <div class="card-img"
                          th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
                          aria-hidden="true">
                         <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
                              th:alt="${hecho.titulo}"/>
-                    </div>
+                    </div> -->
 
                 </a>
 

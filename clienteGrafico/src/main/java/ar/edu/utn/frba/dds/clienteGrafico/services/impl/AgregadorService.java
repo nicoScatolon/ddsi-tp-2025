@@ -95,6 +95,7 @@ public class AgregadorService implements IAgregadorService {
     }
 
     // --- SOLICITUDES ELIMINACION --- //
+
     @Override
     public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion){
         SolicitudEliminarHechoOutputDTO request = DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
@@ -106,6 +107,21 @@ public class AgregadorService implements IAgregadorService {
                 .bodyValue(request)
                 .retrieve()
                 .toBodilessEntity()
+                .block();
+    }
+
+    // --- FUENTES --- //
+
+    @Override
+    public List<FuenteInputDTO> getFuentesPreview(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/fuente/publica/preview")
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(FuenteInputDTO.class)
+                .collectList()
                 .block();
     }
 
