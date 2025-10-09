@@ -26,9 +26,9 @@ public class ColeccionesController {
     private final Executor executor;
 
     public ColeccionesController(
-            ColeccionesService coleccionesService,
+            ColeccionesService coleccionesServicee,
             @Qualifier("executorColecciones") Executor executor) {
-        this.coleccionesService = coleccionesService;
+        this.coleccionesService = coleccionesServicee;
         this.executor = executor;
     }
     // ------------------------------------------- API Privada -------------------------------------------
@@ -91,6 +91,11 @@ public class ColeccionesController {
     @GetMapping("/publica/preview")
     public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
         return this.coleccionesService.findAllPreview(page);
+    }
+
+    @GetMapping("/publica/preview/{handle}")
+    public ColeccionPreviewOutputDTO obtenerColeccionesPreview(@PathVariable String handle) {
+        return this.coleccionesService.findByHandlePreview(handle);
     }
 
     // ------------------------------------------- TESTEO -------------------------------------------
