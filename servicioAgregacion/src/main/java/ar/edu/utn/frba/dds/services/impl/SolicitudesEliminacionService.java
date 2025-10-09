@@ -48,24 +48,25 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) { //Todo: debería ser responseEntity
+    public ResponseEntity<Void>  crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) {
         if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
         }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
                 .constructorSolicitud(hecho, razon, idCreador);
         repository.save(solicitud);
+
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
+    public ResponseEntity<Void> crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
         Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
 
         if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
         }
-
-        this.crearSolicitudDesdeEntidad(
+        return  this.crearSolicitudDesdeEntidad(
                 hecho,
                 solicitud.getRazonDeEliminacion(),
                 solicitud.getIdCreador()

@@ -17,7 +17,7 @@ public class SolicitudEliminarHecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "razonDeEliminacion")
+    @Column(columnDefinition = "TEXT", name = "razonDeEliminacion")
     private String razonDeEliminacion;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hecho_id")
