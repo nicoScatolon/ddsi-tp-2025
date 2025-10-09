@@ -178,19 +178,4 @@ document.addEventListener('DOMContentLoaded', function() {
             tipoUbicacionSelect.value = '';
         }, 0);
     });
-
-    window.addEventListener('load', function() {
-        const logeado = /*[[${logeado}]]*/ 0;
-
-        if (logeado === 0) {
-            const modal = document.getElementById("loginModal");
-            const form = document.getElementById("hechoForm");
-
-            // Esperar un pequeño retardo para asegurar que el fondo se haya renderizado
-            setTimeout(() => {
-                if (modal) modal.style.display = "flex";
-                if (form) form.style.display = "none";
-            }, 300);
-        }
-    });
 });

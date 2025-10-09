@@ -52,12 +52,14 @@ public class HechosController {
         model.addAttribute("titulo", "Crear Hecho");
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("categorias", categorias);
-        model.addAttribute("logeado", 0);
+        model.addAttribute("rol", 1);
+        model.addAttribute("logeado", 1);
         return "/hechos/create";
     }
 
     @PostMapping("/create") // path coincide con el form
     public String guardarHecho(@ModelAttribute("hechoDTO") HechoOutputDTO hechoDTO, Model model) {
+
         try {
             ContribuyenteOutputDTO contribuyenteOutputDTO = this.obtenerUsuarioPrueba();
             hechoDTO.setContribuyente(contribuyenteOutputDTO);

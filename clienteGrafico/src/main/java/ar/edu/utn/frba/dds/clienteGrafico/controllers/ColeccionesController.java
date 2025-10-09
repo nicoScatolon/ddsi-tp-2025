@@ -32,11 +32,11 @@ public class ColeccionesController {
         model.addAttribute("logeado", 1);
         return "/colecciones/explore";
     }
-
+    /*
     @GetMapping("/{handle}")
     public String detallesColeccion(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, @PathVariable String handle, Model model) {
         ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreview(handle);
-        List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion();
+        List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(paginaActual);
 
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
@@ -51,5 +51,5 @@ public class ColeccionesController {
         model.addAttribute("logeado", 1);
         return "/colecciones/colecciones-details";
     }
-
+    */
 }
