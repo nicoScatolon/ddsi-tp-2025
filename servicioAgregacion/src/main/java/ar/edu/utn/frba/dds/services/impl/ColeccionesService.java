@@ -174,20 +174,68 @@ public class ColeccionesService implements IColeccionesService {
     @Transactional
     public void actualizarColeccionesScheduler(){
         logger.info("Actualizando Colecciones Scheduler");
-/*aca esta*/List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
-/*el error */coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
-        coleccionesActualizables.forEach(Coleccion::actualizarHechos);
+
+        //busco colecciones actualzables
+        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+
+        //obtengo las fuentes de esas colecciones
+        Set<Fuente> fuentes = coleccionesActualizables.stream()
+                .flatMap(coleccion -> coleccion.getListaFuentes().stream())
+                .collect(Collectors.toSet()); // set para no repetir
+
+        // hago un map de fuentes y lista de hechos de las fuentes
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechosFuente = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechosFuente);
+        }
+
+        // por cada coleccion, le paso sus hechos correspondientes y le digo que se actualize
+        for (Coleccion coleccion : coleccionesActualizables) {
+            logger.info("Coleccion a actualizar; Titulo: {}", coleccion.getTitulo());
+
+            List<Hecho> hechosParaColeccion = coleccion.getListaFuentes().stream()
+                    .flatMap(fuente -> listaHechosXFuente.getOrDefault(fuente, List.of()).stream())
+                    .toList();
+
+            coleccion.actualizarHechos(hechosParaColeccion);
+        }
     }
 
     @Transactional
     public void curarColeccionesScheduler(){
         logger.info("Curando Colecciones Scheduler");
-        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
-        coleccionesActualizables.forEach(n->logger.info("Coleccion a curar; Titulo: {}", n.getTitulo()));
-        coleccionesActualizables.forEach(Coleccion::curarHechos);
+
+        //busco colecciones actualzables
+        List <Coleccion> coleccionesCurables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
+
+        //obtengo las fuentes de esas colecciones
+        Set<Fuente> fuentes = coleccionesCurables.stream()
+                .flatMap(coleccion -> coleccion.getListaFuentes().stream())
+                .collect(Collectors.toSet()); // set para no repetir
+
+        // hago un map de fuentes y lista de hechos de las fuentes
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechosFuente = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechosFuente);
+        }
+
+        // por cada coleccion, le paso sus hechos correspondientes y le digo que se cure
+        for (Coleccion coleccion : coleccionesCurables) {
+            logger.info("Coleccion a actualizar; Titulo: {}", coleccion.getTitulo());
+
+            List< List<Hecho> > hechosFuentesColeccion = listaHechosXFuente.entrySet().stream()
+                    .filter(entry -> coleccion.getListaFuentes().contains(entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .toList();
+
+            coleccion.curarHechos( hechosFuentesColeccion );
+        }
     }
 
     @Override
+    @Transactional
     public void notificarActualizacionFuentes(List<Fuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
         colecciones = colecciones.stream()
@@ -197,6 +245,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public void notificarFuenteEliminada(Fuente fuente){
         List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
                 .filter(c -> c.getListaFuentes().contains(fuente)).toList();
@@ -271,15 +320,58 @@ public class ColeccionesService implements IColeccionesService {
     // --- TESTEO --- //
     @Transactional
     public ColeccionOutputDTO actualizarColeccionManual(String handle) {
+        // 1. Obtener la colección
         Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
-        coleccion.actualizarHechos();
+        if (coleccion == null) {
+            throw new IllegalArgumentException("No existe la colección con handle: " + handle);
+        }
+
+        // 2. Obtener fuentes únicas de la colección
+        List<Fuente> fuentes = coleccion.getListaFuentes().stream()
+                .distinct() // eliminar duplicados
+                .toList();
+
+        // 3. Mapear cada fuente a su lista de hechos
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechos = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechos);
+        }
+
+        // 4. Llamar a actualizarHechos pasando la lista combinada de hechos
+        List<Hecho> todosLosHechos = listaHechosXFuente.values().stream()
+                .flatMap(List::stream)
+                .toList();
+
+        coleccion.actualizarHechos(todosLosHechos);
+
+        // 5. Devolver DTO
         return DTOConverter.coleccionOutputDTO(coleccion);
     }
 
     @Transactional
     public ColeccionOutputDTO curarColeccionManual(String handle) {
-        Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
-        coleccion.curarHechos();
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) throw new IllegalArgumentException("No existe la colección");
+
+        // Obtener todas las fuentes de la colección
+        List<Fuente> fuentes = coleccion.getListaFuentes().stream()
+                .distinct()
+                .toList();
+
+        // Obtener hechos por fuente
+        Map<Fuente, List<Hecho>> hechosPorFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechos = this.hechosService.findByFuente(fuente);
+            hechosPorFuente.put(fuente, hechos);
+        }
+
+        // Aplanar todos los hechos en una lista total
+        List<List<Hecho>> listaHechosFuentes = new ArrayList<>(hechosPorFuente.values());
+
+        // Pasar los hechos y el map de hechos por fuente al métod0 de curación
+        coleccion.curarHechos(listaHechosFuentes);
+
         return DTOConverter.coleccionOutputDTO(coleccion);
     }
 

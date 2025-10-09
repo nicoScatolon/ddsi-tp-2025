@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface IAlgoritmoConsenso {
     TipoAlgoritmoConsenso getTipo();
-    List<Hecho> curar(List<Hecho> listaHechos, List<Fuente> listaFuentes);
+    List<Hecho> curar(List<Hecho> listaHechos, List< List<Hecho> > listaHechosFuentes);
 }

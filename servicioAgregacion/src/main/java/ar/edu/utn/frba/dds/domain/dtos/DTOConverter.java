@@ -255,6 +255,7 @@ public class DTOConverter {
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
                 .algoritmoConsenso(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
+                .hechos( DTOConverter.hechoOutputDTO(coleccion.getListaHechos()) )
                 .build();
     }
 

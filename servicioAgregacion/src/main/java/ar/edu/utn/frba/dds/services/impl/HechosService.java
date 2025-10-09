@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
@@ -269,5 +270,10 @@ public class HechosService implements IHechosService {
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    @Override
+    public List<Hecho> findByFuente(Fuente fuente){
+        return this.hechosRepository.findAllByFuente(fuente);
     }
 }

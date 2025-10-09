@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import org.springframework.http.ResponseEntity;
 
@@ -15,6 +16,7 @@ public interface IHechosService {
     List<Hecho> findAll();
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
+    List<Hecho> findByFuente(Fuente fuente);
 
     void actualizarHechosRepository(List<Hecho> hechosActualizados);
 

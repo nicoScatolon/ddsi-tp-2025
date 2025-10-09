@@ -140,27 +140,18 @@ public class Coleccion {
                 .collect(Collectors.toList());
     }
 
-    public void actualizarHechos() {
-        List<Hecho> listaAuxiliar = new ArrayList<>();
-        //cargamos todos los hechos de las fuentes
-        for (Fuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
-            if (hechosFuente != null) {
-                listaAuxiliar.addAll(hechosFuente);
-            }
-        }
+    public void actualizarHechos( List<Hecho> hechosFuentes ) {
         // filtramos estos hechos
-        this.listaHechos = this.filtrarHechos(listaAuxiliar);
+        this.listaHechos = this.filtrarHechos(hechosFuentes);
         this.setCurarHechos(true);
     }
 
-    public void curarHechos() {
+    public void curarHechos( List< List<Hecho> > listaHechosFuentes) {
         if (algoritmoConsenso == null) {
             this.listaHechosCurados = this.listaHechos;
         }
         else
-            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
+            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
         setCurarHechos(false);
     }
 

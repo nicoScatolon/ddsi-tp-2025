@@ -22,14 +22,12 @@ public class ConsensoMayoriaSimple implements IAlgoritmoConsenso {
     }
 
     @Override
-    public List<Hecho> curar(List<Hecho> listaHechos, List<Fuente> listaFuentes) {
+    public List<Hecho> curar(List<Hecho> listaHechos, List< List<Hecho> > listaHechosFuentes) {
         Map<Hecho, Integer> mapHechos = new HashMap<>();
         listaHechos.forEach(listaHecho -> mapHechos.put(listaHecho, 0));
         Integer cantApariciones = (listaHechos.size()+1)/2;
 
-        for (IFuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
+        for (List<Hecho> hechosFuente : listaHechosFuentes) {
 
             List<Hecho> hechosRepetidos = mapHechos.keySet().stream()
                     .filter(h1 -> hechosFuente.stream()
