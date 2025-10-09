@@ -27,6 +27,7 @@ public class AgregadorService implements IAgregadorService {
         this.webClient = webClient;
     }
 
+    // --- HECHOS --- //
 
     public HechoInputDTO getHechoById(Long id) {
         return webClient.get()
@@ -63,6 +64,8 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    // --- COLECCIONES --- //
+
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -77,6 +80,8 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    // --- CATEGORIAS --- //
+
     public List<String> obtenerCategoriasShort(){
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -87,6 +92,9 @@ public class AgregadorService implements IAgregadorService {
                 .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
                 .block();
     }
+
+
+    // --- METODOS PRIVADOS --- //
 
     private void aplicarFiltrosHecho(UriBuilder builder, HechosFilterOutputDTO filter) {
         if (filter.getCategoria() != null && !filter.getCategoria().isEmpty()) {
