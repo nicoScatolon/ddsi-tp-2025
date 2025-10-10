@@ -58,4 +58,11 @@ public class SolicitudEliminarHecho {
         estado = EstadoDeSolicitud.RECHAZADA;
         this.idAdministrador = idAdministrador;
     }
+
+    public void rechazarSpam(){
+        if (estado != EstadoDeSolicitud.PENDIENTE) {
+            throw new IllegalStateException("La solicitud ya fue procesada.");
+        }
+        estado = EstadoDeSolicitud.SPAM;
+    }
 }
