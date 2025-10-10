@@ -1,14 +1,13 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.impl.AgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

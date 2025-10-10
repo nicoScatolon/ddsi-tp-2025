@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos.input;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos;
 
 import lombok.*;
 

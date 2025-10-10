@@ -1,11 +1,13 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos.output;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos;
 
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.EtiquetaOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UbicacionOutputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

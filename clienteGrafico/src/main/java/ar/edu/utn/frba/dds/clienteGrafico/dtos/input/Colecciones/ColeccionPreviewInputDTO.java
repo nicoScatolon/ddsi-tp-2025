@@ -1,4 +1,5 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos.input;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -34,4 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // Actualizar input oculto para enviar al backend
         hiddenInput.value = ids.join(","); // si usas Spring, podes recibirlo como String y luego convertir a Set<Long>
     }
+    document.getElementById('createCollectionForm').addEventListener('submit', function() {
+        const select = document.getElementById('algoritmo');
+        if (select.value === "") {
+            select.removeAttribute('name');
+        }
+    });
 });

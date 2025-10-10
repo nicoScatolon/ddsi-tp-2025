@@ -49,6 +49,14 @@
                         <div class="criterio-controls">
                             <select id="criterioSelect" aria-label="Seleccionar criterio">
                                 <option value="">-- escoger criterio --</option>
+                                <option value="CargaEntreFechas">Carga entre fechas</option>
+                                <option value="Categoria">Categoría</option>
+                                <option value="ContenidoMultimedia">Contenido multimedia</option>
+                                <option value="Etiqueta">Etiqueta</option>
+                                <option value="Fuente">Fuente</option>
+                                <option value="OcurrenciaEntreFechas">Ocurrencia entre fechas</option>
+                                <option value="Provincia">Provincia</option>
+                                <option value="Titulo">Título</option>
                             </select>
                             <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
                         </div>
@@ -58,8 +66,13 @@
                 </div>
 
                 <div>
-                    <label for="algoritmo">Algoritmo de Consenso</label>
-                    <select id="algoritmo" name="algoritmo"></select>
+                    <label for="algoritmo"></label><select id="algoritmo" name="algoritmoConsenso.tipo" class="form-select">
+                        <option value="">Ninguno</option>
+                        <option value="ABSOLUTO">Absoluto</option>
+                        <option value="MAYORIASIMPLE">Mayoría simple</option>
+                        <option value="MULTIPLEMENCION">Múltiple mención</option>
+                    </select>
+
                 </div>
 
                 <div class="form-actions">

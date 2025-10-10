@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;

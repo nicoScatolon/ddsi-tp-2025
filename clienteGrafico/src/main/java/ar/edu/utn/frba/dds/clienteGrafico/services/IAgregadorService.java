@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.EstadoDeSolicitud;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.HechosFilterOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ProcesarSolicitudOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
