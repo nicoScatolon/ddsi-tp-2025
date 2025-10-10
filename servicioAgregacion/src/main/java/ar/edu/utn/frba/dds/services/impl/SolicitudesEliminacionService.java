@@ -48,6 +48,15 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
+    public List<SolicitudEliminarHechoOutputDTO> findSinProcesar(){
+        return this.repository
+                .findByEstado(EstadoDeSolicitud.PENDIENTE)
+                .stream()
+                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                .toList();
+    }
+
+    @Override
     public ResponseEntity<Void>  crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) {
         if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");

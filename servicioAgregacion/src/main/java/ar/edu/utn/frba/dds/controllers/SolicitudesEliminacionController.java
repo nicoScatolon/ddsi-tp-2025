@@ -42,6 +42,11 @@ public class SolicitudesEliminacionController {
         return this.solicitudesEliminacionService.findAll();
     }
 
+    @GetMapping("/privada")
+    public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
+        return this.solicitudesEliminacionService.findSinProcesar();
+    }
+
     @GetMapping("/publica/{id}")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
