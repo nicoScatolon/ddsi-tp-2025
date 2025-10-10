@@ -1,8 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="gestion-hechos">
-    <section>
+    <section id="hechos" class="content-section">
+        <h2>Gestión de Hechos</h2>
 
+        <!-- Tabs para moderación -->
+        <div class="moderation-panel">
+            <div class="moderation-tabs" role="tablist">
+                <button class="mod-tab" th:classappend="${estado == 'PENDIENTE'} ? ' active'"
+                        th:href="@{/admin/hechos(estado='PENDIENTE')}">Peticiones — Pendientes</button>
+                <button class="mod-tab" th:classappend="${estado == 'MODIFICADO'} ? ' active'"
+                        th:href="@{/admin/hechos(estado='RECHAZADO')}">Peticiones — Rechazados</button>
+            </div>
+
+            <div id="moderacion-hechos" class="moderacion-container">
+                <div th:if="${#lists.isEmpty(hechos)}">
+                    <p>No hay hechos pendientes.</p>
+                </div>
+
+                <div th:each="hecho : ${hechos}" class="solicitud-card">
+                    <div class="solicitud-info">
+                        <span><strong>ID:</strong> <span th:text="${hecho.id}">1</span></span>
+                        <span><strong>ID Usuario:</strong> <span th:text="${hecho.contribuyenteId}">999</span></span>
+                        <span><strong>Fecha:</strong> <span th:text="${#temporals.format(hecho.fechaDeCarga, 'yyyy-MM-dd')}">2025-09-01</span></span>
+                    </div>
+
+                    <div class="solicitud-razon">
+                        <strong>Título:</strong> <span th:text="${hecho.titulo}">Hecho ejemplo</span>
+                    </div>
+
+                    <div class="solicitud-actions-row">
+                        <a th:href="@{'/admin/hechos/' + ${hecho.id}}" class="btn">Ver Detalle</a>
+                        <div class="solicitud-actions">
+                            <button type="button" class="accept">Aceptar</button>
+                            <button type="button" class="reject">Rechazar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </th:block>
 </html>

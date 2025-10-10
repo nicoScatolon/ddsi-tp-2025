@@ -1,11 +1,14 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminPanelController {
     private final IAgregadorService agregadorService;
+    private final IFuenteDinamicaService fuenteDinamicaService;
 
     @GetMapping
     public String adminPanel(){
@@ -43,8 +47,12 @@ public class AdminPanelController {
     }
 
     @GetMapping("/hechos")
-    public String gestionHechos(Model model) {
+    public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model) {
+        if (estado == null) {estado = EstadoHecho.PENDIENTE;}
+        List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamica(estado);
+
         model.addAttribute("titulo", "Gestión de Hechos");
+        model.addAttribute("hechos", hechos);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "gestion-hechos");
