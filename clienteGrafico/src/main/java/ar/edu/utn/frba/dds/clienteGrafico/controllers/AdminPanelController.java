@@ -1,15 +1,20 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
+import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminPanelController {
+    private final IAgregadorService agregadorService;
+
     @GetMapping
     public String adminPanel(){
         return "redirect:/admin/hechos";
@@ -53,6 +58,7 @@ public class AdminPanelController {
 
     @GetMapping("/solicitudes")
     public String solicitudesEliminacion(Model model) {
+
         model.addAttribute("titulo", "Gestión de Solicitudes Eliminación");
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);

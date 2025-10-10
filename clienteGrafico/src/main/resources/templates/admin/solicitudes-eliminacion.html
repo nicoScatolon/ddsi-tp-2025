@@ -1,8 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<th:block th:fragment="adminContent">
-    <section>
+<th:block th:fragment="solicitudes-eliminacion">
+    <section id="solicitudes" class="content-section">
+        <h1>Solicitudes de Eliminación</h1>
+        <div class="solicitudes-container" id="solicitudes-list">
 
+            <!-- Si la lista está vacía -->
+            <p th:if="${#lists.isEmpty(solicitudes)}">No hay solicitudes pendientes.</p>
+
+            <!-- Si hay solicitudes -->
+            <div th:each="solicitud : ${solicitudes}" class="solicitud-card">
+
+                <div class="solicitud-info">
+                    <span><strong>ID:</strong> <span th:text="${solicitud.id}"></span></span>
+                    <span><strong>Nombre:</strong>
+                        <span th:text="${solicitud.nombre}"></span>
+                        <span th:text="${solicitud.apellido}"></span>
+                    </span>
+                    <span><strong>Fecha:</strong> <span th:text="${solicitud.fecha}"></span></span>
+                </div>
+
+                <div class="solicitud-razon">
+                    <strong>Razón:</strong>
+                    <span th:text="${solicitud.razon}"></span>
+                </div>
+
+                <div class="solicitud-actions-row">
+                    <a th:href="@{'/hechos/' + ${solicitud.hechoId}}" class="btn">
+                        Ver Hecho
+                    </a>
+
+                    <div class="solicitud-actions">
+                        <form th:action="@{'/solicitudes/' + ${solicitud.id} + '/aceptar'}" method="post" style="display:inline">
+                            <button type="submit" class="accept">Aceptar</button>
+                        </form>
+                        <form th:action="@{'/solicitudes/' + ${solicitud.id} + '/rechazar'}" method="post" style="display:inline">
+                            <button type="submit" class="reject">Rechazar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </th:block>
 </html>
