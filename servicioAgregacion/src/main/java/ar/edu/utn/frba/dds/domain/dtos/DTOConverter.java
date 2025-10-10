@@ -120,6 +120,10 @@ public class DTOConverter {
                 .build();
     }
 
+    public static List<FuentePreviewOutputDTO> convertirListaFuentePreviewOutputDTO(List<Fuente> fuente) {
+        return fuente.stream().map(DTOConverter::convertirFuentePreviewOutputDTO).toList();
+    }
+
     // FUENTE INPUT
 
     public static Fuente fuenteOutputDTOToFuente(FuenteInputDTO fuenteDTO) {
@@ -264,6 +268,8 @@ public class DTOConverter {
                 .titulo(coleccion.getTitulo())
                 .descripcion(coleccion.getDescripcion())
                 .handle(coleccion.getHandle())
+                .algoritmoCurado(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
+                .fuentes(DTOConverter.convertirListaFuentePreviewOutputDTO(coleccion.getListaFuentes()))
                 .build();
     }
 

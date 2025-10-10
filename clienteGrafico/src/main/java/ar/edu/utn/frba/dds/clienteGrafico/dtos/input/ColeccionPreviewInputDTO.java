@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,6 +14,6 @@ public class ColeccionPreviewInputDTO {
     private String handle;
     private String titulo;
     private String descripcion;
-    // tipo de curacion
-    // lista fuentes
+    private AlgoritmoConsensoDTO algoritmoCurado;
+    private List<FuenteInputDTO> fuentes;
 }

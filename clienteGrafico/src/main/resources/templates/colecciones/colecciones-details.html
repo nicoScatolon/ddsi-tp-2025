@@ -11,8 +11,8 @@
 
       <!-- Info de la colección -->
       <div class="collection-header">
-        <h1 id="collection-title">Nombre de la Colección</h1>
-        <p id="collection-description">Descripción de la colección...</p>
+        <h1 id="collection-title" th:text="${coleccion.titulo}">Nombre de la Colección</h1>
+        <p id="collection-description" th:text="${coleccion.descripcion}" >Descripción de la colección...</p>
       </div>
 
       <!-- BOX FILTROS -->
@@ -71,9 +71,11 @@
             <label for="fuenteId">Fuente:</label>
             <select id="fuenteId" name="fuenteId">
               <option value="">-- Seleccionar fuente --</option>
-              <option value="1">Fuente 1</option>
-              <option value="2">Fuente 2</option>
-              <option value="3">Fuente 3</option>
+              <option th:each="fuente : ${coleccion.fuentes}"
+                      th:value="${fuente.fuenteId}"
+                      th:text="${fuente.nombre}"
+                      th:selected="${fuente.fuenteId == filtros.fuenteId}">
+              </option>
             </select>
           </div>
 
