@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPrevie
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -46,6 +47,16 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .retrieve()
                 .bodyToFlux(HechoDinamicaInputDTO.class)
                 .collectList()
+                .block();
+    }
+
+    @Override
+    public void enviarRevisionHechoDinamica(RevisionHechoInputDTO revisionHecho, Long adminId) {
+        webClient.post()
+                .uri("/api/fuenteDinamica/hechos/admin/{adminId}", adminId)
+                .bodyValue(revisionHecho)
+                .retrieve()
+                .toBodilessEntity()
                 .block();
     }
 

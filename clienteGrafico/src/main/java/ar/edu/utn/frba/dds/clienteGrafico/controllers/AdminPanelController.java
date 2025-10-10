@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
@@ -57,6 +58,13 @@ public class AdminPanelController {
         model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "gestion-hechos");
         return "admin/panel-base";
+    }
+
+    @PostMapping("/hechos")
+    public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho){
+        //TODO obtener id admin
+        this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, 10L);
+        return "redirect:/admin/hechos";
     }
 
     @GetMapping("/colecciones")

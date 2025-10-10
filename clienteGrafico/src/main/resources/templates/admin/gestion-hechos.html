@@ -32,8 +32,18 @@
                     <div class="solicitud-actions-row">
                         <a th:href="@{'/admin/hechos/' + ${hecho.id}}" class="btn">Ver Detalle</a>
                         <div class="solicitud-actions">
-                            <button type="button" class="accept">Aceptar</button>
-                            <button type="button" class="reject">Rechazar</button>
+                            <form th:action="@{/admin/hechos}" method="post">
+                                <input type="hidden" name="idHecho" th:value="${hecho.id}" />
+                                <input type="hidden" name="nuevoEstado" value="ACEPTADO" />
+                                <input type="hidden" name="sugerencia" value="" />
+                                <button type="submit" class="accept">Aceptar</button>
+                            </form>
+                            <form th:action="@{/admin/hechos}" method="post">
+                                <input type="hidden" name="idHecho" th:value="${hecho.id}" />
+                                <input type="hidden" name="nuevoEstado" value="RECHAZADO" />
+                                <input type="hidden" name="sugerencia" value="" />
+                                <button type="submit" class="reject">Rechazar</button>
+                            </form>
                         </div>
                     </div>
                 </div>
