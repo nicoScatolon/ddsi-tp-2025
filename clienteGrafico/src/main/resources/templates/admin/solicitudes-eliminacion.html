@@ -38,6 +38,7 @@
                     <div class="solicitud-actions">
                         <form th:action="@{/admin/solicitudes/aceptar}" method="post">
                             <input type="hidden" name="hechoId" th:value="${solicitud.hecho.id}" />
+                            <input type="hidden" name="idSolicitud" th:value="${solicitud.id}" />
                             <input type="hidden" name="razonDeEliminacion" th:value="${solicitud.razonDeEliminacion}" />
                             <input type="hidden" name="fechaCreacion" th:value="${solicitud.fechaCreacion}" />
                             <input type="hidden" name="idCreador" th:value="${solicitud.idCreador}" />
@@ -45,6 +46,7 @@
                         </form>
                         <form th:action="@{/admin/solicitudes/rechazar}" method="post">
                             <input type="hidden" name="hechoId" th:value="${solicitud.hecho.id}" />
+                            <input type="hidden" name="idSolicitud" th:value="${solicitud.id}" />
                             <input type="hidden" name="razonDeEliminacion" th:value="${solicitud.razonDeEliminacion}" />
                             <input type="hidden" name="fechaCreacion" th:value="${solicitud.fechaCreacion}" />
                             <input type="hidden" name="idCreador" th:value="${solicitud.idCreador}" />

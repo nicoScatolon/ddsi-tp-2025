@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolicitudEliminarHechoOutputDTO {
+    private Long idSolicitud;
     private String razonDeEliminacion;
     private Long hechoId;
     private LocalDateTime fechaCreacion;
