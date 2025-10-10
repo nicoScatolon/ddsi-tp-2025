@@ -12,7 +12,7 @@ public interface ISolicitudesEliminacionRepository extends JpaRepository<Solicit
     @Query("SELECT s FROM SolicitudEliminarHecho s WHERE s.eliminada = false")
     List<SolicitudEliminarHecho> findActives();
 
-
+    SolicitudEliminarHecho findByHechoId(Long hechoId);
+    List<SolicitudEliminarHecho> findAllByHechoId(Long hechoId);
     List<SolicitudEliminarHecho> findByEstado(EstadoDeSolicitud estado);
-
 }
