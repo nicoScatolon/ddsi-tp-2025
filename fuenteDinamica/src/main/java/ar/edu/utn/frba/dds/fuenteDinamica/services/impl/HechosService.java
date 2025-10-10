@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
@@ -11,7 +12,9 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,13 +35,23 @@ public class HechosService implements IHechosService {
     private Long diasValidosModificacion;
 
     @Override
-    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
-        if (fechaDeCarga == null) {
-            return this.hechosRepository.findHechoByEstado(EstadoHecho.ACEPTADO).stream()
+    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado) {
+        if (fechaDeCarga == null && estado == null) {
+            return this.hechosRepository.findAll().stream()
                     .map(this::hechoOutputDTO)
                     .toList();
         }
-        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(EstadoHecho.ACEPTADO, fechaDeCarga).stream()
+        if (fechaDeCarga == null) {
+            return this.hechosRepository.findHechoByEstado(estado).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        if (estado == null) {
+            return this.hechosRepository.findAllByFechaDeCargaAfter(fechaDeCarga).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(estado, fechaDeCarga).stream()
                 .map(this::hechoOutputDTO)
                 .toList();
     }
@@ -51,6 +64,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
+    @Transactional
     public Hecho modificarHecho(HechoInputDTO hechoInputDTO) {
         Optional<Hecho> optionalHechoGuardado = this.hechosRepository.findById(hechoInputDTO.getId());
         Hecho hechoNuevo = hechoInputDTO(hechoInputDTO);
@@ -70,19 +84,39 @@ public class HechosService implements IHechosService {
         }
     }
 
+    public List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado) {
+        if (estado == null) {
+            return this.hechosRepository.findAllByContribuyenteId(userId).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        return this.hechosRepository.findAllByContribuyenteIdAndEstado(userId, estado).stream()
+                .map(this::hechoOutputDTO)
+                .toList();
+    }
+
     @Override
-    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
+    @Transactional
+    public ResponseEntity<HechoOutputDTO> revisarHecho(Long idAdmin, RevisionHechoInputDTO revisionHechoDTO) {
+        Long idHecho = revisionHechoDTO.getIdHecho();
+        EstadoHecho nuevoEstado = revisionHechoDTO.getNuevoEstado();
+        String sugerencia = revisionHechoDTO.getSugerencia();
+
         Optional<Hecho> optionalHecho = this.hechosRepository.findById(idHecho);
         if (optionalHecho.isPresent()) {
             Hecho hecho = optionalHecho.get();
             hecho.serRevisado(idAdmin, nuevoEstado, sugerencia);
             this.hechosRepository.save(hecho);
-            return hecho;
+            return ResponseEntity.ok(hechoOutputDTO(hecho));
         }
         else {
-            return null; //TODO responder 404
+            return ResponseEntity.notFound().build();
         }
     }
+
+    // API privada //
+
+
 
     //Metodos privados
 
@@ -121,6 +155,7 @@ public class HechosService implements IHechosService {
                 .cargadoAnonimamente(hecho.getCargadoAnonimamente())
                 .contribuyenteId(hecho.getContribuyenteId())
                 .estado(hecho.getEstado())
+                .sugerencia(hecho.getSugerencia())
                 .build();
     }
 

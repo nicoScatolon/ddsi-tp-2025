@@ -1,11 +1,14 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -33,11 +36,11 @@ public class HechosController {
 
     @GetMapping
     public List<HechoOutputDTO> obtenerHechos(
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga)
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga,
+            @RequestParam(required = false) EstadoHecho estado)
     {
         // formato fecha: YYYY-MM-DDThh:mm:ss --> ejemplo: 2025-10-07T18:37:00
-        return hechosService.getHechos(fechaDeCarga);
+        return hechosService.getHechos(fechaDeCarga, estado);
     }
 
     @PostMapping
@@ -65,6 +68,18 @@ public class HechosController {
         catch (ModificacionNoPermitidaException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<HechoOutputDTO> obtenerHechosUsuario(
+            @PathVariable Long userId,
+            @RequestParam(required = false) EstadoHecho estado) {
+        return this.hechosService.getHechosUsuario(userId, estado);
+    }
+
+    @PostMapping("/admin/{adminId}")
+    public ResponseEntity<HechoOutputDTO> revisarHechoAdmin(@PathVariable Long adminId, @RequestBody RevisionHechoInputDTO revisionHechoInputDTO) {
+        return this.hechosService.revisarHecho(adminId, revisionHechoInputDTO);
     }
 
     // --- Test --- //
