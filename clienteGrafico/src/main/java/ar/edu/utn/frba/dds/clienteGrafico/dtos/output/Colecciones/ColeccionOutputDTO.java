@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.AlgoritmoConsensoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +17,5 @@ public class ColeccionOutputDTO {
     private String handle;
     private String titulo;
     private String descripcion;
-    private AlgoritmoConsensoDTO algoritmoConsenso;
+    private AlgoritmoConcensoOutputDTO algoritmoConsenso;
 }

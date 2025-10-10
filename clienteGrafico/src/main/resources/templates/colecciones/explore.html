@@ -99,9 +99,24 @@
         </div>
 
     </section>
-
+    <a href="/colecciones/create" class="fab-create" aria-label="Crear colección">
+        <i class="fas fa-plus"></i>
+    </a>
 </div>
 <th:block th:fragment="jsExtra">
+    <script>
+        (function addFavicon() {
+            const existing = document.querySelector('link[rel="icon"]');
+            if (existing) existing.href = "icon.ico";
+            else {
+                const link = document.createElement("link");
+                link.rel = "icon";
+                link.href = "icon.ico";
+                document.head.appendChild(link);
+            }
+        })();
+
+    </script>
 </th:block>
 
 </html>

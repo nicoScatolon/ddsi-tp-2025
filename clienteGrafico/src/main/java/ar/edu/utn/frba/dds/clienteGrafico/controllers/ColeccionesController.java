@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.ColeccionPreviewInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.HechosFilterInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.AlgoritmoConcensoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -62,4 +63,31 @@ public class ColeccionesController {
         return "/colecciones/colecciones-details";
     }
 
+    @GetMapping("/create")
+    public String crearColeccion(Model model) {
+        ColeccionOutputDTO coleccionDTO = instanciarColeccionOutput();
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+
+        model.addAttribute("titulo", "Crear Coleccion");
+        model.addAttribute("coleccionDTO", coleccionDTO);
+        model.addAttribute("fuentes", fuentes);
+        model.addAttribute("rol", 2);
+        model.addAttribute("logeado", 1);
+
+        return "/colecciones/create";
+    }
+
+    @PostMapping("/create") public String crearColeccion(
+            @ModelAttribute ColeccionOutputDTO coleccionDTO) {
+
+        return "redirect:/colecciones";
+    }
+
+    private ColeccionOutputDTO instanciarColeccionOutput() {
+        return ColeccionOutputDTO.builder()
+                .listaCriterios(new HashSet<>())
+                .listaIdsFuentes(new HashSet<>())
+                .algoritmoConsenso(new AlgoritmoConcensoOutputDTO())
+                .build();
+    }
 }
