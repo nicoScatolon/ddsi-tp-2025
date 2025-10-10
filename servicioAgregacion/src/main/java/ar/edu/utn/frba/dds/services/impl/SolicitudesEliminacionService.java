@@ -89,14 +89,9 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.getById(solicitudDTO.getSolicitud().getHechoId());
+        SolicitudEliminarHecho solicitud = repository.findByHechoId(solicitudDTO.getSolicitud().getHechoId());
         if (solicitud == null) {
             solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
-        }
-
-
-        if (EstadoDeSolicitud.PENDIENTE.equals(solicitud.getEstado())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         if (solicitudDTO.getAdministradorId() == null) {
@@ -105,6 +100,9 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
         if (aceptar) {
             solicitud.serAceptada(solicitudDTO.getAdministradorId());
+            List<SolicitudEliminarHecho> solicitudesARechazar = repository.findAllByHechoId(solicitudDTO.getSolicitud().getHechoId());
+            solicitudesARechazar.forEach(solicitudARechazar -> {solicitudARechazar.serRechazada(solicitudDTO.getAdministradorId());});
+
         } else {
             solicitud.serRechazada(solicitudDTO.getAdministradorId());
         }
