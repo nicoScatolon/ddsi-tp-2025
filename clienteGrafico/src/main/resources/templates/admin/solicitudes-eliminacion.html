@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="solicitudes-eliminacion">
     <section id="solicitudes" class="content-section">
-        <h1>Solicitudes de Eliminación</h1>
         <div class="solicitudes-container" id="solicitudes-list">
 
             <!-- Si la lista está vacía -->
@@ -14,27 +13,32 @@
                 <div class="solicitud-info">
                     <span><strong>ID:</strong> <span th:text="${solicitud.id}"></span></span>
                     <span><strong>Nombre:</strong>
-                        <span th:text="${solicitud.nombre}"></span>
-                        <span th:text="${solicitud.apellido}"></span>
+                        <!-- <span th:text="${solicitud.nombre}"></span>
+                        <span th:text="${solicitud.apellido}"></span>-->
                     </span>
-                    <span><strong>Fecha:</strong> <span th:text="${solicitud.fecha}"></span></span>
+                    <span class="fecha-hora">
+                        <strong>Fecha:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'yyyy-MM-dd')}"></span>
+                        <strong>Hora:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'HH:mm:ss')}"></span>
+                    </span>
                 </div>
 
                 <div class="solicitud-razon">
                     <strong>Razón:</strong>
-                    <span th:text="${solicitud.razon}"></span>
+                    <span th:text="${solicitud.razonDeEliminacion}"></span>
                 </div>
 
                 <div class="solicitud-actions-row">
-                    <a th:href="@{'/hechos/' + ${solicitud.hechoId}}" class="btn">
+                    <a th:href="@{'/hechos/' + ${solicitud.hecho.id}}" class="btn">
                         Ver Hecho
                     </a>
 
                     <div class="solicitud-actions">
-                        <form th:action="@{'/solicitudes/' + ${solicitud.id} + '/aceptar'}" method="post" style="display:inline">
+                        <form th:action="@{/admin/solicitudes/aceptar}" th:object="${solicitud}" method="post" style="display:inline">
+                            <input type="hidden" th:field="*{hecho.id}" />
                             <button type="submit" class="accept">Aceptar</button>
                         </form>
-                        <form th:action="@{'/solicitudes/' + ${solicitud.id} + '/rechazar'}" method="post" style="display:inline">
+                        <form th:action="@{/admin/solicitudes/rechazar}" th:object="${solicitud}" method="post" style="display:inline">
+                            <input type="hidden" th:field="*{hecho.id}" />
                             <button type="submit" class="reject">Rechazar</button>
                         </form>
                     </div>

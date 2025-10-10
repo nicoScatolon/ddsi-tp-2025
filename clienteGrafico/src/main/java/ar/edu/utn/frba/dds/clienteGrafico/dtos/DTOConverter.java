@@ -103,4 +103,20 @@ public class DTOConverter {
                 .hechoId(hechoId)
                 .build();
     }
+
+    public static SolicitudEliminarHechoOutputDTO convertirSolicitudEliminacion(SolicitudEliminarHechoInputDTO solInputDTO){
+        return SolicitudEliminarHechoOutputDTO.builder()
+                .fechaCreacion(solInputDTO.getFechaCreacion())
+                .razonDeEliminacion(solInputDTO.getRazonDeEliminacion())
+                .idCreador(solInputDTO.getIdCreador())
+                .hechoId(solInputDTO.getHecho().getId())
+                .build();
+    }
+
+    public static ProcesarSolicitudOutputDTO convertirProcesarSolicitudOutputDTO(SolicitudEliminarHechoInputDTO solInputDTO, Long idAdmin) {
+        return ProcesarSolicitudOutputDTO.builder()
+                .administradorId(idAdmin)
+                .solicitud(DTOConverter.convertirSolicitudEliminacion(solInputDTO))
+                .build();
+    }
 }
