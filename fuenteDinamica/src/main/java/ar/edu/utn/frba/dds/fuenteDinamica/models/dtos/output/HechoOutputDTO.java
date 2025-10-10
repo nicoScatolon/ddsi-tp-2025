@@ -28,5 +28,6 @@ public class HechoOutputDTO {
     private List<ContenidoMultimedia> contenidoMultimedia;
     private Long contribuyenteId;
     private EstadoHecho estado;
+    private String sugerencia;
     private Boolean cargadoAnonimamente;
 }
