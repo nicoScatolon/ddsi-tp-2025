@@ -219,12 +219,12 @@ public class DTOConverter {
 
     // SOLICITUD ELIMINACION OUTPUT
 
-    public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud) {
+    public static SolicitudEliminarHechoOutputDTO solicitudEliminarHechoOutputDTO(SolicitudEliminarHecho solicitud, Contribuyente contribuyente) {
         return SolicitudEliminarHechoOutputDTO
                 .builder()
                 .hecho(DTOConverter.convertirHechoOutputDTO(solicitud.getHecho()))
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
-                .idAdministrador(solicitud.getIdAdministrador())
+                .idCreador(solicitud.getIdCreador())
                 .fechaCreacion(solicitud.getFechaCreacion())
                 .build();
     }
