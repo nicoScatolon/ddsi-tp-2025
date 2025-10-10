@@ -1,0 +1,40 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/admin-panel.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><h2>Panel Administración</h2></div>
+        <ul class="sidebar-menu">
+            <li th:classappend="${contentTemplate == 'actividad'} ? ' active'" class="menu-item">
+                <a href="/admin/actividad">Resumen Actividad</a>
+            </li>
+            <li th:classappend="${contentTemplate == 'importar-hechos'} ? ' active'" class="menu-item">
+                <a href="/admin/importar">Importar Hechos</a>
+            </li>
+            <li th:classappend="${contentTemplate == 'gestion-hechos'} ? ' active'" class="menu-item">
+                <a href="/admin/hechos">Gestión de Hechos</a>
+            </li>
+            <li th:classappend="${contentTemplate == 'gestion-colecciones'} ? ' active'" class="menu-item">
+                <a href="/admin/colecciones">Gestión de Colecciones</a>
+            </li>
+            <li th:classappend="${contentTemplate == 'solicitudes-eliminacion'} ? ' active'" class="menu-item">
+                <a href="/admin/solicitudes">Solicitudes de Eliminación</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="panel-wrapper">
+        <div class="panel-card">
+        <h1 th:text="${titulo}"></h1>
+            <div th:replace="~{'admin/' + ${contentTemplate} :: adminContent}"></div>
+        </div>
+    </div>
+</div>
+
+<th:block th:fragment="jsExtra">
+</th:block>
+
+</html>
