@@ -1,0 +1,341 @@
+/* ===========================================================
+   collection-form.css
+   Scoped styles para Create / Edit (no tocan navbar ni globals)
+   Requiere: <main class="collection-form-page"> ... </main>
+   =========================================================== */
+
+.collection-form-page {
+    /* variables locales (no afectan :root global) */
+    --cfp-primary: #2F60F4;
+    --cfp-primary-600: #2351d6;
+    --cfp-bg: #E5ECFF;
+    --cfp-muted: #6b7280;
+    --cfp-card-bg: #ffffff;
+    --cfp-shadow: 0 6px 20px rgba(2,6,23,0.06);
+    --cfp-radius-lg: 12px;
+    --cfp-radius-md: 8px;
+    --cfp-transition: 180ms cubic-bezier(.2,.9,.2,1);
+    --cfp-max-width: 980px;
+}
+
+/* =========================
+   Layout / contenedor
+   ========================= */
+.collection-form-page,
+.collection-form-page main,
+.collection-form-page > .card {
+    box-sizing: border-box;
+}
+
+.collection-form-page main {
+    max-width: var(--cfp-max-width);
+    margin: 4rem auto;
+    padding: 1.25rem;
+    background: transparent; /* respetamos background global */
+}
+
+.collection-form-page .card {
+    background: var(--cfp-card-bg);
+    border-radius: var(--cfp-radius-lg);
+    padding: 1.4rem;
+    box-shadow: var(--cfp-shadow);
+    border: 1px solid rgba(15,23,42,0.03);
+    box-sizing: border-box;
+    margin: 1.25rem auto;               /* separación exterior */
+    max-width: 920px;                   /* no ocupe toda la pantalla */
+    width: calc(100% - 2rem);           /* responsivo con padding lateral */
+}
+
+/* Asegurar espacio al final (fix solicitado) */
+.collection-form-page main > .card,
+.collection-form-page .card {
+    margin-bottom: 2rem; /* separación inferior general */
+}
+.collection-form-page main > .card:last-child,
+.collection-form-page .card:last-child {
+    margin-bottom: 3rem; /* un poco más de espacio en la última card */
+}
+
+/* Titulares */
+.collection-form-page h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.collection-form-page .hint {
+    color: var(--cfp-muted);
+    font-size: 0.92rem;
+    margin-bottom: 0.6rem;
+}
+
+/* =========================
+   Form basics (scoped)
+   ========================= */
+.collection-form-page form {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+.collection-form-page label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 6px;
+    color: #0f1724;
+}
+
+.collection-form-page input[type="text"],
+.collection-form-page textarea,
+.collection-form-page select,
+.collection-form-page input[type="date"],
+.collection-form-page input[type="number"] {
+    width: 100%;
+    padding: 0.62rem 0.8rem;
+    border-radius: var(--cfp-radius-md);
+    border: 1px solid #d6dbe6;
+    font-size: 0.95rem;
+    background: #fafbff;
+    outline: none;
+    transition: box-shadow var(--cfp-transition), border-color var(--cfp-transition);
+}
+
+.collection-form-page input[type="text"]:focus,
+.collection-form-page textarea:focus,
+.collection-form-page select:focus,
+.collection-form-page input[type="date"]:focus {
+    box-shadow: 0 6px 18px rgba(47,96,244,0.08);
+    border-color: var(--cfp-primary-600);
+}
+
+.collection-form-page textarea {
+    min-height: 120px;
+    resize: vertical;
+    padding-top: 0.7rem;
+}
+
+/* Row helpers inside scope */
+.collection-form-page .row {
+    display: flex;
+    gap: 1rem;
+}
+.collection-form-page .row .col { flex: 1; }
+.collection-form-page .small { font-size: 0.85rem; color: var(--cfp-muted); }
+
+/* =========================
+   Buttons (scoped)
+   ========================= */
+.collection-form-page .btn {
+    padding: 0.55rem 0.9rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: transform 120ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    user-select: none;
+}
+.collection-form-page .btn:active { transform: translateY(1px) scale(.998); }
+.collection-form-page .btn:focus { box-shadow: 0 6px 18px rgba(47,96,244,0.12); outline: none; }
+
+.collection-form-page .btn-primary { background: var(--cfp-primary); color: #fff; }
+.collection-form-page .btn-primary:hover { background: var(--cfp-primary-600); }
+
+.collection-form-page .btn-secondary {
+    background: #fff;
+    color: var(--cfp-primary);
+    border: 1px solid var(--cfp-primary);
+}
+.collection-form-page .btn-secondary:hover { background: #f6faff; }
+
+.collection-form-page .btn-danger {
+    background: #ef4444;
+    color: #fff;
+    transition: transform 120ms ease, background-color 160ms ease;
+}
+.collection-form-page .btn-danger:hover {
+    transform: translateY(-1px) scale(1.002); /* se “eleva” */
+    background: #dc2626; /* rojo más oscuro pero cercano al original */
+}
+
+
+.collection-form-page .btn-secondary {
+    background: #fff;
+    color: #2F60F4; /* color primario */
+    border: 1px solid #2F60F4;
+    transition: transform 120ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.collection-form-page .btn-secondary:hover {
+    transform: translateY(-1px) scale(1.002); /* se eleva */
+    background: #f0f5ff; /* ligeramente más azul/blanco */
+    color: #2351d6; /* un azul más oscuro */
+}
+
+
+/* =========================
+   Toast (scoped)
+   ========================= */
+.collection-form-page .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
+    background: #111827;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    display: none;
+    z-index: 99999;
+    font-weight: 600;
+    box-shadow: 0 6px 24px rgba(2,6,23,0.18);
+}
+
+/* =========================
+   Fuentes multi-select (scoped)
+   ========================= */
+.collection-form-page .fuentes-selector { position: relative; }
+.collection-form-page .fuentes-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.62rem 0.75rem;
+    border-radius: var(--cfp-radius-md);
+    background: #fff;
+    border: 1px solid #d6dbe6;
+    cursor: pointer;
+    transition: box-shadow var(--cfp-transition), transform 120ms ease;
+}
+.collection-form-page .fuentes-toggle:focus {
+    box-shadow: 0 8px 24px rgba(47,96,244,0.06);
+    outline: none;
+}
+
+/* panel desplegable */
+.collection-form-page .fuentes-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 12px 36px rgba(2,6,23,0.08);
+    max-height: 280px;
+    overflow: auto;
+    border: 1px solid rgba(34, 100, 255, 0.06);
+    display: none; /* JS maneja la visibilidad inline si prefieres */
+    z-index: 80;
+    padding: 8px;
+    transition: opacity var(--cfp-transition) ease, transform var(--cfp-transition) ease;
+}
+
+.collection-form-page .fuente-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.collection-form-page .fuente-row:hover { background: #f5f9ff; }
+.collection-form-page .fuente-row input[type="checkbox"] { width: 16px; height: 16px; }
+.collection-form-page .fuente-label { flex: 1; color: #0f1724; font-weight: 600; }
+
+/* chips */
+.collection-form-page .fuentes-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.collection-form-page .chip {
+    background: linear-gradient(180deg,#f1f6ff,#eef6ff);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    border: 1px solid rgba(47,96,244,0.06);
+}
+.collection-form-page .chip button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: rgba(15,23,42,0.6);
+}
+.collection-form-page .chip button:hover { background: rgba(0,0,0,0.04); }
+
+/* =========================
+   Criterios (scoped)
+   ========================= */
+.collection-form-page .criterios-area { display: flex; flex-direction: column; gap: 10px; }
+.collection-form-page .criterio-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.collection-form-page .criterio-controls select { min-width: 200px; }
+
+.collection-form-page .criterio-card {
+    background: linear-gradient(180deg,#fbfdff,#fcfeff);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid rgba(34, 100, 255, 0.04);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+}
+.collection-form-page .criterio-card h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f1724;
+}
+.collection-form-page .criterio-params {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+.collection-form-page .criterio-card .btn { padding: 6px 8px; font-size: 0.85rem; border-radius: 8px; }
+.collection-form-page .criterio-card .btn + .btn { margin-left: 6px; }
+
+/* spacing */
+.collection-form-page .fuentes-chips,
+.collection-form-page .criterio-controls { margin-bottom: 4px; }
+
+/* =========================
+   Accessibility helpers (scoped)
+   ========================= */
+.collection-form-page [role="button"] { cursor: pointer; }
+.collection-form-page [aria-hidden="true"] { visibility: hidden; opacity: 0; pointer-events: none; }
+
+/* =========================
+   Responsive (scoped)
+   ========================= */
+@media (max-width: 900px) {
+    .collection-form-page { padding: 1rem; }
+    .collection-form-page .criterio-params {
+        grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
+    }
+}
+@media (max-width: 600px) {
+    .collection-form-page .row { flex-direction: column; }
+    .collection-form-page .fuentes-toggle { font-size: .95rem; padding: 0.56rem; }
+}
+
+/* small polish: focus-visible (scoped) */
+.collection-form-page :focus-visible {
+    outline: 3px solid rgba(47,96,244,0.12);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Optional helper: mostrar panel vía clase .open (en vez de inline styles) */
+.collection-form-page .fuentes-panel.open { display: block; opacity: 1; transform: translateY(0); }

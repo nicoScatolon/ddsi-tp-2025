@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/colecciones/create.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <section id="create-collection">
+        <section class="card">
+            <h1>Crear Colección</h1>
+            <form th:action="@{/colecciones/create}" th:object="${coleccionDTO}" method="post" id="createCollectionForm">
+                <div>
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incidentes de tráfico" required>
+                </div>
+
+                <div>
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" rows="3" required placeholder="Descripción breve de la colección"></textarea>
+                </div>
+
+                <div>
+                    <label>Fuentes</label>
+                    <div class="fuentes-selector">
+                        <div id="fuentesToggle" class="fuentes-toggle" role="button" aria-expanded="false">
+                            Seleccionar fuentes <span id="fuentesCount" class="small">(0)</span>
+                        </div>
+
+                        <!-- Panel oculto con la lista de fuentes -->
+                        <div id="fuentesPanel" class="fuentes-panel" aria-hidden="true" style="display:none;">
+                            <!-- Thymeleaf recorre las fuentes -->
+                            <ul>
+                                <li th:each="fuente : ${fuentes}">
+                                    <label>
+                                        <input type="checkbox" class="fuente-checkbox" th:value="${fuente.fuenteId}" th:data-nombre="${fuente.nombre}" />
+                                        <span th:text="${fuente.nombre}">Fuente</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Chips que muestran las fuentes seleccionadas -->
+                        <div id="fuentesChips" class="fuentes-chips" aria-live="polite"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Criterios</label>
+                    <div class="criterios-area">
+                        <div class="criterio-controls">
+                            <select id="criterioSelect" aria-label="Seleccionar criterio">
+                                <option value="">-- escoger criterio --</option>
+                            </select>
+                            <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
+                        </div>
+
+                        <div id="criteriosContainer"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="algoritmo">Algoritmo de Consenso</label>
+                    <select id="algoritmo" name="algoritmo"></select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                </div>
+            </form>
+        </section>
+    </section>
+</div>
+<th:block th:fragment="jsExtra">
+    <script th:src="@{/js/coleccion-create.js}"></script>
+</th:block>
+</html>
