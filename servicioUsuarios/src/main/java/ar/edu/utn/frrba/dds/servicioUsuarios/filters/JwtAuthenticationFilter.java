@@ -46,6 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         // No aplicar el filtro JWT solo a los endpoints públicos de autenticación
-        return path.equals("/api/auth") || path.equals("/api/auth/refresh");
+        return path.equals("/api/auth") || path.equals("/api/auth/refresh") || path.startsWith("/api/usuarios");
     }
 }

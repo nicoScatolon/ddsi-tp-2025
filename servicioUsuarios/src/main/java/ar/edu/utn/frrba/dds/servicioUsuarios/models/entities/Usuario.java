@@ -22,14 +22,20 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
-
-    @Column(unique = true)
-    private String email;
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "contrasenia", nullable = false)
-    private String contrasenia;
+    private String password;
+
+    @Column(name = "email", unique = true)
+    private String email;
+
+    @Column(name = "nombre", nullable = false)
+    private String nombre;
+
+    @Column(name = "apellido", nullable = false)
+    private String apellido;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,7 +52,6 @@ public class Usuario {
 
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn = LocalDateTime.now();
-
 
 }
 

@@ -2,6 +2,7 @@ package ar.edu.utn.frrba.dds.servicioUsuarios.controllers;
 
 import ar.edu.utn.frrba.dds.servicioUsuarios.exceptions.NotFoundException;
 import ar.edu.utn.frrba.dds.servicioUsuarios.models.dtos.*;
+import ar.edu.utn.frrba.dds.servicioUsuarios.models.entities.Usuario;
 import ar.edu.utn.frrba.dds.servicioUsuarios.services.LoginService;
 import ar.edu.utn.frrba.dds.servicioUsuarios.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -37,11 +38,11 @@ public class AuthController {
             }
 
             // Autenticar usuario usando el LoginService
-            loginService.autenticarUsuario(username, password);
+            Usuario u = loginService.autenticar(username, password);
 
             // Generar tokens
-            String accessToken = loginService.generarAccessToken(username);
-            String refreshToken = loginService.generarRefreshToken(username);
+            String accessToken  = loginService.generarAccessToken(u);
+            String refreshToken = loginService.generarRefreshToken(u.getNombre());
 
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .accessToken(accessToken)
@@ -74,7 +75,10 @@ public class AuthController {
                 return ResponseEntity.badRequest().build();
             }
 
-            String newAccessToken = JwtUtil.generarAccessToken(username);
+
+            // Generá el access con rol/perms resolviendo el usuario adentro del servicio
+            String newAccessToken = loginService.generarAccessToken(username);
+
             TokenResponseDTO response = new TokenResponseDTO(newAccessToken, request.getRefreshToken());
 
             return ResponseEntity.ok(response);

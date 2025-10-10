@@ -16,16 +16,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("=== CONFIGURANDO SECURITY ===");
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth", "/api/auth/refresh").permitAll();
-                    auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
-                    auth.anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
+                        .requestMatchers(
+                                "/api/auth/**", "/api/usuarios/**"      // todo lo relacionado con usuarios
+                        ).permitAll()
+
+                        // Endpoints que requieren autenticación
+                        .requestMatchers("/api/auth/user/roles-permisos").authenticated()
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

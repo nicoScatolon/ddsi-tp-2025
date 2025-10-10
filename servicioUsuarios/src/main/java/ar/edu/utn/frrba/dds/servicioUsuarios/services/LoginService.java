@@ -21,39 +21,54 @@ public class LoginService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public Usuario autenticarUsuario(String username, String password) {
-        Optional<Usuario> usuarioOpt = usuariosRepository.findByNombre(username);
+    public Usuario autenticar(String nombre, String contrasenia) {
+        Optional<Usuario> usuarioOpcional = usuariosRepository.findByNombre(nombre);
 
-        if (usuarioOpt.isEmpty()) {
-            throw new NotFoundException("Usuario", username);
+        if (usuarioOpcional.isEmpty()) {
+            throw new NotFoundException("Usuario", nombre);
         }
 
-        Usuario usuario = usuarioOpt.get();
+        Usuario usuario = usuarioOpcional.get();
 
         // Verificar la contraseña usando BCrypt
-        if (!passwordEncoder.matches(password, usuario.getContrasenia())) {
-            throw new NotFoundException("Usuario", username);
+        if (!passwordEncoder.matches(contrasenia, usuario.getPassword())) {
+            throw new NotFoundException("Usuario", nombre);
         }
 
         return usuario;
     }
 
-    public String generarAccessToken(String username) {
-        return JwtUtil.generarAccessToken(username);
+    // USAR EN LOGIN: ya tenés el Usuario cargado
+    public String generarAccessToken(Usuario usuario) {
+        return JwtUtil.generarAccessToken(usuario);
     }
+
+    // USAR EN REFRESH: solo tenés el username; cargás y delegás
+    public String generarAccessToken(String username) {
+        var u = usuariosRepository.findByNombreFetchAuth(username)
+                .orElseThrow(() -> new NotFoundException("Usuario", username));
+        return JwtUtil.generarAccessToken(u);
+    }
+
+    // Nos conviene hacer esto porque en el login ya tenemos al usuario en memoria entonces es al pedo ir al repo y consultarle a la base de vuelta.
+    // Si estamos generando el access a partir del refresh si vamos a necesitar ir a buscar el usuario al repo para generar el access token
+
 
     public String generarRefreshToken(String username) {
         return JwtUtil.generarRefreshToken(username);
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
-        Usuario usuario = usuariosRepository.findByNombre(username)
-                .orElseThrow(() -> new NotFoundException("Usuario", username));
-
+        var u = getByUsername(username);
         return UserRolesPermissionsDTO.builder()
-                .username(usuario.getNombre())          // <- NO usuario.get()
-                .rol(usuario.getRol())                  // Rol (enum) único
-                .permisos(usuario.getPermisos())        // Set<Permiso>
+                .username(u.getNombre())
+                .rol(u.getRol())
+                .permisos(u.getPermisos())
                 .build();
+    }
+
+    public Usuario getByUsername(String username) {
+        return usuariosRepository.findByNombre(username)
+                .orElseThrow(() -> new NotFoundException("Usuario", username));
     }
 }

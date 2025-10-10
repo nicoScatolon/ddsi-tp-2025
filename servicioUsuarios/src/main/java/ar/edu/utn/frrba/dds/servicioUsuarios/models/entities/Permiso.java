@@ -8,7 +8,7 @@ public enum Permiso {
     VER_DETALLE_HECHO,
 
     SOLICITAR_ELIMINACION, // Visualizador y Contribuyente
-    SELECCIONAR_MODO_NAVEGACION // Visualizador y Contribuyente
+    SELECCIONAR_MODO_NAVEGACION, // Visualizador y Contribuyente
 
     // Contribuyente
     CREAR_HECHO,
