@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface ISolicitudesEliminacionService {
     List<SolicitudEliminarHechoOutputDTO> findAll();
+    List<SolicitudEliminarHechoOutputDTO> findSinProcesar();
     ResponseEntity<Void> crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador);
     ResponseEntity<Void> crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud);
     SolicitudEliminarHecho findByID(Long id);
