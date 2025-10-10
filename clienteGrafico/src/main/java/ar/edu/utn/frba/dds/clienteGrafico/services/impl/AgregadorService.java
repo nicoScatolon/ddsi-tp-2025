@@ -140,6 +140,33 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    @Override
+    public List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/privada")
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(SolicitudEliminarHechoInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO, EstadoDeSolicitud estadoDeSolicitud) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/privada/solicitud")
+                        .queryParam("accion", estadoDeSolicitud)
+                        .build()
+                )
+                .bodyValue(procesarSolicitudOutputDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
     // --- FUENTES --- //
 
     @Override
