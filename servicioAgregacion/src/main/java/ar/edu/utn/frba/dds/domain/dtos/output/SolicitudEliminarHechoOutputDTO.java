@@ -16,5 +16,5 @@ public class SolicitudEliminarHechoOutputDTO {
     private String razonDeEliminacion;
     private HechoOutputDTO hecho;
     private LocalDateTime fechaCreacion;
-    private Long idAdministrador;
+    private Long idCreador;
 }
