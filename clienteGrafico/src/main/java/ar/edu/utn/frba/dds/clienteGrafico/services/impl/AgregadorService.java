@@ -81,6 +81,36 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/publica/preview/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .bodyToMono(ColeccionPreviewInputDTO.class)
+                .block();
+    }
+
+    public List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado) {
+        HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
+        return webClient.get()
+                .uri(uriBuilder -> {
+                    UriBuilder builder = uriBuilder.path("/api/colecciones/publica/{handle}/hechos")
+                            .queryParam("curado", curado != null ? curado : false)
+                            .queryParam("page", paginaActual);
+                    aplicarFiltrosHecho(builder, filter);
+                    // Agregar los filtros como query params
+
+                    return uriBuilder.build(handle); // reemplaza {handle} en el path
+                })
+                .retrieve()
+                .bodyToFlux(HechoInputDTO.class)
+                .collectList()
+                .block(); // bloquea hasta obtener la lista
+    }
+
+
     // --- CATEGORIAS --- //
 
     public List<String> obtenerCategoriasShort(){

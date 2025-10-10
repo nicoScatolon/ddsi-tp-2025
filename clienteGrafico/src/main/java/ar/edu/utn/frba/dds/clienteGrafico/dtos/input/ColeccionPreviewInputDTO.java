@@ -12,4 +12,6 @@ public class ColeccionPreviewInputDTO {
     private String handle;
     private String titulo;
     private String descripcion;
+    // tipo de curacion
+    // lista fuentes
 }

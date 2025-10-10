@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
+import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
@@ -18,9 +19,10 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,9 @@ public class ColeccionesService implements IColeccionesService {
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
     private final ICategoriaService categoriaService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
@@ -97,32 +102,83 @@ public class ColeccionesService implements IColeccionesService {
         // Convertir el DTO en objeto de dominio
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
 
-        // Specification de base a partir del filtro
-        Specification<Hecho> specFiltro = buildHechosSpecification(hechosFilter);
+        Integer page = filterDTO.getPage();
+        if (page == null) {page = 0;}
+        Integer pageSizeLocal = pageSize; // tu pageSize definido en el service
 
-        Specification<Hecho> specCurado = (root, query, cb) -> {
-            query.distinct(true); // evita duplicados por el join
-            // Dependiendo si querés curados o no
-            String coleccionField = curado ? "listaHechosCurados" : "listaHechos";
-            Join<Hecho, Coleccion> joinColeccion = root.join(coleccionField, JoinType.INNER);
-            return cb.equal(joinColeccion.get("handle"), handle);
-        };
+        // Traer hechos usando Criteria API desde Coleccion
+        List<Hecho> hechos = findHechosColeccionConFiltros(
+                handle,
+                curado,
+                hechosFilter,
+                page,
+                pageSizeLocal
+        );
 
-        Specification<Hecho> specFinal = Specification.where(specFiltro).and(specCurado);
+        // Convertir a DTO
+        return hechos.stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .toList();
 
+    }
 
-        if (filterDTO.getPage() == null) { // no tiene pagina -> devuelvo tod0s los hechos
-            return this.hechosService.findAllSpec(specFinal, null)
-                    .stream()
-                    .map(DTOConverter::convertirHechoOutputDTO)
-                    .toList();
-        } else {
-            Pageable pageable = PageRequest.of(filterDTO.getPage(), pageSize);
-            return this.hechosService.findAllSpec(specFinal, pageable)
-                    .stream()
-                    .map(DTOConverter::convertirHechoOutputDTO)
-                    .toList();
+    private List<Hecho> findHechosColeccionConFiltros(
+            String handle,
+            Boolean curado,
+            HechoFilter hechosFilter,
+            Integer page,
+            Integer pageSize
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
+        Root<Coleccion> coleccionRoot = query.from(Coleccion.class);
+
+        Join<Coleccion, Hecho> hechosJoin = curado
+                ? coleccionRoot.join("listaHechosCurados", JoinType.INNER)
+                : coleccionRoot.join("listaHechos", JoinType.INNER);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(coleccionRoot.get("handle"), handle));
+
+        // aplicar filtros del Hecho
+        if (hechosFilter.getCategoria() != null) {
+            predicates.add(cb.equal(hechosJoin.get("categoria").get("nombre"), hechosFilter.getCategoria()));
         }
+        if (hechosFilter.getFReporteDesde() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(hechosJoin.get("fechaDeCarga"), hechosFilter.getFReporteDesde()));
+        }
+        if (hechosFilter.getFReporteHasta() != null) {
+            predicates.add(cb.lessThanOrEqualTo(hechosJoin.get("fechaDeCarga"), hechosFilter.getFReporteHasta()));
+        }
+        if (hechosFilter.getFAconDesde() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(hechosJoin.get("fechaDeOcurrencia"), hechosFilter.getFAconDesde()));
+        }
+        if (hechosFilter.getFAconHasta() != null) {
+            predicates.add(cb.lessThanOrEqualTo(hechosJoin.get("fechaDeOcurrencia"), hechosFilter.getFAconHasta()));
+        }
+        if (hechosFilter.getFuenteId() != null) {
+            predicates.add(cb.equal(hechosJoin.get("fuente").get("id"), hechosFilter.getFuenteId()));
+        }
+        if (hechosFilter.getProvincia() != null) {
+            predicates.add(cb.equal(hechosJoin.get("ubicacion").get("provincia"), hechosFilter.getProvincia()));
+        }
+        if (hechosFilter.getEtiqueta() != null && !hechosFilter.getEtiqueta().isBlank()) {
+            Join<Hecho, Etiqueta> joinEtiquetas = hechosJoin.join("etiquetas", JoinType.INNER);
+            predicates.add(cb.equal(cb.lower(joinEtiquetas.get("nombre")), hechosFilter.getEtiqueta().toLowerCase()));
+        }
+
+        query.select(hechosJoin)
+                .where(predicates.toArray(new Predicate[0]))
+                .distinct(true);
+
+        TypedQuery<Hecho> typedQuery = entityManager.createQuery(query);
+
+        if (page != null && pageSize != null) {
+            typedQuery.setFirstResult(page * pageSize);
+            typedQuery.setMaxResults(pageSize);
+        }
+
+        return typedQuery.getResultList();
     }
 
 
@@ -342,40 +398,8 @@ public class ColeccionesService implements IColeccionesService {
         return handle;
     }
 
-    public Specification<Hecho> buildHechosSpecification(HechoFilter hechosFilter) {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
 
-            if (hechosFilter.getCategoria() != null) {
-                predicates.add(cb.equal(root.get("categoria").get("nombre"), hechosFilter.getCategoria() ));
-            }
-            if (hechosFilter.getFReporteDesde() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("fechaDeCarga"), hechosFilter.getFReporteDesde()));
-            }
-            if (hechosFilter.getFReporteHasta() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("fechaDeCarga"), hechosFilter.getFReporteHasta()));
-            }
-            if (hechosFilter.getFAconDesde() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("fechaDeOcurrencia"), hechosFilter.getFAconDesde()));
-            }
-            if (hechosFilter.getFAconHasta() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("fechaDeOcurrencia"), hechosFilter.getFAconHasta()));
-            }
-            if (hechosFilter.getFuenteId() != null) {
-                predicates.add(cb.equal(root.get("fuente").get("id"), hechosFilter.getFuenteId()));
-            }
-            if (hechosFilter.getProvincia() != null) {
-                predicates.add(cb.equal(root.get("ubicacion").get("provincia"), hechosFilter.getProvincia()));
-            }
-            if (hechosFilter.getEtiqueta() != null && !hechosFilter.getEtiqueta().isBlank()) {
-                // Hacemos un JOIN entre Hecho y Etiqueta
-                Join<Object, Object> joinEtiquetas = root.join("etiquetas", JoinType.INNER);
-                predicates.add( cb.equal( cb.lower( joinEtiquetas.get("nombre") ), hechosFilter.getEtiqueta().toLowerCase() ) );
-            }
 
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-    }
 
     // --- TESTEO --- //
     @Transactional

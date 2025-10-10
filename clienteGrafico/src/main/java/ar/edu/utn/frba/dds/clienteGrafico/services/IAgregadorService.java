@@ -10,8 +10,14 @@ public interface IAgregadorService {
     HechoInputDTO getHechoById(Long id);
     List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filter);
     List<HechoMapaInputDTO> getHechosMapa();
+
     List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual);
+    ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle);
+    List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado);
+
     List<String> obtenerCategoriasShort();
+
     ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion);
+
     List<FuenteInputDTO> getFuentesPreview();
 }

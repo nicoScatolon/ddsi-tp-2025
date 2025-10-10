@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -32,14 +33,21 @@ public class ColeccionesController {
         model.addAttribute("logeado", 1);
         return "/colecciones/explore";
     }
-    /*
+
     @GetMapping("/{handle}")
-    public String detallesColeccion(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, @PathVariable String handle, Model model) {
-        ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreview(handle);
-        List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(paginaActual);
+    public String detallesColeccion(@ModelAttribute HechosFilterInputDTO filtros,
+                                    @RequestParam(value = "page", defaultValue = "0") int paginaActual,
+                                    @RequestParam(value = "curado", defaultValue = "false") Boolean curado,
+                                    @PathVariable String handle,
+                                    Model model) {
+        ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreviewIndividual(handle);
+        List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(handle, paginaActual, filtros, curado);
 
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
+        }
+        if (hechosColeccion == null) {
+            hechosColeccion = new ArrayList<>();
         }
 
         model.addAttribute("titulo", String.format("Coleccion - %s", coleccion.getHandle()));
@@ -47,9 +55,11 @@ public class ColeccionesController {
         model.addAttribute("hechos", hechosColeccion);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
+        model.addAttribute("curado", curado);
+        model.addAttribute("filtros", filtros);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "/colecciones/colecciones-details";
     }
-    */
+
 }
