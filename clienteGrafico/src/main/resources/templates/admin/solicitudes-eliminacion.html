@@ -11,7 +11,8 @@
             <div th:each="solicitud : ${solicitudes}" class="solicitud-card">
 
                 <div class="solicitud-info">
-                    <span><strong>ID:</strong> <span th:text="${solicitud.id}"></span></span>
+                    <span><strong>ID Solicitud:</strong> <span th:text="${solicitud.id}"></span></span>
+                    <span><strong>ID Hecho:</strong> <span th:text="${solicitud.hecho.id}"></span></span>
                     <span><strong>Nombre:</strong>
                         <!-- <span th:text="${solicitud.nombre}"></span>
                         <span th:text="${solicitud.apellido}"></span>-->
@@ -21,7 +22,9 @@
                         <strong>Hora:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'HH:mm:ss')}"></span>
                     </span>
                 </div>
-
+                <div class="titulo-hecho">
+                    <span class="titulo-text" th:text="${solicitud.hecho.titulo}"></span>
+                </div>
                 <div class="solicitud-razon">
                     <strong>Razón:</strong>
                     <span th:text="${solicitud.razonDeEliminacion}"></span>
@@ -33,12 +36,18 @@
                     </a>
 
                     <div class="solicitud-actions">
-                        <form th:action="@{/admin/solicitudes/aceptar}" th:object="${solicitud}" method="post" style="display:inline">
-                            <input type="hidden" th:field="*{hecho.id}" />
+                        <form th:action="@{/admin/solicitudes/aceptar}" method="post">
+                            <input type="hidden" name="hechoId" th:value="${solicitud.hecho.id}" />
+                            <input type="hidden" name="razonDeEliminacion" th:value="${solicitud.razonDeEliminacion}" />
+                            <input type="hidden" name="fechaCreacion" th:value="${solicitud.fechaCreacion}" />
+                            <input type="hidden" name="idCreador" th:value="${solicitud.idCreador}" />
                             <button type="submit" class="accept">Aceptar</button>
                         </form>
-                        <form th:action="@{/admin/solicitudes/rechazar}" th:object="${solicitud}" method="post" style="display:inline">
-                            <input type="hidden" th:field="*{hecho.id}" />
+                        <form th:action="@{/admin/solicitudes/rechazar}" method="post">
+                            <input type="hidden" name="hechoId" th:value="${solicitud.hecho.id}" />
+                            <input type="hidden" name="razonDeEliminacion" th:value="${solicitud.razonDeEliminacion}" />
+                            <input type="hidden" name="fechaCreacion" th:value="${solicitud.fechaCreacion}" />
+                            <input type="hidden" name="idCreador" th:value="${solicitud.idCreador}" />
                             <button type="submit" class="reject">Rechazar</button>
                         </form>
                     </div>

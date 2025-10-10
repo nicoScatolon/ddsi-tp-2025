@@ -358,6 +358,33 @@ main:has(.panel-wrapper) {
     transform: translateY(0);
 }
 
+/* ===== TÍTULO DEL HECHO ===== */
+.titulo-hecho {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+}
+
+.titulo-hecho .titulo-text {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .titulo-hecho {
+        padding: 0.75rem;
+    }
+
+    .titulo-hecho .titulo-text {
+        font-size: 0.95rem;
+    }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .solicitud-card {

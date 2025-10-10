@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ProcesarSolicitudOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -67,13 +68,12 @@ public class AdminPanelController {
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "solicitudes-eliminacion");
-        model.addAttribute("solicitud", new SolicitudEliminarHechoInputDTO());
         model.addAttribute("solicitudes", solicitudes);
         return "admin/panel-base";
     }
 
     @PostMapping("/solicitudes/aceptar")
-    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoInputDTO solicitud) {
+    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoOutputDTO solicitud) {
         //Todo obtener id admin
         ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, 17L);
         agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.ACEPTADA);
@@ -82,7 +82,7 @@ public class AdminPanelController {
     }
 
     @PostMapping("/solicitudes/rechazar")
-    public String rechazarSolicitud(@ModelAttribute  SolicitudEliminarHechoInputDTO solicitud) {
+    public String rechazarSolicitud(@ModelAttribute SolicitudEliminarHechoOutputDTO solicitud) {
         //Todo obtener id admin
         ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, 17L);
         agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.RECHAZADA);

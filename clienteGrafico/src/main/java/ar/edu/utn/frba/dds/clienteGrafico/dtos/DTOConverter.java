@@ -113,10 +113,10 @@ public class DTOConverter {
                 .build();
     }
 
-    public static ProcesarSolicitudOutputDTO convertirProcesarSolicitudOutputDTO(SolicitudEliminarHechoInputDTO solInputDTO, Long idAdmin) {
+    public static ProcesarSolicitudOutputDTO convertirProcesarSolicitudOutputDTO(SolicitudEliminarHechoOutputDTO solInputDTO, Long idAdmin) {
         return ProcesarSolicitudOutputDTO.builder()
                 .administradorId(idAdmin)
-                .solicitud(DTOConverter.convertirSolicitudEliminacion(solInputDTO))
+                .solicitud(solInputDTO)
                 .build();
-    }
+        }
 }
