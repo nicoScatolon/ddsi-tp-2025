@@ -1,10 +1,11 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.AlgoritmoConcensoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -67,12 +67,12 @@ public class ColeccionesController {
 
     @GetMapping("/create")
     public String crearColeccion(Model model) {
-        ColeccionOutputDTO coleccionDTO = instanciarColeccionOutput();
+        ColeccionFormDTO coleccionFormDTO = new ColeccionFormDTO(); // Usar el form DTO
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
 
         model.addAttribute("titulo", "Crear Coleccion");
-        model.addAttribute("coleccionDTO", coleccionDTO);
+        model.addAttribute("coleccionDTO", coleccionFormDTO); // Cambiar esto
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 2);
@@ -81,17 +81,24 @@ public class ColeccionesController {
         return "/colecciones/create";
     }
 
-    @PostMapping("/create") public String crearColeccion(
-            @ModelAttribute ColeccionOutputDTO coleccionDTO) {
-
+    @PostMapping("/create")
+    public String crearColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) {
+        // Convertir el FormDTO al DTO real
+        ColeccionOutputDTO coleccionDTO = DTOConverter.convertirFormToOutput(coleccionFormDTO);
+        agregadorService.crearColeccion(coleccionDTO);
         return "redirect:/colecciones";
     }
 
-    private ColeccionOutputDTO instanciarColeccionOutput() {
-        return ColeccionOutputDTO.builder()
-                .listaCriterios(new HashSet<>())
-                .listaIdsFuentes(new HashSet<>())
-                .algoritmoConsenso(new AlgoritmoConcensoOutputDTO())
-                .build();
+    @DeleteMapping("/{handle}")
+    public String eliminarColeccion(@PathVariable String handle) {
+        agregadorService.eliminarColeccion(handle);
+        return "redirect:/colecciones";
+    }
+
+
+    @GetMapping("/{handle}/editar")
+    public String modificarColeccion(Model model, @PathVariable String handle) {
+
+        return "/colecciones/editar";
     }
 }

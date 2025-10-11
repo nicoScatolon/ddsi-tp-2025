@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPrevie
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
@@ -72,6 +73,32 @@ public class AgregadorService implements IAgregadorService {
     }
 
     // --- COLECCIONES --- //
+
+    @Override
+    public ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/privada")
+                        .build()
+                )
+                .bodyValue(coleccionDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarColeccion(String handle) {
+        return webClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/privada/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
 
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
@@ -172,6 +199,8 @@ public class AgregadorService implements IAgregadorService {
                 .toBodilessEntity()
                 .block();
     }
+
+
 
     // --- FUENTES --- //
 

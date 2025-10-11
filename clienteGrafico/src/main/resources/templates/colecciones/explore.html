@@ -64,12 +64,17 @@
 
                     <!-- Acciones -->
                     <div th:if="${rol == 2}" class="card-actions">
-                        <button class="btn-action btn-edit">
+                        <a th:href="@{/colecciones/{handle}/edit(handle=${coleccion.handle})}" class="btn-action btn-edit">
                             Editar
-                        </button>
-                        <button class="btn-action btn-delete">
-                            Eliminar
-                        </button>
+                        </a>
+
+                        <!-- Eliminar: DELETE -->
+                        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn-action btn-delete">
+                                Eliminar
+                            </button>
+                        </form>
                     </div>
                 </a>
             </div>

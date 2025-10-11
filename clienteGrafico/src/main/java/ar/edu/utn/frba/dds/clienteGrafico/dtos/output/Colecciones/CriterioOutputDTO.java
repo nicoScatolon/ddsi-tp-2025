@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -13,5 +14,5 @@ import java.util.Map;
 @Builder
 public class CriterioOutputDTO {
     private String tipo;
-    private Map<String, String> parametros;
+    private Map<String, String> parametros = new HashMap<>();
 }

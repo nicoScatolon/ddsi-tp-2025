@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,8 @@ public interface IAgregadorService {
     List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes();
 
     ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO, EstadoDeSolicitud estadoDeSolicitud);
+
+    ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO);
+
+    ResponseEntity<Void> eliminarColeccion(String handle);
 }

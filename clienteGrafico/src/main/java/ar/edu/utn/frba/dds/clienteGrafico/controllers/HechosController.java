@@ -87,6 +87,7 @@ public class HechosController {
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
             model.addAttribute("usuario", usuario);
+            model.addAttribute("permitirEdicion",0);
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
             model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {

@@ -25,20 +25,22 @@
                             Seleccionar fuentes <span id="fuentesCount" class="small">(0)</span>
                         </div>
 
-                        <!-- Panel oculto con la lista de fuentes -->
                         <div id="fuentesPanel" class="fuentes-panel" aria-hidden="true" style="display:none;">
-                            <!-- Thymeleaf recorre las fuentes -->
                             <ul>
                                 <li th:each="fuente : ${fuentes}">
                                     <label>
-                                        <input type="checkbox" class="fuente-checkbox" th:value="${fuente.fuenteId}" th:data-nombre="${fuente.nombre}" />
+                                        <input
+                                                type="checkbox"
+                                                class="fuente-checkbox"
+                                                th:value="${fuente.fuenteId}"
+                                                th:data-nombre="${fuente.nombre}"
+                                        />
                                         <span th:text="${fuente.nombre}">Fuente</span>
                                     </label>
                                 </li>
                             </ul>
                         </div>
 
-                        <!-- Chips que muestran las fuentes seleccionadas -->
                         <div id="fuentesChips" class="fuentes-chips" aria-live="polite"></div>
                     </div>
                 </div>
@@ -60,48 +62,43 @@
                             <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
                         </div>
 
-                        <!-- plantillas ocultas (Thymeleaf las renderiza y el JS las clona) -->
-                        <!-- Select para categorías -->
                         <div id="categoriaTemplate" style="display:none;">
                             <label>Buscar categoría</label>
-                            <input type="text" name="" placeholder="Escriba para buscar..." list="listaCategorias">
+                            <input type="text" class="criterio-categoria-input" placeholder="Escriba para buscar..." list="listaCategorias">
                             <datalist id="listaCategorias">
                                 <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
                             </datalist>
                         </div>
 
-                        <!-- Select para etiquetas
                         <select id="etiquetaTemplate" style="display:none;">
                             <option value="">-- seleccionar etiqueta --</option>
                             <option th:each="et : ${etiquetas}"
                                     th:value="${et.id}"
                                     th:text="${et.nombre}"></option>
                         </select>
-                        -->
 
-                        <!-- Si querés lista de provincias, podés renderizarla igual y usarla
                         <select id="provinciaTemplate" style="display:none;">
                             <option value="">-- seleccionar provincia --</option>
                             <option th:each="prov : ${provincias}"
                                     th:value="${prov}"
                                     th:text="${prov}"></option>
                         </select>
-                        -->
 
                         <div id="criteriosContainer"></div>
                     </div>
                 </div>
 
                 <div>
-                    <label>Algoritmo de Consenso</label>
-                    <label for="algoritmo"></label><select id="algoritmo" name="algoritmoConsenso.tipo" class="form-select">
+                    <label for="algoritmoConsensoTipo">Algoritmo de Consenso</label>
+                    <select id="algoritmoConsensoTipo" th:field="*{algoritmoConsensoTipo}" class="form-select">
                         <option value="">Ninguno</option>
                         <option value="ABSOLUTO">Absoluto</option>
                         <option value="MAYORIASIMPLE">Mayoría simple</option>
                         <option value="MULTIPLEMENCION">Múltiple mención</option>
                     </select>
-
                 </div>
+
+                <div id="generatedHiddenFields" style="display:none;"></div>
 
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>

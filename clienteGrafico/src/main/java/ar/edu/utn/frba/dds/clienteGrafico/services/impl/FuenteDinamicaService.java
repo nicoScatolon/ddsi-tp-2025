@@ -27,7 +27,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     @Override
     public ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO) {
         return webClient.post()
-                .uri("/api/fuenteDinamica/hechos/pruebas")
+                .uri("/api/fuenteDinamica/hechos")
                 .contentType(MediaType.APPLICATION_JSON)            // asegurate de esto
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(hechoOutputDTO)
