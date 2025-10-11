@@ -3,7 +3,7 @@
 <div th:fragment="contenido">
 
     <th:block th:fragment="cssExtra">
-        <link rel="stylesheet" th:href="@{/css/hechosExplore.css}">
+        <link rel="stylesheet" th:href="@{/css/hechos/hechosExplore.css}">
     </th:block>
 
     <section id="explore">
@@ -11,42 +11,70 @@
             <!-- BOX FILTROS -->
             <aside class="filter-box">
                 <h2>Filtros</h2>
-                <!-- 🔽 Nuevo filtro de modo -->
-                <div class="filter-group">
-                    <label for="filter-modo">Modo de navegación:</label>
-                    <select id="filter-modo">
-                        <option value="irrestricto">Irrestricto</option>
-                        <option value="curados">Curados</option>
-                    </select>
-                </div>
+
+                <form th:action="@{/hechos}" method="get" >
+                    <!-- Provincia -->
+                    <div class="filter-group">
+                        <label for="provincia">Provincia:</label>
+                        <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires"
+                               th:value="${filtros?.provincia}">
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="filter-group">
+                        <label for="categoria">Categoría:</label>
+                        <input type="text" id="categoria" name="categoria" placeholder="Ej: Robo, Violencia..."
+                               th:value="${filtros?.categoria}">
+                    </div>
+
+                    <!-- Fechas de reporte -->
+                    <div class="filter-group">
+                        <label>Fecha de reporte:</label>
+                        <div class="date-range">
+                            <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
+                                   th:value="${#temporals.format(filtros?.fReporteDesde, 'yyyy-MM-dd')}">
+                            <input type="date" id="fReporteHasta" name="fReporteHasta" placeholder="Hasta"
+                                   th:value="${#temporals.format(filtros?.fReporteHasta, 'yyyy-MM-dd')}">
+                        </div>
+                    </div>
+
+                    <!-- Fechas de acontecimiento -->
+                    <div class="filter-group">
+                        <label>Fecha del acontecimiento:</label>
+                        <div class="date-range">
+                            <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
+                                   th:value="${#temporals.format(filtros?.fAconDesde, 'yyyy-MM-dd')}">
+                            <input type="date" id="fAconHasta" name="fAconHasta" placeholder="Hasta"
+                                   th:value="${#temporals.format(filtros?.fAconHasta, 'yyyy-MM-dd')}">
+                        </div>
+                    </div>
+
+                    <!-- Fuente -->
+                    <div class="filter-group">
+                        <label for="fuenteId">Fuente:</label>
+                        <select id="fuenteId" name="fuenteId">
+                            <option value="">-- Seleccionar fuente --</option>
+                            <option th:each="fuente : ${fuentes}"
+                                    th:value="${fuente.fuenteId}"
+                                    th:text="${fuente.nombre}"
+                                    th:selected="${fuente.fuenteId == filtros.fuenteId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Etiqueta -->
+                    <div class="filter-group">
+                        <label for="etiqueta">Etiqueta:</label>
+                        <input type="text" id="etiqueta" name="etiqueta" placeholder="Ej: Inseguridad, Tránsito..."
+                               th:value="${filtros?.etiqueta}">
+                    </div>
+
+                    <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
+
+                    <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
+                </form>
 
 
-                <div class="filter-group">
-                    <label for="filter-fecha">Fecha:</label>
-                    <input type="text" id="filter-fecha" placeholder="YYYY-MM-DD">
-                </div>
-
-                <div class="filter-group">
-                    <label for="filter-ubicacion">Ubicación:</label>
-                    <input type="text" id="filter-ubicacion" placeholder="Ej: Buenos Aires">
-                </div>
-
-                <div class="filter-group">
-                    <label for="filter-categoria">Categoría:</label>
-                    <input type="text" id="filter-categoria">
-                </div>
-
-                <div class="filter-group">
-                    <label for="filter-etiqueta">Etiqueta:</label>
-                    <input type="text" id="filter-etiqueta">
-                </div>
-
-                <div class="filter-group">
-                    <label for="filter-fuente">Fuente:</label>
-                    <input type="text" id="filter-fuente">
-                </div>
-
-                <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
 
             </aside>
 
@@ -86,21 +114,20 @@
                             <strong>📅</strong>
                             <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'yyyy-MM-dd')}">Fecha</span>
                         </p>
-                        <!--
-                        Podemos cambiarlo agregando un fuente Nombre para mostrar la fuente de origen
-                        <p th:if="${hecho.url != null && hecho.url != ''}">
-                            <strong>🌐</strong> <a th:href="${hecho.url}" th:text="${hecho.url}">Enlace</a>
+                        <p>
+                            <strong>🌐</strong>
+                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : '-'}">Fuente</span>
                         </p>
-                        -->
+
                     </div>
 
-                    <!-- 4️⃣ Imagen -->
+                    <!-- 4️⃣ Imagen
                     <div class="card-img"
-                         th:if="${hecho.contenidoMultimedia != null and #lists.isNotEmpty(hecho.contenidoMultimedia)}"
+                         th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
                          aria-hidden="true">
                         <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
                              th:alt="${hecho.titulo}"/>
-                    </div>
+                    </div> -->
 
                 </a>
 
@@ -110,7 +137,17 @@
                     <a class="pagination-arrow"
                        th:classappend="${paginaActual == 0} ? ' disabled' : ''"
                        th:onclick="${paginaActual == 0} ? 'return false;' : ''"
-                       th:href="@{/hechos(page=${paginaActual - 1})}">
+                       th:href="@{/hechos(
+                        page=${paginaActual - 1},
+                        provincia=${filtros.provincia},
+                        categoria=${filtros.categoria},
+                        fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
+                        fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
+                        fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
+                        fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
+                        fuenteId=${filtros.fuenteId},
+                        etiqueta=${filtros.etiqueta}
+                    )}">
                         ◀
                     </a>
 
@@ -121,7 +158,17 @@
                     <a class="pagination-arrow"
                        th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
                        th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
-                       th:href="@{/hechos(page=${paginaActual + 1})}">
+                       th:href="@{/hechos(
+                        page=${paginaActual + 1},
+                        provincia=${filtros.provincia},
+                        categoria=${filtros.categoria},
+                        fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
+                        fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
+                        fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
+                        fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
+                        fuenteId=${filtros.fuenteId},
+                        etiqueta=${filtros.etiqueta}
+                    )}">
                         ▶
                     </a>
 

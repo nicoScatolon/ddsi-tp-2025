@@ -1,0 +1,477 @@
+/* hecho-detail.css
+   Versión que NO sobrescribe estilos de base.css
+   Solo aplica estilos específicos para la vista de detalle del hecho
+*/
+
+/* ===== VARIABLES ESPECÍFICAS PARA HECHO-DETAIL ===== */
+#hecho-detail {
+    --card-width: 1400px;
+    --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
+    --tag-grad: linear-gradient(135deg, #6A82FB, #FC5C7D);
+    --danger-grad: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+/* ===== CARD PRINCIPAL (ancho fijo, altura flexible) ===== */
+#hecho-detail.card {
+    background: var(--white);
+    padding: 2.25rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: var(--card-width);
+    min-height: 600px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+/* ===== WRAPPER PRINCIPAL ===== */
+#hecho-detail .content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Separador vertical */
+#hecho-detail .vertical-separator {
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, #eee 10%, #eee 90%, transparent);
+    align-self: stretch;
+    flex-shrink: 0;
+}
+
+/* ===== COLUMNAS ===== */
+#hecho-detail .left-column {
+    flex: 1 1 60%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+#hecho-detail .right-column {
+    flex: 0 0 35%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ===== TITULO Y FECHA ===== */
+#hecho-detail .title-fecha h1 {
+    margin: 0;
+    font-size: 1.95rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0f1724;
+    word-wrap: break-word;
+}
+
+#hecho-detail .title-fecha .fechas {
+    margin-top: 0.5rem;
+}
+
+#hecho-detail .title-fecha .fecha,
+#hecho-detail #hecho-fecha,
+#hecho-detail .fecha-carga {
+    display: inline-block;
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* ===== SEPARADORES ===== */
+#hecho-detail .separator {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 0.8rem 0;
+}
+
+/* ===== TAGS ===== */
+#hecho-detail .categories-row {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+#hecho-detail .tags-header {
+    font-weight: 700;
+    color: #333;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+#hecho-detail .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+#hecho-detail .tags li {
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: var(--tag-grad);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(106,130,251,0.12);
+    white-space: nowrap;
+}
+
+/* ===== INFO ITEMS ===== */
+#hecho-detail .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+#hecho-detail .info-item p {
+    margin: 0;
+    color: #333;
+    line-height: 1.6;
+    font-size: 0.98rem;
+    word-wrap: break-word;
+}
+
+#hecho-detail .ubicacion,
+#hecho-detail .contribuyente {
+    color: #555;
+    font-weight: 500;
+}
+
+/* ===== MULTIMEDIA ===== */
+#hecho-detail .multimedia-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+#hecho-detail .multimedia-container {
+    display: flex;
+    gap: 0.8rem;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#hecho-detail .multimedia-container img,
+#hecho-detail .multimedia-container .multimedia-item {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform .22s ease, box-shadow .22s ease;
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+#hecho-detail .multimedia-container img:hover,
+#hecho-detail .multimedia-container .multimedia-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* placeholder multimedia */
+#hecho-detail .placeholder {
+    width: 100%;
+    height: 220px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#f8f8f8,#f1f4ff);
+    color: #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    border: 2px dashed rgba(0,0,0,0.06);
+}
+
+/* ===== MAPA ===== */
+#hecho-detail .map-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+#hecho-detail #hecho-map {
+    width: 100%;
+    height: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    background: #eaeffb;
+}
+
+/* hint para modo edición del mapa */
+#hecho-detail .map-hint {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(47,96,244,0.12);
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+/* ===== BOTONES / ACCIONES - ALINEADOS HORIZONTALMENTE ===== */
+#hecho-detail #hecho-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 1rem;
+    flex-wrap: nowrap;
+}
+
+/* Sobrescritura específica para botones dentro de hecho-actions */
+#hecho-detail #hecho-actions .btn-primary,
+#hecho-detail #hecho-actions .btn-warning,
+#hecho-detail #hecho-actions .btn-secondary,
+#hecho-detail #hecho-actions button {
+    white-space: nowrap;
+    display: inline-block;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+/* Botón warning específico para solicitar eliminación */
+#hecho-detail #hecho-actions .btn-warning {
+    background: var(--danger-grad);
+    color: white;
+    box-shadow: 0 6px 18px rgba(249,115,22,0.14);
+    border: 2px solid transparent;
+}
+
+#hecho-detail #hecho-actions .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(249,115,22,0.2);
+    background: var(--danger-grad);
+    border-color: transparent;
+}
+
+/* ===== CONTROLES DE EDICIÓN ===== */
+#hecho-detail .image-controls {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: #fbfbff;
+    border: 1px solid #f0f4ff;
+    margin-top: 0.5rem;
+}
+
+/* ===== MODAL ===== */
+#deleteModal.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#deleteModal.modal.open {
+    display: flex;
+}
+
+#deleteModal .modal-content {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 14px 50px rgba(0,0,0,0.25);
+}
+
+#deleteModal .close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.3s ease;
+}
+
+#deleteModal .close:hover {
+    color: #333;
+}
+
+#deleteModal textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    font-size: 0.95rem;
+    margin: 1rem 0;
+    font-family: inherit;
+}
+
+#deleteModal label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+#deleteModal h2 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* Botón del modal usa los estilos de base.css pero con especificidad */
+#deleteModal .btn-warning {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+/* ===== CAMPOS EDITABLES VISUAL ===== */
+#hecho-detail [contenteditable="true"] {
+    outline: 2px dashed rgba(47,96,244,0.18);
+    background: #fbfcff;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+#hecho-detail [contenteditable="true"]:focus {
+    outline: 2px solid rgba(47,96,244,0.28);
+    box-shadow: 0 6px 18px rgba(47,96,244,0.08);
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    padding: 2rem;
+}
+
+.error-message .card {
+    text-align: center;
+    padding: 3rem;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.error-message h2 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.error-message p {
+    margin: 0 0 1.5rem 0;
+    color: var(--muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    #hecho-detail.card {
+        max-width: 95%;
+    }
+
+    #hecho-detail .content-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    #hecho-detail .vertical-separator {
+        display: none;
+    }
+
+    #hecho-detail .right-column {
+        flex: 1 1 100%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #hecho-detail .left-column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #hecho-detail.card {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.5rem;
+    }
+
+    #hecho-detail #hecho-actions {
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    #hecho-detail #hecho-actions button {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    #hecho-detail.card {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.3rem;
+    }
+
+    #hecho-detail .tags li {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    #hecho-detail #hecho-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #hecho-detail #hecho-actions button {
+        width: 100%;
+    }
+
+    #hecho-detail .multimedia-container img,
+    #hecho-detail .multimedia-container .multimedia-item,
+    #hecho-detail .placeholder {
+        max-height: 180px;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 200px;
+    }
+
+    #deleteModal .modal-content {
+        padding: 1.25rem;
+    }
+
+    #deleteModal h2 {
+        font-size: 1.25rem;
+    }
+}

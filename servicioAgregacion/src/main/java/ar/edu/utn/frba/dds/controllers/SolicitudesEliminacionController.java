@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.ProcesarSolicitudInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
@@ -36,14 +35,19 @@ public class SolicitudesEliminacionController {
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE','VISUALIZADOR') and hasAuthority('SOLICITAR_ELIMINACION')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
-        CompletableFuture.runAsync(() -> solicitudesEliminacionService.crearSolicitudDesdeDTO(request), solicitudesExecutor);
-        return ResponseEntity.accepted().build();
+        return solicitudesEliminacionService.crearSolicitudDesdeDTO(request);
+
     }
 
     @GetMapping("/publica")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.findAll();
+    }
+
+    @GetMapping("/privada")
+    public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
+        return this.solicitudesEliminacionService.findSinProcesar();
     }
 
     @GetMapping("/publica/{id}")

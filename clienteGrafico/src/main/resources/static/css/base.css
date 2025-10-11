@@ -1,11 +1,6 @@
 /* =========================
    MetaMapa - styles.css
-   Versión: unificada y coherente con JS
-   Paleta:
-     primary: #2F60F4
-     accent:  #1746D2
-     No lectura: #E5ECFF
-     lectura: #F2F6FF
+   Versión: limpia - solo desktop
    ========================= */
 
 :root{
@@ -15,23 +10,49 @@
     --bg: #F2F6FF;
     --muted: #6b7280;
     --desktop-nav-height: 60px;
-    --zoom-nav-height: 44px;
-    --mobile-nav-height: 60px;
     --radius-sm: 6px;
     --radius-lg: 20px;
     --shadow-sm: 0 4px 10px rgba(15,23,42,0.06);
-    --glass: rgba(255,255,255,0.06);
     --text-color: #1f2937;
 }
 
 /* --- RESET / BASE --- */
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; font-family: 'Poppins', Arial, Helvetica, sans-serif; color: var(--text-color); background: var(--bg); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-a { color: inherit; text-decoration: none; }
-button { font-family: inherit; cursor: pointer; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    color: var(--text-color);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
 
 /* Focus a11y */
-:focus { outline: 3px solid rgba(47,96,244,0.18); outline-offset: 2px; }
+:focus {
+    outline: 3px solid rgba(47,96,244,0.18);
+    outline-offset: 2px;
+}
 
 /* Container helpers */
 .container {
@@ -43,12 +64,14 @@ button { font-family: inherit; cursor: pointer; }
 nav {
     font-weight: 500;
 }
+
 /* =========================
    NAVBAR - DESKTOP
    ========================= */
 .desktop-nav, header.desktop-nav {
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: var(--desktop-nav-height);
     background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
@@ -68,27 +91,61 @@ nav {
 }
 
 /* Brand */
-.brand a { display:flex; align-items:center; gap:10px; color: var(--white); }
-.brand img { width:32px; height:32px; border-radius:8px; display:block; }
-.site-name { font-size:1.25rem; color:var(--white); letter-spacing:0.2px; }
+.brand a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white);
+}
+
+.brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: block;
+}
+
+.site-name {
+    font-size: 1.25rem;
+    color: var(--white);
+    letter-spacing: 0.2px;
+}
 
 /* Links */
-.nav-links { list-style:none; display:flex; gap:14px; align-items:center; margin:0 auto; padding:0; }
-.nav-links li { white-space:nowrap; }
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 52%;
+}
+
+.nav-links li {
+    white-space: nowrap;
+}
+
 .nav-links a {
     color: var(--white);
     padding: 8px 12px;
     border-radius: 10px;
     transition: background .18s ease, transform .12s ease;
-    display:inline-block;
+    display: inline-block;
 }
-.nav-links a:hover, .nav-links a:focus { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+
+.nav-links a:hover,
+.nav-links a:focus {
+    background: rgba(0,0,0,0.25);
+    transform: translateY(-1px);
+}
 
 /* Right controls wrapper */
-.right-controls { display:flex; align-items:center; gap:12px; }
-
-/* Small display tweaks when there are many links */
-.nav-links { max-width: 52%; }
+.right-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
 /* =========================
    BUTTONS (global)
@@ -97,268 +154,186 @@ nav {
     padding: 0.45rem 0.9rem;
     border-radius: var(--radius-lg);
     border: 2px solid var(--color-accent);
-    display:inline-block;
-    line-height:1;
+    display: inline-block;
+    line-height: 1;
     transition: all .18s ease;
     background: var(--white);
     color: var(--color-accent);
     box-shadow: 0 6px 14px rgba(2,6,23,0.06);
     text-decoration: none;
 }
-.btn:focus { box-shadow: 0 0 0 4px rgba(23,70,210,0.12); }
+
+.btn:focus {
+    box-shadow: 0 0 0 4px rgba(23,70,210,0.12);
+}
 
 .btn-primary {
     background: var(--color-accent);
     color: var(--white);
     border-color: var(--color-accent);
 }
-.btn-primary:hover { background: linear-gradient(180deg,var(--white),#f8f9ff); color: var(--color-accent); transform: translateY(-1px); }
+
+/* Hover de +Create: fondo blanco, texto azul */
+.btn-primary:hover {
+    background: var(--white) !important;
+    color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    transform: translateY(-1px);
+}
 
 .btn-secondary {
     background: var(--white);
     color: var(--color-accent);
-}
-.btn-secondary:hover { background: var(--color-accent); color: var(--white); }
-
-.btn-secondary-custom {
-    background: var(--white);
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    border-radius: var(--radius-sm);
-    padding: 0.45rem 0.75rem;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-}
-.btn-secondary-custom:hover { background: var(--color-accent); color: var(--white); transform: translateY(-1px); }
-
-/* + Create: fondo blanco en hover */
-.nav-links a.btn-primary:hover,
-.nav-links li a.btn-primary:hover,
-.mobile-nav .create-btn:hover,
-.create-btn.btn-primary:hover {
-    background: var(--white) !important;
-    color: var(--color-accent) !important;
-    border-color: var(--color-accent) !important;
-    transform: translateY(0); /* opcional: quita el levantado */
-    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    border-color: var(--color-accent);
 }
 
-
+/* Hover de Log in / Sign up: fondo azul, texto blanco, BORDE BLANCO */
+.btn-secondary:hover {
+    background: var(--color-accent);
+    color: var(--white);
+    border-color: var(--white) !important;
+    transform: translateY(-1px);
+}
 
 /* Avatar in nav */
 .nav-avatar {
-    width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--white); background: #efefef; vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--white);
+    background: #efefef;
+    vertical-align: middle;
 }
 
 /* =========================
-   DESKTOP USER DROPDOWN (#desktopUserDropdown)
-   - JS inyecta items inline; aquí los estilamos coherentemente
+   DESKTOP USER BUTTON & DROPDOWN
    ========================= */
-#desktopUserContainer { position: relative; }
-#desktopUserBtn {
-    display:flex; align-items:center; gap:8px;
-    background: rgba(255,255,255,0.06);
-    border: none; padding: 8px 10px; color: var(--white);
-    border-radius: 12px;
+#desktopUserContainer {
+    position: relative;
 }
-#desktopUserBtn img { width:28px; height:28px; border-radius:50%; border:2px solid var(--white); object-fit:cover; }
 
+/* Botón de usuario (igual estilo que +Create) */
+#desktopUserBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-accent);
+    color: var(--white);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    padding: 0.4rem 0.8rem;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    transition: all .18s ease;
+}
+
+#desktopUserBtn:hover {
+    background: var(--white);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+#desktopUserBtn img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    object-fit: cover;
+}
+
+/* Dropdown */
 #desktopUserDropdown {
-    position:absolute;
-    right:0;
+    position: absolute;
+    right: 0;
     top: calc(100% + 10px);
-    display:none;
+    display: none;
     min-width: 220px;
-    background: linear-gradient(180deg,var(--color-primary),var(--color-accent));
+    background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
     border-radius: 12px;
     padding: 6px;
     z-index: 4000;
     box-shadow: 0 10px 30px rgba(2,6,23,0.18);
     overflow: hidden;
-
 }
-/* Links injected by JS use <a> inside dropdown */
-#desktopUserDropdown a {
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 10px 12px; color: var(--white); text-decoration:none;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-#desktopUserDropdown a:hover { background: rgba(255,255,255,0.06); color: var(--white); }
-#desktopUserDropdown a:last-child { border-bottom: none; }
 
-/* Admin card styling (JS adds .admin-option) */
-#desktopUserDropdown a.admin-option {
-    background: var(--white);
-    color: var(--color-accent);
-    border-radius: 8px;
-    margin: 6px;
+/* Link Panel de Administrador */
+.dropdown-admin {
+    display: block;
     padding: 10px 12px;
-}
-
-/* Badge generic */
-.badge {
-    display:inline-flex;
-    align-items:center; justify-content:center;
-    min-width:18px; padding: 0 6px; height:18px;
-    font-size:0.72rem;
-    background: #e02f2f; color: #fff; border-radius: 999px;
-    margin-left: 8px;
-}
-
-/* =========================
-   MOBILE NAV (bottom) - .mobile-nav
-   ========================= */
-.mobile-nav {
-    position: fixed; bottom: 0; left: 0;
-    width: 100%; height: var(--mobile-nav-height);
-    background: linear-gradient(180deg,var(--color-primary),var(--color-accent));
-    display: none;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 2001;
-    padding: 6px 10px;
-    box-shadow: 0 -6px 20px rgba(2,6,23,0.12);
-}
-.mobile-nav a, .mobile-profile {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    color:var(--white); text-decoration:none; font-size:0.72rem;
-    gap:4px;
-}
-.mobile-nav a img, .mobile-profile img { width:20px; height:20px; display:block; }
-
-/* prominent create button */
-.mobile-nav .create-btn {
-    display:flex; align-items:center; justify-content:center;
-    background: var(--color-accent); color: var(--white);
-    width:52px; height:52px; border-radius: 50%;
-    box-shadow: 0 8px 22px rgba(2,6,23,0.14);
-    transform: translateY(-8px);
-    border: 3px solid rgba(255,255,255,0.12);
-}
-.mobile-nav .create-btn img { width:22px; height:22px; }
-
-/* mobile profile dropdown */
-.mobile-profile { position: relative; }
-.profile-dropdown {
-    position: absolute;
-    bottom: calc(var(--mobile-nav-height) + 10px);
-    right: 6px;
-    min-width: 190px;
-    background: linear-gradient(180deg,var(--color-primary),var(--color-accent));
-    border-radius: 12px;
-    display: none;
-    flex-direction: column;
-    box-shadow: 0 8px 20px rgba(2,6,23,0.18);
-    overflow: hidden;
-    z-index: 2002;
-    padding: 6px 0;
-}
-.profile-dropdown a {
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 8px 12px; color: var(--white); text-decoration:none;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.profile-dropdown a:last-child { border-bottom:none; }
-.profile-dropdown a:hover { background: rgba(255,255,255,0.06); }
-
-/* admin highlight inside mobile */
-.profile-dropdown a.admin-option {
-    background: rgba(255,255,255,0.9);
     color: var(--color-accent);
-    border-radius: 8px;
+    background: white;
     margin: 6px;
-    padding: 8px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all .18s ease;
+    border: 2px solid transparent;
 }
-.profile-dropdown a.admin-option:hover { background: #fff; }
+
+.dropdown-admin:hover {
+    background: var(--color-accent) !important;
+    color: white !important;
+    border-color: white !important;
+    transform: translateY(-2px);
+}
+
+/* Links normales del dropdown (Mi Perfil, Mis Hechos, Mis Solicitudes) */
+.dropdown-link {
+    display: block;
+    padding: 10px 12px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all .18s ease;
+}
+
+.dropdown-link:hover {
+    background: rgba(0,0,0,0.25);
+    color: white;
+    transform: translateX(4px);
+}
+
+/* Separador antes del logout */
+#desktopUserDropdown form {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 6px;
+    padding-top: 6px;
+}
+
+/* Botón Cerrar Sesión */
+.dropdown-logout {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all .18s ease;
+}
+
+.dropdown-logout:hover {
+    background: rgba(255, 0, 0, 0.5);
+    color: #ffcccc;
+    transform: translateX(4px);
+}
 
 /* =========================
-   ZOOM NAV / SIDEBAR (small screens)
+   CONTENT PADDING
    ========================= */
-.zoom-nav {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: var(--zoom-nav-height);
-    background: linear-gradient(180deg,var(--color-primary),var(--color-accent));
-    display: none;
-    align-items: center;
-    padding: 0 0.5rem;
-    z-index: 3000;
-}
-.zoom-nav .burger { font-size: 1.5rem; color: var(--white); cursor:pointer; user-select:none; padding: 8px; }
-.zoom-nav .sidebar {
-    position: fixed;
-    top: var(--zoom-nav-height); left: -280px;
-    width: 280px; height: calc(100% - var(--zoom-nav-height));
-    background: linear-gradient(180deg,var(--color-primary),var(--color-accent));
-    padding: 16px; display:flex; flex-direction:column; gap:10px;
-    transition: left .28s cubic-bezier(.2,.9,.2,1);
-    z-index: 3001; overflow-y: auto;
-    box-shadow: 6px 0 24px rgba(2,6,23,0.18);
-}
-.zoom-nav .sidebar.active { left: 0; }
-.zoom-nav .sidebar a {
-    color: var(--white); text-decoration:none; padding: 10px 12px; border-radius: 8px;
-}
-.zoom-nav .sidebar a:hover { background: rgba(255,255,255,0.06); }
-
-/* ensure custom btn style in sidebar looks consistent */
-.zoom-nav .sidebar a.btn-secondary-custom {
-    background: var(--white) !important; color: var(--color-accent) !important;
-    border: 2px solid var(--color-accent) !important;
-}
-
-/* sidebar scrollbar (small decorative) */
-.zoom-nav .sidebar::-webkit-scrollbar { width: 8px; }
-.zoom-nav .sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius:8px; }
-
-/* Sidebar user area & submenu (JS fills #sidebarUserArea and creates #sidebarUserSubmenu) */
-#sidebarUserArea { margin-top: 8px; display:flex; flex-direction:column; gap:8px; }
-#sidebarUserArea .btn-secondary-custom { justify-content:space-between; width:100%; }
-#sidebarUserSubmenu {
-    display: none;
-    margin-top: 8px;
-    margin-left: 6px;
-    display: flex; flex-direction: column; gap:6px;
-}
-#sidebarUserSubmenu a { color: var(--white); text-decoration:none; padding: 8px; border-radius: 6px; font-weight:700; }
-
-/* =========================
-   RESPONSIVE RULES
-   - The JS controls which nav shows/hidden based on UA and width.
-   - CSS provides defaults for typical viewports.
-   ========================= */
-@media (min-width: 1025px) {
-    .desktop-nav { display: flex; }
-    .zoom-nav, .mobile-nav { display: none; }
-}
-
-@media (max-width: 1024px) and (min-width: 601px) {
-    .desktop-nav { display: none; }
-    .zoom-nav { display:flex; }
-    .mobile-nav { display: none; }
-}
-
-@media (max-width: 600px) {
-    .desktop-nav { display: none; }
-    .zoom-nav { display:flex; }
-    /* mobile nav can be shown by JS when UA indicates phone; keep CSS compact but allow override */
-    .mobile-nav { display: none; }
-}
-
-/* If JS sets inline style display:flex on .mobile-nav, the CSS below ensures layout looks right */
-.mobile-nav[style*="display:flex"], .mobile-nav[style*="display: block"] {
-    display:flex !important;
-}
-
-/* If JS sets inline display on desktop/zoom, CSS below won't override inline, but keeps visual coherence */
-
-/* =========================
-   CONTENT PADDING HELPER
-   - JS computes precise paddingTop and injects inline styles.
-   - Keep fallback values here so content isn't hidden if JS doesn't run.
-   ========================= */
-main, section, .content, .form-container, .about, .collections, .login-section, .signup-section, .map, .explore, .hecho-detail {
+main,
+section,
+.content,
+.form-container,
+.about,
+.collections,
+.login-section,
+.signup-section,
+.map,
+.explore,
+.hecho-detail {
     padding-top: calc(var(--desktop-nav-height) + 12px);
     transition: padding-top .18s ease;
 }
@@ -366,134 +341,47 @@ main, section, .content, .form-container, .about, .collections, .login-section, 
 /* =========================
    MISC / UTILITIES
    ========================= */
-.kicker { color: var(--muted); font-size:0.9rem; }
-.small { font-size:0.85rem; color:var(--muted); }
+.kicker {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
 
-/* Tiny helpers used by JS-created elements */
-.hidden { display:none !important; }
+.small {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
 
-/* Prevent layout jump for dropdowns (improve touch hit area) */
-#desktopUserBtn, .mobile-profile, .burger { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.hidden {
+    display: none !important;
+}
 
-/* Final note: keep colors accessible on badges & small text */
 @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
 }
 
-/* Desktop user button igual que +Create */
-#desktopUserBtn {
-    color: var(--white);
-    border: 2px solid var(--color-accent);
-    border-radius: var(--radius-lg);
-    padding: 0.4rem 0.8rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
-    transition: background .18s ease, color .18s ease, transform .12s ease;
-    background: var(--color-primary);
+.admin-icon {
+    color: #FF4500;
 }
 
-#desktopUserBtn:hover {
-    background: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(2,6,23,0.12);
-}
-
-/* icono/avatar dentro */
-#desktopUserBtn img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--white);
-}
-
-/* -------- Hover invertido para la opción de administrador -------- */
-
-/* Desktop dropdown */
-#desktopUserDropdown a.admin-option {
-    background: var(--white);
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    border-radius: 8px;
-    margin: 6px;
-    padding: 10px 12px;
-    transition: all .18s ease;
-}
-
-#desktopUserDropdown a.admin-option:hover {
-    background: var(--color-accent);
-    color: var(--white);
-}
-
-/* Mobile dropdown */
-.profile-dropdown a.admin-option {
-    background: var(--white);
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    border-radius: 8px;
-    margin: 6px;
-    padding: 8px 10px;
-    transition: all .18s ease;
-}
-
-.profile-dropdown a.admin-option:hover {
-    background: var(--color-accent);
-    color: var(--white);
-}
-
-/* Sidebar submenu (admin panel) */
-#sidebarUserSubmenu a.admin-option {
-    background: var(--white);
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    border-radius: 6px;
-    padding: 8px;
-    transition: all .18s ease;
-}
-
-#sidebarUserSubmenu a.admin-option:hover {
-    background: var(--color-accent);
-    color: var(--white);
-}
-
-/* --- Admin option: base + hover que invierte colores --- */
-#desktopUserDropdown a.admin-option,
-.profile-dropdown a.admin-option,
-.zoom-nav .sidebar a.admin-option {
-    background: var(--white);
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    padding: 8px 10px;
-    border-radius: 8px;
-    display: block;
-    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
-}
-
-/* hover / focus: invertir colores (fondo -> accent, texto -> blanco, borde -> blanco) */
-#desktopUserDropdown a.admin-option:hover,
-.profile-dropdown a.admin-option:hover,
-.zoom-nav .sidebar a.admin-option:hover,
-#desktopUserDropdown a.admin-option:focus,
-.profile-dropdown a.admin-option:focus {
-    background: var(--color-accent) !important;
-    color: var(--white) !important;
-    border-color: var(--white) !important;
-    transform: translateY(-2px);
-    outline: none;
-}
-
-/* accesibilidad: foco visible */
-#desktopUserDropdown a.admin-option:focus-visible,
-.profile-dropdown a.admin-option:focus-visible {
-    box-shadow: 0 0 0 4px rgba(23,70,210,0.12);
-}
-
+/* =========================
+   FOOTER
+   ========================= */
 footer {
     flex-shrink: 0;
     background: #1746D2;
     color: #fff;
     text-align: center;
     padding: 1rem;
+}
+
+footer a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: #E5ECFF;
 }

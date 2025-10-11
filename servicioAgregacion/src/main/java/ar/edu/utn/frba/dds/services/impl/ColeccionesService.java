@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
+import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
@@ -18,12 +19,18 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +45,9 @@ public class ColeccionesService implements IColeccionesService {
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
     private final ICategoriaService categoriaService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(ColeccionesService.class);
 
@@ -78,8 +88,103 @@ public class ColeccionesService implements IColeccionesService {
         }
     }
 
+    public ColeccionPreviewOutputDTO findByHandlePreview (String handle) {
+        return DTOConverter.coleccionPreviewOutputDTO(coleccionesRepository.findByHandle(handle));
+    }
+
+
+    @Override
+    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO filterDTO) {
+        // Busco la coleccion
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) throw new IllegalArgumentException("No existe la colección");
+
+        // Convertir el DTO en objeto de dominio
+        HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
+
+        Integer page = filterDTO.getPage();
+        if (page == null) {page = 0;}
+        Integer pageSizeLocal = pageSize; // tu pageSize definido en el service
+
+        // Traer hechos usando Criteria API desde Coleccion
+        List<Hecho> hechos = findHechosColeccionConFiltros(
+                handle,
+                curado,
+                hechosFilter,
+                page,
+                pageSizeLocal
+        );
+
+        // Convertir a DTO
+        return hechos.stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .toList();
+
+    }
+
+    private List<Hecho> findHechosColeccionConFiltros(
+            String handle,
+            Boolean curado,
+            HechoFilter hechosFilter,
+            Integer page,
+            Integer pageSize
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
+        Root<Coleccion> coleccionRoot = query.from(Coleccion.class);
+
+        Join<Coleccion, Hecho> hechosJoin = curado
+                ? coleccionRoot.join("listaHechosCurados", JoinType.INNER)
+                : coleccionRoot.join("listaHechos", JoinType.INNER);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(coleccionRoot.get("handle"), handle));
+
+        // aplicar filtros del Hecho
+        if (hechosFilter.getCategoria() != null) {
+            predicates.add(cb.equal(hechosJoin.get("categoria").get("nombre"), hechosFilter.getCategoria()));
+        }
+        if (hechosFilter.getFReporteDesde() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(hechosJoin.get("fechaDeCarga"), hechosFilter.getFReporteDesde()));
+        }
+        if (hechosFilter.getFReporteHasta() != null) {
+            predicates.add(cb.lessThanOrEqualTo(hechosJoin.get("fechaDeCarga"), hechosFilter.getFReporteHasta()));
+        }
+        if (hechosFilter.getFAconDesde() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(hechosJoin.get("fechaDeOcurrencia"), hechosFilter.getFAconDesde()));
+        }
+        if (hechosFilter.getFAconHasta() != null) {
+            predicates.add(cb.lessThanOrEqualTo(hechosJoin.get("fechaDeOcurrencia"), hechosFilter.getFAconHasta()));
+        }
+        if (hechosFilter.getFuenteId() != null) {
+            predicates.add(cb.equal(hechosJoin.get("fuente").get("id"), hechosFilter.getFuenteId()));
+        }
+        if (hechosFilter.getProvincia() != null) {
+            predicates.add(cb.equal(hechosJoin.get("ubicacion").get("provincia"), hechosFilter.getProvincia()));
+        }
+        if (hechosFilter.getEtiqueta() != null && !hechosFilter.getEtiqueta().isBlank()) {
+            Join<Hecho, Etiqueta> joinEtiquetas = hechosJoin.join("etiquetas", JoinType.INNER);
+            predicates.add(cb.equal(cb.lower(joinEtiquetas.get("nombre")), hechosFilter.getEtiqueta().toLowerCase()));
+        }
+
+        query.select(hechosJoin)
+                .where(predicates.toArray(new Predicate[0]))
+                .distinct(true);
+
+        TypedQuery<Hecho> typedQuery = entityManager.createQuery(query);
+
+        if (page != null && pageSize != null) {
+            typedQuery.setFirstResult(page * pageSize);
+            typedQuery.setMaxResults(pageSize);
+        }
+
+        return typedQuery.getResultList();
+    }
+
+
     //-------------------------- OPERACIONES CRUD --------------------------
     @Override
+    @Transactional
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO) {
         var coleccion = new Coleccion(
                 this.generarHandleUnico(coleccionInputDTO.getTitulo()),
@@ -99,6 +204,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public ColeccionOutputDTO modificarColeccionBasica(ColeccionInputDTO coleccionInputDTO) {
         // 1) Cargo la colección existente por handle
         Coleccion coleccion = coleccionesRepository.findByHandle(coleccionInputDTO.getHandle());
@@ -139,6 +245,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO){
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
         List<Fuente> nuevasFuentes = new ArrayList<>();
@@ -150,37 +257,88 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
-    public ResponseEntity<Void> eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
-        if(coleccionInputDTO == null){
+    @Transactional
+    public ResponseEntity<Void> eliminarColeccion(String handle){
+        if(handle == null){
             return ResponseEntity.notFound().build();
         }
 
-        if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) == null) {
+        Coleccion coleccion =  coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
         coleccionesRepository.delete(coleccion);
         return ResponseEntity.ok().build();
     }
 
     //-------------------------------------------------------------------------------
 
+    @Transactional
     public void actualizarColeccionesScheduler(){
         logger.info("Actualizando Colecciones Scheduler");
-/*aca esta*/List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
-/*el error */coleccionesActualizables.forEach(n->logger.info("Coleccion a actualizar; Titulo: {}", n.getTitulo()));
-        coleccionesActualizables.forEach(Coleccion::actualizarHechos);
+
+        //busco colecciones actualzables
+        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getActualizarHechos).toList();
+
+        //obtengo las fuentes de esas colecciones
+        Set<Fuente> fuentes = coleccionesActualizables.stream()
+                .flatMap(coleccion -> coleccion.getListaFuentes().stream())
+                .collect(Collectors.toSet()); // set para no repetir
+
+        // hago un map de fuentes y lista de hechos de las fuentes
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechosFuente = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechosFuente);
+        }
+
+        // por cada coleccion, le paso sus hechos correspondientes y le digo que se actualize
+        for (Coleccion coleccion : coleccionesActualizables) {
+            logger.info("Coleccion a actualizar; Titulo: {}", coleccion.getTitulo());
+
+            List<Hecho> hechosParaColeccion = coleccion.getListaFuentes().stream()
+                    .flatMap(fuente -> listaHechosXFuente.getOrDefault(fuente, List.of()).stream())
+                    .toList();
+
+            coleccion.actualizarHechos(hechosParaColeccion);
+        }
     }
 
+    @Transactional
     public void curarColeccionesScheduler(){
         logger.info("Curando Colecciones Scheduler");
-        List <Coleccion> coleccionesActualizables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
-        coleccionesActualizables.forEach(n->logger.info("Coleccion a curar; Titulo: {}", n.getTitulo()));
-        coleccionesActualizables.forEach(Coleccion::curarHechos);
+
+        //busco colecciones actualzables
+        List <Coleccion> coleccionesCurables = coleccionesRepository.findAll().stream().filter(Coleccion::getCurarHechos).toList();
+
+        //obtengo las fuentes de esas colecciones
+        Set<Fuente> fuentes = coleccionesCurables.stream()
+                .flatMap(coleccion -> coleccion.getListaFuentes().stream())
+                .collect(Collectors.toSet()); // set para no repetir
+
+        // hago un map de fuentes y lista de hechos de las fuentes
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechosFuente = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechosFuente);
+        }
+
+        // por cada coleccion, le paso sus hechos correspondientes y le digo que se cure
+        for (Coleccion coleccion : coleccionesCurables) {
+            logger.info("Coleccion a actualizar; Titulo: {}", coleccion.getTitulo());
+
+            List< List<Hecho> > hechosFuentesColeccion = listaHechosXFuente.entrySet().stream()
+                    .filter(entry -> coleccion.getListaFuentes().contains(entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .toList();
+
+            coleccion.curarHechos( hechosFuentesColeccion );
+        }
     }
 
     @Override
+    @Transactional
     public void notificarActualizacionFuentes(List<Fuente> fuentes){
         List<Coleccion> colecciones = coleccionesRepository.findAll();
         colecciones = colecciones.stream()
@@ -190,6 +348,7 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     @Override
+    @Transactional
     public void notificarFuenteEliminada(Fuente fuente){
         List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
                 .filter(c -> c.getListaFuentes().contains(fuente)).toList();
@@ -222,30 +381,8 @@ public class ColeccionesService implements IColeccionesService {
     }
 
 
-    @Override
-    public List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO filterDTO) {
-        // Convertir el DTO en objeto de dominio
-        HechoFilter filter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
 
-        // Buscar la categoría si corresponde
-        Categoria categoria = null;
-        if (filter.getCategoria() != null) {
-            categoria = this.categoriaService.findByNombre(filter.getCategoria());
-        }
-
-        // Generar criterios con la factory
-        List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoria, filter);
-
-        // btener hechos según haya o no criterios
-        List<Hecho> hechos;
-        if (criterios.isEmpty()) {
-            hechos = this.getHechosColeccion(handle, curado);
-        } else {
-            hechos = this.getHechosColeccionFiltrados(handle, criterios, curado);
-        }
-
-        return DTOConverter.hechoOutputDTO(hechos);
-    }
+    // --- METODOS PRIVADOS --- //
 
     private String generarHandleUnico(String titulo) {
         // Normalizar título: quitar espacios, acentos, etc.
@@ -260,5 +397,67 @@ public class ColeccionesService implements IColeccionesService {
 
         return handle;
     }
+
+
+
+
+    // --- TESTEO --- //
+    @Transactional
+    public ColeccionOutputDTO actualizarColeccionManual(String handle) {
+        // 1. Obtener la colección
+        Coleccion coleccion = this.coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) {
+            throw new IllegalArgumentException("No existe la colección con handle: " + handle);
+        }
+
+        // 2. Obtener fuentes únicas de la colección
+        List<Fuente> fuentes = coleccion.getListaFuentes().stream()
+                .distinct() // eliminar duplicados
+                .toList();
+
+        // 3. Mapear cada fuente a su lista de hechos
+        Map<Fuente, List<Hecho>> listaHechosXFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechos = this.hechosService.findByFuente(fuente);
+            listaHechosXFuente.put(fuente, hechos);
+        }
+
+        // 4. Llamar a actualizarHechos pasando la lista combinada de hechos
+        List<Hecho> todosLosHechos = listaHechosXFuente.values().stream()
+                .flatMap(List::stream)
+                .toList();
+
+        coleccion.actualizarHechos(todosLosHechos);
+
+        // 5. Devolver DTO
+        return DTOConverter.coleccionOutputDTO(coleccion);
+    }
+
+    @Transactional
+    public ColeccionOutputDTO curarColeccionManual(String handle) {
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) throw new IllegalArgumentException("No existe la colección");
+
+        // Obtener todas las fuentes de la colección
+        List<Fuente> fuentes = coleccion.getListaFuentes().stream()
+                .distinct()
+                .toList();
+
+        // Obtener hechos por fuente
+        Map<Fuente, List<Hecho>> hechosPorFuente = new HashMap<>();
+        for (Fuente fuente : fuentes) {
+            List<Hecho> hechos = this.hechosService.findByFuente(fuente);
+            hechosPorFuente.put(fuente, hechos);
+        }
+
+        // Aplanar todos los hechos en una lista total
+        List<List<Hecho>> listaHechosFuentes = new ArrayList<>(hechosPorFuente.values());
+
+        // Pasar los hechos y el map de hechos por fuente al métod0 de curación
+        coleccion.curarHechos(listaHechosFuentes);
+
+        return DTOConverter.coleccionOutputDTO(coleccion);
+    }
+
 }
 

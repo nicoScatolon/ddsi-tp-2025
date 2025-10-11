@@ -2,17 +2,26 @@ package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +35,7 @@ public class AgregadorService implements IAgregadorService {
         this.webClient = webClient;
     }
 
+    // --- HECHOS --- //
 
     public HechoInputDTO getHechoById(Long id) {
         return webClient.get()
@@ -37,15 +47,16 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    //TODO posiblemente debamos agregar la capacidad de recibir los filtros aca tambien
-    public List<HechoInputDTO> getAllHechos(Integer paginaActual) {
+    public List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filterInputDTO) {
+        HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filterInputDTO);
+
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/hechos/publica")
-                        .queryParam("page", paginaActual)
-                        // .queryParam("categoria", "ejemplo") // para cuando necesitemos agregar filtros
-                        .build()
-                )
+                .uri(uriBuilder -> {
+                    UriBuilder builder = uriBuilder.path("/api/hechos/publica")
+                            .queryParam("page", paginaActual);
+                    aplicarFiltrosHecho(builder, filter);
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToFlux(HechoInputDTO.class)
                 .collectList()
@@ -61,9 +72,33 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    public HechoInputDTO obtenerUnHecho(Long id){
-        return crearHecho1();
+    // --- COLECCIONES --- //
+
+    @Override
+    public ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/privada")
+                        .build()
+                )
+                .bodyValue(coleccionDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
+
+    @Override
+    public ResponseEntity<Void> eliminarColeccion(String handle) {
+        return webClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/privada/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
 
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
@@ -78,6 +113,141 @@ public class AgregadorService implements IAgregadorService {
                 .collectList()
                 .block();
     }
+
+    public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/publica/preview/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .bodyToMono(ColeccionPreviewInputDTO.class)
+                .block();
+    }
+
+    public List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado) {
+        HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
+        return webClient.get()
+                .uri(uriBuilder -> {
+                    UriBuilder builder = uriBuilder.path("/api/colecciones/publica/{handle}/hechos")
+                            .queryParam("curado", curado != null ? curado : false)
+                            .queryParam("page", paginaActual);
+                    aplicarFiltrosHecho(builder, filter);
+                    // Agregar los filtros como query params
+
+                    return uriBuilder.build(handle); // reemplaza {handle} en el path
+                })
+                .retrieve()
+                .bodyToFlux(HechoInputDTO.class)
+                .collectList()
+                .block(); // bloquea hasta obtener la lista
+    }
+
+
+    // --- CATEGORIAS --- //
+
+    public List<String> obtenerCategoriasShort(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/privada/categorias/short")
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
+                .block();
+    }
+
+    // --- SOLICITUDES ELIMINACION --- //
+
+    @Override
+    public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion){
+        SolicitudEliminarHechoOutputDTO request = DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/publica")
+                        .build()
+                )
+                .bodyValue(request)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/privada")
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(SolicitudEliminarHechoInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO, EstadoDeSolicitud estadoDeSolicitud) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/solicitudes-eliminacion/privada/solicitud")
+                        .queryParam("accion", estadoDeSolicitud)
+                        .build()
+                )
+                .bodyValue(procesarSolicitudOutputDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+
+
+    // --- FUENTES --- //
+
+    @Override
+    public List<FuenteInputDTO> getFuentesPreview(){
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/fuente/publica/preview")
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(FuenteInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    // --- METODOS PRIVADOS --- //
+
+    private void aplicarFiltrosHecho(UriBuilder builder, HechosFilterOutputDTO filter) {
+        if (filter.getCategoria() != null && !filter.getCategoria().isEmpty()) {
+            builder.queryParam("categoria", filter.getCategoria());
+        }
+        if (filter.getProvincia() != null && !filter.getProvincia().isEmpty()) {
+            builder.queryParam("provincia", filter.getProvincia());
+        }
+        if (filter.getEtiqueta() != null && !filter.getEtiqueta().isEmpty()) {
+            builder.queryParam("etiqueta", filter.getEtiqueta());
+        }
+        if (filter.getFuenteId() != null) {
+            builder.queryParam("fuenteId", filter.getFuenteId());
+        }
+
+        if (filter.getFReporteDesde() != null) {
+            builder.queryParam("fReporteDesde", filter.getFReporteDesde());
+        }
+        if (filter.getFReporteHasta() != null) {
+            builder.queryParam("fReporteHasta", filter.getFReporteHasta());
+        }
+        if (filter.getFAconDesde() != null) {
+            builder.queryParam("fAconDesde", filter.getFAconDesde());
+        }
+        if (filter.getFAconHasta() != null) {
+            builder.queryParam("fAconHasta", filter.getFAconHasta());
+        }
+    }
+
+
 
     // --- TEST --- //
     public List<HechoInputDTO> obtenerHechos(Integer paginaActual) {

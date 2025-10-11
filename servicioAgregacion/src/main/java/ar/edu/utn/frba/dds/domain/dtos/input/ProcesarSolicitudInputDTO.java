@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProcesarSolicitudInputDTO {
     private SolicitudEliminarHechoInputDTO solicitud;
-    private UsuarioInputDTO administrador;
+    private Long administradorId;
 }

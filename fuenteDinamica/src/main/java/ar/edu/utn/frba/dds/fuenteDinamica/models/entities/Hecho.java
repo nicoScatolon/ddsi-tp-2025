@@ -27,7 +27,7 @@ public class Hecho {
     @Column(nullable = false, name = "titulo")
     private String titulo;
 
-    @Column(nullable = false, name = "descripcion") //todo estaba como unique = true
+    @Column(nullable = false, name = "descripcion",columnDefinition = "MEDIUMTEXT" )
     private String descripcion;
 
     @Embedded
@@ -47,7 +47,7 @@ public class Hecho {
     private LocalDateTime fechaDeCarga;
 
     @Column(nullable = false, name = "anonimo")
-    private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
+    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true
 
     //Metadata
     @Column(name = "fecha-modificacion")
@@ -55,17 +55,13 @@ public class Hecho {
 
 
     //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
-            @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
-    })
-    private Contribuyente contribuyente; // el ususario que lo carga
+    @Column(name = "contribuyenteId")
+    private Long contribuyenteId; // el ususario que lo carga
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
+    private EstadoHecho estado = EstadoHecho.PENDIENTE;
 
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
@@ -77,7 +73,7 @@ public class Hecho {
         if ( getFechaDeCarga().plusDays(diasMaximos).isBefore(fechaModificacion) ) {
             throw new ModificacionNoPermitidaException( String.format("Pasaron los %d dias permitidos para serModificado el hecho", diasMaximos) );
         }
-        if ( contribuyente.getId() == null ) { // si no tiene id no esta registrado
+        if ( contribuyenteId == null ) { // si no tiene id no esta registrado
             throw new ModificacionNoPermitidaException( "El contribuyente no esta registrado, modificacion no permitida" );
         }
     }
@@ -91,6 +87,9 @@ public class Hecho {
         this.setUbicacion(nuevosDatosHecho.getUbicacion());
         this.setContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
         this.setFechaDeOcurrencia(nuevosDatosHecho.getFechaDeOcurrencia());
+
+        this.setFechaDeModificacion(LocalDateTime.now());
+        this.setEstado(EstadoHecho.PENDIENTE);
     }
 
     public void serRevisado(Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {

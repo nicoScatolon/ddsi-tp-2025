@@ -1,0 +1,95 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/usuario/profile.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <main class="profile-main">
+        <section class="profile-container">
+            <!-- Columna izquierda: foto y botones -->
+            <div class="profile-left">
+                <div class="avatar-wrapper" title="Perfil de usuario">
+                    <i class="fas fa-user"></i>
+                </div>
+
+
+                <!-- Botones solo si es editor -->
+                <div th:if="${editor}" class="profile-buttons">
+                    <button id="changePasswordBtn" class="small-btn">Cambiar contraseña</button>
+                    <form th:action="@{/logout}" method="post" style="width: 100%;">
+                        <button type="submit" class="small-btn" style="width: 100%;">Cerrar Sesión</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Columna derecha: campos editables o solo visualización -->
+            <div class="profile-right">
+                <h2 th:text="${editor ? 'Mi Perfil' : 'Perfil de Usuario'}"></h2>
+
+                <!-- Si es editor: formulario editable -->
+                <form th:if="${editor}" id="profileForm" th:action="@{/profile/update}" method="post" autocomplete="off">
+                    <div class="form-group">
+                        <label for="firstName">Nombre</label>
+                        <input type="text" id="firstName" name="firstName" th:value="${usuario.nombre}" placeholder="Nombre">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Apellido</label>
+                        <input type="text" id="lastName" name="lastName" th:value="${usuario.apellido}" placeholder="Apellido">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birthDate">Fecha de Nacimiento</label>
+                        <input type="date" id="birthDate" name="birthDate" th:value="${usuario.fechaNacimiento}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Mail</label>
+                        <input type="email" id="email" name="email" th:value="${usuario.email}" placeholder="email@ejemplo.com">
+                    </div>
+
+                    <div class="actions-row">
+                        <button type="submit" class="btn-save">Guardar cambios</button>
+                        <button type="button" id="resetBtn" class="btn-ghost">Restaurar</button>
+                    </div>
+                </form>
+
+                <!-- Si NO es editor: solo visualización -->
+                <div th:if="${!editor}" class="profile-view">
+                    <div class="view-group">
+                        <label>Nombre</label>
+                        <p th:text="${usuario.nombre}">-</p>
+                    </div>
+
+                    <div class="view-group">
+                        <label>Apellido</label>
+                        <p th:text="${usuario.apellido}">-</p>
+                    </div>
+
+                    <div class="view-group">
+                        <label>Edad</label>
+                        <p th:text="${edad + ' años'}">-</p>
+                    </div>
+
+                    <div class="view-group">
+                        <label>Fecha de Nacimiento</label>
+                        <p th:text="${#temporals.format(usuario.fechaNacimiento, 'dd/MM/yyyy')}">-</p>
+                    </div>
+
+                    <div class="view-group">
+                        <label>Mail</label>
+                        <p th:text="${usuario.email}">-</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<th:block th:fragment="jsExtra">
+    <script th:if="${editor}" th:src="@{/js/profile.js}"></script>
+</th:block>
+
+</html>

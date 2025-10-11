@@ -4,7 +4,7 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- CSS específico para hecho-detail -->
-    <link rel="stylesheet" th:href="@{/css/hecho.css}">
+    <link rel="stylesheet" th:href="@{/css/hechos/hecho.css}">
 </th:block>
 
 <th:block th:fragment="contenido">
@@ -113,7 +113,7 @@
                     <!-- Acciones solo para usuarios logueados -->
                     <div th:if="${logeado == 1}" id="hecho-actions" class="info-item" style="margin-top:12px;">
                         <button id="deleteBtn" class="btn-warning">Solicitar eliminación</button>
-                        <button th:if="${rol == 2}" id="editBtn" class="btn-primary">Editar</button>
+                        <button th:if="${rol == 2 && permitirEdicion == 1}" id="editBtn" class="btn-primary">Editar</button>
                     </div>
                 </div>
 
@@ -165,11 +165,22 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Solicitar Eliminación del Hecho</h2>
-            <form id="deleteForm">
+            <form id="deleteForm" th:action="@{/solicitudesEliminacion}" method="post">
+                <!-- Razón de eliminación -->
                 <label for="reason">Razón de la eliminación:</label>
-                <textarea id="reason" name="reason" rows="6"
+                <textarea id="reason"
+                          name="razonEliminacion"
+                          rows="6"
                           placeholder="Escribe tu razón aquí... (mínimo 500 caracteres)"
-                          required minlength="500"></textarea>
+                          required
+                          minlength="500"></textarea>
+
+                <!-- ID del hecho -->
+                <input type="hidden" name="hechoId" th:value="${hecho.id}" />
+
+                <!-- ID del usuario -->
+                <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
+
                 <button type="submit" class="btn-warning">Enviar Solicitud</button>
             </form>
         </div>

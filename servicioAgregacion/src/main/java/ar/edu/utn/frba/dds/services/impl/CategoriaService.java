@@ -33,12 +33,12 @@ public class CategoriaService implements ICategoriaService {
 
     public Categoria findById(Long idCategoria) {
         return categoriasRepository.findById(idCategoria)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id " + idCategoria));
+                .orElse(null);
     }
 
     public Categoria findByNombre(String nombreCategoria) {
         return categoriasRepository.findByNombre(nombreCategoria)
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada con nombre " + nombreCategoria));
+                .orElse(null);
     }
 
     @Override
@@ -47,6 +47,11 @@ public class CategoriaService implements ICategoriaService {
                 .stream()
                 .map(DTOConverter::convertirCategoriaOutputDTO)
                 .toList();
+    }
+
+    @Override
+    public List<String> findAllShort(){
+        return categoriasRepository.findAllNombres();
     }
 
     @Override

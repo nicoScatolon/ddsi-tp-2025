@@ -2,13 +2,11 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,15 +64,8 @@ public class CriterioFactory {
         if(filter.getFAconDesde() != null || filter.getFAconHasta() != null){
             criterios.add(this.crearCriterioOcurrenciaEntreFechas(filter.getFAconDesde(),filter.getFAconHasta()));
         }
-        if(filter.getUbicacion() != null){
-            criterios.add(new CriterioUbicacion(Ubicacion.builder()
-                    .provincia(filter.getUbicacion().getProvincia())
-                    .departamento(filter.getUbicacion().getDepartamento())
-                    .calle(filter.getUbicacion().getCalle())
-                    .numero(filter.getUbicacion().getNumero())
-                    .latitud(filter.getUbicacion().getLatitud())
-                    .longitud(filter.getUbicacion().getLongitud())
-                    .build())
+        if(filter.getProvincia() != null){
+            criterios.add(new CriterioProvincia(filter.getProvincia())
             );
         }
         return criterios;

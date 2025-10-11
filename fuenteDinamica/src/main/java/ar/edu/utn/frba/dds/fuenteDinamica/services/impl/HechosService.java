@@ -2,7 +2,7 @@ package ar.edu.utn.frba.dds.fuenteDinamica.services.impl;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
@@ -12,7 +12,9 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,14 +35,34 @@ public class HechosService implements IHechosService {
     private Long diasValidosModificacion;
 
     @Override
-    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga) {
-        List<Hecho> hechosAEnviar = this.hechosRepository.findByEstadoOrderByFechaDeCargaDesc(EstadoHecho.ACEPTADO);
-
-        if (fechaDeCarga !=null){
-            hechosAEnviar = hechosAEnviar.stream().filter(h -> h.getFechaDeCarga().isAfter(fechaDeCarga)).toList();
+    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado) {
+        if (fechaDeCarga == null && estado == null) {
+            return this.hechosRepository.findAll().stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
         }
+        if (fechaDeCarga == null) {
+            return this.hechosRepository.findHechoByEstado(estado).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        if (estado == null) {
+            return this.hechosRepository.findAllByFechaDeCargaAfter(fechaDeCarga).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(estado, fechaDeCarga).stream()
+                .map(this::hechoOutputDTO)
+                .toList();
+    }
 
-        return hechosAEnviar.stream().map(this::hechoOutputDTO).toList();
+    @Override
+    public ResponseEntity<HechoOutputDTO> getHechoById(Long idHecho) {
+        Hecho hechoBuscado = this.hechosRepository.findById(idHecho).orElse(null);
+        if (hechoBuscado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(hechoOutputDTO(hechoBuscado));
     }
 
     @Transactional
@@ -51,6 +73,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
+    @Transactional
     public Hecho modificarHecho(HechoInputDTO hechoInputDTO) {
         Optional<Hecho> optionalHechoGuardado = this.hechosRepository.findById(hechoInputDTO.getId());
         Hecho hechoNuevo = hechoInputDTO(hechoInputDTO);
@@ -58,32 +81,49 @@ public class HechosService implements IHechosService {
             Hecho hechoGuardado = optionalHechoGuardado.get();
 
             if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
-            if (hechoNuevo.getContribuyente().getId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-            if (!hechoNuevo.getContribuyente().getId().equals(hechoGuardado.getContribuyente().getId()))
+            if (hechoNuevo.getContribuyenteId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
+            if (!hechoNuevo.getContribuyenteId().equals(hechoGuardado.getContribuyenteId()))
             { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
 
             hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
             this.hechosRepository.save(hechoGuardado);
             return hechoGuardado;
-
         } else {
-           return null;//TODO responder 404
+           return null;//responder 404
         }
     }
 
+    public List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado) {
+        if (estado == null) {
+            return this.hechosRepository.findAllByContribuyenteId(userId).stream()
+                    .map(this::hechoOutputDTO)
+                    .toList();
+        }
+        return this.hechosRepository.findAllByContribuyenteIdAndEstado(userId, estado).stream()
+                .map(this::hechoOutputDTO)
+                .toList();
+    }
+
     @Override
-    public Hecho revisarHecho(Long idHecho, Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
+    @Transactional
+    public ResponseEntity<HechoOutputDTO> revisarHecho(Long idAdmin, RevisionHechoInputDTO revisionHechoDTO) {
+        Long idHecho = revisionHechoDTO.getIdHecho();
+        EstadoHecho nuevoEstado = revisionHechoDTO.getNuevoEstado();
+        String sugerencia = revisionHechoDTO.getSugerencia();
+
         Optional<Hecho> optionalHecho = this.hechosRepository.findById(idHecho);
         if (optionalHecho.isPresent()) {
             Hecho hecho = optionalHecho.get();
             hecho.serRevisado(idAdmin, nuevoEstado, sugerencia);
             this.hechosRepository.save(hecho);
-            return hecho;
+            return ResponseEntity.ok(hechoOutputDTO(hecho));
         }
         else {
-            return null; //TODO responder 404
+            return ResponseEntity.notFound().build();
         }
     }
+
+    // API privada //
 
 
 
@@ -97,23 +137,15 @@ public class HechosService implements IHechosService {
                 .ubicacion(this.ubicacionInputDTO(hechoDTO.getUbicacion()))
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
-                .contribuyente(this.contribuyenteDTO(hechoDTO.getContribuyente()))
-                .esAnonimo(hechoDTO.getEsAnonimo())
-                .build();
-    }
-
-    private Contribuyente contribuyenteDTO(ContribuyenteInputDTO contribuyenteDTO) {
-        return Contribuyente.builder()
-                .id(contribuyenteDTO.getId())
-                .nombre(contribuyenteDTO.getNombre())
-                .apellido(contribuyenteDTO.getApellido())
+                .contribuyenteId(hechoDTO.getContribuyenteId())
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : false )
                 .build();
     }
 
     private Categoria categoriaInputDTO(CategoriaInputDTO categoriaDTO){
         Categoria categoria = new Categoria();
-        if(categoriaDTO.getNombreCategoria() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
-        categoria.setNombre(categoriaDTO.getNombreCategoria());
+        if(categoriaDTO.getNombre() == null){ throw new IllegalArgumentException("Falta el nombre de la categoria"); }
+        categoria.setNombre(categoriaDTO.getNombre());
         if (categoriaDTO.getId() != null) {categoria.setId(categoriaDTO.getId());}
         else {categoria.setId(categoriaService.obtenerIdCategoria(categoria.getNombre()));}
         return categoria;
@@ -121,17 +153,19 @@ public class HechosService implements IHechosService {
 
     private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
         return HechoOutputDTO.builder()
-                .idLocal(hecho.getId())
+                .id(hecho.getId())
                 .titulo(hecho.getTitulo())
                 .descripcion(hecho.getDescripcion())
-                .categoriaOutputDTO(this.categoriaOutputDTO(hecho.getCategoria()))
-                .ubicacionOutputDTO(this.ubicacionOutputDTO(hecho.getUbicacion()))
-                .fechaOcurrencia(hecho.getFechaDeOcurrencia())
-                .fechaCarga(hecho.getFechaDeCarga())
+                .categoria(this.categoriaOutputDTO(hecho.getCategoria()))
+                .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
+                .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
+                .fechaDeCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
-                .esAnonimo(hecho.getEsAnonimo())
-                .contribuyente(hecho.getContribuyente())
+                .cargadoAnonimamente(hecho.getCargadoAnonimamente())
+                .fechaDeModificacion(hecho.getFechaDeModificacion())
+                .contribuyenteId(hecho.getContribuyenteId())
                 .estado(hecho.getEstado())
+                .sugerencia(hecho.getSugerencia())
                 .build();
     }
 
@@ -162,7 +196,17 @@ public class HechosService implements IHechosService {
     private CategoriaOutputDTO categoriaOutputDTO(Categoria categoria) {
         CategoriaOutputDTO categoriaOutputDTO = new CategoriaOutputDTO();
         categoriaOutputDTO.setId(categoria.getId());
-        categoriaOutputDTO.setNombreCategoria(categoria.getNombre());
+        categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
     }
+
+    // Test
+
+    public void crearHechoTest (HechoInputDTO dto) {
+        Hecho h = hechoInputDTO(dto);
+        h.setFechaDeCarga(LocalDateTime.now());
+        h.setEstado(EstadoHecho.ACEPTADO);
+        hechosRepository.save(h);
+    }
+
 }

@@ -1,8 +1,7 @@
 package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 
-import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.ICriterio;
+import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -17,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class CriterioContenidoMultimedia extends Criterio {
 
     @ManyToOne
-    @JoinColumn(name = "contenidoMultimedia_id")
+    @JoinColumn(name = "contenidoMultimedia_id", nullable = true)
     private ContenidoMultimedia contenido;
     @Override
     public Boolean pertenece(Hecho hecho) {
-        return false;
+        return hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty();
     }
 }

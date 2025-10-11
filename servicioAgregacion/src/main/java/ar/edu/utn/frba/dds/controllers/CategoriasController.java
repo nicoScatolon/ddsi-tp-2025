@@ -29,6 +29,12 @@ public class CategoriasController {
         return ResponseEntity.ok(listaCategorias);
     }
 
+    @GetMapping("/short")
+    public ResponseEntity<List<String>> findAllShort() {
+        List<String> listaCategorias = categoriaService.findAllShort();
+        return ResponseEntity.ok(listaCategorias);
+    }
+
     @PostMapping("/equivalentes")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")
     public ResponseEntity<Void> agregarEquivalentes( @RequestParam EquivalenteInputDTO equivalenteInputDTO) {
@@ -42,5 +48,4 @@ public class CategoriasController {
         categoriaService.eliminarEquivalentes(equivalente);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 }

@@ -18,7 +18,7 @@ public class Hecho {
     @Column (name = "titulo", nullable = false)
     private String titulo;
 
-    @Column(name = "descripcion", columnDefinition = "TEXT", unique = true)
+    @Column(name = "descripcion", columnDefinition = "MEDIUMTEXT", unique = true)
     private String descripcion;
 
     @Embedded

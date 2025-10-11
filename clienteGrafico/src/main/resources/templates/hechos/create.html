@@ -1,13 +1,13 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
-    <link rel="stylesheet" th:href="@{/css/create.css}">
+    <link rel="stylesheet" th:href="@{/css/hechos/create.css}">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 </th:block>
 
     <th:block th:fragment="contenido">
-    <section class="form-container">
+        <section class="form-container" th:attr="data-logeado=${logeado}">
         <h1>Crear Hecho</h1>
         <form th:action="@{/hechos/create}" th:object="${hechoDTO}" method="post" id="hechoForm">
             <!-- Datos básicos -->
@@ -22,24 +22,20 @@
             </div>
 
             <div class="form-group">
-                <label for="categoria">Categoría</label>
-                <div class="categoria-wrapper">
-                    <!-- select mantiene el th:field para que Thymeleaf genere el name -->
-                    <select id="categoria" th:field="*{categoria.nombre}" required>
-                        <option value="" disabled selected>Seleccione una categoría</option>
-                        <option value="Ambiental">Ambiental</option>
-                        <option value="Social">Social</option>
-                        <option value="Política">Política</option>
-                        <option value="other">Otra...</option>
-                    </select>
-
-                    <!-- input SIN th:field: el JS le pondrá el name solo si hace falta -->
-                    <input type="text" id="categoriaNueva" placeholder="Escriba nueva categoría"
-                           style="display:none; margin-top:0.5rem;" />
-                </div>
+                <label for="categoriaInput">Categoría</label>
+                <input
+                        type="text"
+                        id="categoriaInput"
+                        name="categoria.nombre"
+                        list="categorias-list"
+                        placeholder="Escribe para buscar..."
+                        required
+                        autocomplete="off"
+                />
+                <datalist id="categorias-list">
+                    <option th:each="cat : ${categorias}" th:value="${cat}"></option>
+                </datalist>
             </div>
-
-
 
             <!-- Fecha -->
             <div class="form-group">
@@ -103,12 +99,40 @@
             </div>
         </form>
     </section>
-    <br>
+        <div id="loginModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>¡Debes identificarte!</h2>
+                <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
+                <div class="modal-actions">
+                    <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
+                    <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
+                </div>
+            </div>
+        </div>
     </th:block>
 
 <th:block th:fragment="jsExtra">
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script th:src="@{/js/form.js}"></script>
+    <script th:src="@{/js/hecho-create.js}"></script>
+
+    <script>
+        window.addEventListener('load', function() {
+            // Lee directamente el valor que le pasó el controller
+            const formContainer = document.querySelector('.form-container');
+            const logeado = Number(formContainer?.dataset.logeado || 0);
+
+            console.log('Valor de logeado:', logeado); // Debug
+
+            if (logeado === 0) {
+                const modal = document.getElementById("loginModal");
+                const form = document.getElementById("hechoForm");
+                setTimeout(() => {
+                    if (modal) modal.style.display = "flex";
+                    if (form) form.style.display = "none";
+                }, 300);
+            }
+        });
+    </script>
 </th:block>
 </html>

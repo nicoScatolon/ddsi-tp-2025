@@ -45,12 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 marker = L.marker([lat, lng]).addTo(map);
 
-                const popupContent = `
-                    <strong>${HECHO_DATA.titulo}</strong><br>
-                    ${HECHO_DATA.ubicacion.calle || ''} ${HECHO_DATA.ubicacion.numero || ''}<br>
-                    ${HECHO_DATA.ubicacion.localidad || ''}, ${HECHO_DATA.ubicacion.provincia || ''}
-                `;
-                marker.bindPopup(popupContent).openPopup();
             } catch (error) {
                 console.error('Error al inicializar el mapa:', error);
                 mapEl.innerHTML = '<div class="placeholder">Error al cargar el mapa</div>';
@@ -68,44 +62,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!deleteBtn || !modal) return;
 
         const closeBtn = modal.querySelector('.close');
-        const form = document.getElementById('deleteForm');
 
-        // Abrir modal solo al apretar botón
+        // Abrir modal al click
         deleteBtn.addEventListener('click', () => {
-            modal.style.display = 'flex'; // usar flex para centrar
+            modal.style.display = 'flex'; // flex para centrar
         });
 
-        // Cerrar modal
+        // Cerrar modal al click en la "X"
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 modal.style.display = 'none';
             });
         }
 
+        // Cerrar modal al hacer click fuera del contenido
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
-
-        // Enviar formulario
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const reasonEl = document.getElementById('reason');
-                const reason = reasonEl ? reasonEl.value.trim() : '';
-                if (reason && reason.length >= 500) {
-                    console.log('Solicitud de eliminación enviada:', {
-                        hechoId: HECHO_DATA.id,
-                        razon: reason
-                    });
-                    alert('Solicitud de eliminación enviada correctamente');
-                    form.reset();
-                    modal.style.display = 'none';
-                } else {
-                    alert('Por favor ingresa una razón de al menos 500 caracteres.');
-                }
-            });
-        }
     };
+
 
     // ===== MODO EDICIÓN =====
     const setupEditMode = () => {
@@ -192,8 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (marker) marker.setLatLng([lat, lng]);
                 else marker = L.marker([lat, lng]).addTo(map);
-
-                marker.bindPopup(`<strong>${HECHO_DATA.titulo}</strong><br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
             };
 
             map.on('click', mapClickHandler);

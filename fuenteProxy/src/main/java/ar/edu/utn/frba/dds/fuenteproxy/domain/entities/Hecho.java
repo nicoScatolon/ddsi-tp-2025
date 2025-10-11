@@ -28,8 +28,7 @@ public class Hecho {
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
-
-    @Lob
+    
     @Column(name = "descripcion", columnDefinition = "MEDIUMTEXT")
     private String descripcion;
 
