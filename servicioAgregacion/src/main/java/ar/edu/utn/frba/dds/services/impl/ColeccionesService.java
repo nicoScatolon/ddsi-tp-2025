@@ -258,16 +258,16 @@ public class ColeccionesService implements IColeccionesService {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> eliminarColeccion(ColeccionInputDTO coleccionInputDTO){
-        if(coleccionInputDTO == null){
+    public ResponseEntity<Void> eliminarColeccion(String handle){
+        if(handle == null){
             return ResponseEntity.notFound().build();
         }
 
-        if (coleccionesRepository.findByHandle(coleccionInputDTO.getHandle()) == null) {
+        Coleccion coleccion =  coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Coleccion coleccion = DTOConverter.coleccionFromInputDTO(coleccionInputDTO);
         coleccionesRepository.delete(coleccion);
         return ResponseEntity.ok().build();
     }
