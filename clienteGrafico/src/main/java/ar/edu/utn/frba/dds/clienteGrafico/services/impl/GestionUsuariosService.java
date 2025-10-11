@@ -2,32 +2,37 @@ package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.RolesPermisosDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
-import lombok.Value;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.Map;
 
+@Service
 public class GestionUsuariosService {
-    private static final Logger log = (Logger) LoggerFactory.getLogger(GestionUsuariosService.class);
+    private static final Logger log = LoggerFactory.getLogger(GestionUsuariosService.class);
     private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String authServiceUrl;
-    private final String alumnosServiceUrl;
+    private final String usuariosServiceUrl;
 
     @Autowired
     public GestionUsuariosService(
             WebApiCallerService webApiCallerService,
             @Value("${auth.service.url}") String authServiceUrl,
-            @Value("${alumnos.service.url}") String usuariosServiceUrl) {
+            @Value("${usuarios.service.url}") String usuariosServiceUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
-        this.alumnosServiceUrl = usuariosServiceUrl;
+        this.usuariosServiceUrl = usuariosServiceUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -70,47 +75,61 @@ public class GestionUsuariosService {
         }
     }
 
-    public List<AlumnoDTO> obtenerTodosLosAlumnos() {
-        List<AlumnoDTO> response = webApiCallerService.getList(alumnosServiceUrl + "/alumnos", AlumnoDTO.class);
+    public List<UsuarioDTO> obtenerTodosLosUsuarios() {
+        List<UsuarioDTO> response = webApiCallerService.getList(
+                usuariosServiceUrl + "/usuarios",
+                UsuarioDTO.class
+        );
         return response != null ? response : List.of();
     }
 
-    public AlumnoDTO obtenerAlumnoPorLegajo(String legajo) {
-        AlumnoDTO response = webApiCallerService.get(alumnosServiceUrl + "/alumnos/" + legajo, AlumnoDTO.class);
+    public UsuarioDTO obtenerUsuarioPorId(Long id) {
+        UsuarioDTO response = webApiCallerService.get(
+                usuariosServiceUrl + "/usuarios/" + id,
+                UsuarioDTO.class
+        );
         if (response == null) {
-            throw new NotFoundException("Alumno", legajo);
+            throw new NotFoundException("Usuario", String.valueOf(id));
         }
         return response;
     }
 
-    public AlumnoDTO crearAlumno(AlumnoDTO alumnoDTO) {
-        AlumnoDTO response = webApiCallerService.post(alumnosServiceUrl + "/alumnos", alumnoDTO, AlumnoDTO.class);
+    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
+        UsuarioDTO response = webApiCallerService.post(
+                usuariosServiceUrl + "/usuarios",
+                usuarioDTO,
+                UsuarioDTO.class
+        );
         if (response == null) {
-            throw new RuntimeException("Error al crear alumno en el servicio externo");
+            throw new RuntimeException("Error al crear usuario en el servicio externo");
         }
         return response;
     }
 
-    public AlumnoDTO actualizarAlumno(String legajo, AlumnoDTO alumnoDTO) {
-        AlumnoDTO response = webApiCallerService.put(alumnosServiceUrl + "/alumnos/" + legajo, alumnoDTO, AlumnoDTO.class);
+    public UsuarioDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        UsuarioDTO response = webApiCallerService.put(
+                usuariosServiceUrl + "/usuarios/" + id,
+                usuarioDTO,
+                UsuarioDTO.class
+        );
         if (response == null) {
-            throw new RuntimeException("Error al actualizar alumno en el servicio externo");
+            throw new RuntimeException("Error al actualizar usuario en el servicio externo");
         }
         return response;
     }
 
-    public void eliminarAlumno(String legajo) {
-        webApiCallerService.delete(alumnosServiceUrl + "/alumnos/" + legajo);
+    public void eliminarUsuario(Long id) {
+        webApiCallerService.delete(usuariosServiceUrl + "/usuarios/" + id);
     }
 
-    public boolean existeAlumno(String legajo) {
+    public boolean existeUsuario(Long id) {
         try {
-            obtenerAlumnoPorLegajo(legajo);
+            obtenerUsuarioPorId(id);
             return true;
         } catch (NotFoundException e) {
             return false;
         } catch (Exception e) {
-            throw new RuntimeException("Error al verificar existencia del alumno: " + e.getMessage(), e);
+            throw new RuntimeException("Error al verificar existencia del usuario: " + e.getMessage(), e);
         }
     }
 }

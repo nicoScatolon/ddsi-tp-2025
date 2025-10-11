@@ -54,7 +54,7 @@ public class WebApiCallerService {
                 }
             }
             if(e.getStatusCode() == HttpStatus.NOT_FOUND){
-                throw new NotFoundException(e.getMessage());
+                throw new NotFoundException(e.getMessage(), "");
             }
             throw new RuntimeException("Error en llamada al API: " + e.getMessage(), e);
         } catch (Exception e) {

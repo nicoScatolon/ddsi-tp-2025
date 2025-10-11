@@ -61,7 +61,7 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada/{handle}/consenso")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
+    @PreAuthorize("hasRole('ADMIN') and hasAnyAuthority('GESTIONAR_COLECCIONES','CONFIGURAR_CONSENSO')")
     public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
@@ -72,36 +72,36 @@ public class ColeccionesController {
         return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 
-    @DeleteMapping("/privada")
+    @DeleteMapping("/privada/{handle}")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
-    public ResponseEntity<Void> eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        return coleccionesService.eliminarColeccion(coleccionInputDTO);
+    public ResponseEntity<Void> eliminarColeccion(@PathVariable("handle") String handle) {
+        return coleccionesService.eliminarColeccion(handle);
     }
 
 
     // ------------------------------------------- API PÚBLICA -------------------------------------------
 
     @GetMapping("/publica")
-    @PreAuthorize("hasRole ('VISUALIZADOR') and hasAuthority('VER_COLECCIONES')")
+    @PreAuthorize("permitAll()")
     public List<ColeccionOutputDTO> obtenerColeccionesPublica() {
         return coleccionesService.findAll();
     }
 
     @GetMapping("/publica/{handle}")
-    @PreAuthorize("hasRole ('VISUALIZADOR') and hasAuthority('VER_COLECCIONES')")
+    @PreAuthorize("permitAll()")
     public ColeccionOutputDTO obtenerColeccionPublica(@PathVariable String handle) {
         return coleccionesService.findByHandle(handle);
     }
 
 
     @GetMapping("publica/{handle}/hechos")
-    @PreAuthorize("hasAnyRole ('VISUALIZADOR','CONTRIBUYENTE') and hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
         return this.coleccionesService.mostrarHechosColeccion(handle, curado, filtros);
     }
 
     @GetMapping("/publica/preview")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
         return this.coleccionesService.findAllPreview(page);
     }

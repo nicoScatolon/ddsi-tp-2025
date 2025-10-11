@@ -46,6 +46,7 @@ public class SolicitudesEliminacionController {
     }
 
     @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
     public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
         return this.solicitudesEliminacionService.findSinProcesar();
     }

@@ -27,7 +27,7 @@ public class HechosController {
     @GetMapping("/publica")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
-        return hechosService.getHechos(hechosFilterDTO);
+        return hechosService.getHechos(hechosFilterDTO,null);
     }
 
     @GetMapping("/publica/{id}")

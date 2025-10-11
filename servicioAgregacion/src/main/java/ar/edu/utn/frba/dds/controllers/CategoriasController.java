@@ -30,13 +30,14 @@ public class CategoriasController {
     }
 
     @GetMapping("/short")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<String>> findAllShort() {
         List<String> listaCategorias = categoriaService.findAllShort();
         return ResponseEntity.ok(listaCategorias);
     }
 
     @PostMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")//TODO: a chequear
     public ResponseEntity<Void> agregarEquivalentes( @RequestParam EquivalenteInputDTO equivalenteInputDTO) {
         categoriaService.agregarEquivalentes(equivalenteInputDTO.getCodCategoria(), equivalenteInputDTO.getEquivalente());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
