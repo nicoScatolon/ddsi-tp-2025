@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
+import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
@@ -14,8 +15,7 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.ConstructorSol
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorUbicacion.normalizarUbicacion;
@@ -299,6 +299,53 @@ public class DTOConverter {
                 .build();
     }
 
+    public static ColeccionEditOutputDTO coleccionEditOutputDTO(Coleccion coleccion) {
+        return ColeccionEditOutputDTO.builder()
+                .titulo(coleccion.getTitulo())
+                .descripcion(coleccion.getDescripcion())
+                .handle(coleccion.getHandle())
+                .algoritmoConsenso(coleccion.getAlgoritmoConsenso().getTipo())
+                .fuentes(DTOConverter.convertirListaFuentePreviewOutputDTO(coleccion.getListaFuentes()))
+                .listaCriterios(DTOConverter.listaCriterioOutputDTO(coleccion.getListaCriterios()))
+                .build();
+    }
 
+    public static Set<CriterioOutputDTO> listaCriterioOutputDTO(Set<Criterio> criterios) {
+        Set<CriterioOutputDTO> set = new HashSet<>();
+        criterios.forEach(criterio -> {set.add(DTOConverter.convertirCriterioOutputDTO(criterio));});
+        return set;
+    }
 
+    public static CriterioOutputDTO convertirCriterioOutputDTO(Criterio criterio) {
+        Map<String, String> params = new HashMap<>();
+
+        if (criterio instanceof CriterioCargaEntreFechas c) {
+            params.put("primeraFecha", c.getPrimeraFecha().toString());
+            params.put("segundaFecha", c.getSegundaFecha().toString());
+        }
+        else if (criterio instanceof CriterioOcurrenciaEntreFechas c) {
+            params.put("primeraFecha", c.getPrimeraFecha().toString());
+            params.put("segundaFecha", c.getSegundaFecha().toString());
+        }
+        else if (criterio instanceof CriterioCategoria c) {
+            params.put("categoria", c.getCategoria().getNombre());
+        }
+        else if (criterio instanceof CriterioTitulo c) {
+            params.put("titulo", c.getNombre());
+        }
+        else if (criterio instanceof CriterioProvincia c) {
+            params.put("provincia", c.getProvincia());
+        }
+        else if (criterio instanceof CriterioContenidoMultimedia) {
+            // este no tiene parámetros
+        }
+        else {
+            throw new IllegalArgumentException("Tipo de criterio no soportado: " + criterio.getClass().getSimpleName());
+        }
+
+        return CriterioOutputDTO.builder()
+                .tipo(criterio.getNombre())
+                .parametros(params)
+                .build();
+    }
 }

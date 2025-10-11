@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
@@ -254,6 +255,12 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesRepository.save(coleccion);
 
         return coleccion.getListaFuentes();
+    }
+
+    @Override
+    public ColeccionEditOutputDTO findByHandleEditable(String handle) {
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        return DTOConverter.coleccionEditOutputDTO(coleccion);
     }
 
     @Override
