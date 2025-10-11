@@ -56,6 +56,15 @@ public class HechosService implements IHechosService {
                 .toList();
     }
 
+    @Override
+    public ResponseEntity<HechoOutputDTO> getHechoById(Long idHecho) {
+        Hecho hechoBuscado = this.hechosRepository.findById(idHecho).orElse(null);
+        if (hechoBuscado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(hechoOutputDTO(hechoBuscado));
+    }
+
     @Transactional
     public void cargarHecho(HechoInputDTO dto) {
         Hecho h = hechoInputDTO(dto);
@@ -153,6 +162,7 @@ public class HechosService implements IHechosService {
                 .fechaDeCarga(hecho.getFechaDeCarga())
                 .contenidoMultimedia(hecho.getContenidoMultimedia())
                 .cargadoAnonimamente(hecho.getCargadoAnonimamente())
+                .fechaDeModificacion(hecho.getFechaDeModificacion())
                 .contribuyenteId(hecho.getContribuyenteId())
                 .estado(hecho.getEstado())
                 .sugerencia(hecho.getSugerencia())

@@ -16,4 +16,6 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
     List<Hecho> findHechoByEstadoAndFechaDeCargaAfter(EstadoHecho estado, LocalDateTime fechaDeCargaAfter);
     List<Hecho> findAllByContribuyenteId(Long contribuyenteId);
     List<Hecho> findAllByContribuyenteIdAndEstado(Long contribuyenteId, EstadoHecho estado);
+
+    Long id(Long id);
 }

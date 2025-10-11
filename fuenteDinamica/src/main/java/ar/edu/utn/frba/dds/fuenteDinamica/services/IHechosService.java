@@ -15,4 +15,5 @@ public interface IHechosService {
     Hecho modificarHecho(HechoInputDTO hechoInputDTO);
     ResponseEntity<HechoOutputDTO> revisarHecho(Long idAdmin, RevisionHechoInputDTO revisionHechoDTO);
     List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado);
+    ResponseEntity<HechoOutputDTO> getHechoById(Long idHecho);
 }

@@ -26,6 +26,7 @@ public class HechoOutputDTO {
     private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
     private List<ContenidoMultimedia> contenidoMultimedia;
+    private LocalDateTime fechaDeModificacion;
     private Long contribuyenteId;
     private EstadoHecho estado;
     private String sugerencia;
