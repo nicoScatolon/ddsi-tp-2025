@@ -79,11 +79,11 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
+    public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO, Boolean fueEliminado){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
 
         if (filterDTO.getPage() == null) { // no tiene pagina -> devuelvo tod0s los hechos
-            return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter))
+            return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter, fueEliminado))
                     .stream()
                     .map(DTOConverter::convertirHechoOutputDTO)
                     .toList();
@@ -91,7 +91,7 @@ public class HechosService implements IHechosService {
 
         Pageable pageable = PageRequest.of(filterDTO.getPage(), pageSize);
 
-        return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter), pageable)
+        return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter, fueEliminado), pageable)
                 .stream()
                 .map(DTOConverter::convertirHechoOutputDTO)
                 .toList();
@@ -233,7 +233,7 @@ public class HechosService implements IHechosService {
     query es la consulta completa, sirve si necesitamos hacer joins, fetchs, cambiar orden, etc.
     Los "Predicate" son las consultas logicas que crea el criteriaBuilder
     */
-    public Specification<Hecho> buildHechosSpecification(HechoFilter hechosFilter) {
+    public Specification<Hecho> buildHechosSpecification(HechoFilter hechosFilter, Boolean fueEliminado) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -262,6 +262,10 @@ public class HechosService implements IHechosService {
                 // Hacemos un JOIN entre Hecho y Etiqueta
                 Join<Object, Object> joinEtiquetas = root.join("etiquetas", JoinType.INNER);
                 predicates.add( cb.equal( cb.lower( joinEtiquetas.get("nombre") ), hechosFilter.getEtiqueta().toLowerCase() ) );
+            }
+
+            if (fueEliminado != null) {
+                predicates.add(cb.equal(root.get("fueEliminado"), fueEliminado));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

@@ -22,7 +22,7 @@ public interface IHechosService {
 
     void actualizarHechosRepository(List<Hecho> hechosActualizados);
 
-    List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO);
+    List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO, Boolean fueEliminado);
     List<HechoMapaOutputDTO> getHechosMapa();
     List<HechoOutputDTO> getHechosDestacados();
 

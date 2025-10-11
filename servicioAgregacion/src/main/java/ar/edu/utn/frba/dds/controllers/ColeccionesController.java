@@ -65,9 +65,9 @@ public class ColeccionesController {
         return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 
-    @DeleteMapping("/privada")
-    public ResponseEntity<Void> eliminarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        return coleccionesService.eliminarColeccion(coleccionInputDTO);
+    @DeleteMapping("/privada/{handle}")
+    public ResponseEntity<Void> eliminarColeccion(@PathVariable String handle) {
+        return coleccionesService.eliminarColeccion(handle);
     }
 
 

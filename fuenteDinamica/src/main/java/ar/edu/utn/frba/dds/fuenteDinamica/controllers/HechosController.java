@@ -51,6 +51,13 @@ public class HechosController {
         return ResponseEntity.accepted().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<HechoOutputDTO> obtenerHechoPorId(@PathVariable Long id)
+    {
+        // formato fecha: YYYY-MM-DDThh:mm:ss --> ejemplo: 2025-10-07T18:37:00
+        return hechosService.getHechoById(id);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         try {

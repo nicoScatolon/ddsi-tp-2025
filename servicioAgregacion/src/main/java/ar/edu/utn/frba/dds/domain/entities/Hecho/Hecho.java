@@ -63,9 +63,6 @@ public class Hecho {
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
-    @Enumerated(EnumType.STRING)
-    private TipoHecho tipoHecho;
-
     @Builder.Default
     @Column (name = "contribuyenteId")
     private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios

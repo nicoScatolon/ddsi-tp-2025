@@ -17,7 +17,7 @@ public interface IColeccionesService {
     List<ColeccionOutputDTO> findAll();
     List<ColeccionPreviewOutputDTO> findAllPreview(Integer page);
     ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO);
-    ResponseEntity<Void> eliminarColeccion(ColeccionInputDTO coleccionInputDTO);
+    ResponseEntity<Void> eliminarColeccion(String handle);
     List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO hechosFilterDTO);
     void notificarActualizacionFuentes(List<Fuente> fuentes);
     void notificarFuenteEliminada(Fuente fuente);
