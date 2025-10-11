@@ -26,8 +26,8 @@ public class HechosController {
     // --- API Publica --- //
 
     @GetMapping("/publica")
-    public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
-        return hechosService.getHechos(hechosFilterDTO);
+    public List<HechoOutputDTO> getHechosPublica(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
+        return hechosService.getHechos(hechosFilterDTO ,false);
     }
 
     @GetMapping("/publica/{id}")
@@ -47,6 +47,11 @@ public class HechosController {
     }
 
     // --- API Privada --- //
+
+    @GetMapping("/privada")
+    public List<HechoOutputDTO> getHechosPrivada(@ModelAttribute HechosFilterDTO hechosFilterDTO, @RequestParam(required = false) Boolean fueEliminado) {
+        return hechosService.getHechos(hechosFilterDTO, fueEliminado);
+    }
 
     @PutMapping("/privada/{id}/etiquetas")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
