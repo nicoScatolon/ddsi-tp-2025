@@ -72,9 +72,7 @@ public class Coleccion {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
-        if (algoritmoConsenso != null) {
-            this.algoritmoConsenso = algoritmoConsenso;
-        }
+        this.algoritmoConsenso = algoritmoConsenso;
     }
 
     public void agregarCriterio(Criterio criterio) {
