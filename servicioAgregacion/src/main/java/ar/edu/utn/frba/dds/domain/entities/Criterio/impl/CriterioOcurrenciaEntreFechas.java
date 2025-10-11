@@ -4,12 +4,13 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-
+@Getter
 @NoArgsConstructor
 @DiscriminatorValue("OcurrenciaEntreFechas")
 public class CriterioOcurrenciaEntreFechas extends Criterio {
