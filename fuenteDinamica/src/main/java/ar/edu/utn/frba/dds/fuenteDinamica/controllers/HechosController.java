@@ -1,13 +1,18 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.ContribuyenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -30,7 +35,7 @@ public class HechosController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> obtenerHechos(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga)
@@ -39,8 +44,26 @@ public class HechosController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('CONTRIBUYENTE') and hasAuthority('CREAR_HECHO')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        ContribuyenteInputDTO contribuyenteDTO = new ContribuyenteInputDTO();
+
+        if(auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            Object principal = auth.getPrincipal();
+            if(principal instanceof Contribuyente contribuyente){
+                contribuyenteDTO.setNombre(contribuyente.getNombre());
+                contribuyenteDTO.setApellido(contribuyente.getApellido());
+                contribuyenteDTO.setId(contribuyente.getId());
+            }
+        }else{
+            contribuyenteDTO.setNombre("Anonimo");
+            contribuyenteDTO.setApellido("");
+            contribuyenteDTO.setId(null);
+        }
+        dto.setContribuyente(contribuyenteDTO);
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
                     if (ex != null) {
                         log.error("Fallo al cargar hecho", ex);}});

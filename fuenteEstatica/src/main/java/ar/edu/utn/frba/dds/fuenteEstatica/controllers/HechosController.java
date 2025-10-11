@@ -36,7 +36,7 @@ public class HechosController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> buscarTodosPorFecha(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga
