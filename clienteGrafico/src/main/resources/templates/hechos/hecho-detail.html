@@ -61,17 +61,17 @@
                     <div class="info-item">
                         <div class="tags-header">Ubicación:</div>
                         <p id="hecho-ubicacion" class="ubicacion">
-                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.localidad!= null)}">
+                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
                                 <span th:if="${hecho.ubicacion.provincia != null}"
                                       th:text="${hecho.ubicacion.provincia}"></span>
-                                <span th:if="${hecho.ubicacion.localidad != null}"
-                                      th:text="${hecho.ubicacion.localidad}"></span>
+                                <span th:if="${hecho.ubicacion.departamento != null}"
+                                      th:text="${hecho.ubicacion.departamento}"></span>
                                 <span th:if="${hecho.ubicacion.calle != null}"
                                       th:text="${' - ' + hecho.ubicacion.calle}"></span>
                                 <span th:if="${hecho.ubicacion.numero != null}"
                                       th:text="${' ' + hecho.ubicacion.numero}"></span>
                             </span>
-                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.localidad!= null)}">Sin ubicación especificada</span>
+                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
                         </p>
                     </div>
 
@@ -98,15 +98,15 @@
                     <hr class="separator">
 
                     <!-- Contribuyente -->
-                    <div class="info-item">
+                    <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
                         <div class="tags-header">Contribuyente ID:</div>
                         <p id="hecho-contribuyente" class="contribuyente">
                             <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
-                            <span th:if="${hecho.contribuyenteId != null}"
-                                  th:text="${ hecho.contribuyenteId}">
+                            <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
+                            <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
                                 Nombre Apellido
                             </span>
-                            <span th:if="${hecho.contribuyenteId == null}">Anónimo</span>
+
                         </p>
                     </div>
 
@@ -201,15 +201,15 @@
             categoriaNombre: /*[[${hecho != null && hecho.categoria != null && hecho.categoria.nombre != null ? hecho.categoria.nombre : ''}]]*/ '',
             ubicacion: {
                 provincia: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : ''}]]*/ '',
-                localidad: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.localidad != null ? hecho.ubicacion.localidad : ''}]]*/ '',
+                departamento: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.departamento != null ? hecho.ubicacion.departamento : ''}]]*/ '',
                 latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
                 longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
             },
             etiquetasPresentes: /*[[${hecho != null && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
             fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
             fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
-            contribuyenteNombre: /*[[${hecho != null && hecho.contribuyente != null && hecho.contribuyente.nombre != null ? hecho.contribuyente.nombre : ''}]]*/ '',
-            contribuyenteApellido: /*[[${hecho != null && hecho.contribuyente != null && hecho.contribuyente.apellido != null ? hecho.contribuyente.apellido : ''}]]*/ ''
+            contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
+            contribuyenteApellido: /*[[${contribuyente != null && contribuyente.apellido != null ? contribuyente.apellido : ''}]]*/ ''
         };
 
         const USER_DATA = {

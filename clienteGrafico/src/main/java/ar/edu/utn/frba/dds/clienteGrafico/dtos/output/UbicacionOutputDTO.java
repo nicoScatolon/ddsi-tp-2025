@@ -13,7 +13,7 @@ public class UbicacionOutputDTO {
     private Long id;
 
     private String provincia;
-    private String localidad;
+    private String departamento;
     private String calle;
     private Integer numero;
 

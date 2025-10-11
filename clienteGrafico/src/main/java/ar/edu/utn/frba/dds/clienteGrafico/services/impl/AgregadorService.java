@@ -284,7 +284,7 @@ public class AgregadorService implements IAgregadorService {
                         .build())
                 .ubicacion(UbicacionInputDTO.builder()
                         .provincia("Buenos Aires")
-                        .localidad("CABA")                // Ciudad Autónoma de Buenos Aires
+                        .departamento("CABA")                // Ciudad Autónoma de Buenos Aires
                         .calle("Av. Corrientes")          // Calle conocida
                         .numero(1234)
                         .latitud(-34.6037)                // Coordenadas aproximadas

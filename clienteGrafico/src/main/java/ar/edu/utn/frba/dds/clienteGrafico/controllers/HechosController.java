@@ -83,9 +83,15 @@ public class HechosController {
     public String hecho(@PathVariable("id") Long id, Model model) {
         try {
             HechoInputDTO hecho = agregadorService.getHechoById(id);
+            ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
+            contribuyente.setId(hecho.getContribuyenteId());
+            contribuyente.setNombre("AAAA");
+            contribuyente.setApellido("BBBB");
+            //TODO obtener datos del usuario con el id desde el hecho
             ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
+            model.addAttribute("contribuyente", contribuyente);
             model.addAttribute("usuario", usuario);
             model.addAttribute("permitirEdicion",0);
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
