@@ -12,4 +12,5 @@ public interface IFuenteDinamicaService {
     ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO);
     List<HechoDinamicaInputDTO> obtenerHechosDinamica(EstadoHecho estadoHecho);
     void enviarRevisionHechoDinamica(RevisionHechoInputDTO revisionHecho, Long adminId);
+    HechoDinamicaInputDTO obtenerHechoDinamicaId(Long idHecho);
 }

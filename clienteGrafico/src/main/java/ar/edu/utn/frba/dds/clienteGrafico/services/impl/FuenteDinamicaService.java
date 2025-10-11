@@ -51,6 +51,17 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     }
 
     @Override
+    public HechoDinamicaInputDTO obtenerHechoDinamicaId(Long idHecho) {
+        return webClient.get()
+                .uri("/api/fuenteDinamica/hechos/{id}", idHecho)
+                .retrieve()
+                .bodyToMono(HechoDinamicaInputDTO.class)
+                .block();
+        //TODO agregar metodo al backend
+        // ver que onda si devuelve un 404
+    }
+
+    @Override
     public void enviarRevisionHechoDinamica(RevisionHechoInputDTO revisionHecho, Long adminId) {
         webClient.post()
                 .uri("/api/fuenteDinamica/hechos/admin/{adminId}", adminId)

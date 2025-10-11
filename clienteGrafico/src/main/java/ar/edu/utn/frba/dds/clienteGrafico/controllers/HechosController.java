@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
@@ -103,6 +104,19 @@ public class HechosController {
         model.addAttribute("logeado", 1);
         return "/hechos/hechos-map";
     }
+
+    @GetMapping("/fuenteDinamica/{id}")
+    public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model) {
+        HechoDinamicaInputDTO hecho = this.fuenteDinamicaService.obtenerHechoDinamicaId(id);
+
+        model.addAttribute("titulo", "Hecho Fuente Dinamica");
+        model.addAttribute("hecho", hecho);
+        model.addAttribute("idContribuyente", 2);
+        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
+        model.addAttribute("logeado", 1);
+        return ""; //TODO agregar html de respuesta
+    }
+
 
     /*
      List<HechoMapaInputDTO> hechosMapa = new ArrayList<>();
