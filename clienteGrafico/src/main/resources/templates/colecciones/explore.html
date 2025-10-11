@@ -20,63 +20,43 @@
             </div>
 
             <div id="collections-container" class="cards-container">
-                <a th:each="coleccion : ${colecciones}" class="card collection-card"
-                     th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}">
-                    <!-- Imagen o fallback
-                    <div th:if="${coleccion.hechos[0]?.img != null}">
-                        <img th:src="${coleccion.hechos[0].img}" th:alt="${coleccion.titulo}" class="card-img" />
-                    </div>
-                    <div th:if="${coleccion.hechos[0]?.img == null}"
-                         class="card-fallback"
-                         th:style="'background:' + ${coleccion.colorFallback} + '; display:flex; justify-content:center; align-items:center; height:150px;'">
-                        <span style="color:#fff; font-weight:700; font-size:1.4rem;"
-                      th:text="${#strings.substring(coleccion.titulo, 0, 1)}">A</span>
-                    </div> -->
+                <div th:each="coleccion : ${colecciones}" class="card collection-card">
 
-                    <div class="card-fallback"
-                         style="background:#2F60F4; display:flex; justify-content:center; align-items:center; height:150px;">
-                <span style="color:#fff; font-weight:700; font-size:1.4rem;"
-                      th:text="${#strings.substring(coleccion.titulo, 0, 1)}"> A
-                </span>
-                    </div>
+                    <!-- Área clickeable que lleva al detalle -->
+                    <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="card-link">
+                        <div class="card-fallback"
+                             style="background:#2F60F4; display:flex; justify-content:center; align-items:center; height:120px;">
+                            <span style="color:#fff; font-weight:700; font-size:1.4rem;"
+                                  th:text="${#strings.substring(coleccion.titulo, 0, 1)}"> A
+                            </span>
+                        </div>
 
-                    <!-- Título -->
-                    <div class="card-title" th:text="${coleccion.titulo}">Título de la colección</div>
+                        <!-- Título -->
+                        <div class="card-title" th:text="${coleccion.titulo}">Título de la colección</div>
 
-                    <!-- Descripción -->
-                    <div class="card-description">
-                        <p th:text="${#strings.abbreviate(coleccion.descripcion, 140)}">
-                            Breve descripción de la colección...
-                        </p>
-                    </div>
+                        <!-- Descripción -->
+                        <div class="card-description">
+                            <p th:text="${#strings.abbreviate(coleccion.descripcion, 140)}">
+                                Breve descripción de la colección...
+                            </p>
+                        </div>
+                    </a>
 
-                    <!-- Metadatos -->
-                    <div class="card-meta">
-                        <p>
-                            Cantidad de hechos:
-                            <!-- <span th:text="${#lists.size(coleccion.hechos)}">0</span> -->
-                        </p>
-                        <p>
-                            Última actualización:
-                            <!-- <span th:text="${coleccion.ultimaActualizacion}">—</span> -->
-                        </p>
-                    </div>
-
-                    <!-- Acciones -->
+                    <!-- Acciones FUERA del link -->
                     <div th:if="${rol == 2}" class="card-actions">
-                        <a th:href="@{/colecciones/{handle}/edit(handle=${coleccion.handle})}" class="btn-action btn-edit">
+                        <!-- Editar: redirige al controlador -->
+                        <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}" class="btn-action btn-edit">
                             Editar
                         </a>
 
-                        <!-- Eliminar: DELETE -->
-                        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="post" style="display:inline;">
+                        <!-- Eliminar: form POST con método DELETE -->
+                        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="post" class="inline-form"
+                              onsubmit="return confirm('¿Seguro que querés eliminar esta colección?');">
                             <input type="hidden" name="_method" value="delete" />
-                            <button type="submit" class="btn-action btn-delete">
-                                Eliminar
-                            </button>
+                            <button type="submit" class="btn-action btn-delete">Eliminar</button>
                         </form>
                     </div>
-                </a>
+                </div>
             </div>
 
             <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">

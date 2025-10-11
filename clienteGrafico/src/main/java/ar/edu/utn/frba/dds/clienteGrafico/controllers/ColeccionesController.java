@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
@@ -71,8 +72,8 @@ public class ColeccionesController {
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
 
-        model.addAttribute("titulo", "Crear Coleccion");
-        model.addAttribute("coleccionDTO", coleccionFormDTO); // Cambiar esto
+        model.addAttribute("titulo", "Crear Colección");
+        model.addAttribute("coleccionDTO", coleccionFormDTO);
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 2);
@@ -98,7 +99,9 @@ public class ColeccionesController {
 
     @GetMapping("/{handle}/editar")
     public String modificarColeccion(Model model, @PathVariable String handle) {
-
-        return "/colecciones/editar";
+        ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);
+        model.addAttribute("titulo", "Modificar Colección");
+        model.addAttribute("coleccionDTO", coleccionDTO);
+        return "/colecciones/create";
     }
 }

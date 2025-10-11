@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
@@ -33,4 +34,6 @@ public interface IAgregadorService {
     ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO);
 
     ResponseEntity<Void> eliminarColeccion(String handle);
+
+    ColeccionInputDTO obtenerColeccion(String handle);
 }

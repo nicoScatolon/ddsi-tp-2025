@@ -1,5 +1,5 @@
 main {
-    margin: 1rem; /* solo al contenido principal */
+    margin: 1rem;
     padding: 0;
 }
 
@@ -26,9 +26,9 @@ footer {
 }
 
 .card {
-    width: 100%;        /* ancho flexible */
-    max-width: 380px;   /* tamaño máximo para cada card */
-    height: 400px; /* más alto para destacar */
+    width: 100%;
+    max-width: 380px;
+    height: 320px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -37,15 +37,23 @@ footer {
     border-radius: 10px;
     background: #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    text-decoration: none;
     color: #333;
     transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
+    position: relative;
 }
 
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    cursor: pointer;
 }
 
 #collections h1 {
@@ -66,7 +74,7 @@ footer {
     color: #555;
     line-height: 1.3rem;
     display: -webkit-box;
-    -webkit-line-clamp: 5;   /* máximo 5 líneas */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -75,7 +83,7 @@ footer {
 .card-img,
 .card-fallback {
     width: 100%;
-    height: 180px;
+    height: 120px;
     border-radius: 8px;
     margin-bottom: 0.8rem;
     object-fit: cover;
@@ -134,7 +142,7 @@ footer {
 
 /* Filtros */
 .filter-box {
-    flex: 0 0 250px; /* ancho fijo */
+    flex: 0 0 250px;
     background: #fff;
     padding: 1rem;
     border-radius: 10px;
@@ -174,14 +182,32 @@ footer {
 }
 
 /* ====== Botones de acción ====== */
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.inline-form {
+    flex: 1;
+    margin: 0;
+}
+
 .btn-action {
-    padding: 6px 12px;
+    flex: 1;
+    width: 100%;
+    padding: 8px 14px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-action:hover {
@@ -195,6 +221,7 @@ footer {
 
 .btn-edit:hover {
     background: #1746D2;
+    color: #fff; /* Mantener el texto blanco en hover */
 }
 
 .btn-delete {
@@ -204,6 +231,7 @@ footer {
 
 .btn-delete:hover {
     background: #c92a2a;
+    color: #fff; /* También mantener blanco por consistencia */
 }
 
 /* ===== FAB CREAR COLECCIÓN ===== */
@@ -277,7 +305,6 @@ footer {
     padding: 0;
 }
 
-/* deshabilitado */
 .pagination-arrow.disabled {
     opacity: 0.45;
     cursor: not-allowed;

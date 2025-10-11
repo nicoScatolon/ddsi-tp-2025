@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
@@ -99,6 +100,18 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    @Override
+    public ColeccionInputDTO obtenerColeccion(String handle) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/publica/editable/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .bodyToMono(ColeccionInputDTO.class)
+                .block();
+    }
+
 
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
@@ -124,6 +137,7 @@ public class AgregadorService implements IAgregadorService {
                 .bodyToMono(ColeccionPreviewInputDTO.class)
                 .block();
     }
+
 
     public List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado) {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);

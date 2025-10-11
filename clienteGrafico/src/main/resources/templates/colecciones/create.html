@@ -6,7 +6,7 @@
 <div th:fragment="contenido">
     <section id="create-collection">
         <section class="card">
-            <h1>Crear Colección</h1>
+            <h1 th:text="${titulo}"></h1>
             <form th:action="@{/colecciones/create}" th:object="${coleccionDTO}" method="post" id="createCollectionForm">
                 <div>
                     <label for="titulo">Título</label>
