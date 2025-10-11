@@ -31,19 +31,23 @@ public class AuthController {
             String username = credentials.get("username");
             String password = credentials.get("password");
 
+            log.info("Llegan este usuario y esta contrasenia" + username, password);
+
             // Validación básica de credenciales
             if (username == null || username.trim().isEmpty() ||
                     password == null || password.trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
 
+            log.info("el usuario no se autentico");
             // Autenticar usuario usando el LoginService
             Usuario u = loginService.autenticar(username, password);
-
+            log.info("el usuario autenticado");
             // Generar tokens
             String accessToken  = loginService.generarAccessToken(u);
             String refreshToken = loginService.generarRefreshToken(u.getNombre());
 
+            log.info("se generaron los tokens, queda buildear la respuesta");
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)

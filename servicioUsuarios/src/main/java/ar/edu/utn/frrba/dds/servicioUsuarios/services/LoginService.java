@@ -21,18 +21,18 @@ public class LoginService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public Usuario autenticar(String nombre, String contrasenia) {
-        Optional<Usuario> usuarioOpcional = usuariosRepository.findByNombre(nombre);
+    public Usuario autenticar(String username, String contrasenia) {
+        Optional<Usuario> usuarioOpcional = usuariosRepository.findByUsername(username);
 
         if (usuarioOpcional.isEmpty()) {
-            throw new NotFoundException("Usuario", nombre);
+            throw new NotFoundException("Usuario", username);
         }
 
         Usuario usuario = usuarioOpcional.get();
 
         // Verificar la contraseña usando BCrypt
         if (!passwordEncoder.matches(contrasenia, usuario.getPassword())) {
-            throw new NotFoundException("Usuario", nombre);
+            throw new NotFoundException("Usuario", username);
         }
 
         return usuario;
