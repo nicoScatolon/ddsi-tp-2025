@@ -23,8 +23,9 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/solicitud")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','VISUALIZADOR') and hasAuthority('SOLICITAR_ELIMINACION')")
+    @PreAuthorize("permitAll()")
     public Mono<Void> crearSolicitudEliminacion(@RequestBody SolicitudEliminarHechoInputDTO solicitud) {
+        //chequeo dentro del service de solicitudes de eliminacion
         return solicitudesEliminacionService.crearSolicitudEliminacion(solicitud);
     }
 }

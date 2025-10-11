@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,41 +49,45 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
                 .map(DTOConverter::solicitudEliminarHechoOutputDTO)
                 .toList();
     }
+    public List<SolicitudEliminarHechoOutputDTO> findSinProcesar(){
+        return null;
+    }
+
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) { //Todo: debería ser responseEntity
+    public ResponseEntity<Void> crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long id) { //Todo: debería ser responseEntity
         if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
         }
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
-                .constructorSolicitud(hecho, razon, nombre, apellido);
+                .constructorSolicitud(hecho, razon, id);
         repository.save(solicitud);
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
+    public ResponseEntity<Void> crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
         Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
 
         if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
         }
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean esVisualizador = auth !=null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("VISUALIZADOR"));
-        if(esVisualizador && solicitud.getRazonDeEliminacion().length() < 500){
+
+        boolean esAnonimo = (auth ==null || !auth.isAuthenticated() ||auth instanceof AnonymousAuthenticationToken);
+
+        if(esAnonimo && solicitud.getRazonDeEliminacion().length() < 500){
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Los visualizadores deben ingresar una justificación de al menos 500 caracteres"
+                    HttpStatus.BAD_REQUEST,"Los usuarios no autenticados deben ingresar una justificación de al menos 500 caracteres"
             );
         }
 
         this.crearSolicitudDesdeEntidad(
                 hecho,
                 solicitud.getRazonDeEliminacion(),
-                solicitud.getNombreCreador(),
-                solicitud.getApellidoCreador()
+                solicitud.getIdCreador()
         );
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -102,14 +107,14 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        if (solicitudDTO.getAdministrador().getNombre() == null || solicitudDTO.getAdministrador().getApellido() == null) {
+        if (solicitudDTO.getAdministradorId() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         if (aceptar) {
-            solicitud.serAceptada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serAceptada(solicitudDTO.getAdministradorId());
         } else {
-            solicitud.serRechazada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serRechazada(solicitudDTO.getAdministradorId());
         }
 
         repository.save(solicitud);
@@ -126,11 +131,10 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         logger.info("Solicitudes de eliminación cargadas - Cantidad: {}", solicitudes.size());
         solicitudes.forEach(solicitud ->
                 logger.info(
-                        "Solicitud ID: {} - Hecho ID: {} - Nombre: {} {} - Razón: {} - Fecha: {}",
+                        "Solicitud ID: {} - Hecho ID: {} - ID del Admin: {} - Razón: {} - Fecha: {}",
                         solicitud.getId(),
                         solicitud.getHecho() != null ? solicitud.getHecho().getId() : "N/A",
-                        solicitud.getNombreCreador(),
-                        solicitud.getApellidoCreador(),
+                        solicitud.getIdAdministrador(),
                         acortarTexto(solicitud.getRazonDeEliminacion()),
                         solicitud.getFechaCreacion()
                 )

@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponseDTO {
-    private String accessToken;
-    private String refreshToken;
+public class RolesPermisosDTO {
+    private String username;
+    private Rol rol;
+    private List<Permiso> permisos;
 }

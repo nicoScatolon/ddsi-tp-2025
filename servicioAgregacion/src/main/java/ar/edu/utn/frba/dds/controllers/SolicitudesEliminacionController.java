@@ -32,7 +32,7 @@ public class SolicitudesEliminacionController {
     }
 
     @PostMapping("/publica")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','VISUALIZADOR') and hasAuthority('SOLICITAR_ELIMINACION')")
+    @PreAuthorize("permitAll()")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
         return solicitudesEliminacionService.crearSolicitudDesdeDTO(request);

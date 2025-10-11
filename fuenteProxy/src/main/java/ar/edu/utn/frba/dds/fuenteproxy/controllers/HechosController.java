@@ -26,19 +26,19 @@ public class HechosController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public Mono<List<HechoOutputDTO>> obtenerHechos() {
         return hechosService.buscarTodos();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public Mono<HechoOutputDTO> buscarHechoPorId(@PathVariable Long id, @RequestBody FuenteInputDTO fuente) {
         return hechosService.buscarPorId(id, fuente);
     }
 
     @GetMapping("/filtrados")
-    @PreAuthorize("hasAuthority('VER_HECHOS')")
+    @PreAuthorize("permitAll()")
     public Mono<List<HechoOutputDTO>> filtrarHechos(@ModelAttribute HechosFilterDTO filtros) {
         return hechosService.buscarConFiltros(filtros);
     }

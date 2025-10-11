@@ -1,7 +1,6 @@
-package ar.edu.utn.frrba.dds.servicioUsuarios.models.entities;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos;
 
 public enum Permiso {
-
     SOLICITAR_ELIMINACION, // Visualizador y Contribuyente
     SELECCIONAR_MODO_NAVEGACION, // Visualizador y Contribuyente
 
