@@ -99,14 +99,14 @@
 
                     <!-- Contribuyente -->
                     <div class="info-item">
-                        <div class="tags-header">Contribuyente:</div>
+                        <div class="tags-header">Contribuyente ID:</div>
                         <p id="hecho-contribuyente" class="contribuyente">
                             <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
-                            <span th:if="${hecho.contribuyente != null}"
-                                  th:text="${hecho.contribuyente.nombre + ' ' + hecho.contribuyente.apellido}">
+                            <span th:if="${hecho.contribuyenteId != null}"
+                                  th:text="${ hecho.contribuyenteId}">
                                 Nombre Apellido
                             </span>
-                            <span th:unless="${hecho.contribuyente != null}">Anónimo</span>
+                            <span th:if="${hecho.contribuyenteId == null}">Anónimo</span>
                         </p>
                     </div>
 

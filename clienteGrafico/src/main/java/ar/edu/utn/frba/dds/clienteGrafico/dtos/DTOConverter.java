@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.CriterioInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
@@ -17,9 +19,11 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Pro
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class DTOConverter {
@@ -46,11 +50,6 @@ public class DTOConverter {
                 )
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .fechaDeCarga(hechoDTO.getFechaDeCarga())
-                .contribuyente(
-                        hechoDTO.getContribuyente() != null
-                                ? convertirContribuyenteInputDTO(hechoDTO.getContribuyente())
-                                : null
-                )
                 .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente())
                 .build();
     }
@@ -169,5 +168,39 @@ public class DTOConverter {
                 .descripcion(formDTO.getDescripcion())
                 .algoritmoConsenso(algoritmo)
                 .build();
+    }
+
+    public static ColeccionFormDTO convertirAFormDTO(ColeccionInputDTO coleccionDTO) {
+        ColeccionFormDTO form = new ColeccionFormDTO();
+        form.setHandle(coleccionDTO.getHandle());
+        form.setTitulo(coleccionDTO.getTitulo());
+        form.setDescripcion(coleccionDTO.getDescripcion());
+        form.setAlgoritmoConsensoTipo(
+                coleccionDTO.getAlgoritmoConsenso() != null ?
+                        coleccionDTO.getAlgoritmoConsenso().name() : null
+        );
+
+        // Convertir fuentes
+        form.setListaIdsFuentes(
+                coleccionDTO.getFuentes().stream()
+                        .map(FuenteInputDTO::getFuenteId)
+                        .collect(Collectors.toList())
+        );
+
+        // Convertir criterios
+        form.setListaCriterios(
+                coleccionDTO.getListaCriterios().stream()
+                        .map(DTOConverter::convertirCriterio)
+                        .collect(Collectors.toList())
+        );
+
+        return form;
+    }
+
+    public static CriterioFormDTO convertirCriterio(CriterioInputDTO input) {
+        CriterioFormDTO form = new CriterioFormDTO();
+        form.setTipo(input.getTipo());
+        form.setParametros(new HashMap<>(input.getParametros()));
+        return form;
     }
 }
