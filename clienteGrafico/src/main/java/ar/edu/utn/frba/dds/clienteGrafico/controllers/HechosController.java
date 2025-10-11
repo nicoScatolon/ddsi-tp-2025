@@ -91,7 +91,9 @@ public class HechosController {
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
             model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {
-            model.addAttribute("hecho", null);
+            model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
+            model.addAttribute("urlRedirect", "/hechos");
+            return "404";
         }
         return "/hechos/hecho-detail";
     }
@@ -110,12 +112,19 @@ public class HechosController {
     public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model) {
         HechoDinamicaInputDTO hecho = this.fuenteDinamicaService.obtenerHechoDinamicaId(id);
 
+        if (hecho == null) {
+            model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
+            model.addAttribute("urlRedirect", "/user/misHechos");
+            return "404";
+        }
+
         model.addAttribute("titulo", "Hecho Fuente Dinamica");
         model.addAttribute("hecho", hecho);
         model.addAttribute("idContribuyente", 2);
+        model.addAttribute("permitirEdicion",1);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return ""; //TODO agregar html de respuesta
+        return "/hechos/hecho-detail";
     }
 
 
@@ -139,13 +148,12 @@ public class HechosController {
     }
 
     public HechoInputDTO instanciarHecho(){
-        ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
         CategoriaInputDTO categoria = new CategoriaInputDTO();
         UbicacionInputDTO ubicacion = new UbicacionInputDTO();
 
         HechoInputDTO hecho = new HechoInputDTO();
 
-        hecho.setContribuyente(contribuyente);
+        hecho.setContribuyenteId(10L);
         hecho.setCategoria(categoria);
         hecho.setUbicacion(ubicacion);
 

@@ -113,7 +113,7 @@
                     <!-- Acciones solo para usuarios logueados -->
                     <div th:if="${logeado == 1}" id="hecho-actions" class="info-item" style="margin-top:12px;">
                         <button id="deleteBtn" class="btn-warning">Solicitar eliminación</button>
-                        <button th:if="${rol == 2 && permitirEdicion == 1}" id="editBtn" class="btn-primary">Editar</button>
+                        <button th:if="${logeado == 1 && permitirEdicion == 1 && hecho.contribuyenteId == idContribuyente}" id="editBtn" class="btn-primary">Editar</button>
                     </div>
                 </div>
 

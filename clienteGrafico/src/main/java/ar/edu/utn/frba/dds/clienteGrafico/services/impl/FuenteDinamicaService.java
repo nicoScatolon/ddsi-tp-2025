@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
@@ -52,13 +53,15 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
 
     @Override
     public HechoDinamicaInputDTO obtenerHechoDinamicaId(Long idHecho) {
-        return webClient.get()
-                .uri("/api/fuenteDinamica/hechos/{id}", idHecho)
-                .retrieve()
-                .bodyToMono(HechoDinamicaInputDTO.class)
-                .block();
-        //TODO agregar metodo al backend
-        // ver que onda si devuelve un 404
+        try {
+            return webClient.get()
+                    .uri("/api/fuenteDinamica/hechos/{id}", idHecho)
+                    .retrieve()
+                    .bodyToMono(HechoDinamicaInputDTO.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            return null;
+        }
     }
 
     @Override

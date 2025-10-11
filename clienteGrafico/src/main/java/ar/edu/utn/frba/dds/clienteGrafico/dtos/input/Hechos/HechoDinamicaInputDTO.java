@@ -19,6 +19,7 @@ public class HechoDinamicaInputDTO {
     private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga; //TODO agregar la fecha de modificacion
     private List<ContenidoMultimediaInputDTO> contenidoMultimedia;
+    private LocalDateTime fechaDeModificacion;
     private Long contribuyenteId;
     private EstadoHecho estado;
     private String sugerencia;
