@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="solicitud-actions-row">
-                        <a th:href="@{'/admin/hechos/' + ${hecho.id}}" class="btn">Ver Detalle</a>
+                        <a th:href="@{'/hechos/fuenteDinamica/' + ${hecho.id}}" class="btn">Ver Detalle</a>
                         <div class="solicitud-actions">
                             <form th:action="@{/admin/hechos}" method="post">
                                 <input type="hidden" name="idHecho" th:value="${hecho.id}" />

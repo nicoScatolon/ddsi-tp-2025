@@ -78,17 +78,17 @@
                     <hr class="separator">
 
                     <!-- Etiquetas -->
-                    <div class="info-item">
+                    <div class="info-item" th:if="${origenAgregador == true}">
                         <div class="tags-header">Etiquetas:</div>
 
                         <!-- Caso sin etiquetas -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho.etiquetas == null or #lists.isEmpty(hecho.etiquetas)}">
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
                             <li>Sin etiquetas</li>
                         </ul>
 
                         <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho.etiquetas != null and !#lists.isEmpty(hecho.etiquetas)}">
-                            <li th:each="etiqueta : ${hecho.etiquetas}"
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
+                            <li th:each="etiqueta : ${hecho?.etiquetas}"
                                 th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
                                 Etiqueta
                             </li>
@@ -99,7 +99,7 @@
 
                     <!-- Contribuyente -->
                     <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
-                        <div class="tags-header">Contribuyente ID:</div>
+                        <div class="tags-header">Contribuyente:</div>
                         <p id="hecho-contribuyente" class="contribuyente">
                             <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
                             <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
@@ -113,7 +113,7 @@
                     <!-- Acciones solo para usuarios logueados -->
                     <div th:if="${logeado == 1}" id="hecho-actions" class="info-item" style="margin-top:12px;">
                         <button id="deleteBtn" class="btn-warning">Solicitar eliminación</button>
-                        <button th:if="${logeado == 1 && permitirEdicion == 1 && hecho.contribuyenteId == idContribuyente}" id="editBtn" class="btn-primary">Editar</button>
+                        <button th:if="${logeado == 1 && origenAgregador == false && hecho.contribuyenteId == idContribuyente}" id="editBtn" class="btn-primary">Editar</button>
                     </div>
                 </div>
 
@@ -205,7 +205,7 @@
                 latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
                 longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
             },
-            etiquetasPresentes: /*[[${hecho != null && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
+            etiquetasPresentes: /*[[${hecho != null && origenAgregador == true && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
             fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
             fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
             contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
