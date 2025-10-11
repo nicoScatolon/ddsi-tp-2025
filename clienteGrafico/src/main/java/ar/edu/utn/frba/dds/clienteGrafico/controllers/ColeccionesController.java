@@ -69,10 +69,12 @@ public class ColeccionesController {
     public String crearColeccion(Model model) {
         ColeccionOutputDTO coleccionDTO = instanciarColeccionOutput();
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
 
         model.addAttribute("titulo", "Crear Coleccion");
         model.addAttribute("coleccionDTO", coleccionDTO);
         model.addAttribute("fuentes", fuentes);
+        model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 2);
         model.addAttribute("logeado", 1);
 

@@ -1,0 +1,450 @@
+#create-collection {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+#create-collection .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+}
+
+#create-collection h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--bg);
+}
+
+/* =================================
+   ESTILOS DEL FORMULARIO
+   ================================= */
+
+#createCollectionForm > div {
+    margin-bottom: 1.5rem;
+}
+
+#createCollectionForm label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+#createCollectionForm input[type="text"],
+#createCollectionForm textarea,
+#createCollectionForm select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    background: var(--white);
+}
+
+#createCollectionForm input[type="text"]:focus,
+#createCollectionForm textarea:focus,
+#createCollectionForm select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.1);
+}
+
+#createCollectionForm textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* =================================
+   SELECTOR DE FUENTES
+   ================================= */
+
+.fuentes-selector {
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    background: var(--bg);
+}
+
+.fuentes-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--white);
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+.fuentes-toggle:hover {
+    background: var(--bg);
+    border-color: var(--color-primary);
+}
+
+.fuentes-toggle .small {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/* Panel desplegable de fuentes */
+.fuentes-panel {
+    margin-top: 1rem;
+    background: var(--white);
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.fuentes-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.fuentes-panel li {
+    border-bottom: 1px solid var(--bg);
+}
+
+.fuentes-panel li:last-child {
+    border-bottom: none;
+}
+
+.fuentes-panel label {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin: 0;
+    font-weight: 400;
+}
+
+.fuentes-panel label:hover {
+    background: var(--bg);
+}
+
+.fuentes-panel input[type="checkbox"] {
+    margin-right: 0.75rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+/* Chips de fuentes seleccionadas */
+.fuentes-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    min-height: 20px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    background: var(--color-primary);
+    color: var(--white);
+    border-radius: var(--radius-lg);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.chip-close {
+    background: var(--white);
+    border: none;
+    margin-left: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--color-primary);
+
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+/* =================================
+   ÁREA DE CRITERIOS
+   ================================= */
+
+.criterios-area {
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    background: var(--bg);
+}
+
+.criterio-controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.criterio-controls select {
+    flex: 1;
+}
+
+.criterio-controls button {
+    flex-shrink: 0;
+}
+
+/* Contenedor de criterios agregados */
+#criteriosContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Bloque individual de criterio */
+.criterio-block {
+    background: var(--white);
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.criterio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bg);
+}
+
+.criterio-header strong {
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.criterio-label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.criterio-block input[type="text"],
+.criterio-block input[type="datetime-local"],
+.criterio-block select {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    background: var(--white);
+}
+
+.criterio-block input[type="text"]:focus,
+.criterio-block input[type="datetime-local"]:focus,
+.criterio-block select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.1);
+}
+
+/* =================================
+   BOTONES
+   ================================= */
+
+.btn {
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.25);
+}
+
+.btn-secondary {
+    background: var(--bg);
+    color: var(--text-color);
+    border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb;
+    border-color: var(--muted);
+}
+
+.btn-link {
+    background: transparent;
+    color: #dc2626;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+.btn-link:hover {
+    color: #b91c1c;
+    text-decoration: underline;
+}
+
+.btn-remove-criterio {
+    background: transparent;
+    color: #dc2626;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.btn-remove-criterio:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--bg);
+}
+
+/* =================================
+   SELECT DE ALGORITMO
+   ================================= */
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    background: var(--white);
+    cursor: pointer;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.1);
+}
+
+/* =================================
+   RESPONSIVE
+   ================================= */
+
+@media (max-width: 768px) {
+    #create-collection {
+        margin: 1rem auto;
+    }
+
+    #create-collection .card {
+        padding: 1.5rem;
+    }
+
+    #create-collection h1 {
+        font-size: 1.5rem;
+    }
+
+    .criterio-controls {
+        flex-direction: column;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .fuentes-chips {
+        gap: 0.4rem;
+    }
+
+    .chip {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.6rem;
+    }
+}
+
+/* =================================
+   ANIMACIONES Y ESTADOS
+   ================================= */
+
+.criterio-block {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estados de validación (opcional) */
+input:invalid:not(:placeholder-shown),
+textarea:invalid:not(:placeholder-shown),
+select:invalid:not(:placeholder-shown) {
+    border-color: #dc2626;
+}
+
+input:valid:not(:placeholder-shown),
+textarea:valid:not(:placeholder-shown) {
+    border-color: #10b981;
+}
+
+/* Scrollbar personalizado para panel de fuentes */
+.fuentes-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.fuentes-panel::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+.fuentes-panel::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: var(--radius-sm);
+}
+
+.fuentes-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+}

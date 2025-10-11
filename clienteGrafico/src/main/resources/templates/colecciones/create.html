@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 <th:block th:fragment="cssExtra">
-    <link rel="stylesheet" th:href="@{/css/colecciones/create.css}">
+    <link rel="stylesheet" th:href="@{/css/colecciones/coleccion-create.css}">
 </th:block>
 
 <div th:fragment="contenido">
@@ -49,23 +49,51 @@
                         <div class="criterio-controls">
                             <select id="criterioSelect" aria-label="Seleccionar criterio">
                                 <option value="">-- escoger criterio --</option>
-                                <option value="CargaEntreFechas">Carga entre fechas</option>
-                                <option value="Categoria">Categoría</option>
-                                <option value="ContenidoMultimedia">Contenido multimedia</option>
-                                <option value="Etiqueta">Etiqueta</option>
-                                <option value="Fuente">Fuente</option>
-                                <option value="OcurrenciaEntreFechas">Ocurrencia entre fechas</option>
-                                <option value="Provincia">Provincia</option>
                                 <option value="Titulo">Título</option>
+                                <option value="Categoria">Categoría</option>
+                                <option value="Etiqueta">Etiqueta</option>
+                                <option value="Provincia">Provincia</option>
+                                <option value="CargaEntreFechas">Carga entre fechas</option>
+                                <option value="OcurrenciaEntreFechas">Ocurrencia entre fechas</option>
+                                <option value="ContenidoMultimedia">Contenido multimedia</option>
                             </select>
                             <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
                         </div>
+
+                        <!-- plantillas ocultas (Thymeleaf las renderiza y el JS las clona) -->
+                        <!-- Select para categorías -->
+                        <div id="categoriaTemplate" style="display:none;">
+                            <label>Buscar categoría</label>
+                            <input type="text" name="" placeholder="Escriba para buscar..." list="listaCategorias">
+                            <datalist id="listaCategorias">
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            </datalist>
+                        </div>
+
+                        <!-- Select para etiquetas
+                        <select id="etiquetaTemplate" style="display:none;">
+                            <option value="">-- seleccionar etiqueta --</option>
+                            <option th:each="et : ${etiquetas}"
+                                    th:value="${et.id}"
+                                    th:text="${et.nombre}"></option>
+                        </select>
+                        -->
+
+                        <!-- Si querés lista de provincias, podés renderizarla igual y usarla
+                        <select id="provinciaTemplate" style="display:none;">
+                            <option value="">-- seleccionar provincia --</option>
+                            <option th:each="prov : ${provincias}"
+                                    th:value="${prov}"
+                                    th:text="${prov}"></option>
+                        </select>
+                        -->
 
                         <div id="criteriosContainer"></div>
                     </div>
                 </div>
 
                 <div>
+                    <label>Algoritmo de Consenso</label>
                     <label for="algoritmo"></label><select id="algoritmo" name="algoritmoConsenso.tipo" class="form-select">
                         <option value="">Ninguno</option>
                         <option value="ABSOLUTO">Absoluto</option>
