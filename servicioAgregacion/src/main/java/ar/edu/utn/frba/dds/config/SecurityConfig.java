@@ -1,50 +1,69 @@
 package ar.edu.utn.frba.dds.config;
 
-import ar.edu.utn.frba.dds.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   Converter<Jwt, ? extends AbstractAuthenticationToken> jwtConverter) throws Exception {
+
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/health").permitAll()
+
+                        .requestMatchers("/api/privada/categorias", "/api/privada/categorias/short").permitAll()
+
+                        .requestMatchers("/api/colecciones/publica", "/api/colecciones/publica/**").permitAll()
+
+                        .requestMatchers("/api/hechos/publica", "/api/hechos/publica/**").permitAll()
+
+                        .requestMatchers("/api/solicitudes-eliminacion/publica").permitAll()
+
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)));
+
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain api(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // doc y errores
-                        .requestMatchers("/error", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        return jwt -> {
+            List<GrantedAuthority> authorities = new ArrayList<>();
 
-                        // PÚBLICOS según tus controllers
-                        .requestMatchers(
-                                "/api/colecciones/publica",
-                                "/api/colecciones/publica/**",
-                                "/api/hechos/publica",
-                                "/api/hechos/publica/**",
-                                "/api/privada/categorias",
-                                "/api/privada/categorias/short",
-                                "/api/solicitudes-eliminacion/publica",   // POST crear solicitud
-                                "/api/fuente/test/**"
-                        ).permitAll()
+            List<String> permisos = jwt.getClaimAsStringList("permisos");
+            if (permisos != null) {
+                for (String p : permisos) authorities.add(new SimpleGrantedAuthority(p));
+            }
 
-                        // resto protegido
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            String rol = jwt.getClaimAsString("rol");
+            if (rol != null && !rol.isBlank()) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + rol));
+            }
 
-        return http.build();
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
+        };
     }
 }
