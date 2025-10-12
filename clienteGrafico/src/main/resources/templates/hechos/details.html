@@ -118,12 +118,27 @@
                             Solicitar eliminación
                         </button>
 
-                        <!-- Botón destacar (solo admin) -->
-                        <form th:if="${rol == 2}" th:action="@{/hechos/destacar/{id}(id=${hecho.id})}" method="post" style="margin: 0;">
+                        <!-- Botón para DESTACAR (si NO está destacado) -->
+                        <form th:if="${rol == 2 and !hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
                             <input type="hidden" name="_method" value="put" />
                             <button type="submit" class="btn-destacar">
                                 <i class="fas fa-star"></i>
-                                Destacar
+                                 Destacar
+                            </button>
+                        </form>
+
+                        <!-- Botón para QUITAR DESTACADO (si SÍ está destacado) -->
+                        <form th:if="${rol == 2 and hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn-destacar quitar">
+                                <i class="fas fa-star-half-alt"></i>
+                                Quitar destacado
                             </button>
                         </form>
                     </div>

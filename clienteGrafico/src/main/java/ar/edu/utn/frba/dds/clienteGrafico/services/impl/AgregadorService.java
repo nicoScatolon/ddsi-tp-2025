@@ -123,16 +123,7 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
-    @Override
-    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
-        return webClient.get()
-                .uri("/api/colecciones") //Todo no esta implementado en back
-                .retrieve()
-                .bodyToFlux(ColeccionPreviewInputDTO.class)
-                .collectList()
-                .block();
-    }
-
+    // DESTACAR HECHOS
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {
         return webClient.get()
@@ -153,8 +144,41 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    public ResponseEntity<Void> eliminarDestacarHecho(Long id) {
+        return webClient.delete()
+                .uri("/api/hechos/privada/destacado/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    // DESTACAR COLECCION
+    @Override
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
+        return webClient.get()
+                .uri("/api/colecciones/publica/destacadas") //Todo no esta implementado en back
+                .retrieve()
+                .bodyToFlux(ColeccionPreviewInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
     public ResponseEntity<Void> destacarColeccion(String handle) {
-        return null; //Todo sin implementar en back
+        return webClient.put()
+                .uri("/api/colecciones/privada/destacada/{handle}", handle)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarDestacarColeccion(String handle) {
+        return webClient.delete()
+                .uri("/api/colecciones/privada/destacada/{handle}", handle)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 
 

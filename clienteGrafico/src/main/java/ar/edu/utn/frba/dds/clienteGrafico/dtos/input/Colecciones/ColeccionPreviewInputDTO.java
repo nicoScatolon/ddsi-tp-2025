@@ -17,4 +17,5 @@ public class ColeccionPreviewInputDTO {
     private String descripcion;
     private AlgoritmoConsensoDTO algoritmoCurado;
     private List<FuenteInputDTO> fuentes;
+    private Boolean destacada;
 }

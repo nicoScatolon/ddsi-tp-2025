@@ -15,7 +15,58 @@
         <p id="collection-description" th:text="${coleccion.descripcion}" >Descripción de la colección...</p>
       </div>
 
-      <!-- BOX FILTROS -->
+        <!-- Acciones FUERA del link -->
+        <div th:if="${rol == 2}" class="card-actions">
+
+            <!-- DESTACAR  -->
+            <form th:if="${!coleccion.destacada}"
+                  th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
+                  method="post"
+                  class="inline-form">
+                <input type="hidden" name="_method" value="put" />
+                <button type="submit" class="btn-action btn-destacar">
+                    <i class="fas fa-star"></i>
+                    Destacar
+                </button>
+            </form>
+
+            <!--  QUITAR DESTACADO  -->
+            <form th:if="${coleccion.destacada}"
+                  th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
+                  method="post"
+                  class="inline-form">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit" class="btn-action btn-destacar quitar">
+                    <i class="fas fa-star-half-alt"></i>
+                    Quitar destacado
+                </button>
+            </form>
+
+            <!-- Editar -->
+            <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}"
+               class="btn-action btn-edit">
+                <i class="fas fa-edit"></i>
+                 Editar
+            </a>
+
+            <!--  Eliminar -->
+            <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                  method="post"
+                  class="inline-form"
+                  onsubmit="return confirm('¿Seguro que querés eliminar esta colección?');">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit" class="btn-action btn-delete">
+                    <i class="fas fa-trash-alt"></i>
+                     Eliminar
+                </button>
+            </form>
+
+
+
+        </div>
+
+
+        <!-- BOX FILTROS -->
       <aside class="filter-box">
         <h2>Filtros</h2>
 

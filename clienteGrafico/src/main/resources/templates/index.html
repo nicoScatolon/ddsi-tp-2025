@@ -71,15 +71,36 @@
             </div>
         </section>
 
-        <!-- Colecciones destacadas
+        <!-- Colecciones destacadas-->
         <section id="colecciones" th:if="${colecciones != null && !#lists.isEmpty(colecciones)}">
             <h2>Colecciones destacadas</h2>
             <div class="scroll-container">
                 <button class="scroll-btn left" data-target="collections-container" aria-label="Scroll izquierda">&#10094;</button>
-                <div id="collections-container" class="cards-row" tabindex="0"></div>
+                <div id="collections-container" class="cards-row" tabindex="0">
+                    <!-- Card de colección -->
+                    <a th:each="coleccion : ${colecciones}"
+                       th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                       class="card">
+                        <!-- Imagen o placeholder -->
+                        <div class="card-thumbnail">
+                            <div class="card-placeholder">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                        </div>
+
+
+                        <!-- Contenido de la card -->
+                        <div class="card-content">
+                            <h3 class="card-title" th:text="${coleccion.titulo}">Título de la colección</h3>
+
+                            <p class="card-description" th:if="${coleccion.descripcion != null && !#strings.isEmpty(coleccion.descripcion)}"
+                               th:text="${#strings.abbreviate(coleccion.descripcion, 100)}">Descripción de la colección</p>
+                        </div>
+                    </a>
+                </div>
                 <button class="scroll-btn right" data-target="collections-container" aria-label="Scroll derecha">&#10095;</button>
             </div>
-        </section>-->
+        </section>
     </div>
 </div>
 

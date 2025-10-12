@@ -26,4 +26,5 @@ public class HechoInputDTO {
     private Long contribuyenteId;
     private Boolean cargadoAnonimamente;
     private FuenteInputDTO fuente;
+    private Boolean destacado;
 }

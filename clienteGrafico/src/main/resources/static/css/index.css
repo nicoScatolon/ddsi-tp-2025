@@ -388,3 +388,20 @@ section h2 {
     font-size: 2.6em;
     text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.85);
 }
+
+/* ===== ESTILOS PARA COLECCIONES ===== */
+.card-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+    margin-top: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Icono específico para colecciones en placeholder */
+.card-placeholder .fa-layer-group {
+    font-size: 3rem;
+}

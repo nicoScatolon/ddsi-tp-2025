@@ -32,7 +32,7 @@ main {
 /* Cabecera de la colección */
 .collection-header {
     grid-column: 1 / -1;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 #collection-title {
@@ -45,7 +45,91 @@ main {
 #collection-description {
     font-size: 1rem;
     color: #555;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0;
+}
+
+/* ====== Botones de acción - ARRIBA A LA DERECHA ====== */
+.card-actions {
+    grid-column: 2;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.inline-form {
+    margin: 0;
+}
+
+.btn-action {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    line-height: 1;
+    box-sizing: border-box;
+    height: 44px;
+    min-width: 120px;
+}
+
+.btn-action i {
+    font-size: 1rem;
+}
+
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+.btn-destacar {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.btn-destacar:hover {
+    background: #d97706;
+    color: #fff;
+}
+
+.btn-destacar.quitar {
+    background: #6b7280;
+    color: #fff;
+}
+
+.btn-destacar.quitar:hover {
+    background: #4b5563;
+    color: #fff;
+}
+
+.btn-edit {
+    background: #2F60F4;
+    color: #fff;
+}
+
+.btn-edit:hover {
+    background: #1746D2;
+    color: #fff;
+}
+
+.btn-delete {
+    background: #e03131;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background: #c92a2a;
+    color: #fff;
 }
 
 /* --- FILTROS --- */
@@ -112,21 +196,16 @@ main {
     width: 100%;
 }
 
+/* --- CONTENIDO DE LA COLECCIÓN --- */
+.collection-content {
+    grid-column: 2;
+}
+
 /* --- CARDS: contenedor y separación --- */
 .cards-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* más espacio vertical entre bloques (rows) */
-}
-
-/* Row que contiene las cards de la página actual (paginación) */
-.cards-row-explore {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;              /* espacio horizontal y vertical entre cards */
-    align-items: stretch;
-    justify-content: flex-start;
-    margin: 0.1rem 0;
+    gap: 1.5rem;
 }
 
 /* --- CARD --- */
@@ -148,7 +227,6 @@ a {
     padding: 0.5rem;
     gap: 0;
     height: 150px;
-    overflow: hidden;
 }
 
 /* un padding interior uniforme para cada celda */
@@ -172,9 +250,6 @@ a {
 
 /* Descripción */
 .card-description {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -190,7 +265,6 @@ a {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    line-clamp: 3;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.2rem;
@@ -261,9 +335,14 @@ a {
     transition: background 0.14s, transform 0.08s;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     padding: 0;
+    text-decoration: none;
 }
 
-/* deshabilitado */
+.pagination-arrow:hover:not(.disabled) {
+    background: rgba(47,96,244,0.15);
+    transform: scale(1.1);
+}
+
 .pagination-arrow.disabled {
     opacity: 0.45;
     cursor: not-allowed;
@@ -282,4 +361,3 @@ a {
     justify-content: center;
     font-weight: 600;
 }
-

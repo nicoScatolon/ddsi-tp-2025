@@ -113,6 +113,13 @@ public class HechosController {
         return "redirect:/hechos/" + id;
     }
 
+    @DeleteMapping("/destacar/{id}") //Todo solo admins
+    public String eliminarDestacarHecho(@PathVariable("id") Long id, Model model){
+        agregadorService.eliminarDestacarHecho(id);
+
+        return "redirect:/hechos/" + id;
+    }
+
     @GetMapping("/map")
     public String mapaHechos(Model model) {
         List<HechoMapaInputDTO> hechosMapa = agregadorService.getHechosMapa();

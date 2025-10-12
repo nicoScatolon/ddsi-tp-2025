@@ -22,17 +22,16 @@ public class HomeController {
 
     @GetMapping("/index")
     public String index(Model model) {
-        //List<ColeccionPreviewInputDTO> listaColeccionesDestacadasDTO = agregadorService.obtenerColeccionesDestacadas();
+        List<ColeccionPreviewInputDTO> listaColeccionesDestacadasDTO = agregadorService.obtenerColeccionesDestacadas();
         List<HechoInputDTO> listaHechosDestacadosDTO = agregadorService.obtenerHechosDestacados();
 
-        //model.addAttribute("colecciones", listaColeccionesDestacadasDTO);
+        model.addAttribute("colecciones", listaColeccionesDestacadasDTO);
         model.addAttribute("hechos", listaHechosDestacadosDTO);
         model.addAttribute("titulo", "Inicio");
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
         return "index";
     }
-
 
     @GetMapping("/legales")
     public String legales(Model model) {

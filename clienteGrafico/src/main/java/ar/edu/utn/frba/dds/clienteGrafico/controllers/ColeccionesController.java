@@ -131,4 +131,18 @@ public class ColeccionesController {
         model.addAttribute("nueva", false);
         return "/colecciones/create";
     }
+
+    @PutMapping("/destacar/{handle}") //Todo solo admins
+    public String destacarColeccion(@PathVariable("handle") String handle){
+        agregadorService.destacarColeccion(handle);
+
+        return "redirect:/colecciones/" + handle;
+    }
+
+    @DeleteMapping("/destacar/{handle}") //Todo solo admins
+    public String eliminarDestacarColeccion(@PathVariable("handle") String handle){
+        agregadorService.eliminarDestacarColeccion(handle);
+
+        return "redirect:/colecciones/" + handle;
+    }
 }
