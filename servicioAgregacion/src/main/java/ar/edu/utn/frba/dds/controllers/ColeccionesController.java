@@ -47,6 +47,11 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada")
+    public ResponseEntity<Void> modificarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        return coleccionesService.modificarColeccion(coleccionInputDTO);
+    }
+
+    @PutMapping("/privada/basica")
     public ColeccionOutputDTO modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }

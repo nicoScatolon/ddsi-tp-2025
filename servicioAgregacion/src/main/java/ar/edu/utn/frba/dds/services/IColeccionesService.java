@@ -28,4 +28,6 @@ public interface IColeccionesService {
     List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO);
 
     ColeccionEditOutputDTO findByHandleEditable(String handle);
+
+    ResponseEntity<Void> modificarColeccion(ColeccionInputDTO coleccionInputDTO);
 }

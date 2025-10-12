@@ -115,13 +115,15 @@ public class Coleccion {
         List<Fuente> fuentesEliminadas = listaFuentes.stream()
                 .filter(f1 -> !nuevasFuentes.contains(f1))
                 .toList();
+
+        if ( !fuentesEliminadas.isEmpty()) {
+            fuentesEliminadas.forEach(this::eliminarFuente);
+        }
         if ( !fuentesNuevas.isEmpty() ) {
             fuentesNuevas.forEach(this::agregarFuente);
             curarHechos = false; // quiero que primero se actualize y despues cure, para que no quede mal la lista de hechosCurados
         }
-        if ( !fuentesEliminadas.isEmpty()) {
-            fuentesEliminadas.forEach(this::eliminarFuente);
-        }
+
     }
 
     public void setIAlgoritmoConsenso(IAlgoritmoConsenso IAlgoritmoConsenso) {
