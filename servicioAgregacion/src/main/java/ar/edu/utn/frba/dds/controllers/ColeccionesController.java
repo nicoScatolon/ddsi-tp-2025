@@ -76,6 +76,11 @@ public class ColeccionesController {
         return coleccionesService.eliminarColeccion(handle);
     }
 
+    @GetMapping("/publica/destacadas")
+    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
+        return coleccionesService.getColeccionesDestacadas();
+    }
+
     @PutMapping("/privada/destacada/{handle}")
     public ResponseEntity<Void> destacarColeccion(@PathVariable String handle){
         return coleccionesService.setDestacadaColeccion(handle, true);
@@ -86,10 +91,7 @@ public class ColeccionesController {
         return coleccionesService.setDestacadaColeccion(handle, false);
     }
 
-    @GetMapping("/publica/destacadas")
-    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
-        return coleccionesService.getColeccionesDestacadas();
-    }
+
 
     // ------------------------------------------- API PÚBLICA -------------------------------------------
 

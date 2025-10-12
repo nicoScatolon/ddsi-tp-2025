@@ -14,12 +14,17 @@ import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HechosService implements IHechosService {
@@ -34,24 +39,34 @@ public class HechosService implements IHechosService {
     @Value("${hecho.diasModificacion}")
     private Long diasValidosModificacion;
 
+    @Value("${app.pagination.hechos.size}")
+    private Integer pageSize;
+
     @Override
-    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado) {
-        if (fechaDeCarga == null && estado == null) {
-            return this.hechosRepository.findAll().stream()
+    public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado, Integer page) {
+        Specification<Hecho> spec = Specification.where(null);
+        if (fechaDeCarga != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.or(
+                        cb.greaterThan(root.get("fechaDeCarga"), fechaDeCarga),
+                        cb.greaterThan(root.get("fechaDeModificacion"), fechaDeCarga)
+            ));
+        }
+        if (estado != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("estado"), estado));
+        }
+
+        if (page == null) {
+            return hechosRepository.findAll(spec).stream()
                     .map(this::hechoOutputDTO)
                     .toList();
         }
-        if (fechaDeCarga == null) {
-            return this.hechosRepository.findHechoByEstado(estado).stream()
-                    .map(this::hechoOutputDTO)
-                    .toList();
-        }
-        if (estado == null) {
-            return this.hechosRepository.findAllByFechaDeCargaAfter(fechaDeCarga).stream()
-                    .map(this::hechoOutputDTO)
-                    .toList();
-        }
-        return this.hechosRepository.findHechoByEstadoAndFechaDeCargaAfter(estado, fechaDeCarga).stream()
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        return hechosRepository.findAll(spec, pageable)
+                .stream()
                 .map(this::hechoOutputDTO)
                 .toList();
     }
@@ -93,16 +108,30 @@ public class HechosService implements IHechosService {
         }
     }
 
-    public List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado) {
-        if (estado == null) {
-            return this.hechosRepository.findAllByContribuyenteId(userId).stream()
-                    .map(this::hechoOutputDTO)
-                    .toList();
+    @Override
+    public List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado, Integer page) {
+        Specification<Hecho> spec = Specification.where(null);
+        if (userId != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("contribuyenteId"), userId));
         }
-        return this.hechosRepository.findAllByContribuyenteIdAndEstado(userId, estado).stream()
+        if (estado != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("estado"), estado));
+        }
+
+        if (page == null) {
+            return hechosRepository.findAll(spec).stream().map(this::hechoOutputDTO).toList();
+        }
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        return this.hechosRepository.findAll(spec, pageable).stream()
                 .map(this::hechoOutputDTO)
                 .toList();
     }
+
+
+    // API privada //
 
     @Override
     @Transactional
@@ -122,9 +151,6 @@ public class HechosService implements IHechosService {
             return ResponseEntity.notFound().build();
         }
     }
-
-    // API privada //
-
 
 
     //Metodos privados

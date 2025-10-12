@@ -29,6 +29,6 @@ public interface IColeccionesService {
 
     ColeccionEditOutputDTO findByHandleEditable(String handle);
     ResponseEntity<Void> modificarColeccion(ColeccionInputDTO coleccionInputDTO);
-    ResponseEntity<Void> setDestacadaColeccion(String handle, boolean estaDestacado);
+    ResponseEntity<Void> setDestacadaColeccion(String handle, boolean estaDestacada);
     List<ColeccionPreviewOutputDTO> getColeccionesDestacadas();
 }
