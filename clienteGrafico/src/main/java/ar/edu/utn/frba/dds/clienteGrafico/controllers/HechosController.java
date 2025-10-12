@@ -56,7 +56,7 @@ public class HechosController {
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 1);
-        model.addAttribute("logeado", 0);
+        model.addAttribute("logeado", 1);
         return "/hechos/create";
     }
 

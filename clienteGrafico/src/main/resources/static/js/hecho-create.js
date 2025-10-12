@@ -21,11 +21,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const latDisplay = document.getElementById('latDisplay');
     const lngDisplay = document.getElementById('lngDisplay');
 
+    // Elementos multimedia
+    const multimediaInput = document.getElementById('multimediaInput');
+    const addFileBtn = document.getElementById('addFileBtn');
+    const multimediaPreview = document.getElementById('multimediaPreview');
+
     const submitBtn = form.querySelector('button[type="submit"]');
 
     // Variable para el mapa de Leaflet
     let map = null;
     let marker = null;
+
+    // Array para almacenar archivos multimedia
+    let multimediaFiles = [];
+
+    // Configuración de tipos de archivo permitidos
+    const ALLOWED_TYPES = {
+        imagen: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
+        video: ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'],
+        audio: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'],
+        documento: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    };
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     // Inicializar el mapa de Leaflet
     function initMap() {
@@ -125,6 +143,141 @@ document.addEventListener('DOMContentLoaded', function() {
 
     resetUbicacionFields();
 
+    // Determinar el tipo de contenido según el MIME type
+    function getTipoContenido(mimeType) {
+        if (ALLOWED_TYPES.imagen.includes(mimeType)) return 'IMAGEN';
+        if (ALLOWED_TYPES.video.includes(mimeType)) return 'VIDEO';
+        if (ALLOWED_TYPES.audio.includes(mimeType)) return 'AUDIO';
+        if (ALLOWED_TYPES.documento.includes(mimeType)) return 'DOCUMENTO';
+        return null;
+    }
+
+    // Validar archivo
+    function validateFile(file) {
+        const tipoContenido = getTipoContenido(file.type);
+
+        if (!tipoContenido) {
+            alert(`Tipo de archivo no permitido: ${file.name}`);
+            return false;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            alert(`El archivo ${file.name} excede el tamaño máximo de 10MB`);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Agregar archivos multimedia
+    addFileBtn.addEventListener('click', function() {
+        const files = multimediaInput.files;
+
+        if (files.length === 0) {
+            alert('Por favor, seleccione al menos un archivo');
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            if (validateFile(file)) {
+                const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const tipoContenido = getTipoContenido(file.type);
+
+                multimediaFiles.push({
+                    id: fileId,
+                    file: file,
+                    tipoContenido: tipoContenido,
+                    descripcion: ''
+                });
+
+                renderMultimediaItem(fileId, file, tipoContenido);
+            }
+        });
+
+        multimediaInput.value = '';
+    });
+
+    // Renderizar preview del archivo multimedia
+    function renderMultimediaItem(fileId, file, tipoContenido) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'multimedia-item';
+        itemDiv.dataset.fileId = fileId;
+
+        let previewContent = '';
+
+        if (tipoContenido === 'IMAGEN') {
+            const objectUrl = URL.createObjectURL(file);
+            previewContent = `<img src="${objectUrl}" alt="${file.name}">`;
+        } else if (tipoContenido === 'VIDEO') {
+            const objectUrl = URL.createObjectURL(file);
+            previewContent = `<video controls><source src="${objectUrl}" type="${file.type}"></video>`;
+        } else if (tipoContenido === 'AUDIO') {
+            previewContent = `<div class="file-icon">🎵</div>`;
+        } else if (tipoContenido === 'DOCUMENTO') {
+            previewContent = `<div class="file-icon">📄</div>`;
+        }
+
+        itemDiv.innerHTML = `
+            ${previewContent}
+            <button type="button" class="remove-btn" data-file-id="${fileId}">&times;</button>
+            <div class="file-info">
+                <strong>${tipoContenido}</strong><br>
+                ${file.name} (${formatFileSize(file.size)})
+            </div>
+            <div class="file-desc">
+                <input type="text" 
+                       placeholder="Descripción (opcional)" 
+                       data-file-id="${fileId}"
+                       class="desc-input"
+                       maxlength="200">
+            </div>
+        `;
+
+        multimediaPreview.appendChild(itemDiv);
+
+        // Event listener para el botón de eliminar
+        itemDiv.querySelector('.remove-btn').addEventListener('click', function() {
+            removeMultimediaItem(fileId);
+        });
+
+        // Event listener para la descripción
+        itemDiv.querySelector('.desc-input').addEventListener('input', function(e) {
+            updateFileDescription(fileId, e.target.value);
+        });
+    }
+
+    // Formatear tamaño de archivo
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Eliminar archivo multimedia
+    function removeMultimediaItem(fileId) {
+        multimediaFiles = multimediaFiles.filter(item => item.id !== fileId);
+        const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${fileId}"]`);
+        if (itemDiv) {
+            // Liberar URL del objeto si existe
+            const img = itemDiv.querySelector('img');
+            const video = itemDiv.querySelector('video source');
+            if (img) URL.revokeObjectURL(img.src);
+            if (video) URL.revokeObjectURL(video.src);
+
+            itemDiv.remove();
+        }
+    }
+
+    // Actualizar descripción del archivo
+    function updateFileDescription(fileId, descripcion) {
+        const fileItem = multimediaFiles.find(item => item.id === fileId);
+        if (fileItem) {
+            fileItem.descripcion = descripcion;
+        }
+    }
+
     // Manejar envío del formulario
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -142,6 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const actionUrl = form.getAttribute('action') || '/hechos/create';
         const fd = new FormData(form);
 
+        // Agregar archivos multimedia al FormData
+        multimediaFiles.forEach((item, index) => {
+            fd.append(`multimedia[${index}].file`, item.file);
+            fd.append(`multimedia[${index}].tipoContenido`, item.tipoContenido);
+            fd.append(`multimedia[${index}].descripcion`, item.descripcion || '');
+        });
+
         try {
             const response = await fetch(actionUrl, {
                 method: 'POST',
@@ -150,6 +310,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
+                // Liberar URLs de objetos antes de redireccionar
+                multimediaFiles.forEach(item => {
+                    if (item.file.type.startsWith('image/') || item.file.type.startsWith('video/')) {
+                        const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${item.id}"]`);
+                        if (itemDiv) {
+                            const img = itemDiv.querySelector('img');
+                            const video = itemDiv.querySelector('video source');
+                            if (img) URL.revokeObjectURL(img.src);
+                            if (video) URL.revokeObjectURL(video.src);
+                        }
+                    }
+                });
+
                 window.location.href = '/hechos';
             } else {
                 let text = '';
@@ -176,6 +349,21 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             resetUbicacionFields();
             tipoUbicacionSelect.value = '';
+
+            // Limpiar archivos multimedia
+            multimediaFiles.forEach(item => {
+                const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${item.id}"]`);
+                if (itemDiv) {
+                    const img = itemDiv.querySelector('img');
+                    const video = itemDiv.querySelector('video source');
+                    if (img) URL.revokeObjectURL(img.src);
+                    if (video) URL.revokeObjectURL(video.src);
+                }
+            });
+
+            multimediaFiles = [];
+            multimediaPreview.innerHTML = '';
+            multimediaInput.value = '';
         }, 0);
     });
 });

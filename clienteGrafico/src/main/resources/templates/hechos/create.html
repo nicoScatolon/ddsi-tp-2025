@@ -4,12 +4,131 @@
     <link rel="stylesheet" th:href="@{/css/hechos/create.css}">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        .multimedia-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .file-upload-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex: 1;
+        }
+
+        .file-input-wrapper button {
+            padding: 0.5rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper button:hover {
+            background-color: #45a049;
+        }
+
+        .multimedia-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .multimedia-item {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: white;
+        }
+
+        .multimedia-item img,
+        .multimedia-item video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .multimedia-item .file-icon {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            font-size: 3rem;
+        }
+
+        .multimedia-item .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .multimedia-item .remove-btn:hover {
+            background-color: #da190b;
+        }
+
+        .multimedia-item .file-info {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .multimedia-item .file-desc {
+            margin-top: 0.5rem;
+        }
+
+        .multimedia-item .file-desc input {
+            width: 100%;
+            padding: 0.25rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .upload-limits {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+    </style>
 </th:block>
 
-    <th:block th:fragment="contenido">
-        <section class="form-container" th:attr="data-logeado=${logeado}">
+<th:block th:fragment="contenido">
+    <section class="form-container" th:attr="data-logeado=${logeado}">
         <h1>Crear Hecho</h1>
-        <form th:action="@{/hechos/create}" th:object="${hechoDTO}" method="post" id="hechoForm">
+        <form th:action="@{/hechos/create}" th:object="${hechoDTO}" method="post" id="hechoForm" enctype="multipart/form-data">
             <!-- Datos básicos -->
             <div class="form-group">
                 <label for="titulo">Título</label>
@@ -61,7 +180,7 @@
             </div>
             <div class="form-group" id="localidadGroup" style="display:none;">
                 <label for="localidad">Localidad</label>
-                <input type="text" id="localidad" th:field="*{ubicacion.localidad}" placeholder="Ej: La Plata">
+                <input type="text" id="localidad" th:field="*{ubicacion.departamento}" placeholder="Ej: La Plata">
             </div>
             <div class="form-group" id="calleGroup" style="display:none;">
                 <label for="calle">Calle</label>
@@ -87,6 +206,24 @@
             <input type="hidden" th:field="*{ubicacion.latitud}" id="latitudUbicacion">
             <input type="hidden" th:field="*{ubicacion.longitud}" id="longitudUbicacion">
 
+            <!-- Sección de Contenido Multimedia -->
+            <div class="multimedia-section">
+                <h2>📎 Contenido Multimedia (Opcional)</h2>
+                <p class="upload-limits">
+                    <strong>Tipos permitidos:</strong> Imágenes (JPG, PNG, GIF), Videos (MP4, AVI, MOV), Audio (MP3, WAV), Documentos (PDF, DOC, DOCX)<br>
+                    <strong>Tamaño máximo por archivo:</strong> 10MB
+                </p>
+
+                <div class="file-upload-area">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="multimediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple>
+                        <button type="button" id="addFileBtn">Agregar archivos</button>
+                    </div>
+                </div>
+
+                <div class="multimedia-preview" id="multimediaPreview"></div>
+            </div>
+
             <div class="form-group checkbox">
                 <input type="checkbox" id="esAnonimo" th:field="*{cargadoAnonimamente}">
                 <label for="esAnonimo">Publicar como anónimo</label>
@@ -99,17 +236,17 @@
             </div>
         </form>
     </section>
-        <div id="loginModal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <h2>¡Debes identificarte!</h2>
-                <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
-                <div class="modal-actions">
-                    <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
-                    <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
-                </div>
+    <div id="loginModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>¡Debes identificarte!</h2>
+            <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
+            <div class="modal-actions">
+                <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
+                <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
             </div>
         </div>
-    </th:block>
+    </div>
+</th:block>
 
 <th:block th:fragment="jsExtra">
     <!-- Leaflet JS -->
@@ -118,11 +255,10 @@
 
     <script>
         window.addEventListener('load', function() {
-            // Lee directamente el valor que le pasó el controller
             const formContainer = document.querySelector('.form-container');
             const logeado = Number(formContainer?.dataset.logeado || 0);
 
-            console.log('Valor de logeado:', logeado); // Debug
+            console.log('Valor de logeado:', logeado);
 
             if (logeado === 0) {
                 const modal = document.getElementById("loginModal");
