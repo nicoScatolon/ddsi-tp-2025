@@ -15,6 +15,54 @@ document.addEventListener("DOMContentLoaded", () => {
     let criterioIndex = 0;
     const added = new Set();
 
+    // Mapeo de tipos backend a frontend
+    const tipoMap = {
+        'titulo': 'Titulo',
+        'categoria': 'Categoria',
+        'etiqueta': 'Etiqueta',
+        'provincia': 'Provincia',
+        'cargaEntreFechas': 'CargaEntreFechas',
+        'ocurrenciaEntreFechas': 'OcurrenciaEntreFechas',
+        'contenidoMultimedia': 'ContenidoMultimedia'
+    };
+
+    const tipoMapReverse = Object.fromEntries(
+        Object.entries(tipoMap).map(([k, v]) => [v, k])
+    );
+
+    // Cargar criterios existentes en modo edición
+    const coleccionDataDiv = document.getElementById('coleccionData');
+    if (coleccionDataDiv) {
+        const esNueva = coleccionDataDiv.dataset.esNueva === 'true';
+        const criteriosJson = coleccionDataDiv.dataset.criteriosJson;
+
+        console.log('Es nueva:', esNueva);
+        console.log('Criterios JSON:', criteriosJson);
+
+        if (!esNueva && criteriosJson) {
+            try {
+                const criteriosData = JSON.parse(criteriosJson);
+                console.log('Criterios parseados:', criteriosData);
+
+                if (Array.isArray(criteriosData) && criteriosData.length > 0) {
+                    criteriosData.forEach(criterio => {
+                        const tipoFrontend = tipoMap[criterio.tipo] || capitalizeFirst(criterio.tipo);
+                        console.log('Creando bloque para:', tipoFrontend, 'con params:', criterio.parametros);
+                        const bloque = crearBloqueCriterio(tipoFrontend, criterioIndex, criterio.parametros || {});
+                        criteriosContainer.appendChild(bloque);
+                        added.add(tipoFrontend);
+                        criterioIndex++;
+                    });
+                    console.log(`Se cargaron ${criteriosData.length} criterios`);
+                } else {
+                    console.log('No hay criterios para cargar');
+                }
+            } catch (e) {
+                console.error('Error parseando criterios:', e);
+            }
+        }
+    }
+
     // Agregar criterio
     addCriterioBtn.addEventListener('click', () => {
         const tipo = criterioSelect.value;
@@ -29,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
         criterioIndex++;
     });
 
-    function crearBloqueCriterio(tipo, index) {
+    function crearBloqueCriterio(tipo, index, parametrosExistentes = {}) {
+        console.log(`Creando bloque criterio: ${tipo}, index: ${index}, params:`, parametrosExistentes);
+
         const wrapper = document.createElement('div');
         wrapper.className = 'criterio-block';
         wrapper.dataset.tipo = tipo;
@@ -50,9 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
         header.appendChild(removeBtn);
         wrapper.appendChild(header);
 
-        // Crear hidden para el tipo inmediatamente
-        const tipoRaw = tipo;
-        const tipoBinding = tipoRaw.charAt(0).toLowerCase() + tipoRaw.slice(1);
+        // Crear hidden para el tipo (convertir a camelCase para backend)
+        const tipoBinding = tipoMapReverse[tipo] || (tipo.charAt(0).toLowerCase() + tipo.slice(1));
         const tipoInput = document.createElement('input');
         tipoInput.type = 'hidden';
         tipoInput.className = 'hidden-tipo';
@@ -69,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 primera.classList.add('criterio-primera-fecha');
                 primera.dataset.paramKey = 'primeraFecha';
                 primera.dataset.criterioIndex = index;
+                primera.value = formatDatetimeLocal(parametrosExistentes.primeraFecha) || '';
                 primera.addEventListener('change', (e) => actualizarParametro(e.target));
                 wrapper.appendChild(primera);
 
@@ -77,8 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 segunda.classList.add('criterio-segunda-fecha');
                 segunda.dataset.paramKey = 'segundaFecha';
                 segunda.dataset.criterioIndex = index;
+                segunda.value = formatDatetimeLocal(parametrosExistentes.segundaFecha) || '';
                 segunda.addEventListener('change', (e) => actualizarParametro(e.target));
                 wrapper.appendChild(segunda);
+
+                // Crear hiddens iniciales si hay valores
+                if (parametrosExistentes.primeraFecha) {
+                    crearHiddenParam(index, 'primeraFecha', parametrosExistentes.primeraFecha);
+                }
+                if (parametrosExistentes.segundaFecha) {
+                    crearHiddenParam(index, 'segundaFecha', parametrosExistentes.segundaFecha);
+                }
                 break;
 
             case 'Categoria':
@@ -89,9 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     inpCat.classList.add('criterio-categoria-input');
                     inpCat.dataset.paramKey = 'categoria';
                     inpCat.dataset.criterioIndex = index;
+                    inpCat.value = parametrosExistentes.categoria || '';
                     inpCat.addEventListener('change', (e) => actualizarParametro(e.target));
                 }
                 wrapper.appendChild(cclone);
+                if (parametrosExistentes.categoria) {
+                    crearHiddenParam(index, 'categoria', parametrosExistentes.categoria);
+                }
                 break;
 
             case 'Etiqueta':
@@ -100,8 +163,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 selEt.classList.add('criterio-etiqueta-select');
                 selEt.dataset.paramKey = 'etiqueta';
                 selEt.dataset.criterioIndex = index;
+                selEt.value = parametrosExistentes.etiqueta || '';
                 selEt.addEventListener('change', (e) => actualizarParametro(e.target));
                 wrapper.appendChild(selEt);
+                if (parametrosExistentes.etiqueta) {
+                    crearHiddenParam(index, 'etiqueta', parametrosExistentes.etiqueta);
+                }
                 break;
 
             case 'Provincia':
@@ -111,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     selProv.classList.add('criterio-provincia-select');
                     selProv.dataset.paramKey = 'provincia';
                     selProv.dataset.criterioIndex = index;
+                    selProv.value = parametrosExistentes.provincia || '';
                     selProv.addEventListener('change', (e) => actualizarParametro(e.target));
                     wrapper.appendChild(selProv);
                 } else {
@@ -120,8 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     ip.classList.add('criterio-provincia-input');
                     ip.dataset.paramKey = 'provincia';
                     ip.dataset.criterioIndex = index;
+                    ip.value = parametrosExistentes.provincia || '';
                     ip.addEventListener('change', (e) => actualizarParametro(e.target));
                     wrapper.appendChild(ip);
+                }
+                if (parametrosExistentes.provincia) {
+                    crearHiddenParam(index, 'provincia', parametrosExistentes.provincia);
                 }
                 break;
 
@@ -132,8 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 tit.classList.add('criterio-titulo');
                 tit.dataset.paramKey = 'titulo';
                 tit.dataset.criterioIndex = index;
+                tit.value = parametrosExistentes.titulo || '';
                 tit.addEventListener('change', (e) => actualizarParametro(e.target));
                 wrapper.appendChild(tit);
+                if (parametrosExistentes.titulo) {
+                    crearHiddenParam(index, 'titulo', parametrosExistentes.titulo);
+                }
                 break;
 
             case 'ContenidoMultimedia':
@@ -141,6 +217,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
         }
         return wrapper;
+    }
+
+    function crearHiddenParam(criterioIndex, paramKey, value) {
+        const hiddenParam = document.createElement('input');
+        hiddenParam.type = 'hidden';
+        hiddenParam.name = `listaCriterios[${criterioIndex}].parametros[${paramKey}]`;
+        hiddenParam.value = value;
+        hiddenParam.dataset.criterioIndex = criterioIndex;
+        hiddenParam.dataset.paramKey = paramKey;
+        generatedHiddenFields.appendChild(hiddenParam);
     }
 
     function actualizarParametro(input) {
@@ -163,14 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (existingHidden) {
             existingHidden.value = value;
         } else if (value) {
-            // Crear nuevo hidden input
-            const hiddenParam = document.createElement('input');
-            hiddenParam.type = 'hidden';
-            hiddenParam.name = `listaCriterios[${criterioIndex}].parametros[${paramKey}]`;
-            hiddenParam.value = value;
-            hiddenParam.dataset.criterioIndex = criterioIndex;
-            hiddenParam.dataset.paramKey = paramKey;
-            generatedHiddenFields.appendChild(hiddenParam);
+            crearHiddenParam(criterioIndex, paramKey, value);
         }
     }
 
@@ -219,6 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clonarSelectTemplate(templateSelect) {
+        if (!templateSelect) return null;
         const select = document.createElement('select');
         Array.from(templateSelect.options).forEach(opt => {
             const copy = document.createElement('option');
@@ -230,31 +310,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clonarInputTemplate(templateDiv) {
+        if (!templateDiv) return null;
         const clone = templateDiv.cloneNode(true);
         clone.style.display = 'block';
         clone.removeAttribute('id');
         return clone;
     }
 
-    // Fuentes toggle + chips
-    toggleFuentes.addEventListener("click", () => {
-        const expanded = panelFuentes.style.display === "block";
-        panelFuentes.style.display = expanded ? "none" : "block";
-        toggleFuentes.setAttribute("aria-expanded", !expanded);
-        panelFuentes.setAttribute("aria-hidden", expanded);
-    });
+    function formatDatetimeLocal(dateStr) {
+        if (!dateStr) return '';
+        // Convertir "2024-01-15T10:30:00" a "2024-01-15T10:30"
+        return dateStr.substring(0, 16);
+    }
 
-    const checkboxes = panelFuentes.querySelectorAll(".fuente-checkbox");
+    function capitalizeFirst(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Fuentes toggle + chips
+    if (toggleFuentes && panelFuentes) {
+        toggleFuentes.addEventListener("click", () => {
+            const expanded = panelFuentes.style.display === "block";
+            panelFuentes.style.display = expanded ? "none" : "block";
+            toggleFuentes.setAttribute("aria-expanded", !expanded);
+            panelFuentes.setAttribute("aria-hidden", expanded);
+        });
+    }
+
+    const checkboxes = panelFuentes ? panelFuentes.querySelectorAll(".fuente-checkbox") : [];
     checkboxes.forEach(cb => cb.addEventListener("change", updateFuentes));
 
     function updateFuentes() {
+        if (!panelFuentes || !chipsContainer) return;
+
         const selected = Array.from(panelFuentes.querySelectorAll(".fuente-checkbox:checked"));
         chipsContainer.innerHTML = '';
 
         // Limpiar hidden inputs anteriores de fuentes
         generatedHiddenFields.querySelectorAll('input[name="listaIdsFuentes"]').forEach(el => el.remove());
 
-        selected.forEach((cb, index) => {
+        selected.forEach((cb) => {
             // Crear chip visual
             const chip = document.createElement('span');
             chip.className = 'chip';
@@ -282,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (countSpan) countSpan.textContent = `(${selected.length})`;
     }
 
+    // Inicializar fuentes (importante para modo edición)
     updateFuentes();
 
     // Botón cancelar
@@ -293,12 +390,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Debug antes del submit
-    document.getElementById('createCollectionForm').addEventListener('submit', function(e) {
-        console.log('=== DATOS A ENVIAR ===');
-        const formData = new FormData(this);
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key} = ${value}`);
-        }
-        console.log('======================');
-    });
+    const form = document.getElementById('collectionForm') || document.getElementById('createCollectionForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('=== DATOS A ENVIAR ===');
+            const formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key} = ${value}`);
+            }
+            console.log('======================');
+        });
+    }
 });

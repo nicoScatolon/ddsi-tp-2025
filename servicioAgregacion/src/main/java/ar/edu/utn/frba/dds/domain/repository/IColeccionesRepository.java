@@ -11,4 +11,7 @@ public interface IColeccionesRepository extends JpaRepository<Coleccion, Long> {
     Coleccion findByHandle(String handle);
     Optional<Coleccion> findById(Long aLong);
     boolean existsColeccionByHandle(String handle);
+
+    List<Coleccion> findAllByDestacada(boolean esDestacada);
+
 }

@@ -9,6 +9,8 @@
     --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
     --tag-grad: linear-gradient(135deg, #6A82FB, #FC5C7D);
     --danger-grad: linear-gradient(135deg, #f97316, #ea580c);
+    --destacar-grad: linear-gradient(135deg, #fbbf24, #f59e0b);
+    --quitar-destacado-grad: linear-gradient(135deg, #94a3b8, #64748b);
 }
 
 /* ===== CARD PRINCIPAL (ancho fijo, altura flexible) ===== */
@@ -210,66 +212,130 @@
     background: #eaeffb;
 }
 
-/* hint para modo edición del mapa */
-#hecho-detail .map-hint {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    color: #fff;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 10px;
-    box-shadow: 0 6px 18px rgba(47,96,244,0.12);
-    margin-bottom: 6px;
-    font-size: 0.9rem;
-}
-
-/* ===== BOTONES / ACCIONES - ALINEADOS HORIZONTALMENTE ===== */
+/* ===== BOTONES DE ACCIÓN ===== */
 #hecho-detail #hecho-actions {
     display: flex !important;
-    flex-direction: row !important;
     gap: 1rem;
     align-items: center;
     justify-content: flex-start;
     margin-top: 1rem;
-    flex-wrap: nowrap;
+    flex-direction: row !important;
 }
 
-/* Sobrescritura específica para botones dentro de hecho-actions */
-#hecho-detail #hecho-actions .btn-primary,
-#hecho-detail #hecho-actions .btn-warning,
-#hecho-detail #hecho-actions .btn-secondary,
-#hecho-detail #hecho-actions button {
-    white-space: nowrap;
-    display: inline-block;
-    flex-shrink: 0;
+/* Form dentro de actions */
+#hecho-detail #hecho-actions form {
     margin: 0;
+    display: inline-block;
 }
 
-/* Botón warning específico para solicitar eliminación */
-#hecho-detail #hecho-actions .btn-warning {
-    background: var(--danger-grad);
-    color: white;
-    box-shadow: 0 6px 18px rgba(249,115,22,0.14);
-    border: 2px solid transparent;
-}
-
-#hecho-detail #hecho-actions .btn-warning:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(249,115,22,0.2);
-    background: var(--danger-grad);
-    border-color: transparent;
-}
-
-/* ===== CONTROLES DE EDICIÓN ===== */
-#hecho-detail .image-controls {
-    display: flex;
+/* Botón de Solicitar Eliminación - MAYOR ESPECIFICIDAD */
+#hecho-detail #hecho-actions button.btn-delete-request,
+button.btn-delete-request {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
     gap: 0.6rem;
-    flex-wrap: wrap;
-    padding: 0.75rem;
-    border-radius: 10px;
-    background: #fbfbff;
-    border: 1px solid #f0f4ff;
-    margin-top: 0.5rem;
+    padding: 0.75rem 1.5rem !important;
+    background: linear-gradient(135deg, #f97316, #ea580c) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(249,115,22,0.3) !important;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.4;
+}
+
+#hecho-detail #hecho-actions button.btn-delete-request i,
+button.btn-delete-request i {
+    font-size: 1rem;
+}
+
+#hecho-detail #hecho-actions button.btn-delete-request:hover,
+button.btn-delete-request:hover {
+    background: linear-gradient(135deg, #ea580c, #c2410c) !important;
+    color: white !important;
+    border: none !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249,115,22,0.4) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-delete-request:active,
+button.btn-delete-request:active {
+    transform: translateY(0);
+}
+
+#hecho-detail #hecho-actions button.btn-delete-request:focus,
+button.btn-delete-request:focus {
+    outline: 3px solid rgba(249,115,22,0.3);
+    outline-offset: 2px;
+}
+
+/* Botón de Destacar (solo admin) - MAYOR ESPECIFICIDAD */
+#hecho-detail #hecho-actions button.btn-destacar,
+button.btn-destacar {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem !important;
+    background: var(--destacar-grad) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(251,191,36,0.3) !important;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.4;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar i,
+button.btn-destacar i {
+    font-size: 1rem;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar:hover,
+button.btn-destacar:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: white !important;
+    border: none !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251,191,36,0.4) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar:active,
+button.btn-destacar:active {
+    transform: translateY(0);
+}
+
+#hecho-detail #hecho-actions button.btn-destacar:focus,
+button.btn-destacar:focus {
+    outline: 3px solid rgba(251,191,36,0.3);
+    outline-offset: 2px;
+}
+
+/* Botón de Quitar Destacado - ESTILO DISTINTO */
+#hecho-detail #hecho-actions button.btn-destacar.quitar,
+button.btn-destacar.quitar {
+    background: var(--quitar-destacado-grad) !important;
+    box-shadow: 0 4px 12px rgba(100,116,139,0.25) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar.quitar:hover,
+button.btn-destacar.quitar:hover {
+    background: linear-gradient(135deg, #64748b, #475569) !important;
+    box-shadow: 0 6px 20px rgba(100,116,139,0.35) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar.quitar:focus,
+button.btn-destacar.quitar:focus {
+    outline: 3px solid rgba(100,116,139,0.3);
 }
 
 /* ===== MODAL ===== */
@@ -334,23 +400,57 @@
     font-size: 1.5rem;
 }
 
-/* Botón del modal usa los estilos de base.css pero con especificidad */
-#deleteModal .btn-warning {
-    width: 100%;
+/* Botón de Enviar Solicitud (en el modal) - MAYOR ESPECIFICIDAD */
+#deleteModal form button.btn-submit-delete,
+#deleteModal button.btn-submit-delete,
+button.btn-submit-delete {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100% !important;
+    padding: 0.85rem 1.5rem !important;
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(239,68,68,0.3) !important;
+    font-family: 'Poppins', sans-serif;
     margin-top: 0.5rem;
+    line-height: 1.4;
 }
 
-/* ===== CAMPOS EDITABLES VISUAL ===== */
-#hecho-detail [contenteditable="true"] {
-    outline: 2px dashed rgba(47,96,244,0.18);
-    background: #fbfcff;
-    padding: 4px 6px;
-    border-radius: 6px;
+#deleteModal form button.btn-submit-delete i,
+#deleteModal button.btn-submit-delete i,
+button.btn-submit-delete i {
+    font-size: 1.05rem;
 }
 
-#hecho-detail [contenteditable="true"]:focus {
-    outline: 2px solid rgba(47,96,244,0.28);
-    box-shadow: 0 6px 18px rgba(47,96,244,0.08);
+#deleteModal form button.btn-submit-delete:hover,
+#deleteModal button.btn-submit-delete:hover,
+button.btn-submit-delete:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: white !important;
+    border: none !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239,68,68,0.4) !important;
+}
+
+#deleteModal form button.btn-submit-delete:active,
+#deleteModal button.btn-submit-delete:active,
+button.btn-submit-delete:active {
+    transform: translateY(0);
+}
+
+#deleteModal form button.btn-submit-delete:focus,
+#deleteModal button.btn-submit-delete:focus,
+button.btn-submit-delete:focus {
+    outline: 3px solid rgba(239,68,68,0.3);
+    outline-offset: 2px;
 }
 
 /* ===== ERROR MESSAGE ===== */
@@ -423,13 +523,15 @@
         gap: 0.8rem;
     }
 
-    #hecho-detail #hecho-actions button {
-        flex: 1 1 auto;
-        min-width: 120px;
-    }
-
     #hecho-detail #hecho-map {
         height: 250px;
+    }
+
+    button.btn-delete-request,
+    button.btn-destacar,
+    button.btn-submit-delete {
+        font-size: 0.9rem !important;
+        padding: 0.7rem 1.3rem !important;
     }
 }
 
@@ -453,8 +555,10 @@
         width: 100%;
     }
 
-    #hecho-detail #hecho-actions button {
-        width: 100%;
+    button.btn-delete-request,
+    button.btn-destacar {
+        width: 100% !important;
+        justify-content: center;
     }
 
     #hecho-detail .multimedia-container img,

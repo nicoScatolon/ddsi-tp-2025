@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
@@ -254,6 +255,87 @@ public class ColeccionesService implements IColeccionesService {
         coleccionesRepository.save(coleccion);
 
         return coleccion.getListaFuentes();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> modificarColeccion(ColeccionInputDTO coleccionInputDTO) {
+        // 1) Buscar la colección por handle
+        Coleccion coleccion = coleccionesRepository.findByHandle(coleccionInputDTO.getHandle());
+
+        if (coleccion == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 2) Actualizar campos simples (título y descripción)
+        if (coleccionInputDTO.getTitulo() != null) {
+            coleccion.setTitulo(coleccionInputDTO.getTitulo());
+        }
+        if (coleccionInputDTO.getDescripcion() != null) {
+            coleccion.setDescripcion(coleccionInputDTO.getDescripcion());
+        }
+
+        // 3) Actualizar criterios si vienen en el DTO
+        if (coleccionInputDTO.getListaCriterios() != null && !coleccionInputDTO.getListaCriterios().isEmpty()) {
+            List<CriterioInputDTO> criteriosLista = new ArrayList<>(coleccionInputDTO.getListaCriterios());
+            List<Criterio> nuevosCriterios = criterioFactory.crearVarios(criteriosLista);
+
+            coleccion.getListaCriterios().clear();
+            nuevosCriterios.forEach(coleccion::agregarCriterio);
+        }
+
+        // 4) Actualizar algoritmo de consenso si viene en el DTO
+        if (coleccionInputDTO.getAlgoritmoConsenso() != null) {
+            coleccion.setIAlgoritmoConsenso(
+                    DTOConverter.algoritmoConsensoFromDTO(coleccionInputDTO.getAlgoritmoConsenso())
+            );
+        }
+
+        // 5) Actualizar fuentes si vienen en el DTO
+        if (coleccionInputDTO.getListaIdsFuentes() != null) {
+            if (coleccionInputDTO.getListaIdsFuentes().isEmpty()) {
+                // Si viene una lista vacía, eliminar todas las fuentes
+                coleccion.setListaFuentes(new ArrayList<>());
+            } else {
+                // Buscar las fuentes por ID
+                List<Fuente> nuevasFuentes = new ArrayList<>();
+                for (Long idFuente : coleccionInputDTO.getListaIdsFuentes()) {
+                    fuentesRepository.findById(idFuente).ifPresent(nuevasFuentes::add);
+                }
+                // El setter se encargará de agregar/eliminar según corresponda
+                coleccion.setListaFuentes(nuevasFuentes);
+            }
+        }
+
+        // 6) Guardar la colección con todos los cambios
+        coleccionesRepository.save(coleccion);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    @Override
+    public ResponseEntity<Void> setDestacadaColeccion(String handle, boolean estaDestacado){
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) {
+            return ResponseEntity.notFound().build();
+        }
+        coleccion.setDestacada(estaDestacado);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
+        return this.coleccionesRepository.findAllByDestacada(true)
+                .stream()
+                .map(DTOConverter::coleccionPreviewOutputDTO)
+                .toList();
+    }
+
+    @Override
+    public ColeccionEditOutputDTO findByHandleEditable(String handle) {
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        return DTOConverter.coleccionEditOutputDTO(coleccion);
     }
 
     @Override

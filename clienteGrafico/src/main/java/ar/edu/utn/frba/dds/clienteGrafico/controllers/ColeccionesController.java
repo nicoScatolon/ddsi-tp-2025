@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
@@ -62,21 +63,24 @@ public class ColeccionesController {
         model.addAttribute("filtros", filtros);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return "/colecciones/colecciones-details";
+        return "/colecciones/details";
     }
 
     @GetMapping("/create")
     public String crearColeccion(Model model) {
+        String actionUrl = "/colecciones/create";
         ColeccionFormDTO coleccionFormDTO = new ColeccionFormDTO(); // Usar el form DTO
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
 
-        model.addAttribute("titulo", "Crear Coleccion");
-        model.addAttribute("coleccionDTO", coleccionFormDTO); // Cambiar esto
+        model.addAttribute("titulo", "Crear Colección");
+        model.addAttribute("coleccionDTO", coleccionFormDTO);
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 2);
         model.addAttribute("logeado", 1);
+        model.addAttribute("nueva", true);
+        model.addAttribute("actionUrl", actionUrl);
 
         return "/colecciones/create";
     }
@@ -95,10 +99,50 @@ public class ColeccionesController {
         return "redirect:/colecciones";
     }
 
+    @PutMapping()
+    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) {
+        ColeccionOutputDTO coleccionDTO = DTOConverter.convertirFormToOutput(coleccionFormDTO);
+        agregadorService.editarColeccion(coleccionDTO);
+
+        return "redirect:/colecciones";
+    }
 
     @GetMapping("/{handle}/editar")
     public String modificarColeccion(Model model, @PathVariable String handle) {
+        String actionUrl = "/colecciones";
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
+        ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);
 
-        return "/colecciones/editar";
+        // Convertir ColeccionInputDTO a ColeccionFormDTO
+        ColeccionFormDTO formDTO = DTOConverter.convertirAFormDTO(coleccionDTO);
+
+        List<Long> fuentesSeleccionadas = coleccionDTO.getFuentes()
+                .stream()
+                .map(FuenteInputDTO::getFuenteId)
+                .toList();
+
+        model.addAttribute("fuentesSeleccionadas", fuentesSeleccionadas);
+        model.addAttribute("fuentes", fuentes);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("titulo", "Modificar Colección");
+        model.addAttribute("coleccionDTO", formDTO);
+        model.addAttribute("actionUrl", actionUrl);
+        model.addAttribute("nueva", false);
+        return "/colecciones/create";
+    }
+
+    @PutMapping("/destacar/{handle}") //Todo solo admins
+    public String destacarColeccion(@PathVariable("handle") String handle){
+        agregadorService.destacarColeccion(handle);
+
+        return "redirect:/colecciones/" + handle;
+    }
+
+    @DeleteMapping("/destacar/{handle}") //Todo solo admins
+    public String eliminarDestacarColeccion(@PathVariable("handle") String handle){
+        agregadorService.eliminarDestacarColeccion(handle);
+
+        return "redirect:/colecciones/" + handle;
     }
 }

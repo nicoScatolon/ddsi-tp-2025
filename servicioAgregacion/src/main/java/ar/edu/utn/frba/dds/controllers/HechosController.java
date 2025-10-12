@@ -24,6 +24,8 @@ public class HechosController {
         this.seederService = seederService;
     }
 
+    // --- API Publica --- //
+
     @GetMapping("/publica")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
@@ -43,6 +45,18 @@ public class HechosController {
         return hechosService.getHechosMapa();
     }
 
+    @GetMapping("/publica/destacados")
+    public List<HechoOutputDTO> getHechosDestacados() {
+        return hechosService.getHechosDestacados();
+    }
+
+    // --- API Privada --- //
+
+    @GetMapping("/privada")
+    public List<HechoOutputDTO> getHechosPrivada(@ModelAttribute HechosFilterDTO hechosFilterDTO, @RequestParam(required = false) Boolean fueEliminado) {
+        return hechosService.getHechos(hechosFilterDTO, fueEliminado);
+    }
+
     @PutMapping("/privada/{id}/etiquetas")
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
@@ -50,10 +64,20 @@ public class HechosController {
     }
 
     @DeleteMapping ("/privada/{id}/etiquetas")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasAnyRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 
+    }
+
+    @PutMapping("/privada/destacado/{id}")
+    public ResponseEntity<Void> destacarHecho(@PathVariable Long id){
+        return hechosService.setDestacadoHecho(id, true);
+    }
+
+    @DeleteMapping ("/privada/destacado/{id}")
+    public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
+        return hechosService.setDestacadoHecho(id, false);
     }
 
     // --- TEST --- //

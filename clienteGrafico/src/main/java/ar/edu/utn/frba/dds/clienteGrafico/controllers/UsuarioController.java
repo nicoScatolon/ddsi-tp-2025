@@ -1,7 +1,11 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import lombok.RequiredArgsConstructor;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.GestionUsuariosService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.WebApiCallerService;
 import jakarta.servlet.http.HttpSession;
@@ -10,15 +14,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class UsuarioController {
+    private final IFuenteDinamicaService fuenteDinamicaService;
 
     private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
@@ -41,36 +52,6 @@ public class UsuarioController {
         return "usuario/login";
     }
 
-//    @PostMapping("/login")
-//    public String login(@ModelAttribute("usuario") UsuarioOutputDTO usuario, HttpSession session) {
-//        log.info("Iniciando login" + usuario.getEmail(), usuario.getPassword());
-//        // del usuario para el login solo se carga su email y password
-//        try {
-//
-//            Map<String, String> body = java.util.Map.of("username", usuario.getEmail(), "password", usuario.getPassword());
-//            AuthResponseDTO tokens = web.post().uri(authServiceUrl + "/auth")
-//                    .bodyValue(body)
-//                    .retrieve()
-//                    .bodyToMono(AuthResponseDTO.class)
-//                    .block();
-//
-//            if (tokens == null || tokens.getAccessToken() == null) {
-//                return "redirect:/login";
-//            }
-//
-//            session.setAttribute("accessToken", tokens.getAccessToken());
-//            session.setAttribute("refreshToken", tokens.getRefreshToken());
-//
-//            return "redirect:/index";
-//
-//        }
-//        catch (Exception e) {
-//            //todo: mensaje personalizado para el error de credencial inválida
-//            return "redirect:/login";
-//        }
-//    }
-
-
     @GetMapping("/signup")
     public String signup(Model model) {
         UsuarioOutputDTO usuario = new UsuarioOutputDTO();
@@ -89,6 +70,25 @@ public class UsuarioController {
         model.addAttribute("titulo", "Perfil");
         model.addAttribute("editor", true);
         return "usuario/profile";
+    }
+
+    @GetMapping("/misHechos")
+    public String misHechos(
+            @RequestParam(required = false) EstadoHecho estadoHecho,
+            @RequestParam(value = "page", defaultValue = "0") int paginaActual,
+            Model model) {
+        Long usuarioId = 5001L; //Todo obtener el id del usuario actual por la cookie
+
+        List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamicaUsuario(usuarioId, estadoHecho, paginaActual);
+        //if (hechos == null) {hechos = new ArrayList<>();}
+
+        model.addAttribute("usuarioId", usuarioId);
+        model.addAttribute("hechos", hechos);
+        model.addAttribute("paginaActual", paginaActual);
+        model.addAttribute("estadoHecho", estadoHecho);
+        model.addAttribute("titulo", "Perfil");
+        model.addAttribute("editor", true);
+        return "usuario/mis-hechos";
     }
 
 

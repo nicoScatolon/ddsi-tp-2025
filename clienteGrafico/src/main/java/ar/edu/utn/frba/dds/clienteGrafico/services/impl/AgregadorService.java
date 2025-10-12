@@ -2,11 +2,13 @@ package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
@@ -99,6 +101,86 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    @Override
+    public ColeccionInputDTO obtenerColeccion(String handle) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/colecciones/publica/editable/{handle}")
+                        .build(handle)
+                )
+                .retrieve()
+                .bodyToMono(ColeccionInputDTO.class)
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> editarColeccion(ColeccionOutputDTO coleccionOutputDTO) {
+        return webClient.put()
+                .uri("/api/colecciones/privada")
+                .bodyValue(coleccionOutputDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    // DESTACAR HECHOS
+    @Override
+    public List<HechoInputDTO> obtenerHechosDestacados() {
+        return webClient.get()
+                .uri("/api/hechos/publica/destacados")
+                .retrieve()
+                .bodyToFlux(HechoInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> destacarHecho(Long id) {
+        return webClient.put()
+                .uri("/api/hechos/privada/destacado/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarDestacarHecho(Long id) {
+        return webClient.delete()
+                .uri("/api/hechos/privada/destacado/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    // DESTACAR COLECCION
+    @Override
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
+        return webClient.get()
+                .uri("/api/colecciones/publica/destacadas") //Todo no esta implementado en back
+                .retrieve()
+                .bodyToFlux(ColeccionPreviewInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> destacarColeccion(String handle) {
+        return webClient.put()
+                .uri("/api/colecciones/privada/destacada/{handle}", handle)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarDestacarColeccion(String handle) {
+        return webClient.delete()
+                .uri("/api/colecciones/privada/destacada/{handle}", handle)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
 
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()
@@ -124,6 +206,7 @@ public class AgregadorService implements IAgregadorService {
                 .bodyToMono(ColeccionPreviewInputDTO.class)
                 .block();
     }
+
 
     public List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado) {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
@@ -270,7 +353,7 @@ public class AgregadorService implements IAgregadorService {
                         .build())
                 .ubicacion(UbicacionInputDTO.builder()
                         .provincia("Buenos Aires")
-                        .localidad("CABA")                // Ciudad Autónoma de Buenos Aires
+                        .departamento("CABA")                // Ciudad Autónoma de Buenos Aires
                         .calle("Av. Corrientes")          // Calle conocida
                         .numero(1234)
                         .latitud(-34.6037)                // Coordenadas aproximadas

@@ -68,6 +68,9 @@ public class Coleccion {
     @Column(nullable = false, name = "curarHechos")
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
+    @Column (nullable = false, name= "destacada")
+    @Setter private Boolean destacada = false;
+
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
@@ -115,13 +118,15 @@ public class Coleccion {
         List<Fuente> fuentesEliminadas = listaFuentes.stream()
                 .filter(f1 -> !nuevasFuentes.contains(f1))
                 .toList();
+
+        if ( !fuentesEliminadas.isEmpty()) {
+            fuentesEliminadas.forEach(this::eliminarFuente);
+        }
         if ( !fuentesNuevas.isEmpty() ) {
             fuentesNuevas.forEach(this::agregarFuente);
             curarHechos = false; // quiero que primero se actualize y despues cure, para que no quede mal la lista de hechosCurados
         }
-        if ( !fuentesEliminadas.isEmpty()) {
-            fuentesEliminadas.forEach(this::eliminarFuente);
-        }
+
     }
 
     public void setIAlgoritmoConsenso(IAlgoritmoConsenso IAlgoritmoConsenso) {

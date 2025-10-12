@@ -1,13 +1,28 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 <th:block th:fragment="cssExtra">
-    <link rel="stylesheet" th:href="@{/css/colecciones/coleccion-create.css}">
+    <link rel="stylesheet" th:href="@{/css/colecciones/form.css}">
 </th:block>
 
 <div th:fragment="contenido">
     <section id="create-collection">
         <section class="card">
-            <h1>Crear Colección</h1>
-            <form th:action="@{/colecciones/create}" th:object="${coleccionDTO}" method="post" id="createCollectionForm">
+
+            <h1 th:text="${titulo}"></h1>
+
+            <!-- Div para pasar datos al JS -->
+            <div id="coleccionData"
+                 th:data-es-nueva="${nueva}"
+                 th:data-criterios-json="${!nueva && coleccionDTO.listaCriterios != null ? coleccionDTO.listaCriteriosJson : '[]'}"
+                 style="display:none;"></div>
+
+            <form th:action="${actionUrl}" th:object="${coleccionDTO}" method="post" id="collectionForm">
+
+                <!-- Si NO es nueva, convertir POST en PUT -->
+                <input th:if="${!nueva}" type="hidden" name="_method" value="put">
+
+                <!-- Handle solo para edición -->
+                <input th:if="${!nueva}" type="hidden" th:field="*{handle}">
+
                 <div>
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incidentes de tráfico" required>
@@ -34,6 +49,7 @@
                                                 class="fuente-checkbox"
                                                 th:value="${fuente.fuenteId}"
                                                 th:data-nombre="${fuente.nombre}"
+                                                th:checked="${fuentesSeleccionadas != null && #lists.contains(fuentesSeleccionadas, fuente.fuenteId)}"
                                         />
                                         <span th:text="${fuente.nombre}">Fuente</span>
                                     </label>
@@ -102,13 +118,14 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="submit" class="btn btn-primary" th:text="${nueva ? 'Crear' : 'Guardar cambios'}">Crear</button>
                 </div>
             </form>
         </section>
     </section>
 </div>
+
 <th:block th:fragment="jsExtra">
-    <script th:src="@{/js/coleccion-create.js}"></script>
+    <script th:src="@{/js/coleccion-form.js}"></script>
 </th:block>
 </html>

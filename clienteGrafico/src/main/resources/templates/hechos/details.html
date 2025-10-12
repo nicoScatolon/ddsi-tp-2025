@@ -61,34 +61,34 @@
                     <div class="info-item">
                         <div class="tags-header">Ubicación:</div>
                         <p id="hecho-ubicacion" class="ubicacion">
-                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.localidad!= null)}">
+                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
                                 <span th:if="${hecho.ubicacion.provincia != null}"
                                       th:text="${hecho.ubicacion.provincia}"></span>
-                                <span th:if="${hecho.ubicacion.localidad != null}"
-                                      th:text="${hecho.ubicacion.localidad}"></span>
+                                <span th:if="${hecho.ubicacion.departamento != null}"
+                                      th:text="${hecho.ubicacion.departamento}"></span>
                                 <span th:if="${hecho.ubicacion.calle != null}"
                                       th:text="${' - ' + hecho.ubicacion.calle}"></span>
                                 <span th:if="${hecho.ubicacion.numero != null}"
                                       th:text="${' ' + hecho.ubicacion.numero}"></span>
                             </span>
-                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.localidad!= null)}">Sin ubicación especificada</span>
+                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
                         </p>
                     </div>
 
                     <hr class="separator">
 
                     <!-- Etiquetas -->
-                    <div class="info-item">
+                    <div class="info-item" th:if="${origenAgregador == true}">
                         <div class="tags-header">Etiquetas:</div>
 
                         <!-- Caso sin etiquetas -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho.etiquetas == null or #lists.isEmpty(hecho.etiquetas)}">
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
                             <li>Sin etiquetas</li>
                         </ul>
 
                         <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho.etiquetas != null and !#lists.isEmpty(hecho.etiquetas)}">
-                            <li th:each="etiqueta : ${hecho.etiquetas}"
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
+                            <li th:each="etiqueta : ${hecho?.etiquetas}"
                                 th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
                                 Etiqueta
                             </li>
@@ -98,22 +98,49 @@
                     <hr class="separator">
 
                     <!-- Contribuyente -->
-                    <div class="info-item">
+                    <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
                         <div class="tags-header">Contribuyente:</div>
                         <p id="hecho-contribuyente" class="contribuyente">
                             <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
-                            <span th:if="${hecho.contribuyente != null}"
-                                  th:text="${hecho.contribuyente.nombre + ' ' + hecho.contribuyente.apellido}">
+                            <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
+                            <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
                                 Nombre Apellido
                             </span>
-                            <span th:unless="${hecho.contribuyente != null}">Anónimo</span>
+
                         </p>
                     </div>
 
                     <!-- Acciones solo para usuarios logueados -->
-                    <div th:if="${logeado == 1}" id="hecho-actions" class="info-item" style="margin-top:12px;">
-                        <button id="deleteBtn" class="btn-warning">Solicitar eliminación</button>
-                        <button th:if="${rol == 2 && permitirEdicion == 1}" id="editBtn" class="btn-primary">Editar</button>
+                    <div id="hecho-actions" class="info-item" style="margin-top:12px;">
+                        <!-- Botón solicitar eliminación (usuarios logueados) -->
+                        <button th:if="${logeado == 1}" id="deleteBtn" class="btn-delete-request">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Solicitar eliminación
+                        </button>
+
+                        <!-- Botón para DESTACAR (si NO está destacado) -->
+                        <form th:if="${rol == 2 and !hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
+                            <input type="hidden" name="_method" value="put" />
+                            <button type="submit" class="btn-destacar">
+                                <i class="fas fa-star"></i>
+                                 Destacar
+                            </button>
+                        </form>
+
+                        <!-- Botón para QUITAR DESTACADO (si SÍ está destacado) -->
+                        <form th:if="${rol == 2 and hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn-destacar quitar">
+                                <i class="fas fa-star-half-alt"></i>
+                                Quitar destacado
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -181,7 +208,10 @@
                 <!-- ID del usuario -->
                 <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
 
-                <button type="submit" class="btn-warning">Enviar Solicitud</button>
+                <button type="submit" class="btn-submit-delete">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Solicitud
+                </button>
             </form>
         </div>
     </div>
@@ -201,15 +231,15 @@
             categoriaNombre: /*[[${hecho != null && hecho.categoria != null && hecho.categoria.nombre != null ? hecho.categoria.nombre : ''}]]*/ '',
             ubicacion: {
                 provincia: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : ''}]]*/ '',
-                localidad: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.localidad != null ? hecho.ubicacion.localidad : ''}]]*/ '',
+                departamento: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.departamento != null ? hecho.ubicacion.departamento : ''}]]*/ '',
                 latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
                 longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
             },
-            etiquetasPresentes: /*[[${hecho != null && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
+            etiquetasPresentes: /*[[${hecho != null && origenAgregador == true && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
             fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
             fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
-            contribuyenteNombre: /*[[${hecho != null && hecho.contribuyente != null && hecho.contribuyente.nombre != null ? hecho.contribuyente.nombre : ''}]]*/ '',
-            contribuyenteApellido: /*[[${hecho != null && hecho.contribuyente != null && hecho.contribuyente.apellido != null ? hecho.contribuyente.apellido : ''}]]*/ ''
+            contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
+            contribuyenteApellido: /*[[${contribuyente != null && contribuyente.apellido != null ? contribuyente.apellido : ''}]]*/ ''
         };
 
         const USER_DATA = {

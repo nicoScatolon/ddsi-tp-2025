@@ -4,6 +4,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @DiscriminatorValue("CargaEntreFechas")
 @NoArgsConstructor
-
+@Getter
 public class CriterioCargaEntreFechas extends Criterio {
     @Column(name = "primeraFecha", nullable = true)
     private LocalDateTime primeraFecha;

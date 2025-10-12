@@ -23,7 +23,8 @@ public class HechoInputDTO {
     private List<EtiquetaInputDTO> etiquetas;
     private List<ContenidoMultimediaInputDTO> contenidoMultimedia;
     private LocalDateTime fechaDeCarga;
-    private ContribuyenteInputDTO contribuyente;
+    private Long contribuyenteId;
     private Boolean cargadoAnonimamente;
     private FuenteInputDTO fuente;
+    private Boolean destacado;
 }

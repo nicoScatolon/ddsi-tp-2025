@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlgoritmoConcensoOutputDTO {
+public class AlgoritmoConsensoOutputDTO {
     private TipoAlgoritmoConsenso tipo;
 }

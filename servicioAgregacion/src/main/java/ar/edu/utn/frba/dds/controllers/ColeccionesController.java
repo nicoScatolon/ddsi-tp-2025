@@ -50,6 +50,11 @@ public class ColeccionesController {
 
     @PutMapping("/privada")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
+    public ResponseEntity<Void> modificarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
+        return coleccionesService.modificarColeccion(coleccionInputDTO);
+    }
+
+    @PutMapping("/privada/basica")
     public ColeccionOutputDTO modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
@@ -78,6 +83,22 @@ public class ColeccionesController {
         return coleccionesService.eliminarColeccion(handle);
     }
 
+    @GetMapping("/publica/destacadas")
+    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
+        return coleccionesService.getColeccionesDestacadas();
+    }
+
+    @PutMapping("/privada/destacada/{handle}")
+    public ResponseEntity<Void> destacarColeccion(@PathVariable String handle){
+        return coleccionesService.setDestacadaColeccion(handle, true);
+    }
+
+    @DeleteMapping ("/privada/destacada/{handle}")
+    public ResponseEntity<Void> eliminarDestacadaColeccion(@PathVariable String handle){
+        return coleccionesService.setDestacadaColeccion(handle, false);
+    }
+
+
 
     // ------------------------------------------- API PÚBLICA -------------------------------------------
 
@@ -93,6 +114,10 @@ public class ColeccionesController {
         return coleccionesService.findByHandle(handle);
     }
 
+    @GetMapping("/publica/editable/{handle}")
+    public ColeccionEditOutputDTO obtenerColeccionEditable(@PathVariable String handle) {
+        return coleccionesService.findByHandleEditable(handle);
+    }
 
     @GetMapping("publica/{handle}/hechos")
     @PreAuthorize("permitAll()")
@@ -104,5 +129,22 @@ public class ColeccionesController {
     @PreAuthorize("permitAll()")
     public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
         return this.coleccionesService.findAllPreview(page);
+    }
+
+    @GetMapping("/publica/preview/{handle}")
+    public ColeccionPreviewOutputDTO obtenerColeccionesPreview(@PathVariable String handle) {
+        return this.coleccionesService.findByHandlePreview(handle);
+    }
+
+    // ------------------------------------------- TESTEO -------------------------------------------
+
+    @GetMapping("/test/actualizar/{handle}")
+    public ColeccionOutputDTO actualizarColeccionManual(@PathVariable String handle) {
+        return this.coleccionesService.actualizarColeccionManual(handle);
+    }
+
+    @GetMapping("/test/curar/{handle}")
+    public ColeccionOutputDTO curarColeccionManual(@PathVariable String handle) {
+        return this.coleccionesService.curarColeccionManual(handle);
     }
 }

@@ -83,17 +83,41 @@ public class HechosController {
     public String hecho(@PathVariable("id") Long id, Model model) {
         try {
             HechoInputDTO hecho = agregadorService.getHechoById(id);
+
+            ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
+            contribuyente.setId(hecho.getContribuyenteId());
+            contribuyente.setNombre("AAAA");
+            contribuyente.setApellido("BBBB");
+            //TODO obtener datos del usuario con el id desde el hecho
+
             ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
+            model.addAttribute("contribuyente", contribuyente);
             model.addAttribute("usuario", usuario);
-            model.addAttribute("permitirEdicion",0);
+            model.addAttribute("origenAgregador",true);
             model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
             model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {
-            model.addAttribute("hecho", null);
+            model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
+            model.addAttribute("urlRedirect", "/hechos");
+            return "404";
         }
-        return "/hechos/hecho-detail";
+        return "hechos/details";
+    }
+
+    @PutMapping("/destacar/{id}") //Todo solo admins
+    public String destacarHecho(@PathVariable("id") Long id, Model model){
+        agregadorService.destacarHecho(id);
+
+        return "redirect:/hechos/" + id;
+    }
+
+    @DeleteMapping("/destacar/{id}") //Todo solo admins
+    public String eliminarDestacarHecho(@PathVariable("id") Long id, Model model){
+        agregadorService.eliminarDestacarHecho(id);
+
+        return "redirect:/hechos/" + id;
     }
 
     @GetMapping("/map")
@@ -103,19 +127,34 @@ public class HechosController {
         model.addAttribute("titulo", "Mapa de Hechos");
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return "/hechos/hechos-map";
+        return "hechos/map";
     }
 
     @GetMapping("/fuenteDinamica/{id}")
     public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model) {
         HechoDinamicaInputDTO hecho = this.fuenteDinamicaService.obtenerHechoDinamicaId(id);
 
+        if (hecho == null) {
+            model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
+            model.addAttribute("urlRedirect", "/user/misHechos");
+            return "404";
+        }
+
+        ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
+        contribuyente.setId(hecho.getContribuyenteId());
+        contribuyente.setNombre("AAAA");
+        contribuyente.setApellido("BBBB");
+        //TODO obtener datos del usuario con el id desde el hecho
+
+        ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
         model.addAttribute("titulo", "Hecho Fuente Dinamica");
         model.addAttribute("hecho", hecho);
-        model.addAttribute("idContribuyente", 2);
+        model.addAttribute("contribuyente", contribuyente);
+        model.addAttribute("usuario", usuario); //TODO Obtener de la sesion actual si existe
+        model.addAttribute("origenAgregador",false);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return ""; //TODO agregar html de respuesta
+        return "hechos/details";
     }
 
 
@@ -139,13 +178,12 @@ public class HechosController {
     }
 
     public HechoInputDTO instanciarHecho(){
-        ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
         CategoriaInputDTO categoria = new CategoriaInputDTO();
         UbicacionInputDTO ubicacion = new UbicacionInputDTO();
 
         HechoInputDTO hecho = new HechoInputDTO();
 
-        hecho.setContribuyente(contribuyente);
+        hecho.setContribuyenteId(10L);
         hecho.setCategoria(categoria);
         hecho.setUbicacion(ubicacion);
 

@@ -18,8 +18,7 @@
                         <span th:text="${solicitud.apellido}"></span>-->
                     </span>
                     <span class="fecha-hora">
-                        <strong>Fecha:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'yyyy-MM-dd')}"></span>
-                        <strong>Hora:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'HH:mm:ss')}"></span>
+                        <strong>Fecha:</strong> <span th:text="${#temporals.format(solicitud.fechaCreacion, 'dd-MM-yyyy')}"></span>
                     </span>
                 </div>
                 <div class="titulo-hecho">
