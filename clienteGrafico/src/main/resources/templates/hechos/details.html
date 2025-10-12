@@ -111,9 +111,21 @@
                     </div>
 
                     <!-- Acciones solo para usuarios logueados -->
-                    <div th:if="${logeado == 1}" id="hecho-actions" class="info-item" style="margin-top:12px;">
-                        <button id="deleteBtn" class="btn-warning">Solicitar eliminación</button>
-                        <button th:if="${logeado == 1 && origenAgregador == false && hecho.contribuyenteId == idContribuyente}" id="editBtn" class="btn-primary">Editar</button>
+                    <div id="hecho-actions" class="info-item" style="margin-top:12px;">
+                        <!-- Botón solicitar eliminación (usuarios logueados) -->
+                        <button th:if="${logeado == 1}" id="deleteBtn" class="btn-delete-request">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Solicitar eliminación
+                        </button>
+
+                        <!-- Botón destacar (solo admin) -->
+                        <form th:if="${rol == 2}" th:action="@{/hechos/destacar/{id}(id=${hecho.id})}" method="post" style="margin: 0;">
+                            <input type="hidden" name="_method" value="put" />
+                            <button type="submit" class="btn-destacar">
+                                <i class="fas fa-star"></i>
+                                Destacar
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -181,7 +193,10 @@
                 <!-- ID del usuario -->
                 <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
 
-                <button type="submit" class="btn-warning">Enviar Solicitud</button>
+                <button type="submit" class="btn-submit-delete">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Solicitud
+                </button>
             </form>
         </div>
     </div>

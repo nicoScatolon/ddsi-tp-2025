@@ -1,4 +1,4 @@
-// hecho-detail.js - Gestión completa del detalle de hechos con Leaflet
+// hecho-detail.js - Gestión de detalle de hechos con Leaflet (sin edición)
 
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar que tenemos datos del hecho
@@ -8,24 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Referencias a elementos del DOM
-    const titleEl = document.getElementById('hecho-title');
-    const descEl = document.getElementById('hecho-description');
-    const categoriasEl = document.getElementById('hecho-categorias');
-    const etiquetasEl = document.getElementById('hecho-etiquetas');
-    const fechaEl = document.getElementById('hecho-fecha');
-    const ubicacionEl = document.getElementById('hecho-ubicacion');
     const mapEl = document.getElementById('hecho-map');
-    const multimediaEl = document.getElementById('hecho-multimedia');
 
     // Variables para el mapa
     let map = null;
     let marker = null;
-
-    // Variables para el modo edición
-    let editing = false;
-    let addImageControls = null;
-    let mapClickHandler = null;
-    let mapHint = null;
 
     // ===== INICIALIZAR MAPA CON LEAFLET =====
     const initMap = () => {
@@ -65,155 +52,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Abrir modal al click
         deleteBtn.addEventListener('click', () => {
-            modal.style.display = 'flex'; // flex para centrar
+            modal.classList.add('open');
         });
 
         // Cerrar modal al click en la "X"
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
+                modal.classList.remove('open');
             });
         }
 
         // Cerrar modal al hacer click fuera del contenido
         window.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
+            if (e.target === modal) {
+                modal.classList.remove('open');
+            }
         });
-    };
-
-
-    // ===== MODO EDICIÓN =====
-    const setupEditMode = () => {
-        const editBtn = document.getElementById('editBtn');
-        if (!editBtn) return;
-
-        editBtn.addEventListener('click', () => {
-            if (!editing) enterEditMode();
-            else exitEditMode();
-        });
-    };
-
-    const enterEditMode = () => {
-        editing = true;
-        const editBtn = document.getElementById('editBtn');
-        editBtn.textContent = 'Guardar cambios';
-        editBtn.classList.replace('btn-primary', 'btn-success');
-
-        [titleEl, descEl, fechaEl, ubicacionEl].forEach(el => el?.setAttribute('contenteditable', 'true'));
-        [categoriasEl, etiquetasEl].forEach(list => {
-            list?.querySelectorAll('li').forEach(li => li.setAttribute('contenteditable', 'true'));
-        });
-
-        // Controles de imagen
-        addImageControls = document.createElement('div');
-        addImageControls.className = 'image-controls';
-        addImageControls.innerHTML = `
-            <button class="btn-secondary" id="addImageUrlBtn" type="button">📷 Agregar imagen por URL</button>
-            <input type="file" id="uploadImageInput" accept="image/*" style="display:none;" multiple />
-            <button class="btn-secondary" id="uploadImageBtn" type="button">📁 Subir imagen desde PC</button>
-        `;
-        multimediaEl.appendChild(addImageControls);
-
-        const removePlaceholder = () => multimediaEl.querySelector('.placeholder')?.remove();
-
-        // Agregar imagen por URL
-        addImageControls.querySelector('#addImageUrlBtn')
-            .addEventListener('click', () => {
-                const url = prompt('Ingrese la URL de la imagen:');
-                if (url) {
-                    removePlaceholder();
-                    const img = document.createElement('img');
-                    img.src = url.trim();
-                    img.alt = HECHO_DATA.titulo;
-                    img.className = 'multimedia-item';
-                    multimediaEl.insertBefore(img, addImageControls);
-                }
-            });
-
-        // Subir imagen desde PC
-        const uploadInput = addImageControls.querySelector('#uploadImageInput');
-        const uploadBtn = addImageControls.querySelector('#uploadImageBtn');
-
-        uploadBtn.addEventListener('click', () => uploadInput.click());
-
-        uploadInput.addEventListener('change', e => {
-            Array.from(e.target.files || []).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = ev => {
-                    removePlaceholder();
-                    const img = document.createElement('img');
-                    img.src = ev.target.result;
-                    img.alt = HECHO_DATA.titulo;
-                    img.className = 'multimedia-item';
-                    multimediaEl.insertBefore(img, addImageControls);
-                };
-                reader.readAsDataURL(file);
-            });
-            uploadInput.value = '';
-        });
-
-        // Editar mapa
-        if (map) {
-            mapHint = document.createElement('div');
-            mapHint.className = 'map-hint';
-            mapHint.textContent = '📍 Haz clic en el mapa para cambiar la ubicación';
-            mapEl.parentNode.insertBefore(mapHint, mapEl);
-
-            mapClickHandler = e => {
-                const { lat, lng } = e.latlng;
-                HECHO_DATA.ubicacion.latitud = lat;
-                HECHO_DATA.ubicacion.longitud = lng;
-                ubicacionEl.textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-
-                if (marker) marker.setLatLng([lat, lng]);
-                else marker = L.marker([lat, lng]).addTo(map);
-            };
-
-            map.on('click', mapClickHandler);
-        }
-
-        titleEl?.focus();
-    };
-
-    const exitEditMode = () => {
-        editing = false;
-        const editBtn = document.getElementById('editBtn');
-        editBtn.textContent = 'Editar';
-        editBtn.classList.replace('btn-success', 'btn-primary');
-
-        [titleEl, descEl, fechaEl, ubicacionEl].forEach(el => el?.removeAttribute('contenteditable'));
-        [categoriasEl, etiquetasEl].forEach(list => {
-            list?.querySelectorAll('li').forEach(li => li.removeAttribute('contenteditable'));
-        });
-
-        addImageControls?.remove();
-        addImageControls = null;
-
-        if (mapHint) { mapHint.remove(); mapHint = null; }
-        if (map && mapClickHandler) { map.off('click', mapClickHandler); mapClickHandler = null; }
-
-        // Guardar cambios en HECHO_DATA
-        if (titleEl) HECHO_DATA.titulo = titleEl.textContent.trim();
-        if (descEl) HECHO_DATA.descripcion = descEl.textContent.trim();
-
-        if (categoriasEl) {
-            const categorias = Array.from(categoriasEl.querySelectorAll('li'))
-                .map(li => li.textContent.trim()).filter(Boolean);
-            HECHO_DATA.categoria = categorias[0] || HECHO_DATA.categoria;
-        }
-
-        if (etiquetasEl) {
-            HECHO_DATA.etiquetas = Array.from(etiquetasEl.querySelectorAll('li'))
-                .map(li => ({ nombre: li.textContent.trim() }))
-                .filter(e => e.nombre);
-        }
-
-        // URLs de multimedia
-        HECHO_DATA.multimedia = Array.from(multimediaEl.querySelectorAll('img.multimedia-item'))
-            .map(img => img.src);
-
-        console.log('Cambios guardados:', HECHO_DATA);
-        alert('✅ Cambios guardados correctamente!');
     };
 
     // ===== DROPDOWN NAVBAR =====
@@ -238,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== INICIALIZAR FUNCIONALIDADES =====
     if (USER_DATA?.loggedIn) {
         setupDeleteModal();
-        if (USER_DATA.role === 2) setupEditMode();
     }
 
     setupDesktopDropdown();

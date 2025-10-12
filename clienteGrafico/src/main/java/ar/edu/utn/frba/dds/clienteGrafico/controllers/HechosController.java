@@ -103,7 +103,14 @@ public class HechosController {
             model.addAttribute("urlRedirect", "/hechos");
             return "404";
         }
-        return "/hechos/hecho-detail";
+        return "hechos/details";
+    }
+
+    @PutMapping("/destacar/{id}") //Todo solo admins
+    public String destacarHecho(@PathVariable("id") Long id, Model model){
+        agregadorService.destacarHecho(id);
+
+        return "redirect:/hechos/" + id;
     }
 
     @GetMapping("/map")
@@ -113,7 +120,7 @@ public class HechosController {
         model.addAttribute("titulo", "Mapa de Hechos");
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return "/hechos/hechos-map";
+        return "hechos/map";
     }
 
     @GetMapping("/fuenteDinamica/{id}")
@@ -140,7 +147,7 @@ public class HechosController {
         model.addAttribute("origenAgregador",false);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return "/hechos/hecho-detail";
+        return "hechos/details";
     }
 
 

@@ -123,6 +123,40 @@ public class AgregadorService implements IAgregadorService {
                 .block();
     }
 
+    @Override
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
+        return webClient.get()
+                .uri("/api/colecciones") //Todo no esta implementado en back
+                .retrieve()
+                .bodyToFlux(ColeccionPreviewInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public List<HechoInputDTO> obtenerHechosDestacados() {
+        return webClient.get()
+                .uri("/api/hechos/publica/destacados")
+                .retrieve()
+                .bodyToFlux(HechoInputDTO.class)
+                .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> destacarHecho(Long id) {
+        return webClient.put()
+                .uri("/api/hechos/privada/destacado/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> destacarColeccion(String handle) {
+        return null; //Todo sin implementar en back
+    }
+
 
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
         return webClient.get()

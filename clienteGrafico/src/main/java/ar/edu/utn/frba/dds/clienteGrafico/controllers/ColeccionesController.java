@@ -63,7 +63,7 @@ public class ColeccionesController {
         model.addAttribute("filtros", filtros);
         model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
         model.addAttribute("logeado", 1);
-        return "/colecciones/colecciones-details";
+        return "/colecciones/details";
     }
 
     @GetMapping("/create")

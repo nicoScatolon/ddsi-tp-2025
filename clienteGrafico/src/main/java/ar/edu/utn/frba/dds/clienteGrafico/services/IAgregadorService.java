@@ -39,4 +39,12 @@ public interface IAgregadorService {
     ColeccionInputDTO obtenerColeccion(String handle);
 
     ResponseEntity<Void> editarColeccion(ColeccionOutputDTO coleccionDTO);
+
+    List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas();
+
+    List<HechoInputDTO> obtenerHechosDestacados();
+
+    ResponseEntity<Void> destacarHecho(Long id);
+
+    ResponseEntity<Void>destacarColeccion(String handle);
 }
