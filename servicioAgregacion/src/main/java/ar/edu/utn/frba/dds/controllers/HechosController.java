@@ -72,13 +72,9 @@ public class HechosController {
     @DeleteMapping ("/privada/destacado/{id}")
     public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, false);
-
     }
 
-
-
     // --- TEST --- //
-
     @GetMapping("/pruebas")
     public List<HechoOutputDTO> getHechosPrueba() {
         return hechosService.findAllOutput();
@@ -89,5 +85,4 @@ public class HechosController {
         this.seederService.init();
         return true;
     }
-
 }

@@ -48,6 +48,7 @@ public class DTOConverter {
                 .fechaDeCarga(hecho.getFechaDeCarga())
                 .cargadoAninimamente(hecho.getCargadoAnonimamente())
                 .fuente(convertirFuentePreviewOutputDTO(hecho.getFuente()))
+                .destacado(hecho.getDestacado())
                 .build();
     }
 
@@ -273,11 +274,11 @@ public class DTOConverter {
                 .handle(coleccion.getHandle())
                 .algoritmoCurado(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
                 .fuentes(DTOConverter.convertirListaFuentePreviewOutputDTO(coleccion.getListaFuentes()))
+                .destacada(coleccion.getDestacada())
                 .build();
     }
 
     // COLECCION INPUT
-
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
         return new Coleccion(
                 input.getHandle(),
@@ -287,7 +288,6 @@ public class DTOConverter {
     }
 
     // HECHOS FILTER DTO
-
     public static HechoFilter convertirHechoFilterInputDTO(HechosFilterDTO filterDTO) {
         return HechoFilter.builder()
                 .categoria(filterDTO.getCategoria())
