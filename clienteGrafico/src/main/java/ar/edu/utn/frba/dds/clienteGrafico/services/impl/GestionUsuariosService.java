@@ -22,17 +22,14 @@ public class GestionUsuariosService {
     private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String authServiceUrl;
-    private final String usuariosServiceUrl;
 
     @Autowired
     public GestionUsuariosService(
             WebApiCallerService webApiCallerService,
-            @Value("${auth.service.url}") String authServiceUrl,
-            @Value("${usuarios.service.url}") String usuariosServiceUrl) {
+            @Value("${auth.service.url}") String authServiceUrl){
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
-        this.usuariosServiceUrl = usuariosServiceUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -77,7 +74,7 @@ public class GestionUsuariosService {
 
     public List<UsuarioDTO> obtenerTodosLosUsuarios() {
         List<UsuarioDTO> response = webApiCallerService.getList(
-                usuariosServiceUrl + "/usuarios",
+                authServiceUrl + "/usuarios",
                 UsuarioDTO.class
         );
         return response != null ? response : List.of();
@@ -85,7 +82,7 @@ public class GestionUsuariosService {
 
     public UsuarioDTO obtenerUsuarioPorId(Long id) {
         UsuarioDTO response = webApiCallerService.get(
-                usuariosServiceUrl + "/usuarios/" + id,
+                authServiceUrl + "/usuarios/" + id,
                 UsuarioDTO.class
         );
         if (response == null) {
@@ -96,7 +93,7 @@ public class GestionUsuariosService {
 
     public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
         UsuarioDTO response = webApiCallerService.post(
-                usuariosServiceUrl + "/usuarios",
+                authServiceUrl + "/usuarios",
                 usuarioDTO,
                 UsuarioDTO.class
         );
@@ -108,7 +105,7 @@ public class GestionUsuariosService {
 
     public UsuarioDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
         UsuarioDTO response = webApiCallerService.put(
-                usuariosServiceUrl + "/usuarios/" + id,
+                authServiceUrl + "/usuarios/" + id,
                 usuarioDTO,
                 UsuarioDTO.class
         );
@@ -119,7 +116,7 @@ public class GestionUsuariosService {
     }
 
     public void eliminarUsuario(Long id) {
-        webApiCallerService.delete(usuariosServiceUrl + "/usuarios/" + id);
+        webApiCallerService.delete(authServiceUrl + "/usuarios/" + id);
     }
 
     public boolean existeUsuario(Long id) {

@@ -22,11 +22,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
                         .requestMatchers(
-                                "/api/auth/**", "/api/usuarios/**"      // todo lo relacionado con usuarios
+                                "/api/auth/", "/api/auth", "/api/auth/refresh", "/api/usuarios/**"      // todo lo relacionado con usuarios
                         ).permitAll()
 
                         // Endpoints que requieren autenticación
-                        .requestMatchers("/api/auth/user/roles-permisos").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

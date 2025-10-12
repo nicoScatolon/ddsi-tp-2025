@@ -35,7 +35,7 @@ public class UsuariosService {
         u.setApellido(dto.getApellido());
         u.setEmail(dto.getEmail());
         u.setRol(Rol.CONTRIBUYENTE);
-        u.setPermisos(List.of(Permiso.VER_HECHOS)); //TODO: VER QUE PERMISOS USA EL CONTRIBUYENTE
+         //TODO: VER QUE PERMISOS USA EL CONTRIBUYENTE
 
         return usuarios.save(u);
     }

@@ -22,9 +22,8 @@ public class FuentesController {
     public FuentesController(FuentesService fuenteService) {
         this.fuenteService = fuenteService;
     }
-
-    @GetMapping("/privada")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
+    @GetMapping("/privada")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
@@ -35,12 +34,12 @@ public class FuentesController {
 
     @DeleteMapping("/privada/{fuenteId}")
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
-    public ResponseEntity<Void> eliminarUnaFuente (@RequestParam long fuenteId) {
+    public ResponseEntity<Void> eliminarUnaFuente (@PathVariable long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
     }
 
     @GetMapping("/test/fuente")
-    public List<HechoOutputDTO> probarActualizarFuente (@RequestParam long fuenteId) {
+    public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
 }

@@ -17,25 +17,20 @@ public class JwtUtil {
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 días
 
     public static String generarAccessToken(Usuario u) {
-        List<String> permisos = u.getPermisos() == null
-                ? java.util.List.of()
-                : u.getPermisos().stream().map(Enum::name).toList();
-
         return Jwts.builder()
-                .setSubject(String.valueOf(u))
+                .setSubject(u.getEmail())
                 .setIssuer("gestion-usuarios")
+                .claim("username", u.getUsername())
+                .claim("rol", u.getRol().name())
+                .claim("perms", u.getPermisos().stream().map(Enum::name).toList())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
-                .claim("type", "access")
-                .claim("uid", u.getId())
-                .claim("rol", u.getRol() == null ? null : u.getRol().name())
-                .claim("perms", permisos)
                 .signWith(key)
                 .compact();
     }
 
-    public static String generarRefreshToken(String username) {
+    public static String generarRefreshToken(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuer("gestion-usuarios")
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
                 .claim("type", "refresh")

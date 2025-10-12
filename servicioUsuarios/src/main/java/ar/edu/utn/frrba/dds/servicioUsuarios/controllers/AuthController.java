@@ -45,7 +45,7 @@ public class AuthController {
             log.info("el usuario autenticado");
             // Generar tokens
             String accessToken  = loginService.generarAccessToken(u);
-            String refreshToken = loginService.generarRefreshToken(u.getNombre());
+            String refreshToken = loginService.generarRefreshToken(u.getEmail());
 
             log.info("se generaron los tokens, queda buildear la respuesta");
             AuthResponseDTO response = AuthResponseDTO.builder()

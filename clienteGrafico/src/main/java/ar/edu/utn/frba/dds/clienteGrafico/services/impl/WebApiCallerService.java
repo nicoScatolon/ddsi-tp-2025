@@ -1,8 +1,11 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.RefreshTokenDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @Service
 public class WebApiCallerService {
 
+    private static final Logger log = LoggerFactory.getLogger(WebApiCallerService.class);
     private final WebClient webClient;
     private final String authServiceUrl;
 
@@ -114,6 +118,7 @@ public class WebApiCallerService {
      * Ejecuta una llamada HTTP POST
      */
     public <T> T post(String url, Object body, Class<T> responseType) {
+        log.info("Llamando al backend con headers {}", webClient.mutate().build());
         return executeWithTokenRetry(accessToken ->
                 webClient
                         .post()

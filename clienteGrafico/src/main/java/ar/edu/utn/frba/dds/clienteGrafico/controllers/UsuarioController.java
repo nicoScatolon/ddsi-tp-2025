@@ -2,8 +2,11 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.services.impl.GestionUsuariosService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.WebApiCallerService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +19,8 @@ import java.util.Map;
 
 @Controller
 public class UsuarioController {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
     @Value("${auth.service.url}")
     private String authServiceUrl;
@@ -36,33 +41,34 @@ public class UsuarioController {
         return "usuario/login";
     }
 
-    @PostMapping("/login")
-    public String login(@ModelAttribute("usuario") UsuarioOutputDTO usuario, HttpSession session) {
-        // del usuario para el login solo se carga su email y password
-        try {
-
-            Map<String, String> body = java.util.Map.of("username", usuario.getEmail(), "password", usuario.getPassword());
-            AuthResponseDTO tokens = web.post().uri(authServiceUrl + "/auth")
-                    .bodyValue(body)
-                    .retrieve()
-                    .bodyToMono(AuthResponseDTO.class)
-                    .block();
-
-            if (tokens == null || tokens.getAccessToken() == null) {
-                return "redirect:/login";
-            }
-
-            session.setAttribute("accessToken", tokens.getAccessToken());
-            session.setAttribute("refreshToken", tokens.getRefreshToken());
-
-            return "redirect:/index";
-
-        }
-        catch (Exception e) {
-            //todo: mensaje personalizado para el error de credencial inválida
-            return "redirect:/login";
-        }
-    }
+//    @PostMapping("/login")
+//    public String login(@ModelAttribute("usuario") UsuarioOutputDTO usuario, HttpSession session) {
+//        log.info("Iniciando login" + usuario.getEmail(), usuario.getPassword());
+//        // del usuario para el login solo se carga su email y password
+//        try {
+//
+//            Map<String, String> body = java.util.Map.of("username", usuario.getEmail(), "password", usuario.getPassword());
+//            AuthResponseDTO tokens = web.post().uri(authServiceUrl + "/auth")
+//                    .bodyValue(body)
+//                    .retrieve()
+//                    .bodyToMono(AuthResponseDTO.class)
+//                    .block();
+//
+//            if (tokens == null || tokens.getAccessToken() == null) {
+//                return "redirect:/login";
+//            }
+//
+//            session.setAttribute("accessToken", tokens.getAccessToken());
+//            session.setAttribute("refreshToken", tokens.getRefreshToken());
+//
+//            return "redirect:/index";
+//
+//        }
+//        catch (Exception e) {
+//            //todo: mensaje personalizado para el error de credencial inválida
+//            return "redirect:/login";
+//        }
+//    }
 
 
     @GetMapping("/signup")

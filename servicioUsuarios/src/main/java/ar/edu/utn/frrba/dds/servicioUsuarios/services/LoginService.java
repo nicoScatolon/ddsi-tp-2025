@@ -22,7 +22,7 @@ public class LoginService {
     }
 
     public Usuario autenticar(String username, String contrasenia) {
-        Optional<Usuario> usuarioOpcional = usuariosRepository.findByUsername(username);
+        Optional<Usuario> usuarioOpcional = usuariosRepository.findByEmail(username);
 
         if (usuarioOpcional.isEmpty()) {
             throw new NotFoundException("Usuario", username);
@@ -59,7 +59,7 @@ public class LoginService {
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
-        var u = getByUsername(username);
+        Usuario u = getByEmail(username);
         return UserRolesPermissionsDTO.builder()
                 .username(u.getNombre())
                 .rol(u.getRol())
@@ -67,8 +67,8 @@ public class LoginService {
                 .build();
     }
 
-    public Usuario getByUsername(String username) {
-        return usuariosRepository.findByNombre(username)
+    public Usuario getByEmail(String username) {
+        return usuariosRepository.findByEmail(username)
                 .orElseThrow(() -> new NotFoundException("Usuario", username));
     }
 }
