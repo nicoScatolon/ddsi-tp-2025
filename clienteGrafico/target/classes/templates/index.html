@@ -22,21 +22,82 @@
     </section>
     <div id="lower-content">
         <!-- Hechos destacados -->
-        <section id="hechos">
+        <section id="hechos" th:if="${hechos != null && !#lists.isEmpty(hechos)}">
             <h2>Hechos destacados</h2>
             <div class="scroll-container">
                 <button class="scroll-btn left" data-target="hechos-container" aria-label="Scroll izquierda">&#10094;</button>
-                <div id="hechos-container" class="cards-row" tabindex="0"></div>
+                <div id="hechos-container" class="cards-row" tabindex="0">
+                    <!-- Card de hecho -->
+                    <a th:each="hecho : ${hechos}"
+                       th:href="@{/hechos/{id}(id=${hecho.id})}"
+                       class="card">
+                        <!-- Imagen o placeholder -->
+                        <div class="card-thumbnail">
+                            <img th:if="${hecho.contenidoMultimedia != null && !#lists.isEmpty(hecho.contenidoMultimedia)}"
+                                 th:src="${hecho.contenidoMultimedia[0].url}"
+                                 th:alt="${hecho.titulo}"
+                                 class="card-img">
+                            <div th:unless="${hecho.contenidoMultimedia != null && !#lists.isEmpty(hecho.contenidoMultimedia)}"
+                                 class="card-placeholder">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        </div>
+
+                        <!-- Contenido de la card -->
+                        <div class="card-content">
+                            <h3 class="card-title" th:text="${hecho.titulo}">Título del hecho</h3>
+
+                            <p class="card-category" th:if="${hecho.categoria != null}">
+                                <i class="fas fa-tag"></i>
+                                <span th:text="${hecho.categoria.nombre}">Categoría</span>
+                            </p>
+
+                            <p class="card-location"
+                               th:if="${hecho.ubicacion != null
+                                   and ((hecho.ubicacion.provincia != null and !#strings.isEmpty(hecho.ubicacion.provincia))
+                                        or (hecho.ubicacion.departamento != null and !#strings.isEmpty(hecho.ubicacion.departamento)))}">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:if="${hecho.ubicacion.provincia != null and !#strings.isEmpty(hecho.ubicacion.provincia)}"
+                                      th:text="${hecho.ubicacion.provincia}">Provincia</span>
+                                <span th:if="${hecho.ubicacion.provincia != null and !#strings.isEmpty(hecho.ubicacion.provincia)
+                                      and hecho.ubicacion.departamento != null and !#strings.isEmpty(hecho.ubicacion.departamento)}">, </span>
+                                <span th:if="${hecho.ubicacion.departamento != null and !#strings.isEmpty(hecho.ubicacion.departamento)}"
+                                      th:text="${hecho.ubicacion.departamento}">Departamento</span>
+                            </p>
+                        </div>
+                    </a>
+                </div>
                 <button class="scroll-btn right" data-target="hechos-container" aria-label="Scroll derecha">&#10095;</button>
             </div>
         </section>
 
-        <!-- Colecciones destacadas -->
-        <section id="colecciones">
+        <!-- Colecciones destacadas-->
+        <section id="colecciones" th:if="${colecciones != null && !#lists.isEmpty(colecciones)}">
             <h2>Colecciones destacadas</h2>
             <div class="scroll-container">
                 <button class="scroll-btn left" data-target="collections-container" aria-label="Scroll izquierda">&#10094;</button>
-                <div id="collections-container" class="cards-row" tabindex="0"></div>
+                <div id="collections-container" class="cards-row" tabindex="0">
+                    <!-- Card de colección -->
+                    <a th:each="coleccion : ${colecciones}"
+                       th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                       class="card">
+                        <!-- Imagen o placeholder -->
+                        <div class="card-thumbnail">
+                            <div class="card-placeholder">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                        </div>
+
+
+                        <!-- Contenido de la card -->
+                        <div class="card-content">
+                            <h3 class="card-title" th:text="${coleccion.titulo}">Título de la colección</h3>
+
+                            <p class="card-description" th:if="${coleccion.descripcion != null && !#strings.isEmpty(coleccion.descripcion)}"
+                               th:text="${#strings.abbreviate(coleccion.descripcion, 100)}">Descripción de la colección</p>
+                        </div>
+                    </a>
+                </div>
                 <button class="scroll-btn right" data-target="collections-container" aria-label="Scroll derecha">&#10095;</button>
             </div>
         </section>

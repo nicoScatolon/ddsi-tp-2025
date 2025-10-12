@@ -1,0 +1,88 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<div th:fragment="contenido">
+
+    <th:block th:fragment="cssExtra">
+        <link rel="stylesheet" th:href="@{/css/usuario/mis-hechos.css}">
+    </th:block>
+
+    <div class="mh-main">
+        <section class="mh-container">
+            <header class="mh-header">
+                <h1>Mis Hechos</h1>
+
+                <form th:action="@{/misHechos}" method="get" id="estadoForm">
+                    <select name="estadoHecho" id="mh-category" aria-label="Filtrar por Estado" th:value="${estadoHecho}">
+                        <option value="">Cualquier Estado</option>
+                        <option value="PENDIENTE" th:selected="${estadoHecho == 'PENDIENTE'}">Pendiente</option>
+                        <option value="SUGERENCIA" th:selected="${estadoHecho == 'SUGERENCIA'}">Sugerencia</option>
+                        <option value="ACEPTADO" th:selected="${estadoHecho == 'ACEPTADO'}">Aceptado</option>
+                        <option value="RECHAZADO" th:selected="${estadoHecho == 'RECHAZADO'}">Rechazado</option>
+                    </select>
+                    <button type="submit" id="mh-filter" class="btn-ghost small">Aplicar</button>
+                </form>
+
+            </header>
+
+            <!-- Lista de hechos -->
+            <div id="mh-list" class="mh-list" aria-live="polite">
+                <!-- Iteramos sobre cada hecho -->
+                <div th:each="hecho : ${hechos}" th:fragment="hechoCard">
+                    <div class="mh-row">
+                        <!-- Izquierda: título + categoría + etiquetas + fecha -->
+                        <div class="mh-left">
+                            <span class="mh-title" th:text="${hecho.titulo}">Título del Hecho</span>
+                            <span class="mh-meta">
+                                <span th:text="'Categoria: ' + ${hecho.categoria.nombre}">Categoría</span>
+                                <span th:text="'Fecha de carga: ' +  ${hecho.fechaDeCarga}">Carga</span>
+                                <span th:text="'Fecha de Modificacion: ' +  ${hecho.fechaDeModificacion}">Modificacion</span>
+                            </span>
+                        </div>
+
+                        <!-- Derecha: botones de acción -->
+                        <div class="mh-right">
+                            <a th:href="@{/hecho/{id}(id=${hecho.id})}" class="mh-edit btn">Editar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay hechos -->
+            <div id="mh-empty" class="mh-empty" th:if="${hechos == null or #lists.isEmpty(hechos)}">
+                <p>No tenés hechos aún. <a th:href="@{/hecho/create}">Creá el primero</a>.</p>
+            </div>
+
+            <!-- Botón Anterior -->
+            <a class="pagination-arrow"
+               th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+               th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+               th:href="@{/misHechos(
+               page=${paginaActual - 1},
+               estadoHecho=${estadoHecho}
+               )}">
+                ◀
+            </a>
+
+            <!-- Número de página actual -->
+            <div class="pagination-page-number" th:text="${paginaActual + 1}">1</div>
+
+            <!-- Botón Siguiente -->
+            <a class="pagination-arrow"
+               th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
+               th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
+               th:href="@{/misHechos(
+                page=${paginaActual + 1},
+                estadoHecho=${estadoHecho}
+                )}">
+                ▶
+            </a>
+
+        </section>
+    </div>
+
+</div>
+<th:block th:fragment="jsExtra">
+</th:block>
+
+</html>
+

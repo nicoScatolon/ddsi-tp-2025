@@ -74,4 +74,19 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .block();
     }
 
+    @Override
+    public List<HechoDinamicaInputDTO> obtenerHechosDinamicaUsuario(Long usuarioId, EstadoHecho estado, Integer page) {
+        return webClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder.path("/api/fuenteDinamica/hechos/user/{userId}");
+                    if (estado != null) uriBuilder.queryParam("estado", estado);
+                    if (page != null) uriBuilder.queryParam("page", page);
+                    return uriBuilder.build(usuarioId);
+                })
+                .retrieve()
+                .bodyToFlux(HechoDinamicaInputDTO.class)
+                .collectList()
+                .block();
+    }
+
 }

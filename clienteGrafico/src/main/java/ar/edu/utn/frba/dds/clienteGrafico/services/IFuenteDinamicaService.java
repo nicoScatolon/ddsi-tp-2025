@@ -13,4 +13,5 @@ public interface IFuenteDinamicaService {
     List<HechoDinamicaInputDTO> obtenerHechosDinamica(EstadoHecho estadoHecho);
     void enviarRevisionHechoDinamica(RevisionHechoInputDTO revisionHecho, Long adminId);
     HechoDinamicaInputDTO obtenerHechoDinamicaId(Long idHecho);
+    List<HechoDinamicaInputDTO> obtenerHechosDinamicaUsuario(Long usuarioId, EstadoHecho estado, Integer page);
 }

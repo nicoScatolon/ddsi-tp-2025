@@ -1,16 +1,25 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class UsuarioController {
+    private final IFuenteDinamicaService fuenteDinamicaService;
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -38,6 +47,25 @@ public class UsuarioController {
         model.addAttribute("titulo", "Perfil");
         model.addAttribute("editor", true);
         return "usuario/profile";
+    }
+
+    @GetMapping("/misHechos")
+    public String misHechos(
+            @RequestParam(required = false) EstadoHecho estadoHecho,
+            @RequestParam(value = "page", defaultValue = "0") int paginaActual,
+            Model model) {
+        Long usuarioId = 5001L; //Todo obtener el id del usuario actual por la cookie
+
+        List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamicaUsuario(usuarioId, estadoHecho, paginaActual);
+        //if (hechos == null) {hechos = new ArrayList<>();}
+
+        model.addAttribute("usuarioId", usuarioId);
+        model.addAttribute("hechos", hechos);
+        model.addAttribute("paginaActual", paginaActual);
+        model.addAttribute("estadoHecho", estadoHecho);
+        model.addAttribute("titulo", "Perfil");
+        model.addAttribute("editor", true);
+        return "usuario/mis-hechos";
     }
 
 

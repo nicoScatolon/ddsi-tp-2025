@@ -1,0 +1,275 @@
+/* styles/mis-hechos-style.css
+   Vista compacta y simplificada para "Mis Hechos"
+   - filas sin imágenes
+   - lectura rápida, compacta y con acciones directas
+*/
+
+:root{
+    --bg: #F2F6FF;
+    --card: #FFFFFF;
+    --muted: #6b7280;
+    --accent: #2F60F4;
+    --accent-dark: #1746D2;
+    --border: #e6e9f2;
+    --danger: #e02f2f;
+}
+
+/* RESET / BASE */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); color: #222; }
+
+/* Ajuste para que el contenido no quede pegado al navbar */
+.mh-main { max-width: 980px; margin: 20px auto; padding: 12px; }
+
+/* Contenedor principal */
+.mh-container {
+    background: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Header compacto con controles */
+.mh-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.mh-header h1 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--accent-dark);
+    font-weight: 600;
+}
+.mh-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.mh-actions input[type="search"] {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    min-width: 220px;
+}
+.mh-actions select {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+/* Lista compacta */
+.mh-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* .mh-item y .mh-row usan los mismos estilos para compatibilidad */
+.mh-item, .mh-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--card);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: background .12s ease, transform .12s ease, box-shadow .12s ease;
+    cursor: default;
+}
+.mh-item:hover, .mh-row:hover {
+    background: linear-gradient(180deg, #fff, #fbfcff);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+}
+
+/* Left: título + pequeña descripción (una línea) */
+.mh-left {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 4px;
+}
+.mh-title {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #1f2a44;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mh-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Right: meta + acciones */
+.mh-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.mh-meta {
+    font-size: 0.82rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* acciones: editar / borrar (pequeñas) */
+.mh-item-actions, .mh-right .actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.mh-edit,
+.mh-delete {
+    font-size: 0.78rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+}
+.mh-edit {
+    color: var(--accent);
+    border-color: rgba(47,96,244,0.08);
+}
+.mh-edit:hover { background: rgba(47,96,244,0.06); }
+.mh-delete {
+    color: var(--danger);
+    border-color: rgba(224,47,47,0.08);
+}
+.mh-delete:hover { background: rgba(224,47,47,0.06); }
+
+/* estado vacío */
+.mh-empty {
+    padding: 18px;
+    background: var(--card);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+}
+
+/* --- Controles de búsqueda y filtro --- */
+.mh-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap; /* que se acomode en pantallas chicas */
+}
+
+.mh-actions input[type="search"] {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db; /* gris claro */
+    background: #fff;
+    font-size: 0.9rem;
+    color: #1f2a44;
+    flex: 1 1 180px; /* crece pero no se hace gigante */
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mh-actions input[type="search"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(47, 96, 244, 0.2);
+}
+
+.mh-actions select {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    font-size: 0.9rem;
+    color: #1f2a44;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mh-actions select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(47, 96, 244, 0.2);
+}
+
+.mh-actions button#mh-filter {
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.mh-actions button#mh-filter:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+}
+
+.mh-actions button#mh-filter:active {
+    transform: translateY(0);
+}
+
+
+/* pequeña variante compacta para items 'pinned' o importantes */
+.mh-item.pinned, .mh-row.pinned { border-left: 4px solid var(--accent); }
+
+/* Responsive: en pantallas muy chicas apilar y ajustar */
+@media (max-width: 700px) {
+    .mh-header { flex-direction: column; align-items: stretch; gap: 10px; }
+    .mh-actions input[type="search"] { min-width: 100%; }
+    .mh-actions select { min-width: 140px; }
+    .mh-meta { display: none; } /* esconder meta para ahorrar espacio */
+}
+
+/*  Paginacion  */
+
+/* Botones flecha discretos */
+.pagination-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(47,96,244,0.08);
+    color: #2F60F4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.14s, transform 0.08s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    padding: 0;
+}
+
+/* deshabilitado */
+.pagination-arrow.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pagination-page-number {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}

@@ -3,13 +3,6 @@ function headerHeight() {
     const hdr = document.querySelector("header.desktop-nav") || document.querySelector("header");
     return hdr ? hdr.offsetHeight : 0;
 }
-function calcTargetY(el) {
-    const rect = el.getBoundingClientRect();
-    const scrollTop = window.scrollY || window.pageYOffset;
-    const hdr = headerHeight();
-    const extraOffset = -50;
-    return Math.max(0, Math.round(scrollTop + rect.top - hdr - extraOffset));
-}
 
 /* ---------- Horizontal scroll (buttons + teclado) ---------- */
 function setupHorizontalScroll() {
@@ -41,29 +34,23 @@ function setupHorizontalScroll() {
     });
 }
 
-/* ---------- Vertical indicator + click (robusto) ---------- */
+/* ---------- Vertical indicator + click ---------- */
 function setupVerticalIndicatorAndScroll() {
     const indicator = document.getElementById("scrollIndicator");
     const lower = document.getElementById("lower-content");
     const home = document.getElementById("home");
 
     if (!indicator || !lower || !home) {
-        // si faltara algo, salimos silenciosamente
         return;
     }
 
-    // Estado
     let scrolledDown = false;
 
-    // Actualiza icono y posición del indicador; agrega/remueve clase 'up'
     function updateIndicator() {
         const currentScroll = window.scrollY || window.pageYOffset;
         const hdr = headerHeight();
-
-        // Usamos getBoundingClientRect para una comparación robusta.
         const lowerRect = lower.getBoundingClientRect();
-        // Si la parte superior de lower llegó a estar cerca del header => estamos "abajo"
-        const threshold = hdr + 6; // margen
+        const threshold = hdr + 6;
         const nowDown = (lowerRect.top <= threshold);
 
         scrolledDown = nowDown;
@@ -72,7 +59,6 @@ function setupVerticalIndicatorAndScroll() {
             indicator.classList.add("up");
             indicator.setAttribute("aria-label", "Volver arriba");
             indicator.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>`;
-            // Colocamos el indicador justo debajo del header (evita solapamientos)
             indicator.style.top = (hdr + 8) + "px";
             indicator.style.bottom = "auto";
         } else {
@@ -84,14 +70,15 @@ function setupVerticalIndicatorAndScroll() {
         }
     }
 
-    // Click / teclado (Enter / Space) sobre indicador
     function activateIndicatorAction(e) {
-        // permitir Enter o Space o click
         if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
         e.preventDefault();
 
         if (!scrolledDown) {
-            const targetY = calcTargetY(lower);
+            const lowerRect = lower.getBoundingClientRect();
+            const scrollTop = window.scrollY || window.pageYOffset;
+            const hdr = headerHeight();
+            const targetY = Math.max(0, Math.round(scrollTop + lowerRect.top - hdr - 50));
             window.scrollTo({ top: targetY, behavior: "smooth" });
         } else {
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -101,36 +88,16 @@ function setupVerticalIndicatorAndScroll() {
     indicator.addEventListener("click", activateIndicatorAction);
     indicator.addEventListener("keydown", activateIndicatorAction);
 
-    // IntersectionObserver para detectar entrada de la sección inferior de forma eficiente
-    let io;
-    try {
-        io = new IntersectionObserver((entries) => {
-            // observamos la entrada de la parte superior de 'lower' con rootMargin para compensar header
-            entries.forEach(entry => {
-                // cuando la parte superior alcanza el header, entry.boundingClientRect.top será <= headerHeight
-                updateIndicator(); // recalc simple (lo hace robusto)
-            });
-        }, {
-            root: null,
-            threshold: [0, 0.01],
-            rootMargin: `-${headerHeight()}px 0px 0px 0px`
-        });
-        io.observe(lower);
-    } catch (err) {
-        // fallbacks: si no hay soporte para IO, nos apoyamos en scroll/resize
-    }
-
-    // Recalcular en resize/load/scroll
     let rafId = null;
     function onScrollOrResize() {
         if (rafId) cancelAnimationFrame(rafId);
         rafId = requestAnimationFrame(() => updateIndicator());
     }
+
     window.addEventListener("resize", onScrollOrResize, { passive: true });
     window.addEventListener("load", updateIndicator);
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
 
-    // primer run
     updateIndicator();
 }
 
