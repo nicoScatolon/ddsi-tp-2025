@@ -186,6 +186,7 @@ public class DTOConverter {
         return UbicacionOutputDTO.builder()
                 .id(ubicacion.getId())
                 .provincia(ubicacion.getProvincia())
+                .departamento(ubicacion.getDepartamento())
                 .calle(ubicacion.getCalle())
                 .numero(ubicacion.getNumero())
                 .latitud(ubicacion.getLatitud())
