@@ -7,7 +7,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoCo
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.AlgoritmoConcensoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.AlgoritmoConsensoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.CriterioOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
@@ -147,9 +147,9 @@ public class DTOConverter {
             }
         }
 
-        AlgoritmoConcensoOutputDTO algoritmo = null;
+        AlgoritmoConsensoOutputDTO algoritmo = null;
         if (formDTO.getAlgoritmoConsensoTipo() != null && !formDTO.getAlgoritmoConsensoTipo().isEmpty()) {
-            algoritmo = new AlgoritmoConcensoOutputDTO();
+            algoritmo = new AlgoritmoConsensoOutputDTO();
             try {
                 TipoAlgoritmoConsenso tipoEnum = TipoAlgoritmoConsenso.valueOf(formDTO.getAlgoritmoConsensoTipo());
                 algoritmo.setTipo(tipoEnum);

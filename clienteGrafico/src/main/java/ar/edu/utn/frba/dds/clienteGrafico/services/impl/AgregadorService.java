@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
@@ -109,6 +110,16 @@ public class AgregadorService implements IAgregadorService {
                 )
                 .retrieve()
                 .bodyToMono(ColeccionInputDTO.class)
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> editarColeccion(ColeccionOutputDTO coleccionOutputDTO) {
+        return webClient.put()
+                .uri("/api/colecciones/privada")
+                .bodyValue(coleccionOutputDTO)
+                .retrieve()
+                .toBodilessEntity()
                 .block();
     }
 

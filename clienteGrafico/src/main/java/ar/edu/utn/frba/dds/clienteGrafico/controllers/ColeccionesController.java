@@ -99,10 +99,17 @@ public class ColeccionesController {
         return "redirect:/colecciones";
     }
 
+    @PutMapping()
+    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) {
+        ColeccionOutputDTO coleccionDTO = DTOConverter.convertirFormToOutput(coleccionFormDTO);
+        agregadorService.editarColeccion(coleccionDTO);
+
+        return "redirect:/colecciones";
+    }
 
     @GetMapping("/{handle}/editar")
     public String modificarColeccion(Model model, @PathVariable String handle) {
-        String actionUrl = "/colecciones/" + handle;
+        String actionUrl = "/colecciones";
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
         ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);

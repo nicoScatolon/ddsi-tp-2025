@@ -17,7 +17,10 @@
 
             <form th:action="${actionUrl}" th:object="${coleccionDTO}" method="post" id="collectionForm">
 
-                <!-- Handle (solo para edición, hidden) -->
+                <!-- Si NO es nueva, convertir POST en PUT -->
+                <input th:if="${!nueva}" type="hidden" name="_method" value="put">
+
+                <!-- Handle solo para edición -->
                 <input th:if="${!nueva}" type="hidden" th:field="*{handle}">
 
                 <div>

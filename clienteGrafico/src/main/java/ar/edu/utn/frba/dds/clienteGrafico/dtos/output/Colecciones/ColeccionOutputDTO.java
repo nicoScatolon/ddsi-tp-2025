@@ -17,5 +17,5 @@ public class ColeccionOutputDTO {
     private String handle;
     private String titulo;
     private String descripcion;
-    private AlgoritmoConcensoOutputDTO algoritmoConsenso;
+    private AlgoritmoConsensoOutputDTO algoritmoConsenso;
 }
