@@ -326,7 +326,7 @@ public class ColeccionesService implements IColeccionesService {
 
     @Override
     public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
-        return this.coleccionesRepository.findColeccionByDestacada(true)
+        return this.coleccionesRepository.findAllByDestacada(true)
                 .stream()
                 .map(DTOConverter::coleccionPreviewOutputDTO)
                 .toList();

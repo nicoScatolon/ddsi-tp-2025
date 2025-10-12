@@ -9,6 +9,8 @@
     --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
     --tag-grad: linear-gradient(135deg, #6A82FB, #FC5C7D);
     --danger-grad: linear-gradient(135deg, #f97316, #ea580c);
+    --destacar-grad: linear-gradient(135deg, #fbbf24, #f59e0b);
+    --quitar-destacado-grad: linear-gradient(135deg, #94a3b8, #64748b);
 }
 
 /* ===== CARD PRINCIPAL (ancho fijo, altura flexible) ===== */
@@ -280,7 +282,7 @@ button.btn-destacar {
     justify-content: center;
     gap: 0.6rem;
     padding: 0.75rem 1.5rem !important;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+    background: var(--destacar-grad) !important;
     color: white !important;
     border: none !important;
     border-radius: 12px !important;
@@ -316,6 +318,24 @@ button.btn-destacar:active {
 button.btn-destacar:focus {
     outline: 3px solid rgba(251,191,36,0.3);
     outline-offset: 2px;
+}
+
+/* Botón de Quitar Destacado - ESTILO DISTINTO */
+#hecho-detail #hecho-actions button.btn-destacar.quitar,
+button.btn-destacar.quitar {
+    background: var(--quitar-destacado-grad) !important;
+    box-shadow: 0 4px 12px rgba(100,116,139,0.25) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar.quitar:hover,
+button.btn-destacar.quitar:hover {
+    background: linear-gradient(135deg, #64748b, #475569) !important;
+    box-shadow: 0 6px 20px rgba(100,116,139,0.35) !important;
+}
+
+#hecho-detail #hecho-actions button.btn-destacar.quitar:focus,
+button.btn-destacar.quitar:focus {
+    outline: 3px solid rgba(100,116,139,0.3);
 }
 
 /* ===== MODAL ===== */

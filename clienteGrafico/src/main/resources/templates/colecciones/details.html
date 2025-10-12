@@ -100,9 +100,9 @@
             <label>Fecha de reporte:</label>
             <div class="date-range">
               <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
-                     th:value="${#temporals.format(filtros?.fReporteDesde, 'yyyy-MM-dd')}">
+                     th:value="${#temporals.format(filtros?.fReporteDesde, 'dd-MM-yyyy')}">
               <input type="date" id="fReporteHasta" name="fReporteHasta" placeholder="Hasta"
-                     th:value="${#temporals.format(filtros?.fReporteHasta, 'yyyy-MM-dd')}">
+                     th:value="${#temporals.format(filtros?.fReporteHasta, 'dd-MM-yyyy')}">
             </div>
           </div>
 
@@ -111,9 +111,9 @@
             <label>Fecha del acontecimiento:</label>
             <div class="date-range">
               <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
-                     th:value="${#temporals.format(filtros?.fAconDesde, 'yyyy-MM-dd')}">
+                     th:value="${#temporals.format(filtros?.fAconDesde, 'dd-MM-yyyy')}">
               <input type="date" id="fAconHasta" name="fAconHasta" placeholder="Hasta"
-                     th:value="${#temporals.format(filtros?.fAconHasta, 'yyyy-MM-dd')}">
+                     th:value="${#temporals.format(filtros?.fAconHasta, 'dd-MM-yyyy')}">
             </div>
           </div>
 
@@ -179,7 +179,7 @@
               </p>
               <p>
                 <strong>📅</strong>
-                <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'yyyy-MM-dd')}">Fecha</span>
+                <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd-MM-yyyy')}">Fecha</span>
               </p>
               <p>
                 <strong>🌐</strong>

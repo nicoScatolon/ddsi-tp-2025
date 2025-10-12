@@ -20,7 +20,7 @@
                     <div class="solicitud-info">
                         <span><strong>ID:</strong> <span th:text="${hecho.id}">1</span></span>
                         <span><strong>ID Usuario:</strong> <span th:text="${hecho.contribuyenteId}">999</span></span>
-                        <span><strong>Fecha:</strong> <span th:text="${#temporals.format(hecho.fechaDeCarga, 'yyyy-MM-dd')}">2025-09-01</span></span>
+                        <span><strong>Fecha:</strong> <span th:text="${#temporals.format(hecho.fechaDeCarga, 'dd-MM-yyyy')}">2025-09-01</span></span>
                     </div>
 
                     <div class="solicitud-razon">
