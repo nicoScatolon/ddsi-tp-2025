@@ -37,10 +37,12 @@ public class HechosController {
     @GetMapping
     public List<HechoOutputDTO> obtenerHechos(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeCarga,
-            @RequestParam(required = false) EstadoHecho estado)
+            @RequestParam(required = false) EstadoHecho estado,
+            @RequestParam(required = false) Integer page)
     {
         // formato fecha: YYYY-MM-DDThh:mm:ss --> ejemplo: 2025-10-07T18:37:00
-        return hechosService.getHechos(fechaDeCarga, estado);
+        // consideramos tanto la fecha de carga como de modificacion para el filtrado
+        return hechosService.getHechos(fechaDeCarga, estado, page);
     }
 
     @PostMapping
@@ -54,7 +56,6 @@ public class HechosController {
     @GetMapping("/{id}")
     public ResponseEntity<HechoOutputDTO> obtenerHechoPorId(@PathVariable Long id)
     {
-        // formato fecha: YYYY-MM-DDThh:mm:ss --> ejemplo: 2025-10-07T18:37:00
         return hechosService.getHechoById(id);
     }
 
@@ -80,8 +81,9 @@ public class HechosController {
     @GetMapping("/user/{userId}")
     public List<HechoOutputDTO> obtenerHechosUsuario(
             @PathVariable Long userId,
-            @RequestParam(required = false) EstadoHecho estado) {
-        return this.hechosService.getHechosUsuario(userId, estado);
+            @RequestParam(required = false) EstadoHecho estado,
+            @RequestParam(required = false) Integer page) {
+        return this.hechosService.getHechosUsuario(userId, estado, page);
     }
 
     @PostMapping("/admin/{adminId}")
