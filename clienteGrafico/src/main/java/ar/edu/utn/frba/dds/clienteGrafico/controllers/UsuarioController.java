@@ -40,10 +40,6 @@ public class UsuarioController {
 
     private final WebApiCallerService webApiCallerService;
 
-    public UsuarioController(WebApiCallerService webApiCallerService) {
-        this.webApiCallerService = webApiCallerService;
-    }
-
     @GetMapping("/login")
     public String login(Model model) {
         UsuarioOutputDTO usuario = new UsuarioOutputDTO();
