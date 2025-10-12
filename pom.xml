@@ -31,7 +31,8 @@
 		<module>fuenteProxy</module>
 		<module>servicioEstadisticas</module>
         <module>ClienteGrafico</module>
-	</modules>
+        <module>servicioUsuarios</module>
+    </modules>
 
 	<dependencies>
 		<dependency>

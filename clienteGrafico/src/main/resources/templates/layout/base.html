@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,35 +43,35 @@
         <div class="right-controls">
 
             <!-- Si el usuario NO está logueado -->
-            <div th:if="${logeado == 0}" class="login">
+            <div sec:authorize="!isAuthenticated()" class="login">
                 <a th:href="@{/login}" class="btn btn-secondary" id="desktopLoginBtn">Ingresar</a>
                 <a th:href="@{/signup}" class="btn btn-secondary" id="desktopSignupBtn">Registrarse</a>
             </div>
 
             <!-- Si el usuario está logueado -->
-            <div th:if="${logeado == 1}" id="desktopUserContainer">
+            <div sec:authorize="isAuthenticated()" id="desktopUserContainer">
                 <button id="desktopUserBtn" class="btn btn-secondary" type="button" aria-haspopup="true" aria-expanded="false">
                     <!-- Ícono según rol -->
                     <span id="desktopUserLabel">
-                            <i th:if="${rol == 1}" class="fas fa-user"></i>
-                            <i class="fas fa-user-cog admin-icon" th:if="${rol == 2}"></i>
+                            <i sec:authorize="hasRole('CONTRIBUYENTE')" class="fas fa-user"></i>
+                            <i sec:authorize="hasRole('ADMIN')" class="fas fa-user-cog admin-icon"></i>
                         </span>
                 </button>
 
                 <div id="desktopUserDropdown">
                     <!-- Opciones para ADMIN -->
-                    <a th:if="${rol == 2}" th:href="@{/admin}" class="dropdown-admin">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="dropdown-admin">
                         Panel de administrador
                     </a>
 
                     <!-- Opciones para USER -->
-                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/profile}" class="dropdown-link">
+                    <a sec:authorize="hasAnyRole('CONTRIBUYENTE','ADMIN')" th:href="@{/profile}" class="dropdown-link">
                         Mi Perfil
                     </a>
-                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/mis-hechos}" class="dropdown-link">
+                    <a sec:authorize="hasAnyRole('CONTRIBUYENTE','ADMIN')" th:href="@{/mis-hechos}" class="dropdown-link">
                         Mis Hechos
                     </a>
-                    <a th:if="${rol == 1 or rol == 2}" th:href="@{/mis-solicitudes}" class="dropdown-link">
+                    <a sec:authorize="hasAnyRole('CONTRIBUYENTE','ADMIN')" th:href="@{/mis-solicitudes}" class="dropdown-link">
                         Mis Solicitudes
                     </a>
 
