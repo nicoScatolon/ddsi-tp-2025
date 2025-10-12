@@ -313,13 +313,30 @@ public class ColeccionesService implements IColeccionesService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
+    @Override
+    public ResponseEntity<Void> setDestacadaColeccion(String handle, boolean estaDestacado){
+        Coleccion coleccion = coleccionesRepository.findByHandle(handle);
+        if (coleccion == null) {
+            return ResponseEntity.notFound().build();
+        }
+        coleccion.setDestacada(estaDestacado);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
+        return this.coleccionesRepository.findColeccionByDestacada(true)
+                .stream()
+                .map(DTOConverter::coleccionPreviewOutputDTO)
+                .toList();
+    }
+
     @Override
     public ColeccionEditOutputDTO findByHandleEditable(String handle) {
         Coleccion coleccion = coleccionesRepository.findByHandle(handle);
         return DTOConverter.coleccionEditOutputDTO(coleccion);
     }
-
-
 
     @Override
     @Transactional

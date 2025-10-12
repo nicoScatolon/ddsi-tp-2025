@@ -26,6 +26,7 @@ public class HechoOutputDTO {
     private Long contribuyenteId;
     private Boolean cargadoAninimamente;
     private FuentePreviewOutputDTO fuente;
+    private Boolean destacado;
     // NOTA los cambios agregados deben ser mostrador por el DTO converter
 }
 

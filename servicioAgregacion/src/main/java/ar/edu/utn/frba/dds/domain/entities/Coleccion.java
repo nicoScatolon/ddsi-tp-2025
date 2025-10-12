@@ -68,6 +68,9 @@ public class Coleccion {
     @Column(nullable = false, name = "curarHechos")
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
 
+    @Column (nullable = false, name= "destacada")
+    @Setter private Boolean destacada = false;
+
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
