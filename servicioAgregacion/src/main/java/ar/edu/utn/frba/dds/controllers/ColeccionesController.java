@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.controllers;
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
@@ -55,6 +56,7 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada/basica")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
     public ColeccionOutputDTO modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
@@ -83,19 +85,22 @@ public class ColeccionesController {
         return coleccionesService.eliminarColeccion(handle);
     }
 
-    @GetMapping("/publica/destacadas")
-    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
-        return coleccionesService.getColeccionesDestacadas();
-    }
-
     @PutMapping("/privada/destacada/{handle}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
     public ResponseEntity<Void> destacarColeccion(@PathVariable String handle){
         return coleccionesService.setDestacadaColeccion(handle, true);
     }
 
     @DeleteMapping ("/privada/destacada/{handle}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
     public ResponseEntity<Void> eliminarDestacadaColeccion(@PathVariable String handle){
         return coleccionesService.setDestacadaColeccion(handle, false);
+    }
+
+    @GetMapping("/privada/editable/{handle}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_COLECCIONES')")
+    public ColeccionEditOutputDTO obtenerColeccionEditable(@PathVariable String handle) {
+        return coleccionesService.findByHandleEditable(handle);
     }
 
 
@@ -114,11 +119,6 @@ public class ColeccionesController {
         return coleccionesService.findByHandle(handle);
     }
 
-    @GetMapping("/publica/editable/{handle}")
-    public ColeccionEditOutputDTO obtenerColeccionEditable(@PathVariable String handle) {
-        return coleccionesService.findByHandleEditable(handle);
-    }
-
     @GetMapping("publica/{handle}/hechos")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> mostrarHechos(@PathVariable String handle, @RequestParam(defaultValue = "false")  Boolean curado, @ModelAttribute HechosFilterDTO filtros) {
@@ -132,11 +132,20 @@ public class ColeccionesController {
     }
 
     @GetMapping("/publica/preview/{handle}")
+    @PreAuthorize("permitAll()")
     public ColeccionPreviewOutputDTO obtenerColeccionesPreview(@PathVariable String handle) {
         return this.coleccionesService.findByHandlePreview(handle);
     }
 
+    @GetMapping("/publica/destacadas")
+    @PreAuthorize("permitAll()")
+    public List<ColeccionPreviewOutputDTO> getColeccionesDestacadas() {
+        return coleccionesService.getColeccionesDestacadas();
+    }
+
     // ------------------------------------------- TESTEO -------------------------------------------
+
+    /*
 
     @GetMapping("/test/actualizar/{handle}")
     public ColeccionOutputDTO actualizarColeccionManual(@PathVariable String handle) {
@@ -147,4 +156,6 @@ public class ColeccionesController {
     public ColeccionOutputDTO curarColeccionManual(@PathVariable String handle) {
         return this.coleccionesService.curarColeccionManual(handle);
     }
+
+    */
 }

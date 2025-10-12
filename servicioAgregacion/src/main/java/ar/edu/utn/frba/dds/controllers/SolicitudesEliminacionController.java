@@ -40,7 +40,7 @@ public class SolicitudesEliminacionController {
     }
 
     @GetMapping("/publica")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
+    @PreAuthorize("permitAll()")
     public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
         return this.solicitudesEliminacionService.findAll();
     }
@@ -52,7 +52,7 @@ public class SolicitudesEliminacionController {
     }
 
     @GetMapping("/publica/{id}")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_SOLICITUDES')")
+    @PreAuthorize("permitAll()")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
     }

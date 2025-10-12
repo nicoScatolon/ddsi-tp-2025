@@ -29,7 +29,7 @@ public class HechosController {
     @GetMapping("/publica")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechos(@ModelAttribute HechosFilterDTO hechosFilterDTO) {
-        return hechosService.getHechos(hechosFilterDTO,null);
+        return hechosService.getHechos(hechosFilterDTO,false);
     }
 
     @GetMapping("/publica/{id}")
@@ -41,11 +41,11 @@ public class HechosController {
     @GetMapping("/publica/mapa")
     @PreAuthorize("permitAll()")
     public List<HechoMapaOutputDTO> getHechosMapa() {
-        //TODO quiza ver como hacer para agregar filtros que reduzcan la cantidad de hechos, ya que son muchos
         return hechosService.getHechosMapa();
     }
 
     @GetMapping("/publica/destacados")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechosDestacados() {
         return hechosService.getHechosDestacados();
     }
@@ -53,35 +53,39 @@ public class HechosController {
     // --- API Privada --- //
 
     @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<HechoOutputDTO> getHechosPrivada(@ModelAttribute HechosFilterDTO hechosFilterDTO, @RequestParam(required = false) Boolean fueEliminado) {
         return hechosService.getHechos(hechosFilterDTO, fueEliminado);
     }
 
     @PutMapping("/privada/{id}/etiquetas")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.agregarEtiquetaHecho(id, etiqueta);
     }
 
     @DeleteMapping ("/privada/{id}/etiquetas")
-    @PreAuthorize("hasAnyRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 
     }
 
     @PutMapping("/privada/destacado/{id}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> destacarHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, true);
     }
 
     @DeleteMapping ("/privada/destacado/{id}")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
     public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, false);
     }
 
     // --- TEST --- //
 
+    /*
     @GetMapping("/pruebas")
     public List<HechoOutputDTO> getHechosPrueba() {
         return hechosService.findAllOutput();
@@ -92,5 +96,6 @@ public class HechosController {
         this.seederService.init();
         return true;
     }
+    */
 
 }

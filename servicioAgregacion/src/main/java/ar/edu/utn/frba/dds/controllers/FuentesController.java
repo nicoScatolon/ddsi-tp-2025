@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.FuentePreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
@@ -22,8 +23,18 @@ public class FuentesController {
     public FuentesController(FuentesService fuenteService) {
         this.fuenteService = fuenteService;
     }
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
+
+    // --- API PUBLICA --- //
+
+    @GetMapping("/publica/preview")
+    public List<FuentePreviewOutputDTO> getFuentesPreview(){
+        return this.fuenteService.getFuentesPreview();
+    }
+
+    // --- API PRIVADA --- //
+
     @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('CONFIGURAR_FUENTES')")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
@@ -38,8 +49,12 @@ public class FuentesController {
         return fuenteService.eliminarFuente(fuenteId);
     }
 
-    @GetMapping("/test/fuente")
+    // --- TEST --- //
+
+    /*
+    @GetMapping("/test/{fuenteId}")
     public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
+    */
 }
