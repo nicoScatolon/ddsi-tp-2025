@@ -68,6 +68,7 @@ public class ColeccionesController {
 
     @GetMapping("/create")
     public String crearColeccion(Model model) {
+        String actionUrl = "/colecciones/create";
         ColeccionFormDTO coleccionFormDTO = new ColeccionFormDTO(); // Usar el form DTO
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
@@ -78,6 +79,8 @@ public class ColeccionesController {
         model.addAttribute("categorias", categorias);
         model.addAttribute("rol", 2);
         model.addAttribute("logeado", 1);
+        model.addAttribute("nueva", true);
+        model.addAttribute("actionUrl", actionUrl);
 
         return "/colecciones/create";
     }
@@ -99,9 +102,26 @@ public class ColeccionesController {
 
     @GetMapping("/{handle}/editar")
     public String modificarColeccion(Model model, @PathVariable String handle) {
+        String actionUrl = "/colecciones/" + handle;
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
         ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);
+
+        // Convertir ColeccionInputDTO a ColeccionFormDTO
+        ColeccionFormDTO formDTO = DTOConverter.convertirAFormDTO(coleccionDTO);
+
+        List<Long> fuentesSeleccionadas = coleccionDTO.getFuentes()
+                .stream()
+                .map(FuenteInputDTO::getFuenteId)
+                .toList();
+
+        model.addAttribute("fuentesSeleccionadas", fuentesSeleccionadas);
+        model.addAttribute("fuentes", fuentes);
+        model.addAttribute("categorias", categorias);
         model.addAttribute("titulo", "Modificar Colección");
-        model.addAttribute("coleccionDTO", coleccionDTO);
+        model.addAttribute("coleccionDTO", formDTO);
+        model.addAttribute("actionUrl", actionUrl);
+        model.addAttribute("nueva", false);
         return "/colecciones/create";
     }
 }
