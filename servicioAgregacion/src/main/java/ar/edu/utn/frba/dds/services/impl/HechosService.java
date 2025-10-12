@@ -97,21 +97,25 @@ public class HechosService implements IHechosService {
                 .toList();
     }
 
-
     @Override
-    public List<HechoMapaOutputDTO> getHechosMapa () {
-        Specification<Hecho> spec = (root, query, cb) -> {
-            return cb.and(
-                    cb.isNotNull(root.get("ubicacion")),
-                    cb.isNotNull(root.get("ubicacion").get("latitud")),
-                    cb.isNotNull(root.get("ubicacion").get("longitud"))
-            );
-        };
-        return this.hechosRepository.findAll(spec)
-                .stream()
-                .map(DTOConverter::convertirHechoMapaOutputDTO)
-                .toList();
+    public List<HechoMapaOutputDTO> getHechosMapa() {
+        return hechosRepository.findAllMapaDTO(); // ya filtra solo los que tienen lat/lng
     }
+
+//    @Override
+//    public List<HechoMapaOutputDTO> getHechosMapa () {
+//        Specification<Hecho> spec = (root, query, cb) -> {
+//            return cb.and(
+//                    cb.isNotNull(root.get("ubicacion")),
+//                    cb.isNotNull(root.get("ubicacion").get("latitud")),
+//                    cb.isNotNull(root.get("ubicacion").get("longitud"))
+//            );
+//        };
+//        return this.hechosRepository.findAllMapaDTO(spec)
+//                .stream()
+//                .map(DTOConverter::convertirHechoMapaOutputDTO)
+//                .toList();
+//    }
 
     @Override
     public List<HechoOutputDTO> getHechosDestacados() {
