@@ -15,6 +15,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Sol
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -32,255 +33,287 @@ import java.util.List;
 public class AgregadorService implements IAgregadorService {
 
     private final WebClient webClient;
+    private final WebApiCallerService webApiCallerService;
+    private final String agregadorUrl;
 
-    public AgregadorService(@Qualifier("agregadorWebClient") WebClient webClient) {
+    public AgregadorService(
+            @Qualifier("agregadorWebClient") WebClient webClient,
+            WebApiCallerService webApiCallerService,
+            @Value("${servicio.agregador.url}") String agregadorUrl
+    ) {
         this.webClient = webClient;
+        this.webApiCallerService = webApiCallerService;
+        this.agregadorUrl = agregadorUrl;
     }
+
 
     // --- HECHOS --- //
 
     public HechoInputDTO getHechoById(Long id) {
-        return webClient.get()
-                .uri("/api/hechos/publica/{id}", id)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new NotFoundException("hecho", id.toString())))
-                .bodyToMono(HechoInputDTO.class)
-                .block();
+
+        try {
+            return webApiCallerService.get(
+                    agregadorUrl + "/api/hechos/publica/" + id,
+                    HechoInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("hecho", id.toString());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener el hecho " + id + ": " + e.getMessage(), e);
+        }
     }
 
     public List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filterInputDTO) {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filterInputDTO);
+        String url = construirUrlHechos(paginaActual, filter);
 
-        return webClient.get()
-                .uri(uriBuilder -> {
-                    UriBuilder builder = uriBuilder.path("/api/hechos/publica")
-                            .queryParam("page", paginaActual);
-                    aplicarFiltrosHecho(builder, filter);
-                    return builder.build();
-                })
-                .retrieve()
-                .bodyToFlux(HechoInputDTO.class)
-                .collectList()
-                .block();
+        return webApiCallerService.getList(url, HechoInputDTO.class);
     }
 
-    public List<HechoMapaInputDTO> getHechosMapa(){
-        return webClient.get()
-                .uri("/api/hechos/publica/mapa")
-                .retrieve()
-                .bodyToFlux(HechoMapaInputDTO.class)
-                .collectList()
-                .block();
+    public List<HechoMapaInputDTO> getHechosMapa() {
+
+        try {
+            return webApiCallerService.getList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener el hecho mapa: " + e.getMessage(), e);
+        }
     }
 
-    // --- COLECCIONES --- //
+        // --- COLECCIONES --- //
 
     @Override
     public ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO) {
-        return webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/colecciones/privada")
-                        .build()
-                )
-                .bodyValue(coleccionDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/colecciones/privada",
+                    coleccionDTO,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear la colección: " + e.getMessage(), e);
+        }
     }
 
-    @Override
     public ResponseEntity<Void> eliminarColeccion(String handle) {
-        return webClient.delete()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/colecciones/privada/{handle}")
-                        .build(handle)
-                )
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.delete(agregadorUrl + "/api/colecciones/privada/" + handle);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar la colección con handle " + handle + ": " + e.getMessage(), e);
+        }
     }
 
-    @Override
     public ColeccionInputDTO obtenerColeccion(String handle) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/colecciones/publica/editable/{handle}")
-                        .build(handle)
-                )
-                .retrieve()
-                .bodyToMono(ColeccionInputDTO.class)
-                .block();
+        try {
+            return webApiCallerService.get(
+                    agregadorUrl + "/api/colecciones/publica/editable/" + handle,
+                    ColeccionInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("colección", handle);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener la colección " + handle + ": " + e.getMessage(), e);
+        }
     }
 
     @Override
     public ResponseEntity<Void> editarColeccion(ColeccionOutputDTO coleccionOutputDTO) {
-        return webClient.put()
-                .uri("/api/colecciones/privada")
-                .bodyValue(coleccionOutputDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.put(
+                    agregadorUrl + "/api/colecciones/privada",
+                    coleccionOutputDTO,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al editar la colección: " + e.getMessage(), e);
+        }
     }
 
     // DESTACAR HECHOS
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {
-        return webClient.get()
-                .uri("/api/hechos/publica/destacados")
-                .retrieve()
-                .bodyToFlux(HechoInputDTO.class)
-                .collectList()
-                .block();
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/hechos/publica/destacados",
+                    HechoInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("hechos destacados", "");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener los hechos destacados: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public ResponseEntity<Void> destacarHecho(Long id) {
-        return webClient.put()
-                .uri("/api/hechos/privada/destacado/{id}", id)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.put(
+                    agregadorUrl + "/api/hechos/privada/destacado/" + id,
+                    null,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al destacar el hecho con id " + id + ": " + e.getMessage(), e);
+        }
     }
 
     @Override
     public ResponseEntity<Void> eliminarDestacarHecho(Long id) {
-        return webClient.delete()
-                .uri("/api/hechos/privada/destacado/{id}", id)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.delete(
+                    agregadorUrl + "/api/hechos/privada/destacado/" + id
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar destacado del hecho con id " + id + ": " + e.getMessage(), e);
+        }
     }
 
     // DESTACAR COLECCION
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
-        return webClient.get()
-                .uri("/api/colecciones/publica/destacadas") //Todo no esta implementado en back
-                .retrieve()
-                .bodyToFlux(ColeccionPreviewInputDTO.class)
-                .collectList()
-                .block();
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/colecciones/publica/destacadas",
+                    ColeccionPreviewInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("colecciones destacadas", "");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las colecciones destacadas: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public ResponseEntity<Void> destacarColeccion(String handle) {
-        return webClient.put()
-                .uri("/api/colecciones/privada/destacada/{handle}", handle)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.put(
+                    agregadorUrl + "/api/colecciones/privada/destacada/" + handle,
+                    null,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al destacar la colección con handle " + handle + ": " + e.getMessage(), e);
+        }
     }
 
     @Override
     public ResponseEntity<Void> eliminarDestacarColeccion(String handle) {
-        return webClient.delete()
-                .uri("/api/colecciones/privada/destacada/{handle}", handle)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.delete(
+                    agregadorUrl + "/api/colecciones/privada/destacada/" + handle
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar destacado de la colección con handle " + handle + ": " + e.getMessage(), e);
+        }
     }
 
 
+    @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/colecciones/publica/preview")
-                        .queryParam("page", paginaActual)
-                        // .queryParam("categoria", "ejemplo") // para cuando necesitemos agregar filtros
-                        .build()
-                )
-                .retrieve()
-                .bodyToFlux(ColeccionPreviewInputDTO.class)
-                .collectList()
-                .block();
+        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+
+        try {
+            return webApiCallerService.getList(url, ColeccionPreviewInputDTO.class);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("colecciones preview", "página " + paginaActual);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las colecciones preview: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/colecciones/publica/preview/{handle}")
-                        .build(handle)
-                )
-                .retrieve()
-                .bodyToMono(ColeccionPreviewInputDTO.class)
-                .block();
+        try {
+            return webApiCallerService.get(
+                    agregadorUrl + "/api/colecciones/publica/preview/" + handle,
+                    ColeccionPreviewInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("colección preview", handle);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener la colección preview con handle " + handle + ": " + e.getMessage(), e);
+        }
     }
 
 
     public List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado) {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
-        return webClient.get()
-                .uri(uriBuilder -> {
-                    UriBuilder builder = uriBuilder.path("/api/colecciones/publica/{handle}/hechos")
-                            .queryParam("curado", curado != null ? curado : false)
-                            .queryParam("page", paginaActual);
-                    aplicarFiltrosHecho(builder, filter);
-                    // Agregar los filtros como query params
+        String url = construirUrlHechosColeccion(handle, paginaActual, filter, curado);
 
-                    return uriBuilder.build(handle); // reemplaza {handle} en el path
-                })
-                .retrieve()
-                .bodyToFlux(HechoInputDTO.class)
-                .collectList()
-                .block(); // bloquea hasta obtener la lista
+        return webApiCallerService.getList(url, HechoInputDTO.class);
     }
-
-
     // --- CATEGORIAS --- //
 
-    public List<String> obtenerCategoriasShort(){
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/privada/categorias/short")
-                        .build()
-                )
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-                .block();
+    @Override
+    public List<String> obtenerCategoriasShort() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/privada/categorias/short",
+                    String.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("categorías", "short");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las categorías short: " + e.getMessage(), e);
+        }
     }
+
 
     // --- SOLICITUDES ELIMINACION --- //
 
     @Override
-    public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion){
-        SolicitudEliminarHechoOutputDTO request = DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
-        return webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/solicitudes-eliminacion/publica")
-                        .build()
-                )
-                .bodyValue(request)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+    public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion) {
+        SolicitudEliminarHechoOutputDTO request =
+                DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
+
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/solicitudes-eliminacion/publica",
+                    request,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear la solicitud de eliminación: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes(){
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/solicitudes-eliminacion/privada")
-                        .build()
-                )
-                .retrieve()
-                .bodyToFlux(SolicitudEliminarHechoInputDTO.class)
-                .collectList()
-                .block();
+    public List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionPendientes() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/solicitudes-eliminacion/privada",
+                    SolicitudEliminarHechoInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("solicitudes de eliminación pendientes", "");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las solicitudes de eliminación pendientes: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO, EstadoDeSolicitud estadoDeSolicitud) {
-        return webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/solicitudes-eliminacion/privada/solicitud")
-                        .queryParam("accion", estadoDeSolicitud)
-                        .build()
-                )
-                .bodyValue(procesarSolicitudOutputDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+    public ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO,
+                                                   EstadoDeSolicitud estadoDeSolicitud) {
+        try {
+            String url = agregadorUrl + "/api/solicitudes-eliminacion/privada/solicitud?accion=" + estadoDeSolicitud;
+
+            webApiCallerService.post(
+                    url,
+                    procesarSolicitudOutputDTO,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al gestionar la solicitud de eliminación: " + e.getMessage(), e);
+        }
     }
 
 
@@ -288,46 +321,67 @@ public class AgregadorService implements IAgregadorService {
     // --- FUENTES --- //
 
     @Override
-    public List<FuenteInputDTO> getFuentesPreview(){
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/fuente/publica/preview")
-                        .build()
-                )
-                .retrieve()
-                .bodyToFlux(FuenteInputDTO.class)
-                .collectList()
-                .block();
+    public List<FuenteInputDTO> getFuentesPreview() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/fuente/publica/preview",
+                    FuenteInputDTO.class
+            );
+        } catch (NotFoundException e) {
+            throw new NotFoundException("fuentes", "preview");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las fuentes preview: " + e.getMessage(), e);
+        }
     }
+
+
 
     // --- METODOS PRIVADOS --- //
 
-    private void aplicarFiltrosHecho(UriBuilder builder, HechosFilterOutputDTO filter) {
+    private String construirUrlHechos(Integer paginaActual, HechosFilterOutputDTO filter) {
+        return "/api/hechos/publica?page=" + paginaActual + construirQueryFiltros(filter);
+    }
+
+    private String construirUrlHechosColeccion(String handle, Integer paginaActual,
+                                               HechosFilterOutputDTO filter, Boolean curado) {
+        return agregadorUrl + "/api/colecciones/publica/" + handle
+                + "/hechos?curado=" + (curado != null ? curado : false)
+                + "&page=" + paginaActual
+                + construirQueryFiltros(filter);
+    }
+
+    /**
+     * Construye el fragmento de query con los filtros dinámicos (sin el '?')
+     */
+    private String construirQueryFiltros(HechosFilterOutputDTO filter) {
+        StringBuilder sb = new StringBuilder();
+
         if (filter.getCategoria() != null && !filter.getCategoria().isEmpty()) {
-            builder.queryParam("categoria", filter.getCategoria());
+            sb.append("&categoria=").append(filter.getCategoria());
         }
         if (filter.getProvincia() != null && !filter.getProvincia().isEmpty()) {
-            builder.queryParam("provincia", filter.getProvincia());
+            sb.append("&provincia=").append(filter.getProvincia());
         }
         if (filter.getEtiqueta() != null && !filter.getEtiqueta().isEmpty()) {
-            builder.queryParam("etiqueta", filter.getEtiqueta());
+            sb.append("&etiqueta=").append(filter.getEtiqueta());
         }
         if (filter.getFuenteId() != null) {
-            builder.queryParam("fuenteId", filter.getFuenteId());
+            sb.append("&fuenteId=").append(filter.getFuenteId());
         }
-
         if (filter.getFReporteDesde() != null) {
-            builder.queryParam("fReporteDesde", filter.getFReporteDesde());
+            sb.append("&fReporteDesde=").append(filter.getFReporteDesde());
         }
         if (filter.getFReporteHasta() != null) {
-            builder.queryParam("fReporteHasta", filter.getFReporteHasta());
+            sb.append("&fReporteHasta=").append(filter.getFReporteHasta());
         }
         if (filter.getFAconDesde() != null) {
-            builder.queryParam("fAconDesde", filter.getFAconDesde());
+            sb.append("&fAconDesde=").append(filter.getFAconDesde());
         }
         if (filter.getFAconHasta() != null) {
-            builder.queryParam("fAconHasta", filter.getFAconHasta());
+            sb.append("&fAconHasta=").append(filter.getFAconHasta());
         }
+
+        return sb.toString();
     }
 
 
