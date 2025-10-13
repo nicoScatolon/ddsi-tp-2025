@@ -61,6 +61,7 @@ public class LoginService {
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
         Usuario u = getByEmail(username);
         return UserRolesPermissionsDTO.builder()
+                .userId(u.getId())
                 .username(u.getNombre())
                 .rol(u.getRol())
                 .permisos(u.getPermisos())

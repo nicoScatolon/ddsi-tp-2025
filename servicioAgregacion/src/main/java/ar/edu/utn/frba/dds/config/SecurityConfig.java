@@ -24,8 +24,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   Converter<Jwt, ? extends AbstractAuthenticationToken> jwtConverter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -33,17 +32,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
 
+                        // Endpoints públicos
                         .requestMatchers("/api/privada/categorias", "/api/privada/categorias/short").permitAll()
-
                         .requestMatchers("/api/colecciones/publica", "/api/colecciones/publica/**").permitAll()
-
                         .requestMatchers("/api/hechos/publica", "/api/hechos/publica/**").permitAll()
-
                         .requestMatchers("/api/solicitudes-eliminacion/publica").permitAll()
 
+                        // lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)));
+                .oauth2ResourceServer(oauth ->
+                        oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                );
 
         return http.build();
     }
@@ -53,11 +53,15 @@ public class SecurityConfig {
         return jwt -> {
             List<GrantedAuthority> authorities = new ArrayList<>();
 
+            // Agrega los permisos del JWT como authorities
             List<String> permisos = jwt.getClaimAsStringList("permisos");
             if (permisos != null) {
-                for (String p : permisos) authorities.add(new SimpleGrantedAuthority(p));
+                for (String p : permisos) {
+                    authorities.add(new SimpleGrantedAuthority(p));
+                }
             }
 
+            // Agrega el rol con el prefijo "ROLE_"
             String rol = jwt.getClaimAsString("rol");
             if (rol != null && !rol.isBlank()) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + rol));

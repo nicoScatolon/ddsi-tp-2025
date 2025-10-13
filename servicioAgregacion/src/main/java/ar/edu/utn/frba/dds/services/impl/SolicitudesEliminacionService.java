@@ -17,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,25 +40,32 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
 
     @Override
     public List<SolicitudEliminarHechoOutputDTO> findAll() {
-       return this.repository
+        return this.repository
                 .findAll()
                 .stream()
                 .map(DTOConverter::solicitudEliminarHechoOutputDTO)
                 .toList();
     }
-    public List<SolicitudEliminarHechoOutputDTO> findSinProcesar(){
-        return null;
-    }
-
 
     @Override
-    public ResponseEntity<Void> crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long id) { //Todo: debería ser responseEntity
-        if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
-        }
+    public List<SolicitudEliminarHechoOutputDTO> findSinProcesar(){
+        return this.repository
+                .findByEstado(EstadoDeSolicitud.PENDIENTE)
+                .stream()
+                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                .toList();
+    }
+
+    @Override
+    public ResponseEntity<Void>  crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
-                .constructorSolicitud(hecho, razon, id);
+                .constructorSolicitud(hecho, razon, idCreador);
+        if (detectorDeSpam.esSpam(razon)){
+            solicitud.rechazarSpam();
+        }
+
         repository.save(solicitud);
+
         return ResponseEntity.ok().build();
     }
 
@@ -72,55 +76,53 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
         }
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        boolean esAnonimo = (auth ==null || !auth.isAuthenticated() ||auth instanceof AnonymousAuthenticationToken);
-
-        if(esAnonimo && solicitud.getRazonDeEliminacion().length() < 500){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,"Los usuarios no autenticados deben ingresar una justificación de al menos 500 caracteres"
-            );
-        }
-
-        this.crearSolicitudDesdeEntidad(
+        return  this.crearSolicitudDesdeEntidad(
                 hecho,
                 solicitud.getRazonDeEliminacion(),
                 solicitud.getIdCreador()
         );
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO solicitudDTO, Boolean aceptar) {
-        Hecho hecho = hechosService.findEntidadPorId(solicitudDTO.getSolicitud().getHechoId());
+    public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO procesarSolicitudDTO, Boolean aceptar) {
+        Hecho hecho = hechosService.findEntidadPorId(procesarSolicitudDTO.getSolicitud().getHechoId());
         if (hecho == null) {
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.getById(solicitudDTO.getSolicitud().getHechoId());
+        SolicitudEliminarHecho solicitud = repository.findById(procesarSolicitudDTO.getSolicitud().getIdSolicitud())
+                .orElse(null);
+
         if (solicitud == null) {
-            solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
+            solicitud = DTOConverter.solicitudEliminarHecho(procesarSolicitudDTO.getSolicitud(), hecho);
         }
 
-
-        if (EstadoDeSolicitud.PENDIENTE.equals(solicitud.getEstado())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        if (solicitudDTO.getAdministradorId() == null) {
+        if (procesarSolicitudDTO.getAdministradorId() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         if (aceptar) {
-            solicitud.serAceptada(solicitudDTO.getAdministradorId());
+            solicitud.serAceptada(procesarSolicitudDTO.getAdministradorId());
+            repository.save(solicitud);
+            this.rechazarRestoSolicitudes(procesarSolicitudDTO.getSolicitud().getIdSolicitud(), hecho.getId(), procesarSolicitudDTO.getAdministradorId());
         } else {
-            solicitud.serRechazada(solicitudDTO.getAdministradorId());
+            solicitud.serRechazada(procesarSolicitudDTO.getAdministradorId());
+            repository.save(solicitud);
         }
 
-        repository.save(solicitud);
         return ResponseEntity.ok().build();
     }
 
+
+    private void rechazarRestoSolicitudes(Long idSolicitud, Long idHecho, Long idAdmin){
+        List<SolicitudEliminarHecho> solicitudesARechazar = repository
+                .findAllByHechoIdExcludingSolicitud(idHecho, idSolicitud);
+
+        solicitudesARechazar.forEach(s -> {
+            s.serRechazada(idAdmin);
+            repository.save(s);
+        });
+    }
     @Override
     public SolicitudEliminarHecho findByID(Long id) {
         return repository.getById(id);
@@ -131,7 +133,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         logger.info("Solicitudes de eliminación cargadas - Cantidad: {}", solicitudes.size());
         solicitudes.forEach(solicitud ->
                 logger.info(
-                        "Solicitud ID: {} - Hecho ID: {} - ID del Admin: {} - Razón: {} - Fecha: {}",
+                        "Solicitud ID: {} - Hecho ID: {} - Admin ID: {} - Razón: {} - Fecha: {}",
                         solicitud.getId(),
                         solicitud.getHecho() != null ? solicitud.getHecho().getId() : "N/A",
                         solicitud.getIdAdministrador(),

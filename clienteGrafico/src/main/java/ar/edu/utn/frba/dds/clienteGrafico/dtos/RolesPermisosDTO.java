@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RolesPermisosDTO {
+    private Long userId;
     private String username;
     private Rol rol;
     private List<Permiso> permisos;
