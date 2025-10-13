@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('hechoForm');
+    const formContainer = document.querySelector('.form-container');
+    const esNuevo = formContainer?.dataset.esNuevo === 'true';
     const tipoUbicacionSelect = document.getElementById('tipoUbicacion');
 
     // Campos de ubicación
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const multimediaInput = document.getElementById('multimediaInput');
     const addFileBtn = document.getElementById('addFileBtn');
     const multimediaPreview = document.getElementById('multimediaPreview');
+    const existingMultimedia = document.getElementById('existingMultimedia');
 
     const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -35,6 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Array para almacenar archivos multimedia
     let multimediaFiles = [];
 
+    // IDs de multimedia a eliminar
+    let multimediaToDelete = [];
+
     // Configuración de tipos de archivo permitidos
     const ALLOWED_TYPES = {
         imagen: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
@@ -44,6 +50,53 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+    // ===== INICIALIZACIÓN PARA MODO EDICIÓN =====
+    if (!esNuevo) {
+        initEditMode();
+    }
+
+    function initEditMode() {
+        // Detectar tipo de ubicación según los datos cargados
+        const hasDireccion = provinciaInput.value || localidadInput.value || calleInput.value || numeroInput.value;
+        const hasCoordenadas = latitudInput.value && longitudInput.value;
+
+        if (hasDireccion) {
+            tipoUbicacionSelect.value = 'direccion';
+            showDireccionFields();
+        } else if (hasCoordenadas) {
+            tipoUbicacionSelect.value = 'mapa';
+            showMapaFields();
+            initMapWithMarker(parseFloat(latitudInput.value), parseFloat(longitudInput.value));
+        }
+
+        // Manejar botones de eliminar multimedia existente
+        document.querySelectorAll('.remove-existing-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const mediaId = this.dataset.mediaId;
+                removeExistingMedia(mediaId);
+            });
+        });
+    }
+
+    function showDireccionFields() {
+        provinciaInput.required = true;
+        localidadInput.required = true;
+        calleInput.required = true;
+        numeroInput.required = true;
+
+        provinciaGroup.style.display = 'flex';
+        localidadGroup.style.display = 'flex';
+        calleGroup.style.display = 'flex';
+        numeroGroup.style.display = 'flex';
+    }
+
+    function showMapaFields() {
+        mapaGroup.style.display = 'flex';
+        latitudInput.required = true;
+        longitudInput.required = true;
+        initMap();
+    }
 
     // Inicializar el mapa de Leaflet
     function initMap() {
@@ -88,27 +141,54 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => map.invalidateSize(), 100);
     }
 
+    // Inicializar mapa con marcador existente (modo edición)
+    function initMapWithMarker(lat, lng) {
+        initMap();
+
+        setTimeout(() => {
+            map.setView([lat, lng], 15);
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+            latDisplay.textContent = lat.toFixed(7);
+            lngDisplay.textContent = lng.toFixed(7);
+            coordenadasDisplay.style.display = 'block';
+
+            marker.on('dragend', function() {
+                const position = marker.getLatLng();
+                const newLat = position.lat.toFixed(7);
+                const newLng = position.lng.toFixed(7);
+
+                latitudInput.value = newLat;
+                longitudInput.value = newLng;
+                latDisplay.textContent = newLat;
+                lngDisplay.textContent = newLng;
+            });
+        }, 200);
+    }
+
+    // Eliminar multimedia existente
+    function removeExistingMedia(mediaId) {
+        const itemDiv = document.querySelector(`.existing-item[data-media-id="${mediaId}"]`);
+        if (itemDiv) {
+            // Marcar como eliminado
+            const eliminarFlag = itemDiv.querySelector('.eliminar-flag');
+            if (eliminarFlag) {
+                eliminarFlag.value = 'true';
+            }
+            itemDiv.style.display = 'none';
+            multimediaToDelete.push(mediaId);
+        }
+    }
+
     // Manejar campos de ubicación según el tipo seleccionado
     tipoUbicacionSelect.addEventListener('change', function() {
         const tipo = this.value;
         resetUbicacionFields();
 
         if (tipo === 'direccion') {
-            provinciaInput.required = true;
-            localidadInput.required = true;
-            calleInput.required = true;
-            numeroInput.required = true;
-
-            provinciaGroup.style.display = 'flex';
-            localidadGroup.style.display = 'flex';
-            calleGroup.style.display = 'flex';
-            numeroGroup.style.display = 'flex';
-
+            showDireccionFields();
         } else if (tipo === 'mapa') {
-            mapaGroup.style.display = 'flex';
-            latitudInput.required = true;
-            longitudInput.required = true;
-            initMap();
+            showMapaFields();
         }
     });
 
@@ -140,8 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
             marker = null;
         }
     }
-
-    resetUbicacionFields();
 
     // Determinar el tipo de contenido según el MIME type
     function getTipoContenido(mimeType) {
@@ -290,12 +368,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const originalBtnText = submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
+        submitBtn.textContent = esNuevo ? 'Enviando...' : 'Actualizando...';
 
-        const actionUrl = form.getAttribute('action') || '/hechos/create';
+        const actionUrl = form.getAttribute('action') || (esNuevo ? '/hechos/create' : '/hechos/editar');
         const fd = new FormData(form);
 
-        // Agregar archivos multimedia al FormData
+        // Agregar archivos multimedia nuevos al FormData
         multimediaFiles.forEach((item, index) => {
             fd.append(`multimedia[${index}].file`, item.file);
             fd.append(`multimedia[${index}].tipoContenido`, item.tipoContenido);
@@ -327,8 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 let text = '';
                 try { text = await response.text(); } catch (err) {}
-                console.error('Error al crear hecho:', response.status, text);
-                alert('No se pudo crear el hecho. Estado: ' + response.status);
+                console.error('Error al procesar hecho:', response.status, text);
+                alert('No se pudo procesar el hecho. Estado: ' + response.status);
             }
         } catch (err) {
             console.error('Fetch error:', err);
@@ -347,23 +425,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar botón reset
     form.addEventListener('reset', function() {
         setTimeout(() => {
-            resetUbicacionFields();
-            tipoUbicacionSelect.value = '';
+            if (esNuevo) {
+                resetUbicacionFields();
+                tipoUbicacionSelect.value = '';
 
-            // Limpiar archivos multimedia
-            multimediaFiles.forEach(item => {
-                const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${item.id}"]`);
-                if (itemDiv) {
-                    const img = itemDiv.querySelector('img');
-                    const video = itemDiv.querySelector('video source');
-                    if (img) URL.revokeObjectURL(img.src);
-                    if (video) URL.revokeObjectURL(video.src);
-                }
-            });
+                // Limpiar archivos multimedia
+                multimediaFiles.forEach(item => {
+                    const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${item.id}"]`);
+                    if (itemDiv) {
+                        const img = itemDiv.querySelector('img');
+                        const video = itemDiv.querySelector('video source');
+                        if (img) URL.revokeObjectURL(img.src);
+                        if (video) URL.revokeObjectURL(video.src);
+                    }
+                });
 
-            multimediaFiles = [];
-            multimediaPreview.innerHTML = '';
-            multimediaInput.value = '';
+                multimediaFiles = [];
+                multimediaPreview.innerHTML = '';
+                multimediaInput.value = '';
+            } else {
+                // En modo edición, volver a los valores originales
+                window.location.reload();
+            }
         }, 0);
     });
 });

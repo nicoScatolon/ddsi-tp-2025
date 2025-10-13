@@ -14,33 +14,24 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.CriterioFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class DTOConverter {
-    public static HechoOutputDTO convertirHechoInputDTO(HechoInputDTO hechoDTO) {
-        return HechoOutputDTO.builder()
+    public static HechoDinamicaOutputDTO convertirHechoInputDTO(HechoInputDTO hechoDTO) {
+        return HechoDinamicaOutputDTO.builder()
                 .id(hechoDTO.getId())
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
                 .categoria(convertirCategoriaInputDTO(hechoDTO.getCategoria()))
                 .ubicacion(convertirUbicacionInputDTO(hechoDTO.getUbicacion()))
-                .etiquetas(
-                        hechoDTO.getEtiquetas() != null
-                                ? hechoDTO.getEtiquetas().stream()
-                                .map(DTOConverter::convertirEtiquetaInputDTO)
-                                .toList()
-                                : List.of()
-                )
+                .contribuyenteId(hechoDTO.getContribuyenteId())
                 .contenidoMultimedia(
                         hechoDTO.getContenidoMultimedia() != null
                                 ? hechoDTO.getContenidoMultimedia().stream()
@@ -49,7 +40,6 @@ public class DTOConverter {
                                 : List.of()
                 )
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
-                .fechaDeCarga(hechoDTO.getFechaDeCarga())
                 .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente())
                 .build();
     }

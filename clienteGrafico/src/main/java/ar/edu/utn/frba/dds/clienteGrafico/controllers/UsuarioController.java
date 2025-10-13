@@ -49,7 +49,7 @@ public class UsuarioController {
         return "usuario/profile";
     }
 
-    @GetMapping("/misHechos")
+    @GetMapping("/mis-hechos")
     public String misHechos(
             @RequestParam(required = false) EstadoHecho estadoHecho,
             @RequestParam(value = "page", defaultValue = "0") int paginaActual,
@@ -62,11 +62,12 @@ public class UsuarioController {
         model.addAttribute("usuarioId", usuarioId);
         model.addAttribute("hechos", hechos);
         model.addAttribute("paginaActual", paginaActual);
-        model.addAttribute("estadoHecho", estadoHecho);
-        model.addAttribute("titulo", "Perfil");
+        model.addAttribute("estadoHecho", estadoHecho != null ? estadoHecho.name() : "");
+        model.addAttribute("titulo", "Mis Hechos");
         model.addAttribute("editor", true);
         return "usuario/mis-hechos";
     }
+
 
 
     private Integer calcularEdad(LocalDate fechaNacimiento) {

@@ -1,11 +1,9 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 
@@ -26,12 +23,12 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     }
 
     @Override
-    public ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO) {
+    public ResponseEntity<Void> crearHecho(HechoDinamicaOutputDTO hechoDinamicaOutputDTO) {
         return webClient.post()
                 .uri("/api/fuenteDinamica/hechos")
                 .contentType(MediaType.APPLICATION_JSON)            // asegurate de esto
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(hechoOutputDTO)
+                .bodyValue(hechoDinamicaOutputDTO)
                 .retrieve()
                 .toBodilessEntity()
                 .block();
@@ -86,6 +83,16 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .retrieve()
                 .bodyToFlux(HechoDinamicaInputDTO.class)
                 .collectList()
+                .block();
+    }
+
+    @Override
+    public ResponseEntity<Void> editarHecho(HechoDinamicaOutputDTO hechoDTO) {
+        return webClient.put()
+                .uri("/api/fuenteDinamica/hechos/{id}", hechoDTO.getId())
+                .bodyValue(hechoDTO)
+                .retrieve()
+                .toBodilessEntity()
                 .block();
     }
 

@@ -22,6 +22,6 @@ public class SolicitudesEliminacionController {
             @RequestParam Long hechoId,
             @RequestParam Long usuarioId) {
         agregadorService.crearSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
-        return "redirect:/about";
+        return "redirect:/hechos/" + hechoId;
     }
 }
