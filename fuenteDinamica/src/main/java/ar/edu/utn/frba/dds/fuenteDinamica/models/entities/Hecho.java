@@ -7,7 +7,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -78,15 +79,17 @@ public class Hecho {
         }
     }
 
-    public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion){
+    public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion) {
         verificarModificacionValida(diasValidosModificacion, LocalDateTime.now());
 
+        // Actualizar campos simples
         this.setTitulo(nuevosDatosHecho.getTitulo());
         this.setDescripcion(nuevosDatosHecho.getDescripcion());
         this.setCategoria(nuevosDatosHecho.getCategoria());
         this.setUbicacion(nuevosDatosHecho.getUbicacion());
-        this.setContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
         this.setFechaDeOcurrencia(nuevosDatosHecho.getFechaDeOcurrencia());
+
+        sincronizarContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
 
         this.setFechaDeModificacion(LocalDateTime.now());
         this.setEstado(EstadoHecho.PENDIENTE);
@@ -96,5 +99,52 @@ public class Hecho {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}
+    }
+
+    private void sincronizarContenidoMultimedia(List<ContenidoMultimedia> nuevos) {
+        if (nuevos == null) {
+            nuevos = Collections.emptyList();
+        }
+
+        if (this.contenidoMultimedia == null) {
+            this.contenidoMultimedia = new ArrayList<>();
+        }
+
+        // Map de existentes por id
+        Map<Long, ContenidoMultimedia> existentesPorId = this.contenidoMultimedia.stream()
+                .filter(cm -> cm.getId() != null)
+                .collect(Collectors.toMap(ContenidoMultimedia::getId, cm -> cm));
+
+        // Set de ids nuevos
+        Set<Long> idsNuevos = nuevos.stream()
+                .map(ContenidoMultimedia::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // Eliminar los que ya no están
+        Iterator<ContenidoMultimedia> it = this.contenidoMultimedia.iterator();
+        while (it.hasNext()) {
+            ContenidoMultimedia cmExistente = it.next();
+            Long idExistente = cmExistente.getId();
+            if (idExistente != null && !idsNuevos.contains(idExistente)) {
+                it.remove();
+            }
+        }
+
+        // Agregar o actualizar
+        for (ContenidoMultimedia cmNuevo : nuevos) {
+            if (cmNuevo.getId() == null) {
+                this.contenidoMultimedia.add(cmNuevo);
+            } else {
+                ContenidoMultimedia existente = existentesPorId.get(cmNuevo.getId());
+                if (existente != null) {
+                    existente.setUrl(cmNuevo.getUrl());
+                    existente.setDescripcion(cmNuevo.getDescripcion());
+                    existente.setTipoContenido(cmNuevo.getTipoContenido());
+                } else {
+                    this.contenidoMultimedia.add(cmNuevo);
+                }
+            }
+        }
     }
 }

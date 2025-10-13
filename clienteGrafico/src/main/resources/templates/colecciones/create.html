@@ -117,8 +117,13 @@
                 <div id="generatedHiddenFields" style="display:none;"></div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" th:text="${nueva ? 'Crear' : 'Guardar cambios'}">Crear</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i th:class="${nueva} ? 'fas fa-save' : 'fas fa-sync'"></i>
+                        <span th:text="${nueva ? 'Crear' : 'Actualizar'}">Crear</span>
+                    </button>
                 </div>
             </form>
         </section>

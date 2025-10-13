@@ -1,11 +1,13 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,15 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     }
 
     @Override
-    public ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO) {
-        String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos";
-        try {
-            webApiCallerService.post(url, hechoOutputDTO, Void.class);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Error al crear el hecho: " + e.getMessage(), e);
-        }
+    public ResponseEntity<Void> crearHecho(HechoDinamicaOutputDTO hechoDinamicaOutputDTO) {
+        return webClient.post()
+                .uri("/api/fuenteDinamica/hechos")
+                .contentType(MediaType.APPLICATION_JSON)            // asegurate de esto
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(hechoDinamicaOutputDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 
     @Override
@@ -86,6 +89,16 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener los hechos del usuario: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public ResponseEntity<Void> editarHecho(HechoDinamicaOutputDTO hechoDTO) {
+        return webClient.put()
+                .uri("/api/fuenteDinamica/hechos/{id}", hechoDTO.getId())
+                .bodyValue(hechoDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 
 }

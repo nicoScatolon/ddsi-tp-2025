@@ -5,7 +5,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDT
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
@@ -52,6 +52,9 @@ public class HechosController {
     public String crearHecho(Model model) {
         HechoInputDTO hechoInputDTO = this.instanciarHecho();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+
+        model.addAttribute("actionUrl", "/hechos/create");
+        model.addAttribute("esNuevo", true);
         model.addAttribute("titulo", "Crear Hecho");
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("categorias", categorias);
@@ -61,15 +64,15 @@ public class HechosController {
     }
 
     @PostMapping("/create") // path coincide con el form
-    public String guardarHecho(@ModelAttribute("hechoDTO") HechoOutputDTO hechoDTO, Model model) {
+    public String guardarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model) {
 
         try {
-            ContribuyenteOutputDTO contribuyenteOutputDTO = this.obtenerUsuarioPrueba();
-            hechoDTO.setContribuyente(contribuyenteOutputDTO);
-            int prueba = 0;
+            Long contribuyenteId = 10L; //Todo obtener del serv usuarios
+            hechoDTO.setContribuyenteId(contribuyenteId);
             fuenteDinamicaService.crearHecho(hechoDTO);
 
             return "redirect:/hechos";
+            //return "redirect:/hechos/" + hechoDTO.getId(); //Todo q fuenteDinamica devuelva el id, y podremos redirecionar al hecho q se envió
 
         } catch (Exception e) {
             // Loguear error si quieres
@@ -147,6 +150,7 @@ public class HechosController {
         //TODO obtener datos del usuario con el id desde el hecho
 
         ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
+
         model.addAttribute("titulo", "Hecho Fuente Dinamica");
         model.addAttribute("hecho", hecho);
         model.addAttribute("contribuyente", contribuyente);
@@ -157,7 +161,34 @@ public class HechosController {
         return "hechos/details";
     }
 
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable("id") Long id, Model model) {
+        HechoDinamicaInputDTO hecho = fuenteDinamicaService.obtenerHechoDinamicaId(id);
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
 
+        model.addAttribute("actionUrl", "/hechos/editar");
+        model.addAttribute("esNuevo", false);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("rol", 1);
+        model.addAttribute("logeado", 1);
+        model.addAttribute("hechoDTO", hecho);
+        model.addAttribute("titulo", "Editar Hecho");
+        return "hechos/create";
+    }
+
+    @PutMapping("/editar")
+    public String guardarEditarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model) {
+        try {
+            fuenteDinamicaService.editarHecho(hechoDTO);
+
+            return "redirect:/hechos/fuenteDinamica/" + hechoDTO.getId(); //Todo q fuenteDinamica devuelva el id, y podremos redirecionar al hecho q se envió
+
+        } catch (Exception e) {
+            // Loguear error si quieres
+            model.addAttribute("error", "No se pudo editar el hecho.");
+            return "redirect:/hechos/mis-hechos"; // Volver al form con mensaje de error
+        }
+    }
     /*
      List<HechoMapaInputDTO> hechosMapa = new ArrayList<>();
             hechosMapa.add(crearHecho(1L, "Robo en el centro", "Seguridad", -34.6037, -58.3816));
@@ -183,7 +214,7 @@ public class HechosController {
 
         HechoInputDTO hecho = new HechoInputDTO();
 
-        hecho.setContribuyenteId(10L);
+        hecho.setContribuyenteId(10L); //ToDo obtener id de sesión
         hecho.setCategoria(categoria);
         hecho.setUbicacion(ubicacion);
 

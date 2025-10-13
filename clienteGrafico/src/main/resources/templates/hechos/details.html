@@ -111,7 +111,7 @@
                     </div>
 
                     <!-- Acciones solo para usuarios logueados -->
-                    <div id="hecho-actions" class="info-item" style="margin-top:12px;">
+                    <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item" style="margin-top:12px;" >
                         <!-- Botón solicitar eliminación (usuarios logueados) -->
                         <button th:if="${logeado == 1}" id="deleteBtn" class="btn-delete-request">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -126,7 +126,7 @@
                             <input type="hidden" name="_method" value="put" />
                             <button type="submit" class="btn-destacar">
                                 <i class="fas fa-star"></i>
-                                 Destacar
+                                Destacar
                             </button>
                         </form>
 
