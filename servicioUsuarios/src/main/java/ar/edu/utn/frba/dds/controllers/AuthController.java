@@ -76,6 +76,7 @@ public class AuthController {
                     .getBody();
 
             if (!"refresh".equals(claims.get("type"))) {
+                log.info("Primer bad request");
                 return ResponseEntity.badRequest().build();
             }
 

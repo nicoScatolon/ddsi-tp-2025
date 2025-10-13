@@ -130,7 +130,7 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {
         try {
-            return webApiCallerService.getList(
+            return webApiCallerService.getPublicList(
                     agregadorUrl + "/api/hechos/publica/destacados",
                     HechoInputDTO.class
             );
@@ -171,7 +171,7 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
         try {
-            return webApiCallerService.getList(
+            return webApiCallerService.getPublicList(
                     agregadorUrl + "/api/colecciones/publica/destacadas",
                     ColeccionPreviewInputDTO.class
             );
@@ -182,12 +182,26 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+//    @Override
+//    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
+//        try {
+//            return webApiCallerService.getList(
+//                    agregadorUrl + "/api/colecciones/publica/destacadas",
+//                    ColeccionPreviewInputDTO.class
+//            );
+//        } catch (NotFoundException e) {
+//            throw new NotFoundException("colecciones destacadas", "");
+//        } catch (RuntimeException e) {
+//            throw new RuntimeException("Error al obtener las colecciones destacadas: " + e.getMessage(), e);
+//        }
+//    }
+
     @Override
     public ResponseEntity<Void> destacarColeccion(String handle) {
         try {
             webApiCallerService.put(
                     agregadorUrl + "/api/colecciones/privada/destacada/" + handle,
-                    null,
+                    0, //El "0" es para que no tire error el webApiCallerService que espera un body, pero el back no necesita, no es recomendable pero funciona
                     Void.class
             );
             return ResponseEntity.ok().build();
@@ -334,7 +348,7 @@ public class AgregadorService implements IAgregadorService {
     // --- METODOS PRIVADOS --- //
 
     private String construirUrlHechos(Integer paginaActual, HechosFilterOutputDTO filter) {
-        return "/api/hechos/publica?page=" + paginaActual + construirQueryFiltros(filter);
+        return agregadorUrl + "/api/hechos/publica?page=" + paginaActual + construirQueryFiltros(filter);
     }
 
     private String construirUrlHechosColeccion(String handle, Integer paginaActual,

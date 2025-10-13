@@ -23,10 +23,12 @@ public class WebApiCallerService {
     private static final Logger log = LoggerFactory.getLogger(WebApiCallerService.class);
     private final WebClient webClient;
     private final String authServiceUrl;
+    private final WebClient publicWebClient;
 
     public WebApiCallerService(@Value("${auth.service.url}") String authServiceUrl) {
         this.webClient = WebClient.builder().build();
         this.authServiceUrl = authServiceUrl;
+        this.publicWebClient = WebClient.builder().build();
     }
 
     /**
@@ -95,6 +97,15 @@ public class WebApiCallerService {
                         .collectList()
                         .block()
         );
+    }
+
+    public <T> java.util.List<T> getPublicList(String url, Class<T> responseType) {
+        return publicWebClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(responseType)
+                .collectList()
+                .block();
     }
 
     /**
@@ -167,6 +178,7 @@ public class WebApiCallerService {
      * Refresca el access token usando el refresh token
      */
     private AuthResponseDTO refreshToken(String refreshToken) {
+        log.info("Refrescando token con refreshToken={}", refreshToken);
         try {
             RefreshTokenDTO refreshRequest = RefreshTokenDTO.builder()
                     .refreshToken(refreshToken)

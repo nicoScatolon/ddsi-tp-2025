@@ -21,4 +21,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
        where u.nombre = :username
        """)
     Optional<Usuario> findByNombreFetchAuth(@Param("username") String username);
+
+    @Query("""
+       select u from Usuario u
+       left join fetch u.permisos
+       where u.email = :email
+       """)
+    Optional<Usuario> findByEmailFetchAuth(@Param("email") String email);
 }

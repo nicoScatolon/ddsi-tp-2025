@@ -45,7 +45,7 @@ public class LoginService {
 
     // USAR EN REFRESH: solo tenés el username; cargás y delegás
     public String generarAccessToken(String username) {
-        var u = usuariosRepository.findByNombreFetchAuth(username)
+        var u = usuariosRepository.findByEmailFetchAuth(username)
                 .orElseThrow(() -> new NotFoundException("Usuario", username));
         return JwtUtil.generarAccessToken(u);
     }

@@ -59,26 +59,26 @@ public class HechosController {
     }
 
     @PutMapping("/privada/{id}/etiquetas")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.agregarEtiquetaHecho(id, etiqueta);
     }
 
     @DeleteMapping ("/privada/{id}/etiquetas")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
         return hechosService.eliminarEtiquetaHecho(id, etiqueta);
 
     }
 
     @PutMapping("/privada/destacado/{id}")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> destacarHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, true);
     }
 
     @DeleteMapping ("/privada/destacado/{id}")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('MODERAR_HECHO')")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, false);
     }

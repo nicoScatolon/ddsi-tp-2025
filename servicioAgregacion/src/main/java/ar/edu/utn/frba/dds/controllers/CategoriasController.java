@@ -37,14 +37,14 @@ public class CategoriasController {
     }
 
     @PostMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")//TODO: a chequear
+    @PreAuthorize("hasRole('ADMIN')")//TODO: a chequear
     public ResponseEntity<Void> agregarEquivalentes( @RequestParam EquivalenteInputDTO equivalenteInputDTO) {
         categoriaService.agregarEquivalentes(equivalenteInputDTO.getCodCategoria(), equivalenteInputDTO.getEquivalente());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('GESTIONAR_CATEGORIAS')")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> eliminarEquivalentes(@RequestParam String equivalente){
         categoriaService.eliminarEquivalentes(equivalente);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
