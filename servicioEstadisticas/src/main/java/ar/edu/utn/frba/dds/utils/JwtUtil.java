@@ -1,5 +1,4 @@
-package ar.edu.utn.frba.dds.fuenteEstatica.utils;
-
+package ar.edu.utn.frba.dds.utils;
 
 import io.jsonwebtoken.Jwts;
 import javax.crypto.spec.SecretKeySpec;

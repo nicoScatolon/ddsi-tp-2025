@@ -3,33 +3,42 @@ package ar.edu.utn.frba.dds.fuenteDinamica.filters;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-public class JwtAuthenticationFilter extends org.springframework.web.filter.OncePerRequestFilter {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     @Override
-    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
-                                    jakarta.servlet.http.HttpServletResponse response,
-                                    jakarta.servlet.FilterChain chain)
-            throws jakarta.servlet.ServletException, java.io.IOException {
+    protected void doFilterInternal(
+            jakarta.servlet.http.HttpServletRequest request,
+            jakarta.servlet.http.HttpServletResponse response,
+            jakarta.servlet.FilterChain chain
+    ) throws jakarta.servlet.ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
-                String email = JwtUtil.validarToken(token); // sub=email
-                java.util.List<org.springframework.security.core.GrantedAuthority> auths = new java.util.ArrayList<>();
+                String email = JwtUtil.validarToken(token);
 
+                List<org.springframework.security.core.GrantedAuthority> auths = new ArrayList<>();
                 String rol = JwtUtil.extraerRol(token);
                 if (rol != null && !rol.isBlank()) {
-                    auths.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + rol));
+                    auths.add(new SimpleGrantedAuthority("ROLE_" + rol));
                 }
                 for (String p : JwtUtil.extraerPermisos(token)) {
-                    auths.add(new org.springframework.security.core.authority.SimpleGrantedAuthority(p));
+                    auths.add(new SimpleGrantedAuthority(p));
                 }
 
-                org.springframework.security.authentication.UsernamePasswordAuthenticationToken auth =
-                        new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(email, null, auths);
-
-                org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
+                var auth = new UsernamePasswordAuthenticationToken(email, null, auths);
+                SecurityContextHolder.getContext().setAuthentication(auth);
 
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
@@ -42,13 +51,12 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
     @Override
     protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest req) {
         String p = req.getRequestURI();
-        return p.startsWith("/v3/api-docs")
-                || p.equals("/api/colecciones/publica")
-                || p.startsWith("/api/colecciones/publica/")
-                || p.equals("/api/hechos/publica")
-                || p.startsWith("/api/hechos/publica/")
-                || p.equals("/api/privada/categorias")
-                || p.equals("/api/privada/categorias/short")
-                || p.equals("/api/solicitudes-eliminacion/publica");
+        String m = req.getMethod();
+
+        if (p.startsWith("/v3/api-docs") || p.equals("/swagger-ui.html") || p.startsWith("/swagger-ui/")) return true;
+
+        if (p.equals("/api/fuenteDinamica/hechos") && "GET".equalsIgnoreCase(m)) return true;
+        if (p.matches("^/api/fuenteDinamica/hechos/\\d+$") && "GET".equalsIgnoreCase(m)) return true;
+        return p.equals("/api/fuenteDinamica/hechos") && "POST".equalsIgnoreCase(m);
     }
 }

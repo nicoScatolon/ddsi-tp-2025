@@ -1,8 +1,7 @@
-package ar.edu.utn.frba.dds.fuenteEstatica.filters;
+package ar.edu.utn.frba.dds.filters;
 
-import ar.edu.utn.frba.dds.fuenteEstatica.utils.JwtUtil;
+import ar.edu.utn.frba.dds.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,8 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String p = req.getRequestURI();
         String m = req.getMethod();
         if (p.startsWith("/v3/api-docs") || p.equals("/swagger-ui.html") || p.startsWith("/swagger-ui/")) return true;
-        if (p.equals("/api/fuenteEstatica/hechos") && "GET".equalsIgnoreCase(m)) return true;
         return false;
     }
 }
-

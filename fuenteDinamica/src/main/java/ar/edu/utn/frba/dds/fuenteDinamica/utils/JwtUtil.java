@@ -9,15 +9,13 @@ import java.util.Base64;
 import java.util.List;
 
 public class JwtUtil {
-    private static Key key; // la setea JwtKeyConfig al arrancar
+    private static Key key;
 
-    // Llamalo una vez al inicio (desde una @Configuration)
     public static void initFromBase64(String base64Secret) {
         if (base64Secret == null || base64Secret.isBlank())
             throw new IllegalStateException("Falta jwt.secret.base64 en properties");
         byte[] bytes = Base64.getDecoder().decode(base64Secret);
-        // cualquiera de las dos sirve; dejo la “oficial” de JJWT:
-        // key = Keys.hmacShaKeyFor(bytes);
+
         key = new SecretKeySpec(bytes, "HmacSHA256");
     }
 

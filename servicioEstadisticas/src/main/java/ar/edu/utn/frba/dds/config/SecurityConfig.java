@@ -1,6 +1,6 @@
-package ar.edu.utn.frba.dds.fuenteEstatica.config;
+package ar.edu.utn.frba.dds.config;
 
-import ar.edu.utn.frba.dds.fuenteEstatica.filters.JwtAuthenticationFilter;
+import ar.edu.utn.frba.dds.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/fuenteEstatica/hechos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/estadisticas/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
