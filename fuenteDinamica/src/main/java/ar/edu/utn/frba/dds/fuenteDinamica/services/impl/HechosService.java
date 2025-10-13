@@ -8,9 +8,11 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.*;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.ICategoriaService;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.IHechosService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,24 +91,22 @@ public class HechosService implements IHechosService {
 
     @Override
     @Transactional
-    public Hecho modificarHecho(HechoInputDTO hechoInputDTO) {
-        Optional<Hecho> optionalHechoGuardado = this.hechosRepository.findById(hechoInputDTO.getId());
-        Hecho hechoNuevo = hechoInputDTO(hechoInputDTO);
-        if (optionalHechoGuardado.isPresent()) {
-            Hecho hechoGuardado = optionalHechoGuardado.get();
+    public Hecho modificarHecho(HechoInputDTO dto) {
+        Hecho hechoGuardado = this.hechosRepository.findById(dto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Hecho no encontrado"));
 
-            if (hechoNuevo.getId() == null) { throw new IllegalArgumentException("El hecho no existe, falta id"); }
-            if (hechoNuevo.getContribuyenteId() == null) { throw new IllegalArgumentException("El contribuyente modificador no esta registrado"); }
-            if (!hechoNuevo.getContribuyenteId().equals(hechoGuardado.getContribuyenteId()))
-            { throw new IllegalArgumentException("El contribuyente modificador no es el creador del hecho");}
-
-            hechoGuardado.serModificado(hechoNuevo, diasValidosModificacion);
-            this.hechosRepository.save(hechoGuardado);
-            return hechoGuardado;
-        } else {
-           return null;//responder 404
+        if (dto.getContribuyenteId() == null) {
+            throw new IllegalArgumentException("El contribuyente modificador no está registrado");
         }
+
+        if (!dto.getContribuyenteId().equals(hechoGuardado.getContribuyenteId())) {
+            throw new ModificacionNoPermitidaException("El contribuyente modificador no es el creador del hecho");
+        }
+
+        hechoGuardado.serModificado(hechoInputDTO(dto), diasValidosModificacion);
+        return hechosRepository.save(hechoGuardado);
     }
+
 
     @Override
     public List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado, Integer page) {
@@ -154,9 +154,9 @@ public class HechosService implements IHechosService {
 
 
     //Metodos privados
-
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO) {
         return Hecho.builder()
+                .id(hechoDTO.getId())
                 .titulo(hechoDTO.getTitulo())
                 .descripcion(hechoDTO.getDescripcion())
                 .categoria(this.categoriaInputDTO(hechoDTO.getCategoria()))
