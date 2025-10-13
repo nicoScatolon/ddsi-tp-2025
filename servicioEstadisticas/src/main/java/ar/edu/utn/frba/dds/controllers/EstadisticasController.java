@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/estadisticas")
 public class EstadisticasController {
