@@ -228,7 +228,7 @@ public class AgregadorService implements IAgregadorService {
         String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
 
         try {
-            return webApiCallerService.getList(url, ColeccionPreviewInputDTO.class);
+            return webApiCallerService.getPublicList(url, ColeccionPreviewInputDTO.class);
         } catch (NotFoundException e) {
             throw new NotFoundException("colecciones preview", "página " + paginaActual);
         } catch (RuntimeException e) {
@@ -239,7 +239,7 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
         try {
-            return webApiCallerService.get(
+            return webApiCallerService.getPublic(
                     agregadorUrl + "/api/colecciones/publica/preview/" + handle,
                     ColeccionPreviewInputDTO.class
             );

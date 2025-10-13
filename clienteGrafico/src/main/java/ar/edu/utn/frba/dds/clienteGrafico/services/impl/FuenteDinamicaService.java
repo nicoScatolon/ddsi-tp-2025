@@ -25,21 +25,23 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
 
     @Override
     public ResponseEntity<Void> crearHecho(HechoDinamicaOutputDTO hechoDinamicaOutputDTO) {
-        return webClient.post()
-                .uri("/api/fuenteDinamica/hechos")
-                .contentType(MediaType.APPLICATION_JSON)            // asegurate de esto
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(hechoDinamicaOutputDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.postPublic(
+                    fuenteDinamicaUrl + "/api/fuenteDinamica/hechos",
+                    hechoDinamicaOutputDTO,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear el hecho dinámico: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public List<HechoDinamicaInputDTO> obtenerHechosDinamica(EstadoHecho estadoHecho) {
         String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos?estado=" + estadoHecho;
         try {
-            return webApiCallerService.getList(url, HechoDinamicaInputDTO.class);
+            return webApiCallerService.getPublicList(url, HechoDinamicaInputDTO.class);
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener los hechos desde dinamica: " + e.getMessage(), e);
         }
@@ -88,12 +90,16 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
 
     @Override
     public ResponseEntity<Void> editarHecho(HechoDinamicaOutputDTO hechoDTO) {
-        return webClient.put()
-                .uri("/api/fuenteDinamica/hechos/{id}", hechoDTO.getId())
-                .bodyValue(hechoDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            webApiCallerService.put(
+                    fuenteDinamicaUrl + "/api/fuenteDinamica/hechos/" + hechoDTO.getId(),
+                    hechoDTO,
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al editar el hecho " + hechoDTO.getId() + ": " + e.getMessage(), e);
+        }
     }
 
 }

@@ -83,6 +83,14 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> T getPublic(String url, Class<T> responseType) {
+        return publicWebClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(responseType)
+                .block();
+    }
+
     /**
      * Ejecuta una llamada HTTP GET que retorna una lista
      */
@@ -141,6 +149,17 @@ public class WebApiCallerService {
                         .block()
         );
     }
+
+    public <T> T postPublic(String url, Object body, Class<T> responseType) {
+        return publicWebClient
+                .post()
+                .uri(url)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(responseType)
+                .block();
+    }
+
 
     /**
      * Ejecuta una llamada HTTP PUT

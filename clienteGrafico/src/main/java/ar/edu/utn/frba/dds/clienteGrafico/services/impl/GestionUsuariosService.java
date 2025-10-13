@@ -34,27 +34,16 @@ public class GestionUsuariosService {
 
     public AuthResponseDTO login(String username, String password) {
         try {
-            AuthResponseDTO response = webClient
-                    .post()
-                    .uri(authServiceUrl + "/auth")
-                    .bodyValue(Map.of(
-                            "username", username,
-                            "password", password
-                    ))
-                    .retrieve()
-                    .bodyToMono(AuthResponseDTO.class)
-                    .block();
-            return response;
-        } catch (WebClientResponseException e) {
-            log.error(e.getMessage());
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
-                return null;
-            }
-            // Otros errores HTTP
+            return webApiCallerService.postPublic(
+                    authServiceUrl + "/auth",
+                    Map.of("username", username, "password", password),
+                    AuthResponseDTO.class
+            );
+        } catch (NotFoundException e) {
+            // Credenciales inválidas (mantenemos tu contrato de devolver null)
+            return null;
+        } catch (RuntimeException e) {
             throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
         }
     }
 
