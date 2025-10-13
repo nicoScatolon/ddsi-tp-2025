@@ -54,6 +54,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
             RolesPermisosDTO rolesPermisos= externalAuthService.getRolesPermisos(authResponse.getAccessToken());
 
             log.info("Cargando roles y permisos del usuario en sesión");
+            request.getSession().setAttribute("userId", rolesPermisos.getUserId());
             request.getSession().setAttribute("rol", rolesPermisos.getRol());
             request.getSession().setAttribute("permisos", rolesPermisos.getPermisos());
 
