@@ -43,7 +43,7 @@ public class UsuarioController {
     @GetMapping("/login")
     public String login(Model model) {
         UsuarioOutputDTO usuario = new UsuarioOutputDTO();
-        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuario", usuario); //TODO ver que es usuario
         model.addAttribute("titulo", "Iniciar Sesión");
         return "usuario/login";
     }
@@ -51,7 +51,7 @@ public class UsuarioController {
     @GetMapping("/signup")
     public String signup(Model model) {
         UsuarioOutputDTO usuario = new UsuarioOutputDTO();
-        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuario", usuario); //TODO ver que es usuario
         model.addAttribute("titulo", "Registrarse");
         return "usuario/signup";
     }
@@ -61,10 +61,10 @@ public class UsuarioController {
         UsuarioOutputDTO usuario = usuarioPrueba(); //Todo obtener el usuario por id
         Integer edad = calcularEdad(usuario.getFechaNacimiento());
         model.addAttribute("usuario", usuario); // Todo: Mock, si no coinciden no se puede editar
-        model.addAttribute("perfil", usuario);
+        model.addAttribute("perfil", usuario); //TODO ver esto con nico
         model.addAttribute("edad", edad);
         model.addAttribute("titulo", "Perfil");
-        model.addAttribute("editor", true);
+        model.addAttribute("editor", true); //TODO ver que es esto de editor
         return "usuario/profile";
     }
 
@@ -72,8 +72,10 @@ public class UsuarioController {
     public String misHechos(
             @RequestParam(required = false) EstadoHecho estadoHecho,
             @RequestParam(value = "page", defaultValue = "0") int paginaActual,
-            Model model) {
-        Long usuarioId = 5001L; //Todo obtener el id del usuario actual por la cookie
+            Model model,
+            HttpSession session) {
+
+        Long usuarioId = (Long) session.getAttribute("userId");
 
         List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamicaUsuario(usuarioId, estadoHecho, paginaActual);
         //if (hechos == null) {hechos = new ArrayList<>();}
@@ -83,7 +85,7 @@ public class UsuarioController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("estadoHecho", estadoHecho != null ? estadoHecho.name() : "");
         model.addAttribute("titulo", "Mis Hechos");
-        model.addAttribute("editor", true);
+        model.addAttribute("editor", true); //TODO ver que es editor
         return "usuario/mis-hechos";
     }
 

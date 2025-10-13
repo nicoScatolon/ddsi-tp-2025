@@ -11,6 +11,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Pro
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -37,8 +38,6 @@ public class AdminPanelController {
     @GetMapping("/actividad")
     public String resumenActividad(Model model) {
         model.addAttribute("titulo", "Resumen Actividad");
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "actividad");
         return "admin/panel-base";
     }
@@ -46,8 +45,6 @@ public class AdminPanelController {
     @GetMapping("/importar")
     public String importarHechos(Model model) {
         model.addAttribute("titulo", "Importar Hechos");
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "importar-hechos");
         return "admin/panel-base";
     }
@@ -59,16 +56,14 @@ public class AdminPanelController {
 
         model.addAttribute("titulo", "Gestión de Hechos");
         model.addAttribute("hechos", hechos);
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "gestion-hechos");
         return "admin/panel-base";
     }
 
     @PostMapping("/hechos")
-    public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho){
-        //TODO obtener id admin
-        this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, 10L);
+    public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho, HttpSession session){
+        Long adminId = (Long) session.getAttribute("userId");
+        this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
         return "redirect:/admin/hechos";
     }
 
@@ -80,8 +75,6 @@ public class AdminPanelController {
         model.addAttribute("pageSize", pageSize);
 
         model.addAttribute("titulo", "Gestión de Colecciones");
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "gestion-colecciones");
         return "admin/panel-base";
     }
@@ -91,26 +84,26 @@ public class AdminPanelController {
         List<SolicitudEliminarHechoInputDTO> solicitudes = agregadorService.obtenerSolicitudesEliminacionPendientes();
         //Todo deberiamos obtener los usuarios asociados a cada solicitud por el servicio de usuarios
         model.addAttribute("titulo", "Gestión de Solicitudes Eliminación");
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         model.addAttribute("contentTemplate", "solicitudes-eliminacion");
         model.addAttribute("solicitudes", solicitudes);
         return "admin/panel-base";
     }
 
     @PostMapping("/solicitudes/aceptar")
-    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoOutputDTO solicitud) {
-        //Todo obtener id admin
-        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, 17L);
+    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("userId");
+
+        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
         agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.ACEPTADA);
 
         return "redirect:/admin/solicitudes";
     }
 
     @PostMapping("/solicitudes/rechazar")
-    public String rechazarSolicitud(@ModelAttribute SolicitudEliminarHechoOutputDTO solicitud) {
-        //Todo obtener id admin
-        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, 17L);
+    public String rechazarSolicitud(@ModelAttribute SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("userId");
+
+        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
         agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.RECHAZADA);
 
         return "redirect:/admin/solicitudes";

@@ -61,8 +61,6 @@ public class ColeccionesController {
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("curado", curado);
         model.addAttribute("filtros", filtros);
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         return "/colecciones/details";
     }
 
@@ -77,8 +75,6 @@ public class ColeccionesController {
         model.addAttribute("coleccionDTO", coleccionFormDTO);
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);
-        model.addAttribute("rol", 2);
-        model.addAttribute("logeado", 1);
         model.addAttribute("nueva", true);
         model.addAttribute("actionUrl", actionUrl);
 

@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutput
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -43,8 +44,6 @@ public class HechosController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
-        model.addAttribute("rol", 1); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         return "/hechos/explore";
     }
 
@@ -58,16 +57,17 @@ public class HechosController {
         model.addAttribute("titulo", "Crear Hecho");
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("categorias", categorias);
-        model.addAttribute("rol", 1);
-        model.addAttribute("logeado", 1);
         return "/hechos/create";
     }
 
     @PostMapping("/create") // path coincide con el form
-    public String guardarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model) {
+    public String guardarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model, HttpSession session) {
 
         try {
-            Long contribuyenteId = 10L; //Todo obtener del serv usuarios
+            Long contribuyenteId = null;
+            if (session != null) {
+                contribuyenteId = (Long) session.getAttribute("userId"); //TODO ver para cargar hechos sin tener cuenta, si era posible o no y como recibe back
+            }
             hechoDTO.setContribuyenteId(contribuyenteId);
             fuenteDinamicaService.crearHecho(hechoDTO);
 
@@ -83,24 +83,26 @@ public class HechosController {
 
 
     @GetMapping("/{id}")
-    public String hecho(@PathVariable("id") Long id, Model model) {
+    public String hecho(@PathVariable("id") Long id, Model model, HttpSession session) {
         try {
             HechoInputDTO hecho = agregadorService.getHechoById(id);
 
-            ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
-            contribuyente.setId(hecho.getContribuyenteId());
-            contribuyente.setNombre("AAAA");
-            contribuyente.setApellido("BBBB");
-            //TODO obtener datos del usuario con el id desde el hecho
+            Long userId = null;
+            if (session != null) {
+                userId = (Long) session.getAttribute("userId");
+            }
 
-            ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
+            ContribuyenteInputDTO creadorHecho = new ContribuyenteInputDTO();
+            creadorHecho.setId(hecho.getContribuyenteId());
+            creadorHecho.setNombre("AAAA");
+            creadorHecho.setApellido("BBBB");
+            //TODO obtener datos del usuario con el id desde el hecho --> pedir al servicio de usuarios el nombre, apellido linkeados al contribuyenteId que tiene el hecho
+
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
-            model.addAttribute("contribuyente", contribuyente);
-            model.addAttribute("usuario", usuario);
+            model.addAttribute("contribuyente", creadorHecho);
+            model.addAttribute("userId", userId);
             model.addAttribute("origenAgregador",true);
-            model.addAttribute("rol", 2); // TODO temporal mientras no tenemos roles/usuarios
-            model.addAttribute("logeado", 1);
         } catch (NotFoundException e) {
             model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
             model.addAttribute("urlRedirect", "/hechos");
@@ -109,14 +111,14 @@ public class HechosController {
         return "hechos/details";
     }
 
-    @PutMapping("/destacar/{id}") //Todo solo admins
+    @PutMapping("/destacar/{id}")
     public String destacarHecho(@PathVariable("id") Long id, Model model){
         agregadorService.destacarHecho(id);
 
         return "redirect:/hechos/" + id;
     }
 
-    @DeleteMapping("/destacar/{id}") //Todo solo admins
+    @DeleteMapping("/destacar/{id}")
     public String eliminarDestacarHecho(@PathVariable("id") Long id, Model model){
         agregadorService.eliminarDestacarHecho(id);
 
@@ -128,13 +130,11 @@ public class HechosController {
         List<HechoMapaInputDTO> hechosMapa = agregadorService.getHechosMapa();
         model.addAttribute("hechosMapa", hechosMapa);
         model.addAttribute("titulo", "Mapa de Hechos");
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         return "hechos/map";
     }
 
     @GetMapping("/fuenteDinamica/{id}")
-    public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model) {
+    public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model, HttpSession session) {
         HechoDinamicaInputDTO hecho = this.fuenteDinamicaService.obtenerHechoDinamicaId(id);
 
         if (hecho == null) {
@@ -143,21 +143,22 @@ public class HechosController {
             return "404";
         }
 
-        ContribuyenteInputDTO contribuyente = new ContribuyenteInputDTO();
-        contribuyente.setId(hecho.getContribuyenteId());
-        contribuyente.setNombre("AAAA");
-        contribuyente.setApellido("BBBB");
-        //TODO obtener datos del usuario con el id desde el hecho
+        Long userId = null;
+        if (session != null) {
+            userId = (Long) session.getAttribute("userId");
+        }
 
-        ContribuyenteOutputDTO usuario = this.obtenerUsuarioPrueba();
+        ContribuyenteInputDTO creadorHecho = new ContribuyenteInputDTO();
+        creadorHecho.setId(hecho.getContribuyenteId());
+        creadorHecho.setNombre("AAAA");
+        creadorHecho.setApellido("BBBB");
+        //TODO obtener datos del usuario con el id desde el hecho
 
         model.addAttribute("titulo", "Hecho Fuente Dinamica");
         model.addAttribute("hecho", hecho);
-        model.addAttribute("contribuyente", contribuyente);
-        model.addAttribute("usuario", usuario); //TODO Obtener de la sesion actual si existe
+        model.addAttribute("contribuyente", creadorHecho);
+        model.addAttribute("userId", userId); //TODO Obtener de la sesion actual si existe
         model.addAttribute("origenAgregador",false);
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         return "hechos/details";
     }
 
@@ -169,16 +170,19 @@ public class HechosController {
         model.addAttribute("actionUrl", "/hechos/editar");
         model.addAttribute("esNuevo", false);
         model.addAttribute("categorias", categorias);
-        model.addAttribute("rol", 1);
-        model.addAttribute("logeado", 1);
         model.addAttribute("hechoDTO", hecho);
         model.addAttribute("titulo", "Editar Hecho");
         return "hechos/create";
     }
 
     @PutMapping("/editar")
-    public String guardarEditarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model) {
+    public String guardarEditarHecho(@ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO, Model model, HttpSession session) {
         try {
+            Long userId = null;
+            if (session != null) {
+                userId = (Long) session.getAttribute("userId");
+            }
+            hechoDTO.setContribuyenteId(userId); //seteo el valor de quien lo esta modificando actualmente
             fuenteDinamicaService.editarHecho(hechoDTO);
 
             return "redirect:/hechos/fuenteDinamica/" + hechoDTO.getId(); //Todo q fuenteDinamica devuelva el id, y podremos redirecionar al hecho q se envió
@@ -198,23 +202,13 @@ public class HechosController {
             hechosMapa.add(crearHecho(5L, "Fuga de gas", "Infraestructura", -34.6205, -58.3850));
     */
 
-    private HechoMapaInputDTO crearHecho(Long id, String titulo, String categoria, Double lat, Double lng) {
-        HechoMapaInputDTO dto = new HechoMapaInputDTO();
-        dto.setId(id);
-        dto.setTitulo(titulo);
-        dto.setCategoria(categoria);
-        dto.setLatitud(lat);
-        dto.setLongitud(lng);
-        return dto;
-    }
-
     public HechoInputDTO instanciarHecho(){
         CategoriaInputDTO categoria = new CategoriaInputDTO();
         UbicacionInputDTO ubicacion = new UbicacionInputDTO();
 
         HechoInputDTO hecho = new HechoInputDTO();
 
-        hecho.setContribuyenteId(10L); //ToDo obtener id de sesión
+        hecho.setContribuyenteId(null);
         hecho.setCategoria(categoria);
         hecho.setUbicacion(ubicacion);
 

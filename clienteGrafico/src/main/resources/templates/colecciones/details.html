@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 
 <div th:fragment="contenido">
 
@@ -16,7 +16,7 @@
       </div>
 
         <!-- Acciones FUERA del link -->
-        <div th:if="${rol == 2}" class="card-actions">
+        <div sec:authorize="hasRole('ADMIN')" class="card-actions">
 
             <!-- DESTACAR  -->
             <form th:if="${!coleccion.destacada}"

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 <th:block th:fragment="cssExtra">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -113,13 +113,14 @@
                     <!-- Acciones solo para usuarios logueados -->
                     <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item" style="margin-top:12px;" >
                         <!-- Botón solicitar eliminación (usuarios logueados) -->
-                        <button th:if="${logeado == 1}" id="deleteBtn" class="btn-delete-request">
+                        <button sec:authorize="isAuthenticated()" id="deleteBtn" class="btn-delete-request">
                             <i class="fas fa-exclamation-triangle"></i>
                             Solicitar eliminación
                         </button>
 
                         <!-- Botón para DESTACAR (si NO está destacado) -->
-                        <form th:if="${rol == 2 and !hecho.destacado}"
+                        <form sec:authorize="hasRole('ADMIN')"
+                              th:if="${!hecho.destacado}"
                               th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
                               method="post"
                               style="margin: 0;">
@@ -131,7 +132,8 @@
                         </form>
 
                         <!-- Botón para QUITAR DESTACADO (si SÍ está destacado) -->
-                        <form th:if="${rol == 2 and hecho.destacado}"
+                        <form sec:authorize="hasRole('ADMIN')"
+                              th:if="${hecho.destacado}"
                               th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
                               method="post"
                               style="margin: 0;">
@@ -206,7 +208,7 @@
                 <input type="hidden" name="hechoId" th:value="${hecho.id}" />
 
                 <!-- ID del usuario -->
-                <input type="hidden" name="usuarioId" th:value="${usuario.id}" />
+                <input type="hidden" name="usuarioId" th:value="${userId}" />
 
                 <button type="submit" class="btn-submit-delete">
                     <i class="fas fa-paper-plane"></i>
@@ -243,7 +245,7 @@
         };
 
         const USER_DATA = {
-            loggedIn: /*[[${logeado == 1}]]*/ false,
+            loggedIn: /*[[${logeado == 1}]]*/ false, //TODO ver esto que seguro rompe al no tener mas logeado
             role: /*[[${rol}]]*/ 0
         };
         /*]]>*/
