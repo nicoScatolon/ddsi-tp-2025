@@ -81,7 +81,7 @@ public class HechosController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('CONTRIBUYENTE') and hasAuthority('EDITAR_HECHO_PROPIO')")
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
     public ResponseEntity<?> modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         try {
             if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
@@ -117,12 +117,13 @@ public class HechosController {
 
     // --- Test --- //
 
+    /*
     @PostMapping("/pruebas")
     public ResponseEntity<Void> crearHechoPrueba(@RequestBody HechoInputDTO dto) {
         hechosService.crearHechoTest(dto);
         return ResponseEntity.ok().build();
     }
-
+    */
 
 }
 

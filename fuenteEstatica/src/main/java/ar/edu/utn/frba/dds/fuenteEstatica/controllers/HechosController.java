@@ -45,7 +45,7 @@ public class HechosController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('IMPORTAR_CSV')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> importarArchivo(@RequestParam String filename) {
         try {
             // 1) buscamos en classpath
