@@ -24,12 +24,11 @@ public interface IAgregadorService {
 
     List<String> obtenerCategoriasShort();
 
-    ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion);
-
     List<FuenteInputDTO> getFuentesPreview();
 
+    ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion);
     List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes();
-
+    List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionUsuario(Long userId);
     ResponseEntity<Void> gestionarSolicitud(ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO, EstadoDeSolicitud estadoDeSolicitud);
 
     ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO);

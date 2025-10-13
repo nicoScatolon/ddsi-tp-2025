@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
+import ar.edu.utn.frba.dds.clienteGrafico.controllers.SolicitudesEliminacionController;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
@@ -126,7 +127,7 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
-    // DESTACAR HECHOS
+    // --- DESTACAR HECHOS --- //
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {
         try {
@@ -167,7 +168,7 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
-    // DESTACAR COLECCION
+    // --- DESTACAR COLECCION --- //
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
         try {
@@ -325,6 +326,10 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionUsuario (Long usuarioId) {
+        return null;
+    }
 
 
     // --- FUENTES --- //

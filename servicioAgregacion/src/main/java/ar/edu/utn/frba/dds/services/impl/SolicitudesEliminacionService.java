@@ -39,12 +39,21 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public List<SolicitudEliminarHechoOutputDTO> findAll() {
-        return this.repository
-                .findAll()
-                .stream()
-                .map(DTOConverter::solicitudEliminarHechoOutputDTO)
-                .toList();
+    public List<SolicitudEliminarHechoOutputDTO> findAll(Long idCreador) {
+        if (idCreador == null) {
+            return this.repository
+                    .findAll()
+                    .stream()
+                    .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                    .toList();
+        }
+        else {
+            return this.repository
+                    .findAllByIdCreador(idCreador)
+                    .stream()
+                    .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                    .toList();
+        }
     }
 
     @Override

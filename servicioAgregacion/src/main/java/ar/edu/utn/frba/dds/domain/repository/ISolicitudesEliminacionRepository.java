@@ -22,4 +22,6 @@ public interface ISolicitudesEliminacionRepository extends JpaRepository<Solicit
                                                                     @Param("idExcluida") Long idExcluida);
 
     List<SolicitudEliminarHecho> findByEstado(EstadoDeSolicitud estado);
+    
+    List<SolicitudEliminarHecho> findAllByIdCreador(Long idCreador);
 }

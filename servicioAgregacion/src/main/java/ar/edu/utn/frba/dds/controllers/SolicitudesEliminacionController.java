@@ -31,6 +31,8 @@ public class SolicitudesEliminacionController {
         this.solicitudesExecutor = executor;
     }
 
+    // --- API PUBLICA --- //
+
     @PostMapping("/publica")
     @PreAuthorize("permitAll()")
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,20 +43,22 @@ public class SolicitudesEliminacionController {
 
     @GetMapping("/publica")
     @PreAuthorize("permitAll()")
-    public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
-        return this.solicitudesEliminacionService.findAll();
-    }
-
-    @GetMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
-    public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
-        return this.solicitudesEliminacionService.findSinProcesar();
+    public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes(@RequestParam(required = false) Long idCreador) {
+        return this.solicitudesEliminacionService.findAll(idCreador);
     }
 
     @GetMapping("/publica/{id}")
     @PreAuthorize("permitAll()")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
+    }
+
+    // --- API PRIVADA --- //
+
+    @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') ")
+    public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
+        return this.solicitudesEliminacionService.findSinProcesar();
     }
 
     @PostMapping("/privada/solicitud")

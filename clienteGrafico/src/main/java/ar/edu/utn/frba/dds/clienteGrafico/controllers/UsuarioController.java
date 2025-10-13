@@ -3,7 +3,9 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import lombok.RequiredArgsConstructor;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.GestionUsuariosService;
@@ -30,6 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final IFuenteDinamicaService fuenteDinamicaService;
+    private final IAgregadorService agregadorService;
 
     private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
@@ -89,7 +92,22 @@ public class UsuarioController {
         return "usuario/mis-hechos";
     }
 
+    @GetMapping("/mis-solicitudes")
+    public String misSolicitudes(Model model, HttpSession session) {
 
+        Long usuarioId = (Long) session.getAttribute("userId");
+
+        List<SolicitudEliminarHechoInputDTO> solicitudes = this.agregadorService.obtenerSolicitudesEliminacionUsuario(usuarioId);
+        //if (solicitudes == null) {solicitudes = new ArrayList<>();}
+
+        model.addAttribute("usuarioId", usuarioId);
+        model.addAttribute("solicitudes", solicitudes);
+        model.addAttribute("titulo", "Mis Hechos");
+        model.addAttribute("editor", true); //TODO ver que es editor
+        return "usuario/mis-solicitudes";
+    }
+
+    // --- PRIVADO --- //
 
     private Integer calcularEdad(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) {
