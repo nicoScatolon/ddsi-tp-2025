@@ -1,25 +1,23 @@
-package ar.edu.utn.frba.dds.utils;
+package ar.edu.utn.frba.dds.fuenteDinamica.utils;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
 public class JwtUtil {
-    private static Key key;
+    private static Key key; // la setea JwtKeyConfig al arrancar
 
+    // Llamalo una vez al inicio (desde una @Configuration)
     public static void initFromBase64(String base64Secret) {
         if (base64Secret == null || base64Secret.isBlank())
             throw new IllegalStateException("Falta jwt.secret.base64 en properties");
         byte[] bytes = Base64.getDecoder().decode(base64Secret);
-
+        // cualquiera de las dos sirve; dejo la “oficial” de JJWT:
+        // key = Keys.hmacShaKeyFor(bytes);
         key = new SecretKeySpec(bytes, "HmacSHA256");
     }
 
@@ -61,3 +59,4 @@ public class JwtUtil {
                 .getSubject();
     }
 }
+

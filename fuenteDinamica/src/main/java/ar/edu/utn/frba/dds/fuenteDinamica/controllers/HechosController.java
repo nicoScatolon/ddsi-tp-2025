@@ -74,6 +74,7 @@ public class HechosController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<HechoOutputDTO> obtenerHechoPorId(@PathVariable Long id)
     {
         return hechosService.getHechoById(id);
@@ -100,6 +101,7 @@ public class HechosController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
     public List<HechoOutputDTO> obtenerHechosUsuario(
             @PathVariable Long userId,
             @RequestParam(required = false) EstadoHecho estado,
@@ -108,6 +110,7 @@ public class HechosController {
     }
 
     @PostMapping("/admin/{adminId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HechoOutputDTO> revisarHechoAdmin(@PathVariable Long adminId, @RequestBody RevisionHechoInputDTO revisionHechoInputDTO) {
         return this.hechosService.revisarHecho(adminId, revisionHechoInputDTO);
     }
