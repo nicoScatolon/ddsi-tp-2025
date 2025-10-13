@@ -41,14 +41,9 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
     @Override
     protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest req) {
         String p = req.getRequestURI();
-        return p.startsWith("/v3/api-docs")
-                || p.equals("/api/colecciones/publica")
-                || p.startsWith("/api/colecciones/publica/")
-                || p.equals("/api/hechos/publica")
-                || p.startsWith("/api/hechos/publica/")
-                || p.equals("/api/privada/categorias")
-                || p.equals("/api/privada/categorias/short")
-                || p.equals("/api/solicitudes-eliminacion/publica");
+        return p.equals("/api/fuenteEstatica/hechos")
+                || p.startsWith("/v3/api-docs/")
+                || p.startsWith("/swagger-ui");
     }
 }
 
