@@ -31,17 +31,13 @@ import java.util.List;
 
 @Service
 public class AgregadorService implements IAgregadorService {
-
-    private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String agregadorUrl;
 
     public AgregadorService(
-            @Qualifier("agregadorWebClient") WebClient webClient,
             WebApiCallerService webApiCallerService,
             @Value("${servicio.agregador.url}") String agregadorUrl
     ) {
-        this.webClient = webClient;
         this.webApiCallerService = webApiCallerService;
         this.agregadorUrl = agregadorUrl;
     }
@@ -71,7 +67,6 @@ public class AgregadorService implements IAgregadorService {
     }
 
     public List<HechoMapaInputDTO> getHechosMapa() {
-
         try {
             return webApiCallerService.getList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
         } catch (RuntimeException e) {
@@ -384,38 +379,4 @@ public class AgregadorService implements IAgregadorService {
         return sb.toString();
     }
 
-
-
-    // --- TEST --- //
-    public List<HechoInputDTO> obtenerHechos(Integer paginaActual) {
-        //TODO temporal para test
-        List<HechoInputDTO> hechos = new ArrayList<>();
-        hechos.add(this.crearHecho1());
-        hechos.add(this.crearHecho1());
-        hechos.add(this.crearHecho1());
-        return hechos;
-    }
-
-    private HechoInputDTO crearHecho1 (){
-        return HechoInputDTO.builder()
-                .id(Long.valueOf(1))
-                .titulo("titulo 1")
-                .descripcion("Lorem  vel nobis")
-                .categoria(CategoriaInputDTO.builder()
-                        .id("cat1")
-                        .nombre("categoria 1")
-                        .build())
-                .ubicacion(UbicacionInputDTO.builder()
-                        .provincia("Buenos Aires")
-                        .departamento("CABA")                // Ciudad Autónoma de Buenos Aires
-                        .calle("Av. Corrientes")          // Calle conocida
-                        .numero(1234)
-                        .latitud(-34.6037)                // Coordenadas aproximadas
-                        .longitud(-58.3816)
-                        .build())
-                .fechaDeCarga(LocalDateTime.now())
-                .fechaDeOcurrencia(LocalDateTime.now())
-                .cargadoAnonimamente(true)
-                .build();
-    }
 }

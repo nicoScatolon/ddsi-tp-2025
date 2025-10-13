@@ -1,13 +1,11 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,74 +17,75 @@ import java.util.List;
 
 @Service
 public class FuenteDinamicaService implements IFuenteDinamicaService {
-    private final WebClient webClient;
+    private final WebApiCallerService webApiCallerService;
+    private final String fuenteDinamicaUrl;
 
-    public FuenteDinamicaService(@Qualifier("dinamicaWebClient") WebClient webClient) {
-        this.webClient = webClient;
+    public FuenteDinamicaService(WebApiCallerService webApiCallerService,
+                                 @Value("${fuente.dinamica.url}") String fuenteDinamicaUrl) {
+        this.webApiCallerService = webApiCallerService;
+        this.fuenteDinamicaUrl = fuenteDinamicaUrl;
     }
 
     @Override
     public ResponseEntity<Void> crearHecho(HechoOutputDTO hechoOutputDTO) {
-        return webClient.post()
-                .uri("/api/fuenteDinamica/hechos")
-                .contentType(MediaType.APPLICATION_JSON)            // asegurate de esto
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(hechoOutputDTO)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos";
+        try {
+            webApiCallerService.post(url, hechoOutputDTO, Void.class);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear el hecho: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public List<HechoDinamicaInputDTO> obtenerHechosDinamica(EstadoHecho estadoHecho) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/fuenteDinamica/hechos")
-                        .queryParam("estado", estadoHecho)
-                        .build()
-                )
-                .retrieve()
-                .bodyToFlux(HechoDinamicaInputDTO.class)
-                .collectList()
-                .block();
+        String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos?estado=" + estadoHecho;
+        try {
+            return webApiCallerService.getList(url, HechoDinamicaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener los hechos desde dinamica: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public HechoDinamicaInputDTO obtenerHechoDinamicaId(Long idHecho) {
+        String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos/" + idHecho;
         try {
-            return webClient.get()
-                    .uri("/api/fuenteDinamica/hechos/{id}", idHecho)
-                    .retrieve()
-                    .bodyToMono(HechoDinamicaInputDTO.class)
-                    .block();
-        } catch (WebClientResponseException.NotFound e) {
-            return null;
+            return webApiCallerService.get(url, HechoDinamicaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener el hecho desde dinamica: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void enviarRevisionHechoDinamica(RevisionHechoInputDTO revisionHecho, Long adminId) {
-        webClient.post()
-                .uri("/api/fuenteDinamica/hechos/admin/{adminId}", adminId)
-                .bodyValue(revisionHecho)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        String url = fuenteDinamicaUrl + "/api/fuenteDinamica/hechos/admin/" + adminId;
+        try {
+            webApiCallerService.post(url, revisionHecho , Void.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener el hecho mapa: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public List<HechoDinamicaInputDTO> obtenerHechosDinamicaUsuario(Long usuarioId, EstadoHecho estado, Integer page) {
-        return webClient.get()
-                .uri(uriBuilder -> {
-                    uriBuilder.path("/api/fuenteDinamica/hechos/user/{userId}");
-                    if (estado != null) uriBuilder.queryParam("estado", estado);
-                    if (page != null) uriBuilder.queryParam("page", page);
-                    return uriBuilder.build(usuarioId);
-                })
-                .retrieve()
-                .bodyToFlux(HechoDinamicaInputDTO.class)
-                .collectList()
-                .block();
+        StringBuilder urlBuilder = new StringBuilder(fuenteDinamicaUrl)
+                .append("/api/fuenteDinamica/hechos/user/")
+                .append(usuarioId)
+                .append("?page=").append(page);
+
+        // Agregar estado si existe
+        if (estado != null) {
+            urlBuilder.append("&estado=").append(estado);
+        }
+
+        String url = urlBuilder.toString();
+
+        try {
+            return webApiCallerService.getList(url, HechoDinamicaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener los hechos del usuario: " + e.getMessage(), e);
+        }
     }
 
 }

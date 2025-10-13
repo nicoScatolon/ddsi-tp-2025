@@ -13,4 +13,6 @@ public class EstadisticasService implements IEstadisticasService {
         this.webClient = webClient;
     }
 
+
+    // TODO ver que onda con esto, en que vista deben mostrarse
 }
