@@ -5,12 +5,19 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 public class JwtUtil {
     @Getter
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static Key key = null;
+
+    public static void initFromBase64(String base64Secret) {
+        byte[] bytes = Base64.getDecoder().decode(base64Secret);
+        key = new SecretKeySpec(bytes, "HmacSHA256");
+    }
 
     private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000; // 15 min
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 días
@@ -20,6 +27,7 @@ public class JwtUtil {
                 .setSubject(u.getEmail())
                 .setIssuer("gestion-usuarios")
                 .claim("username", u.getUsername())
+                .claim("id", u.getId())
                 .claim("rol", u.getRol().name())
                 .claim("perms", u.getPermisos().stream().map(Enum::name).toList())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
