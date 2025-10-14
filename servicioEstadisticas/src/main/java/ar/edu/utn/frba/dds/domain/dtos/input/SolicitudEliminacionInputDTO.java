@@ -13,5 +13,5 @@ public class SolicitudEliminacionInputDTO {
     private EstadoDeSolicitud estado;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaGestion;
-    private Boolean eliminada; //TODO ver para que servia, quiza no la necesito
+    private Boolean eliminada;
 }

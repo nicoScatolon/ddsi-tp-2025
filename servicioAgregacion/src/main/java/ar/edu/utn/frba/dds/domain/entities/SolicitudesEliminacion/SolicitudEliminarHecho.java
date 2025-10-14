@@ -38,8 +38,6 @@ public class SolicitudEliminarHecho {
     @Column (name = "actualizarFuenteOrigen", nullable = false)
     private Boolean actualizarFuenteOrigen = false; //el actualizar con la fuente de origen
 
-    //TODO agregar algun parametro que me permita desde el servicio de estadisticas saber si es SPAM o no
-
     public void serAceptada(Long idAdministrador) {
         if (estado != EstadoDeSolicitud.PENDIENTE) {
             throw new IllegalStateException("La solicitud ya fue procesada.");

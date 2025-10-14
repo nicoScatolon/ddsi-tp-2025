@@ -45,8 +45,6 @@ public class UsuarioController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        UsuarioOutputDTO usuario = new UsuarioOutputDTO();
-        model.addAttribute("usuario", usuario); //TODO ver que es usuario
         model.addAttribute("titulo", "Iniciar Sesión");
         return "usuario/login";
     }
@@ -63,6 +61,7 @@ public class UsuarioController {
     public String perfil(@PathVariable("id") Long id, Model model) {
         UsuarioOutputDTO usuario = usuarioPrueba(); //Todo obtener el usuario por id
         Integer edad = calcularEdad(usuario.getFechaNacimiento());
+
         model.addAttribute("usuario", usuario); // Todo: Mock, si no coinciden no se puede editar
         model.addAttribute("perfil", usuario); //TODO ver esto con nico
         model.addAttribute("edad", edad);
@@ -88,7 +87,6 @@ public class UsuarioController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("estadoHecho", estadoHecho != null ? estadoHecho.name() : "");
         model.addAttribute("titulo", "Mis Hechos");
-        model.addAttribute("editor", true); //TODO ver que es editor
         return "usuario/mis-hechos";
     }
 
@@ -103,7 +101,6 @@ public class UsuarioController {
         model.addAttribute("usuarioId", usuarioId);
         model.addAttribute("solicitudes", solicitudes);
         model.addAttribute("titulo", "Mis Hechos");
-        model.addAttribute("editor", true); //TODO ver que es editor
         return "usuario/mis-solicitudes";
     }
 

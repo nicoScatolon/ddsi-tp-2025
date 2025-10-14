@@ -37,7 +37,7 @@ public class CategoriasController {
     }
 
     @PostMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN')")//TODO: a chequear
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> agregarEquivalentes( @RequestParam EquivalenteInputDTO equivalenteInputDTO) {
         categoriaService.agregarEquivalentes(equivalenteInputDTO.getCodCategoria(), equivalenteInputDTO.getEquivalente());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
