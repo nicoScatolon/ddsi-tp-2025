@@ -40,3 +40,4 @@ target/**
 /servicioAgregacion/target/
 /servicioEstadisticas/target/
 /clienteGrafico/target/
+/filesystem-data/

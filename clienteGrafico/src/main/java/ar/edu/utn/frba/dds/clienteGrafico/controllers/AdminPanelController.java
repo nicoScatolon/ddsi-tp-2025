@@ -11,13 +11,17 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Pro
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteEstaticaService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -26,6 +30,7 @@ import java.util.List;
 public class AdminPanelController {
     private final IAgregadorService agregadorService;
     private final IFuenteDinamicaService fuenteDinamicaService;
+    private final IFuenteEstaticaService fuenteEstaticaService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -47,6 +52,29 @@ public class AdminPanelController {
         model.addAttribute("titulo", "Importar Hechos");
         model.addAttribute("contentTemplate", "importar-hechos");
         return "admin/panel-base";
+    }
+
+    @PostMapping("/importar")
+    public String procesarImportacion(
+            @RequestParam("archivo") MultipartFile archivo,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            fuenteEstaticaService.importarArchivoCSV(archivo);
+
+            redirectAttributes.addFlashAttribute("success",
+                    "Archivo importado exitosamente: " + archivo.getOriginalFilename());
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error inesperado: " + e.getMessage());
+        }
+
+        return "redirect:/admin/importar";
     }
 
     @GetMapping("/hechos")

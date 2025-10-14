@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,28 +50,23 @@ public class HechosController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> importarArchivo(@RequestParam String filename) {
         try {
-            // 1) buscamos en classpath
-            URL recurso = getClass().getClassLoader().getResource(filename);
-            if (recurso == null) {
+            Path path = Paths.get(filename);
+
+            if (!Files.exists(path)) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body("No se encontró el recurso en classpath: " + filename);
+                        .body("No se encontró el archivo en la ruta: " + filename);
             }
 
-            // 2) resolvemos ruta absoluta
-            String path = Paths.get(recurso.toURI()).toString();
-
-            // 3) encolamos la importación de forma asíncrona
+            // Encolamos la importación de forma asíncrona
             CompletableFuture.runAsync(
-                    () -> hechosService.importarArchivoHechos(path),
+                    () -> hechosService.importarArchivoHechos(path.toString()),
                     executor
             ).exceptionally(ex -> {
-                // Logueá acá si querés, para no romper el 202 al cliente
                 ex.printStackTrace();
                 return null;
             });
 
-            // 202 = aceptado/encolado, el job sigue corriendo en background
             return ResponseEntity
                     .status(HttpStatus.ACCEPTED)
                     .body("Importación en proceso para: " + filename);
