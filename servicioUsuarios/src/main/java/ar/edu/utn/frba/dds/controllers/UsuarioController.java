@@ -22,7 +22,7 @@ public class UsuarioController {
 
     // Público: registro de contribuyente
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrar( @RequestBody RegistroContribuyenteDTO dto) {
+    public ResponseEntity<?> registrar(@RequestBody RegistroContribuyenteDTO dto) {
         try {
             Usuario u = usuarioService.registrarContribuyente(dto);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -32,7 +32,7 @@ public class UsuarioController {
         }
     }
 
-    // Back-office: solo ADMIN
+
     @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
     public ResponseEntity<?> altaAdmin(@RequestBody RegistroAdminDTO dto) {
@@ -40,4 +40,16 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("id", u.getId(), "username", u.getNombre()));
     }
+
+    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
+        Usuario u = usuarioService.obtenerPorId(id);
+        return ResponseEntity.ok(Map.of(
+                "id", u.getId(),
+                "username", u.getUsername(),
+                "nombre", u.getNombre(),
+                "apellido", u.getApellido(),
+                "email", u.getEmail()
+        ));
+    }
 }
+

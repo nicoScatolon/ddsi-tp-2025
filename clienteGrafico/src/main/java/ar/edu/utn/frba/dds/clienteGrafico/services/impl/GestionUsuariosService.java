@@ -2,7 +2,9 @@ package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.RolesPermisosDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.RegisterUsuarioRequestDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioResponseDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,18 +63,18 @@ public class GestionUsuariosService {
         }
     }
 
-    public List<UsuarioDTO> obtenerTodosLosUsuarios() {
-        List<UsuarioDTO> response = webApiCallerService.getList(
+    public List<UsuarioResponseDTO> obtenerTodosLosUsuarios() {
+        List<UsuarioResponseDTO> response = webApiCallerService.getList(
                 authServiceUrl + "/usuarios",
-                UsuarioDTO.class
+                UsuarioResponseDTO.class
         );
         return response != null ? response : List.of();
     }
 
-    public UsuarioDTO obtenerUsuarioPorId(Long id) {
-        UsuarioDTO response = webApiCallerService.get(
+    public UsuarioResponseDTO obtenerUsuarioPorId(Long id) {
+        UsuarioResponseDTO response = webApiCallerService.get(
                 authServiceUrl + "/usuarios/" + id,
-                UsuarioDTO.class
+                UsuarioResponseDTO.class
         );
         if (response == null) {
             throw new NotFoundException("Usuario", String.valueOf(id));
@@ -80,11 +82,11 @@ public class GestionUsuariosService {
         return response;
     }
 
-    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
-        UsuarioDTO response = webApiCallerService.post(
+    public UsuarioResponseDTO crearUsuario(RegisterUsuarioRequestDTO usuarioDTO) {
+        UsuarioResponseDTO response = webApiCallerService.post(
                 authServiceUrl + "/usuarios",
                 usuarioDTO,
-                UsuarioDTO.class
+                UsuarioResponseDTO.class
         );
         if (response == null) {
             throw new RuntimeException("Error al crear usuario en el servicio externo");
@@ -92,11 +94,11 @@ public class GestionUsuariosService {
         return response;
     }
 
-    public UsuarioDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
-        UsuarioDTO response = webApiCallerService.put(
+    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        UsuarioResponseDTO response = webApiCallerService.put(
                 authServiceUrl + "/usuarios/" + id,
                 usuarioDTO,
-                UsuarioDTO.class
+                UsuarioResponseDTO.class
         );
         if (response == null) {
             throw new RuntimeException("Error al actualizar usuario en el servicio externo");

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.services;
 
+import ar.edu.utn.frba.dds.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.models.dtos.RegistroAdminDTO;
 import ar.edu.utn.frba.dds.models.dtos.RegistroContribuyenteDTO;
 import ar.edu.utn.frba.dds.models.entities.Permiso;
@@ -34,7 +35,6 @@ public class UsuariosService {
         u.setApellido(dto.getApellido());
         u.setEmail(dto.getEmail());
         u.setRol(Rol.CONTRIBUYENTE);
-         //TODO: VER QUE PERMISOS USA EL CONTRIBUYENTE
 
         return usuarios.save(u);
     }
@@ -54,5 +54,10 @@ public class UsuariosService {
         u.setPermisos(Arrays.stream(Permiso.values())
                 .collect(Collectors.toCollection(ArrayList::new)));
         return usuarios.save(u);
+    }
+
+    public Usuario obtenerPorId(Long id) {
+        return usuarios.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario", String.valueOf(id)));
     }
 }
