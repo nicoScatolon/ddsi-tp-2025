@@ -144,17 +144,19 @@ public class ColeccionesController {
 
     // ------------------------------------------- TESTEO -------------------------------------------
 
-    /*
+
 
     @GetMapping("/test/actualizar/{handle}")
+    @PreAuthorize("permitAll()")
     public ColeccionOutputDTO actualizarColeccionManual(@PathVariable String handle) {
         return this.coleccionesService.actualizarColeccionManual(handle);
     }
 
     @GetMapping("/test/curar/{handle}")
+    @PreAuthorize("permitAll()")
     public ColeccionOutputDTO curarColeccionManual(@PathVariable String handle) {
         return this.coleccionesService.curarColeccionManual(handle);
     }
 
-    */
+
 }

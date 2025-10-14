@@ -52,10 +52,10 @@ public class FuentesController {
 
     // --- TEST --- //
 
-    /*
+
     @GetMapping("/test/{fuenteId}")
+    @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
-    */
 }

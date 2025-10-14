@@ -38,7 +38,9 @@ public class SecurityConfig {
                                 "/api/privada/categorias",
                                 "/api/privada/categorias/short",
                                 "/api/solicitudes-eliminacion/publica",
-                                "/api/fuente/publica/preview"
+                                "/api/fuente/publica/preview",
+                                "/api/fuente/test/**",
+                                "/api/colecciones/test/**"
                         ).permitAll()
 
                         .anyRequest().authenticated()
