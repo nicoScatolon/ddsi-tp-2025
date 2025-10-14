@@ -328,7 +328,16 @@ public class AgregadorService implements IAgregadorService {
 
     @Override
     public List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionUsuario (Long usuarioId) {
-        return null;
+        try {
+            String url = agregadorUrl + "/api/solicitudes-eliminacion/publica/" + usuarioId;
+
+            return webApiCallerService.getList(
+                    url,
+                    SolicitudEliminarHechoInputDTO.class
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al gestionar la solicitud de eliminación: " + e.getMessage(), e);
+        }
     }
 
 
