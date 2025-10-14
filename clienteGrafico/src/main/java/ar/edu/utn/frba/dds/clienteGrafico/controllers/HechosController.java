@@ -76,6 +76,7 @@ public class HechosController {
 
         } catch (Exception e) {
             // Loguear error si quieres
+            model.addAttribute("esNuevo", true);
             model.addAttribute("error", "No se pudo crear el hecho.");
             return "/hechos/create"; // Volver al form con mensaje de error
         }
