@@ -55,7 +55,6 @@ public class Hecho {
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
 
 
-    //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
     @Column(name = "contribuyenteId")
     private Long contribuyenteId; // el ususario que lo carga
 

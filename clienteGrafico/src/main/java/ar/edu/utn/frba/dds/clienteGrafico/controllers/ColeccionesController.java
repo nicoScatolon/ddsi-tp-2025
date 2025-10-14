@@ -33,8 +33,6 @@ public class ColeccionesController {
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
-        model.addAttribute("rol", 2); //TODO temporal mientras no tenemos los roles/usuarios
-        model.addAttribute("logeado", 1);
         return "/colecciones/explore";
     }
 
@@ -128,14 +126,14 @@ public class ColeccionesController {
         return "/colecciones/create";
     }
 
-    @PutMapping("/destacar/{handle}") //Todo solo admins
+    @PutMapping("/destacar/{handle}")
     public String destacarColeccion(@PathVariable("handle") String handle){
         agregadorService.destacarColeccion(handle);
 
         return "redirect:/colecciones/" + handle;
     }
 
-    @DeleteMapping("/destacar/{handle}") //Todo solo admins
+    @DeleteMapping("/destacar/{handle}")
     public String eliminarDestacarColeccion(@PathVariable("handle") String handle){
         agregadorService.eliminarDestacarColeccion(handle);
 

@@ -157,7 +157,7 @@ public class HechosController {
         model.addAttribute("titulo", "Hecho Fuente Dinamica");
         model.addAttribute("hecho", hecho);
         model.addAttribute("contribuyente", creadorHecho);
-        model.addAttribute("userId", userId); //TODO Obtener de la sesion actual si existe
+        model.addAttribute("userId", userId);
         model.addAttribute("origenAgregador",false);
         return "hechos/details";
     }
