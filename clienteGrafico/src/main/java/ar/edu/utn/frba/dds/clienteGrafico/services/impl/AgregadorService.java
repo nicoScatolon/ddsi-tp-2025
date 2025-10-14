@@ -263,9 +263,8 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public List<String> obtenerCategoriasShort() {
         try {
-            return webApiCallerService.getList(
-                    agregadorUrl + "/api/privada/categorias/short",
-                    String.class
+            return webApiCallerService.getStringList(
+                    agregadorUrl + "/api/privada/categorias/short"
             );
         } catch (NotFoundException e) {
             throw new NotFoundException("categorías", "short");

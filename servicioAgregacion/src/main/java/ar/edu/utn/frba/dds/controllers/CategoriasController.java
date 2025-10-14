@@ -31,9 +31,8 @@ public class CategoriasController {
 
     @GetMapping("/short")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<String>> findAllShort() {
-        List<String> listaCategorias = categoriaService.findAllShort();
-        return ResponseEntity.ok(listaCategorias);
+    public List<String> findAllShort() {
+        return categoriaService.findAllShort();
     }
 
     @PostMapping("/equivalentes")
