@@ -76,6 +76,9 @@ public class Hecho {
         if ( contribuyenteId == null ) { // si no tiene id no esta registrado
             throw new ModificacionNoPermitidaException( "El contribuyente no esta registrado, modificacion no permitida" );
         }
+        if ( cargadoAnonimamente == null ) { // si esta cargado de forma anonima no permite modificaciones
+            throw new ModificacionNoPermitidaException( "El hecho fue cargado de forma anonima, no permite modificaciones" );
+        }
     }
 
     public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion) {

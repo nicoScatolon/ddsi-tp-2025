@@ -57,5 +57,15 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+
+    public static Long extraerId(String token) {
+        ensureKey();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
+    }
 }
 

@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
     <link rel="stylesheet" th:href="@{/css/hechos/create.css}">
@@ -8,7 +8,8 @@
 
 <th:block th:fragment="contenido">
     <section class="form-container"
-             th:attr="data-logeado=${logeado}, data-es-nuevo=${esNuevo}">
+             sec:authorize="isAuthenticated()"
+             th:attr="data-es-nuevo=${esNuevo}">
         <h1 th:text="${titulo}"></h1>
 
         <!-- Form con action dinámico según si es nuevo o edición -->
@@ -169,7 +170,7 @@
         </form>
     </section>
 
-    <div id="loginModal" class="modal" style="display:none;">
+    <div sec:authorize="!isAuthenticated()" id="loginModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>¡Debes identificarte!</h2>
             <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
@@ -186,22 +187,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script th:src="@{/js/hecho-create.js}"></script>
 
-    <script>
-        window.addEventListener('load', function() {
-            const formContainer = document.querySelector('.form-container');
-            const logeado = Number(formContainer?.dataset.logeado || 0);
-
-            console.log('Valor de logeado:', logeado);
-
-            if (logeado === 0) {
-                const modal = document.getElementById("loginModal");
-                const form = document.getElementById("hechoForm");
-                setTimeout(() => {
-                    if (modal) modal.style.display = "flex";
-                    if (form) form.style.display = "none";
-                }, 300);
-            }
-        });
-    </script>
 </th:block>
 </html>

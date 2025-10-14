@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             try {
                 String email = JwtUtil.validarToken(token);
+                Long id = JwtUtil.extraerId(token);
 
                 List<org.springframework.security.core.GrantedAuthority> auths = new ArrayList<>();
                 String rol = JwtUtil.extraerRol(token);
@@ -39,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 var auth = new UsernamePasswordAuthenticationToken(email, null, auths);
+                auth.setDetails(id); //le guardo el id
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
             } catch (Exception e) {

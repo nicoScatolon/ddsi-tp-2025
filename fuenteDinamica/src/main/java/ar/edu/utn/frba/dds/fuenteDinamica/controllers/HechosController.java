@@ -8,6 +8,9 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,19 +55,15 @@ public class HechosController {
     }
 
     @PostMapping
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto, HttpServletRequest request) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
 
-        //Todo: chequear
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if(auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            Object principal = auth.getPrincipal();
-            if(principal instanceof Contribuyente contribuyente){
-                dto.setContribuyenteId(contribuyente.getId());
-            }
-        }else{ // sin token es anonimo, por lo tanto, id=null;
-            dto.setContribuyenteId(null);
+        if (auth != null && auth.isAuthenticated()) {
+            Long id = (Long) auth.getDetails();
+            dto.setContribuyenteId(id);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); //401
         }
 
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
@@ -81,7 +80,7 @@ public class HechosController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('CONTRIBUYENTE')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
     public ResponseEntity<?> modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         try {
             if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
