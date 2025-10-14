@@ -26,7 +26,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     @Override
     public ResponseEntity<Void> crearHecho(HechoDinamicaOutputDTO hechoDinamicaOutputDTO) {
         try {
-            webApiCallerService.postPublic(
+            webApiCallerService.post(
                     fuenteDinamicaUrl + "/api/fuenteDinamica/hechos",
                     hechoDinamicaOutputDTO,
                     Void.class

@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
             String token = header.substring(7);
             try {
                 String email = JwtUtil.validarToken(token);
-                Long id = JwtUtil.extraerId(token);
+                //Long id = JwtUtil.extraerId(token);
 
                 List<org.springframework.security.core.GrantedAuthority> auths = new ArrayList<>();
                 String rol = JwtUtil.extraerRol(token);
@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
                 }
 
                 var auth = new UsernamePasswordAuthenticationToken(email, null, auths);
-                auth.setDetails(id); //le guardo el id
+                //auth.setDetails(id); //le guardo el id
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -55,11 +55,8 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
     protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest req) {
         String p = req.getRequestURI();
         String m = req.getMethod();
-
-        if (p.startsWith("/v3/api-docs") || p.equals("/swagger-ui.html") || p.startsWith("/swagger-ui/")) return true;
-
-        if (p.equals("/api/fuenteDinamica/hechos") && "GET".equalsIgnoreCase(m)) return true;
-        if (p.matches("^/api/fuenteDinamica/hechos/\\d+$") && "GET".equalsIgnoreCase(m)) return true;
-        return p.equals("/api/fuenteDinamica/hechos") && "POST".equalsIgnoreCase(m);
+        return p.startsWith("/v3/api-docs")
+                || p.equals("/api/fuenteDinamica/hechos") && "GET".equalsIgnoreCase(m)
+                || p.matches("^/api/fuenteDinamica/hechos/\\d+$") && "GET".equalsIgnoreCase(m);
     }
 }

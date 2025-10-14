@@ -12,5 +12,8 @@ public class JwtKeyConfig {
     private String secret;
 
     @PostConstruct
-    public void init() {JwtUtil.initFromBase64(secret);}
+    public void init() {
+        System.out.println("🔑 Iniciando JWT Key en fuenteDinamica...");
+        JwtUtil.initFromBase64(secret);
+    }
 }

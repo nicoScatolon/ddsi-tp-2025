@@ -56,7 +56,10 @@ public class HechosController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
-    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto, HttpServletRequest request) {
+    public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
+        log.info("Me llego la peticion de crear un hecho");
+        /*
+
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated()) {
@@ -64,7 +67,7 @@ public class HechosController {
             dto.setContribuyenteId(id);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); //401
-        }
+        } */
 
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
                     if (ex != null) {
