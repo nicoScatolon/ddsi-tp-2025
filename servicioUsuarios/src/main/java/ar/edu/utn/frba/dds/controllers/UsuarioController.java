@@ -2,6 +2,8 @@ package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.models.dtos.RegistroAdminDTO;
 import ar.edu.utn.frba.dds.models.dtos.RegistroContribuyenteDTO;
+import ar.edu.utn.frba.dds.models.dtos.UsuarioMapper;
+import ar.edu.utn.frba.dds.models.dtos.UsuarioResponseDTO;
 import ar.edu.utn.frba.dds.models.entities.Usuario;
 import ar.edu.utn.frba.dds.services.UsuariosService;
 import lombok.AllArgsConstructor;
@@ -22,34 +24,23 @@ public class UsuarioController {
 
     // Público: registro de contribuyente
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrar(@RequestBody RegistroContribuyenteDTO dto) {
-        try {
-            Usuario u = usuarioService.registrarContribuyente(dto);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("id", u.getId(), "username", u.getNombre()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage())); // 409 duplicado
-        }
+    public ResponseEntity<UsuarioResponseDTO> registrar(@RequestBody RegistroContribuyenteDTO dto) {
+        Usuario u = usuarioService.registrarContribuyente(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponse(u));
     }
-
 
     @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
-    public ResponseEntity<?> altaAdmin(@RequestBody RegistroAdminDTO dto) {
+    public ResponseEntity<UsuarioResponseDTO> altaAdmin(@RequestBody RegistroAdminDTO dto) {
         Usuario u = usuarioService.altaAdmin(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("id", u.getId(), "username", u.getNombre()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponse(u));
     }
 
-    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Long id) {
         Usuario u = usuarioService.obtenerPorId(id);
-        return ResponseEntity.ok(Map.of(
-                "id", u.getId(),
-                "username", u.getUsername(),
-                "nombre", u.getNombre(),
-                "apellido", u.getApellido(),
-                "email", u.getEmail()
-        ));
+        return ResponseEntity.ok(UsuarioMapper.toResponse(u));
     }
 }
 
