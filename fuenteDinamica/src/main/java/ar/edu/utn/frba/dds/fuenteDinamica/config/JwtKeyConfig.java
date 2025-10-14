@@ -9,10 +9,8 @@ import jakarta.annotation.PostConstruct;
 @Configuration
 public class JwtKeyConfig {
     @Value("${jwt.secret.base64}")
-    private String base64Secret;
+    private String secret;
 
     @PostConstruct
-    public void init() {
-        JwtUtil.initFromBase64(base64Secret);
-    }
+    public void init() {JwtUtil.initFromBase64(secret);}
 }

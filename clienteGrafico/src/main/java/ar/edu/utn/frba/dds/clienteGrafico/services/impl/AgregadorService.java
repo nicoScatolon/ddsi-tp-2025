@@ -329,7 +329,7 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionUsuario (Long usuarioId) {
         try {
-            String url = agregadorUrl + "/api/solicitudes-eliminacion/publica/" + usuarioId;
+            String url = agregadorUrl + "/api/solicitudes-eliminacion/publica?idCreador=" + usuarioId;
 
             return webApiCallerService.getList(
                     url,

@@ -58,14 +58,19 @@ public class JwtUtil {
                 .getSubject();
     }
 
+
     public static Long extraerId(String token) {
         ensureKey();
-        return Jwts.parserBuilder()
+        Object id = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .get("id", Long.class);
+
+        if (id instanceof Integer i) return i.longValue();
+        if (id instanceof Long l) return l;
+        throw new IllegalStateException("ID inválido en token: " + id);
     }
 }
 
