@@ -17,10 +17,13 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class FuenteEstaticaService implements IFuenteEstaticaService {
-    private final WebClient webClient;
+    private final WebApiCallerService webApiCallerService;
+    private final String fuenteEstaticaUrl;
 
-    public FuenteEstaticaService(@Qualifier("estaticaWebClient") WebClient webClient) {
-        this.webClient = webClient;
+    public FuenteEstaticaService(WebApiCallerService webApiCallerService,
+                                 @Value("${fuente.estatica.url}") String fuenteEstaticaUrl) {
+        this.webApiCallerService = webApiCallerService;
+        this.fuenteEstaticaUrl = fuenteEstaticaUrl;
     }
 
     @Value("${app.directorio.destino}")
@@ -62,19 +65,17 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     }
 
     @Override
-    public ResponseEntity<String> guardarArchivoCSV(Path rutaArchivo) {
+    public String guardarArchivoCSV(Path rutaArchivo) {
         // Convertir Path a String absoluto
         String rutaAbsoluta = rutaArchivo.toAbsolutePath().toString();
 
-        return webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/fuenteEstatica/hechos")
-                        .queryParam("filename", rutaAbsoluta)
-                        .build()
-                )
-                .retrieve()
-                .toEntity(String.class)
-                .block();
+        String url = fuenteEstaticaUrl + "/api/fuenteEstatica/hechos?filename=" + rutaAbsoluta;
+
+        try {
+            return webApiCallerService.post(url, 0 , String.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener el hecho mapa: " + e.getMessage(), e);
+        }
     }
 
     private String generarNombreUnico(String nombreOriginal) {

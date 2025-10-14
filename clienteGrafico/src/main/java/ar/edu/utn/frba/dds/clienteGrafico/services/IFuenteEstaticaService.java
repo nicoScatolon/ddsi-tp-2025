@@ -8,5 +8,5 @@ import java.nio.file.Path;
 
 public interface IFuenteEstaticaService {
     void importarArchivoCSV(MultipartFile archivo) throws IOException;
-    ResponseEntity<String> guardarArchivoCSV(Path rutaArchivo);
+    String guardarArchivoCSV(Path rutaArchivo);
 }
