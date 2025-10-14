@@ -49,7 +49,7 @@ public class AgregadorService implements IAgregadorService {
     public HechoInputDTO getHechoById(Long id) {
 
         try {
-            return webApiCallerService.get(
+            return webApiCallerService.getPublic(
                     agregadorUrl + "/api/hechos/publica/" + id,
                     HechoInputDTO.class
             );
@@ -64,12 +64,12 @@ public class AgregadorService implements IAgregadorService {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filterInputDTO);
         String url = construirUrlHechos(paginaActual, filter);
 
-        return webApiCallerService.getList(url, HechoInputDTO.class);
+        return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
 
     public List<HechoMapaInputDTO> getHechosMapa() {
         try {
-            return webApiCallerService.getList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
+            return webApiCallerService.getPublicList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener el hecho mapa: " + e.getMessage(), e);
         }
@@ -345,7 +345,7 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public List<FuenteInputDTO> getFuentesPreview() {
         try {
-            return webApiCallerService.getList(
+            return webApiCallerService.getPublicList(
                     agregadorUrl + "/api/fuente/publica/preview",
                     FuenteInputDTO.class
             );

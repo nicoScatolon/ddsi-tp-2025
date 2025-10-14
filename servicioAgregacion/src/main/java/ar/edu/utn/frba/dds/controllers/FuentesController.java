@@ -27,6 +27,7 @@ public class FuentesController {
     // --- API PUBLICA --- //
 
     @GetMapping("/publica/preview")
+    @PreAuthorize("permitAll()")
     public List<FuentePreviewOutputDTO> getFuentesPreview(){
         return this.fuenteService.getFuentesPreview();
     }
