@@ -1,0 +1,47 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+  <link rel="stylesheet" th:href="@{/css/usuario/mis-solicitudes.css}">
+</th:block>
+
+<div th:fragment="contenido">
+
+  <main>
+    <section class="card">
+      <h1>Mis Solicitudes de Eliminación</h1>
+      <div id="solicitudes-list" class="solicitudes-container">
+        <div th:if="${#lists.isEmpty(solicitudes)}">
+          <p>No hay solicitudes realizadas.</p>
+        </div>
+
+        <div th:each="solicitud : ${solicitudes}" class="solicitud-card">
+          <div class="row">
+            <div>
+              <span class="label">Hecho:</span>
+              <span th:text="${solicitud.hecho.titulo != null ? solicitud.hecho.titulo : 'Desconocido'}">Título del hecho</span>
+            </div>
+            <div>
+              <span class="label">Fecha de solicitud:</span>
+              <span th:text="${#dates.format(solicitud.fechaCreacion, 'yyyy-MM-dd')}">Fecha Creacion</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="label">Razón:</span>
+            <span th:text="${solicitud.razonDeEliminacion}">Razon de eliminacion</span>
+          </div>
+
+          <div class="actions">
+            <a th:href="@{'/hechos/' + ${solicitud.hecho.id}}" class="btn">Ver Hecho</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</div>
+
+<th:block th:fragment="jsExtra">
+</th:block>
+
+</html>

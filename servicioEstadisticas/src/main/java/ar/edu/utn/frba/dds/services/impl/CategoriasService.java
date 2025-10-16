@@ -36,7 +36,6 @@ public class CategoriasService implements ICategoriasService {
 
     @Transactional
     public void actualizarCategorias(){
-        //TODO hacer controller de categorias en servicio de Agregacion
         List<CategoriaInputDTO> categoriasDTO = webClient.get()
                 .uri("/api/categorias")
                 .retrieve()

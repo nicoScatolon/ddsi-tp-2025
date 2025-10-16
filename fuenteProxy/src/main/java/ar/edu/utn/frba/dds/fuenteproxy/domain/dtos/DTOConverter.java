@@ -58,7 +58,7 @@ public final class DTOConverter {
         if(dto == null) return null;
         return UbicacionOutputDTO.builder()
                 .provincia(dto.getProvincia())
-                .departamento(dto.getDepartamento())
+                .localidad(dto.getLocalidad())
                 .calle(dto.getCalle())
                 .numero(dto.getNumero())
                 .latitud(dto.getLatitud())
@@ -112,7 +112,7 @@ public final class DTOConverter {
             UbicacionInputDTO ubicacionDto = dto.getUbicacion();
             Ubicacion u = new Ubicacion();
             u.setProvincia(ubicacionDto.getProvincia());
-            u.setDepartamento(ubicacionDto.getDepartamento());
+            u.setLocalidad(ubicacionDto.getLocalidad());
             u.setCalle(ubicacionDto.getCalle());
             u.setNumero(ubicacionDto.getNumero());
             u.setLatitud(ubicacionDto.getLatitud());
@@ -142,14 +142,13 @@ public final class DTOConverter {
         if (u == null) return null;
         return UbicacionOutputDTO.builder()
                 .provincia(u.getProvincia())
-                .departamento(u.getDepartamento())
+                .localidad(u.getLocalidad())
                 .calle(u.getCalle())
                 .numero(u.getNumero())
                 .latitud(u.getLatitud())
                 .longitud(u.getLongitud())
                 .build();
     }
-
 
 
 

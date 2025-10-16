@@ -39,71 +39,99 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     }
 
     @Override
-    public List<SolicitudEliminarHechoOutputDTO> findAll() {
-       return this.repository
-                .findAll()
+    public List<SolicitudEliminarHechoOutputDTO> findAll(Long idCreador) {
+        if (idCreador == null) {
+            return this.repository
+                    .findAll()
+                    .stream()
+                    .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                    .toList();
+        }
+        else {
+            return this.repository
+                    .findAllByIdCreador(idCreador)
+                    .stream()
+                    .map(DTOConverter::solicitudEliminarHechoOutputDTO)
+                    .toList();
+        }
+    }
+
+    @Override
+    public List<SolicitudEliminarHechoOutputDTO> findSinProcesar(){
+        return this.repository
+                .findByEstado(EstadoDeSolicitud.PENDIENTE)
                 .stream()
                 .map(DTOConverter::solicitudEliminarHechoOutputDTO)
                 .toList();
     }
 
     @Override
-    public void crearSolicitudDesdeEntidad(Hecho hecho, String razon, String nombre, String apellido) { //Todo: debería ser responseEntity
-        if (detectorDeSpam.esSpam(razon)){ //Todo, si queremos que se guarde como SPAM, deberíamos crearla aca
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La solicitud fue detectada como spam");
-        }
+    public ResponseEntity<Void>  crearSolicitudDesdeEntidad(Hecho hecho, String razon, Long idCreador) {
         SolicitudEliminarHecho solicitud = ConstructorSolicitudesEliminacion
-                .constructorSolicitud(hecho, razon, nombre, apellido);
+                .constructorSolicitud(hecho, razon, idCreador);
+        if (detectorDeSpam.esSpam(razon)){
+            solicitud.rechazarSpam();
+        }
+
         repository.save(solicitud);
+
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
+    public ResponseEntity<Void> crearSolicitudDesdeDTO(SolicitudEliminarHechoInputDTO solicitud){
         Hecho hecho = hechosService.findEntidadPorId(solicitud.getHechoId());
 
         if (hecho == null || hechosService.findByID(hecho.getId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
         }
-
-        this.crearSolicitudDesdeEntidad(
+        return  this.crearSolicitudDesdeEntidad(
                 hecho,
                 solicitud.getRazonDeEliminacion(),
-                solicitud.getNombreCreador(),
-                solicitud.getApellidoCreador()
+                solicitud.getIdCreador()
         );
     }
 
     @Override
-    public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO solicitudDTO, Boolean aceptar) {
-        Hecho hecho = hechosService.findEntidadPorId(solicitudDTO.getSolicitud().getHechoId());
+    public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO procesarSolicitudDTO, Boolean aceptar) {
+        Hecho hecho = hechosService.findEntidadPorId(procesarSolicitudDTO.getSolicitud().getHechoId());
         if (hecho == null) {
             return ResponseEntity.notFound().build();
         }
 
-        SolicitudEliminarHecho solicitud = repository.getById(solicitudDTO.getSolicitud().getHechoId());
+        SolicitudEliminarHecho solicitud = repository.findById(procesarSolicitudDTO.getSolicitud().getIdSolicitud())
+                .orElse(null);
+
         if (solicitud == null) {
-            solicitud = DTOConverter.solicitudEliminarHecho(solicitudDTO.getSolicitud(), hecho);
+            solicitud = DTOConverter.solicitudEliminarHecho(procesarSolicitudDTO.getSolicitud(), hecho);
         }
 
-
-        if (EstadoDeSolicitud.PENDIENTE.equals(solicitud.getEstado())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        if (solicitudDTO.getAdministrador().getNombre() == null || solicitudDTO.getAdministrador().getApellido() == null) {
+        if (procesarSolicitudDTO.getAdministradorId() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         if (aceptar) {
-            solicitud.serAceptada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serAceptada(procesarSolicitudDTO.getAdministradorId());
+            repository.save(solicitud);
+            this.rechazarRestoSolicitudes(procesarSolicitudDTO.getSolicitud().getIdSolicitud(), hecho.getId(), procesarSolicitudDTO.getAdministradorId());
         } else {
-            solicitud.serRechazada(solicitudDTO.getAdministrador().getNombre(), solicitudDTO.getAdministrador().getApellido());
+            solicitud.serRechazada(procesarSolicitudDTO.getAdministradorId());
+            repository.save(solicitud);
         }
 
-        repository.save(solicitud);
         return ResponseEntity.ok().build();
     }
 
+
+    private void rechazarRestoSolicitudes(Long idSolicitud, Long idHecho, Long idAdmin){
+        List<SolicitudEliminarHecho> solicitudesARechazar = repository
+                .findAllByHechoIdExcludingSolicitud(idHecho, idSolicitud);
+
+        solicitudesARechazar.forEach(s -> {
+            s.serRechazada(idAdmin);
+            repository.save(s);
+        });
+    }
     @Override
     public SolicitudEliminarHecho findByID(Long id) {
         return repository.getById(id);
@@ -114,11 +142,10 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         logger.info("Solicitudes de eliminación cargadas - Cantidad: {}", solicitudes.size());
         solicitudes.forEach(solicitud ->
                 logger.info(
-                        "Solicitud ID: {} - Hecho ID: {} - Nombre: {} {} - Razón: {} - Fecha: {}",
+                        "Solicitud ID: {} - Hecho ID: {} - Admin ID: {} - Razón: {} - Fecha: {}",
                         solicitud.getId(),
                         solicitud.getHecho() != null ? solicitud.getHecho().getId() : "N/A",
-                        solicitud.getNombreCreador(),
-                        solicitud.getApellidoCreador(),
+                        solicitud.getIdAdministrador(),
                         acortarTexto(solicitud.getRazonDeEliminacion()),
                         solicitud.getFechaCreacion()
                 )

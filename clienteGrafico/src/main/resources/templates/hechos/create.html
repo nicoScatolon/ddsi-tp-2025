@@ -1,0 +1,191 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/hechos/create.css}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+</th:block>
+
+<th:block th:fragment="contenido">
+    <section class="form-container"
+             sec:authorize="isAuthenticated()"
+             th:attr="data-es-nuevo=${esNuevo}">
+        <h1 th:text="${titulo}"></h1>
+
+        <!-- Form con action dinámico según si es nuevo o edición -->
+        <form th:action="@{${actionUrl}}" th:object="${hechoDTO}" method="post" id="hechoForm">
+
+
+        <input th:if="${!esNuevo}" type="hidden" name="_method" value="put">
+            <!-- ID oculto para edición -->
+            <input type="hidden" th:field="*{id}" th:if="${!esNuevo}">
+            <input type="hidden" th:field="*{contribuyenteId}" th:if="${!esNuevo}">
+
+            <!-- Datos básicos -->
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incendio Forestal" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" th:field="*{descripcion}" rows="3" required placeholder="Escribí aquí la descripción..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="categoriaInput">Categoría</label>
+                <input
+                        type="text"
+                        id="categoriaInput"
+                        name="categoria.nombre"
+                        th:value="${hechoDTO.categoria != null} ? ${hechoDTO.categoria.nombre} : ''"
+                        list="categorias-list"
+                        placeholder="Escribe para buscar..."
+                        required
+                        autocomplete="off"
+                />
+                <datalist id="categorias-list">
+                    <option th:each="cat : ${categorias}" th:value="${cat}"></option>
+                </datalist>
+            </div>
+
+            <!-- Fecha -->
+            <div class="form-group">
+                <label for="fechaDeOcurrencia">Fecha de Ocurrencia</label>
+                <input type="datetime-local"
+                       id="fechaDeOcurrencia"
+                       name="fechaDeOcurrencia"
+                       th:value="${hechoDTO.fechaDeOcurrencia != null} ? ${#temporals.format(hechoDTO.fechaDeOcurrencia, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                       required>
+            </div>
+
+            <!-- Ubicación -->
+            <h2>Ubicación</h2>
+            <div class="form-group">
+                <label for="tipoUbicacion">Tipo de ubicación:</label>
+                <select id="tipoUbicacion" name="tipoUbicacion" required>
+                    <option value="">-- Seleccione --</option>
+                    <option value="direccion">Provincia, Localidad, Calle y Número</option>
+                    <option value="mapa">Seleccionar en el Mapa</option>
+                </select>
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-group" id="provinciaGroup" style="display:none;">
+                <label for="provincia">Provincia</label>
+                <input type="text" id="provincia" th:field="*{ubicacion.provincia}" placeholder="Ej: Buenos Aires">
+            </div>
+            <div class="form-group" id="localidadGroup" style="display:none;">
+                <label for="localidad">Localidad</label>
+                <input type="text" id="localidad" th:field="*{ubicacion.departamento}" placeholder="Ej: La Plata">
+            </div>
+            <div class="form-group" id="calleGroup" style="display:none;">
+                <label for="calle">Calle</label>
+                <input type="text" id="calle" th:field="*{ubicacion.calle}" placeholder="Ej: 7">
+            </div>
+            <div class="form-group" id="numeroGroup" style="display:none;">
+                <label for="numero">Número</label>
+                <input type="text" id="numero" th:field="*{ubicacion.numero}" placeholder="Ej: 1234">
+            </div>
+
+            <!-- Mapa Leaflet -->
+            <div class="form-group" id="mapaGroup" style="display:none;">
+                <label><i class="fas fa-map-marker-alt"></i> Seleccione la ubicación en el mapa</label>
+                <div id="mapContainer"></div>
+                <div class="coordenadas-display" id="coordenadasDisplay" style="display:none;">
+                    <p><strong>✓ Coordenadas seleccionadas:</strong></p>
+                    <p>Latitud: <span id="latDisplay">-</span></p>
+                    <p>Longitud: <span id="lngDisplay">-</span></p>
+                </div>
+            </div>
+
+            <!-- Campos ocultos para coordenadas -->
+            <input type="hidden" th:field="*{ubicacion.latitud}" id="latitudUbicacion">
+            <input type="hidden" th:field="*{ubicacion.longitud}" id="longitudUbicacion">
+
+            <!-- Sección de Contenido Multimedia -->
+            <div class="multimedia-section">
+                <h2><i class="fas fa-paperclip"></i> Contenido Multimedia (Opcional)</h2>
+                <p class="upload-limits">
+                    <strong>Tipos permitidos:</strong> Imágenes (JPG, PNG, GIF), Videos (MP4, AVI, MOV), Audio (MP3, WAV), Documentos (PDF, DOC, DOCX)<br>
+                    <strong>Tamaño máximo por archivo:</strong> 10MB
+                </p>
+
+                <div class="file-upload-area">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="multimediaInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" multiple>
+                        <button type="button" id="addFileBtn">Agregar archivos</button>
+                    </div>
+                </div>
+
+                <!-- Multimedia existente (para edición) -->
+                <div id="existingMultimedia" class="multimedia-preview">
+                    <div th:each="media, iterStat : ${hechoDTO.contenidoMultimedia}"
+                         class="multimedia-item existing-item"
+                         th:attr="data-media-id=${media.id}">
+
+                        <!-- Preview según tipo -->
+                        <div th:if="${media.tipoContenido.toString() == 'IMAGEN'}">
+                            <img th:src="${media.url}" th:alt="${media.descripcion}">
+                        </div>
+                        <div th:if="${media.tipoContenido.toString() == 'VIDEO'}">
+                            <video controls>
+                                <source th:src="${media.url}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div th:if="${media.tipoContenido.toString() == 'AUDIO'}" class="file-icon">🎵</div>
+                        <div th:if="${media.tipoContenido.toString() == 'DOCUMENTO'}" class="file-icon">📄</div>
+
+                        <button type="button" class="remove-existing-btn" th:attr="data-media-id=${media.id}">&times;</button>
+                        <div class="file-info">
+                            <strong th:text="${media.tipoContenido}">TIPO</strong><br>
+                            <span th:text="${media.descripcion}">Descripción</span>
+                        </div>
+
+                        <!-- Campo oculto para marcar como eliminado -->
+                        <input type="hidden" th:name="'contenidoMultimedia[' + ${iterStat.index} + '].id'" th:value="${media.id}">
+                        <input type="hidden" th:name="'contenidoMultimedia[' + ${iterStat.index} + '].eliminar'" value="false" class="eliminar-flag">
+                    </div>
+                </div>
+
+                <!-- Nuevos archivos multimedia -->
+                <div class="multimedia-preview" id="multimediaPreview"></div>
+            </div>
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="esAnonimo" th:field="*{cargadoAnonimamente}">
+                <label for="esAnonimo">Publicar como anónimo</label>
+            </div>
+
+            <!-- Botones -->
+            <div class="form-actions">
+                <button type="submit" class="btn-local-primary">
+                    <i th:class="${esNuevo} ? 'fas fa-save' : 'fas fa-sync'"></i>
+                    <span th:text="${esNuevo} ? 'Guardar' : 'Actualizar'">Guardar</span>
+                </button>
+                <button type="reset" class="btn-local-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <div sec:authorize="!isAuthenticated()" id="loginModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>¡Debes identificarte!</h2>
+            <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
+            <div class="modal-actions">
+                <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
+                <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="jsExtra">
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script th:src="@{/js/hecho-create.js}"></script>
+
+</th:block>
+</html>

@@ -12,5 +12,8 @@ public interface ICategoriasRepository extends JpaRepository<Categoria, Long> {
     Optional<Categoria> findByNombre(String nombre);
     boolean existsByNombre(String nombre);
     Optional<Categoria> findCategoriaByCodigoCategoria(String codigoCategoria);
+
+    @Query("SELECT c.nombre FROM Categoria c")
+    List<String> findAllNombres();
 }
 

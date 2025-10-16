@@ -1,0 +1,32 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/form :: html}">
+
+<div th:fragment="formContent">
+    <div class="form-header">
+        <h1>¡Bienvenido de vuelta!</h1>
+        <p>Inicia sesión con tu cuenta de MetaMapa</p>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger">
+        Credenciales invalidas
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="username" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="********" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Iniciar Sesión</button>
+    </form>
+
+    <div class="form-footer">
+        <p>¿Todavía no tenes cuenta? <a th:href="@{/signup}">¡Registráte Ahora!</a></p>
+    </div>
+</div>
+
+</html>

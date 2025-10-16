@@ -24,4 +24,7 @@ public class ContenidoMultimedia {
     @Column(name = "descripcion")
     private String descripcion;
 
+
+    @Enumerated(EnumType.STRING)
+    private TipoContenido tipoContenido;
 }

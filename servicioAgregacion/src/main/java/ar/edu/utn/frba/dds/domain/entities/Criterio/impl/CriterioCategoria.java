@@ -11,13 +11,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @DiscriminatorValue("Categoria")
 @NoArgsConstructor
 
 public class CriterioCategoria extends Criterio {
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = true)
     @Getter
     @Setter
     private Categoria categoria;
@@ -28,6 +30,6 @@ public class CriterioCategoria extends Criterio {
 
     @Override
     public Boolean pertenece(Hecho hecho){
-        return hecho.getCategoria()==this.categoria;
+        return Objects.equals(hecho.getCategoria().getCodigoCategoria(), this.categoria.getCodigoCategoria());
     }
 }

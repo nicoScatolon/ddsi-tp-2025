@@ -1,3 +1,6 @@
+# Properties
+*.properties
+
 # Compiled class file
 *.class
 
@@ -31,3 +34,10 @@ target/**
 # IJ files
 *.iml
 .idea/**
+/fuenteDinamica/target/
+/fuenteEstatica/target/
+/fuenteProxy/target/
+/servicioAgregacion/target/
+/servicioEstadisticas/target/
+/clienteGrafico/target/
+/filesystem-data/

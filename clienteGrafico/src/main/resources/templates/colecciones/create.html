@@ -1,0 +1,136 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/colecciones/form.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <section id="create-collection">
+        <section class="card">
+
+            <h1 th:text="${titulo}"></h1>
+
+            <!-- Div para pasar datos al JS -->
+            <div id="coleccionData"
+                 th:data-es-nueva="${nueva}"
+                 th:data-criterios-json="${!nueva && coleccionDTO.listaCriterios != null ? coleccionDTO.listaCriteriosJson : '[]'}"
+                 style="display:none;"></div>
+
+            <form th:action="${actionUrl}" th:object="${coleccionDTO}" method="post" id="collectionForm">
+
+                <!-- Si NO es nueva, convertir POST en PUT -->
+                <input th:if="${!nueva}" type="hidden" name="_method" value="put">
+
+                <!-- Handle solo para edición -->
+                <input th:if="${!nueva}" type="hidden" th:field="*{handle}">
+
+                <div>
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incidentes de tráfico" required>
+                </div>
+
+                <div>
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" rows="3" required placeholder="Descripción breve de la colección"></textarea>
+                </div>
+
+                <div>
+                    <label>Fuentes</label>
+                    <div class="fuentes-selector">
+                        <div id="fuentesToggle" class="fuentes-toggle" role="button" aria-expanded="false">
+                            Seleccionar fuentes <span id="fuentesCount" class="small">(0)</span>
+                        </div>
+
+                        <div id="fuentesPanel" class="fuentes-panel" aria-hidden="true" style="display:none;">
+                            <ul>
+                                <li th:each="fuente : ${fuentes}">
+                                    <label>
+                                        <input
+                                                type="checkbox"
+                                                class="fuente-checkbox"
+                                                th:value="${fuente.fuenteId}"
+                                                th:data-nombre="${fuente.nombre}"
+                                                th:checked="${fuentesSeleccionadas != null && #lists.contains(fuentesSeleccionadas, fuente.fuenteId)}"
+                                        />
+                                        <span th:text="${fuente.nombre}">Fuente</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div id="fuentesChips" class="fuentes-chips" aria-live="polite"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Criterios</label>
+                    <div class="criterios-area">
+                        <div class="criterio-controls">
+                            <select id="criterioSelect" aria-label="Seleccionar criterio">
+                                <option value="">-- escoger criterio --</option>
+                                <option value="Titulo">Título</option>
+                                <option value="Categoria">Categoría</option>
+                                <option value="Etiqueta">Etiqueta</option>
+                                <option value="Provincia">Provincia</option>
+                                <option value="CargaEntreFechas">Carga entre fechas</option>
+                                <option value="OcurrenciaEntreFechas">Ocurrencia entre fechas</option>
+                                <option value="ContenidoMultimedia">Contenido multimedia</option>
+                            </select>
+                            <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
+                        </div>
+
+                        <div id="categoriaTemplate" style="display:none;">
+                            <label>Buscar categoría</label>
+                            <input type="text" class="criterio-categoria-input" placeholder="Escriba para buscar..." list="listaCategorias">
+                            <datalist id="listaCategorias">
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            </datalist>
+                        </div>
+
+                        <select id="etiquetaTemplate" style="display:none;">
+                            <option value="">-- seleccionar etiqueta --</option>
+                            <option th:each="et : ${etiquetas}"
+                                    th:value="${et.id}"
+                                    th:text="${et.nombre}"></option>
+                        </select>
+
+                        <select id="provinciaTemplate" style="display:none;">
+                            <option value="">-- seleccionar provincia --</option>
+                            <option th:each="prov : ${provincias}"
+                                    th:value="${prov}"
+                                    th:text="${prov}"></option>
+                        </select>
+
+                        <div id="criteriosContainer"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="algoritmoConsensoTipo">Algoritmo de Consenso</label>
+                    <select id="algoritmoConsensoTipo" th:field="*{algoritmoConsensoTipo}" class="form-select">
+                        <option value="">Ninguno</option>
+                        <option value="ABSOLUTO">Absoluto</option>
+                        <option value="MAYORIASIMPLE">Mayoría simple</option>
+                        <option value="MULTIPLEMENCION">Múltiple mención</option>
+                    </select>
+                </div>
+
+                <div id="generatedHiddenFields" style="display:none;"></div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i th:class="${nueva} ? 'fas fa-save' : 'fas fa-sync'"></i>
+                        <span th:text="${nueva ? 'Crear' : 'Actualizar'}">Crear</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </section>
+</div>
+
+<th:block th:fragment="jsExtra">
+    <script th:src="@{/js/coleccion-form.js}"></script>
+</th:block>
+</html>

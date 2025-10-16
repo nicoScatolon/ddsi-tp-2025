@@ -17,22 +17,18 @@ public class SolicitudEliminarHecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "razonDeEliminacion")
+    @Column(columnDefinition = "TEXT", name = "razonDeEliminacion")
     private String razonDeEliminacion;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hecho_id")
     private Hecho hecho;
     @Enumerated(EnumType.STRING)
     private EstadoDeSolicitud estado;
-    @Column(name = "nombreCreador")
-    private String nombreCreador;
-    @Column(name = "apellidoCreador")
-    private String apellidoCreador;
+    @Column(name = "idCreador")
+    private Long idCreador;
     //posible cambio por Contribuyente
-    @Column(name = "nombreAdministrador")
-    private String nombreAdministrador;
-    @Column(name = "apellidoAdministrador")
-    private String apellidoAdministrador;
+    @Column(name = "idAdministrador")
+    private Long idAdministrador;
     @Column(name = "fechaCreacion")
     private LocalDateTime fechaCreacion;
     @Column(name = "fechaGestion")
@@ -42,26 +38,29 @@ public class SolicitudEliminarHecho {
     @Column (name = "actualizarFuenteOrigen", nullable = false)
     private Boolean actualizarFuenteOrigen = false; //el actualizar con la fuente de origen
 
-    //TODO agregar algun parametro que me permita desde el servicio de estadisticas saber si es SPAM o no
-
-    public void serAceptada(String nombreAdministrador, String apellidoAdministrador) {
+    public void serAceptada(Long idAdministrador) {
         if (estado != EstadoDeSolicitud.PENDIENTE) {
             throw new IllegalStateException("La solicitud ya fue procesada.");
         }
         estado = EstadoDeSolicitud.ACEPTADA;
         fechaGestion = LocalDateTime.now();
-        this.nombreAdministrador = nombreAdministrador;
-        this.apellidoAdministrador = apellidoAdministrador;
+        this.idAdministrador = idAdministrador;
         hecho.setFueEliminado(true);
         this.actualizarFuenteOrigen = true;
     }
 
-    public void serRechazada(String nombreAdministrador, String apellidoAdministrador){
+    public void serRechazada(Long idAdministrador){
         if (estado != EstadoDeSolicitud.PENDIENTE) {
             throw new IllegalStateException("La solicitud ya fue procesada.");
         }
         estado = EstadoDeSolicitud.RECHAZADA;
-        this.nombreAdministrador = nombreAdministrador;
-        this.apellidoAdministrador = apellidoAdministrador;
+        this.idAdministrador = idAdministrador;
+    }
+
+    public void rechazarSpam(){
+        if (estado != EstadoDeSolicitud.PENDIENTE) {
+            throw new IllegalStateException("La solicitud ya fue procesada.");
+        }
+        estado = EstadoDeSolicitud.SPAM;
     }
 }

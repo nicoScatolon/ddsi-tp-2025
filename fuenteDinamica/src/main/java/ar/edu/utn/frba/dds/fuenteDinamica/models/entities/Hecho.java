@@ -7,7 +7,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -27,7 +28,7 @@ public class Hecho {
     @Column(nullable = false, name = "titulo")
     private String titulo;
 
-    @Column(nullable = false, name = "descripcion") //todo estaba como unique = true
+    @Column(nullable = false, name = "descripcion",columnDefinition = "MEDIUMTEXT" )
     private String descripcion;
 
     @Embedded
@@ -47,25 +48,20 @@ public class Hecho {
     private LocalDateTime fechaDeCarga;
 
     @Column(nullable = false, name = "anonimo")
-    private Boolean esAnonimo = Boolean.TRUE; // de base esta en true
+    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true
 
     //Metadata
     @Column(name = "fecha-modificacion")
     private LocalDateTime fechaDeModificacion = null; // para verificar los 7 dias
 
 
-    //TODO: Eze nos marcó que vamos a tener que modificarlo, pero primero quiero ver como va a ser la lógica de inicio de sesion y usuarios
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "nombre", column = @Column(name = "contribuyente_nombre")),
-            @AttributeOverride(name = "apellido", column = @Column(name = "contribuyente_apellido"))
-    })
-    private Contribuyente contribuyente; // el ususario que lo carga
+    @Column(name = "contribuyenteId")
+    private Long contribuyenteId; // el ususario que lo carga
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoHecho estado = EstadoHecho.ACEPTADO; //TODO: Por ahora, por un tema de testing lo dejamos directamente en aceptado pero debería llegar en el input como un pendiente y despues el admin lo acepta.
+    private EstadoHecho estado = EstadoHecho.PENDIENTE;
 
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
@@ -77,25 +73,80 @@ public class Hecho {
         if ( getFechaDeCarga().plusDays(diasMaximos).isBefore(fechaModificacion) ) {
             throw new ModificacionNoPermitidaException( String.format("Pasaron los %d dias permitidos para serModificado el hecho", diasMaximos) );
         }
-        if ( contribuyente.getId() == null ) { // si no tiene id no esta registrado
+        if ( contribuyenteId == null ) { // si no tiene id no esta registrado
             throw new ModificacionNoPermitidaException( "El contribuyente no esta registrado, modificacion no permitida" );
+        }
+        if ( cargadoAnonimamente == null ) { // si esta cargado de forma anonima no permite modificaciones
+            throw new ModificacionNoPermitidaException( "El hecho fue cargado de forma anonima, no permite modificaciones" );
         }
     }
 
-    public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion){
+    public void serModificado(Hecho nuevosDatosHecho, Long diasValidosModificacion) {
         verificarModificacionValida(diasValidosModificacion, LocalDateTime.now());
 
+        // Actualizar campos simples
         this.setTitulo(nuevosDatosHecho.getTitulo());
         this.setDescripcion(nuevosDatosHecho.getDescripcion());
         this.setCategoria(nuevosDatosHecho.getCategoria());
         this.setUbicacion(nuevosDatosHecho.getUbicacion());
-        this.setContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
         this.setFechaDeOcurrencia(nuevosDatosHecho.getFechaDeOcurrencia());
+
+        sincronizarContenidoMultimedia(nuevosDatosHecho.getContenidoMultimedia());
+
+        this.setFechaDeModificacion(LocalDateTime.now());
+        this.setEstado(EstadoHecho.PENDIENTE);
     }
 
     public void serRevisado(Long idAdmin, EstadoHecho nuevoEstado, String sugerencia) {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}
+    }
+
+    private void sincronizarContenidoMultimedia(List<ContenidoMultimedia> nuevos) {
+        if (nuevos == null) {
+            nuevos = Collections.emptyList();
+        }
+
+        if (this.contenidoMultimedia == null) {
+            this.contenidoMultimedia = new ArrayList<>();
+        }
+
+        // Map de existentes por id
+        Map<Long, ContenidoMultimedia> existentesPorId = this.contenidoMultimedia.stream()
+                .filter(cm -> cm.getId() != null)
+                .collect(Collectors.toMap(ContenidoMultimedia::getId, cm -> cm));
+
+        // Set de ids nuevos
+        Set<Long> idsNuevos = nuevos.stream()
+                .map(ContenidoMultimedia::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // Eliminar los que ya no están
+        Iterator<ContenidoMultimedia> it = this.contenidoMultimedia.iterator();
+        while (it.hasNext()) {
+            ContenidoMultimedia cmExistente = it.next();
+            Long idExistente = cmExistente.getId();
+            if (idExistente != null && !idsNuevos.contains(idExistente)) {
+                it.remove();
+            }
+        }
+
+        // Agregar o actualizar
+        for (ContenidoMultimedia cmNuevo : nuevos) {
+            if (cmNuevo.getId() == null) {
+                this.contenidoMultimedia.add(cmNuevo);
+            } else {
+                ContenidoMultimedia existente = existentesPorId.get(cmNuevo.getId());
+                if (existente != null) {
+                    existente.setUrl(cmNuevo.getUrl());
+                    existente.setDescripcion(cmNuevo.getDescripcion());
+                    existente.setTipoContenido(cmNuevo.getTipoContenido());
+                } else {
+                    this.contenidoMultimedia.add(cmNuevo);
+                }
+            }
+        }
     }
 }

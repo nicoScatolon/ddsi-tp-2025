@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.FuentePreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FuentesService implements IFuentesService {
@@ -34,13 +34,18 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
+    public List<FuentePreviewOutputDTO> getFuentesPreview(){
+        return this.fuentesRepository.findAll().stream().map(DTOConverter::convertirFuentePreviewOutputDTO).toList();
+    }
+
+    @Override
     public List<Fuente> buscarFuentes() {
         return fuentesRepository.findAll();
     }
 
     @Override
     public ResponseEntity<Void> agregarFuente(FuenteInputDTO fuenteDTO) {
-        Fuente nuevaFuente = DTOConverter.fuenteDTOToFuente(fuenteDTO);
+        Fuente nuevaFuente = DTOConverter.fuenteOutputDTOToFuente(fuenteDTO);
         this.loguearFuenteCargada(nuevaFuente);
         fuentesRepository.save(nuevaFuente);
         return ResponseEntity.ok().build();
@@ -87,7 +92,6 @@ public class FuentesService implements IFuentesService {
             List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
             logger.info("Fuente actualizada {}", fuente.getTipo());
             if (hechosFuente != null && !hechosFuente.isEmpty()){
-                //this.hechosService.actualizarHechosRepository(hechosFuente);
                 hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }

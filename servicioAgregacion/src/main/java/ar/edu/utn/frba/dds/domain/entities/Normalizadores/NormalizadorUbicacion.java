@@ -80,6 +80,26 @@ public final class NormalizadorUbicacion {
         throw new IllegalArgumentException("Provincia no reconocida: " + dto.getProvincia());
     }
 
+    public static String normalizarProvincia(String provincia) {
+        if (provincia == null || provincia.isBlank()) {
+            return null;
+        }
+        String originalTrim = provincia.trim();
+
+        // 1) Busco si matchea primero por el nombre oficial
+        if (PROVINCIAS_EQUIVALENTES.containsKey(originalTrim)) {
+            return provincia;
+        }
+
+        // 2) Normalizo la provincia y veo si matchea con algun alias
+        String normalizada = normalizarTexto(originalTrim);
+        String oficial = ALIAS_A_OFICIAL.get(normalizada);
+        if (oficial != null) {
+            return oficial;
+        }
+        else return null;
     }
+
+}
 
 

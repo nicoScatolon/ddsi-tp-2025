@@ -16,12 +16,10 @@ public class ConsensoAbsoluto implements IAlgoritmoConsenso {
     }
 
     @Override
-    public List<Hecho> curar(List<Hecho> listaHechos, List<Fuente> listaFuentes) {
+    public List<Hecho> curar(List<Hecho> listaHechos, List< List<Hecho> > listaHechosFuentes) {
         List<Hecho> listaHechosCurados = listaHechos;
 
-        for (IFuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
+        for (List<Hecho> hechosFuente : listaHechosFuentes) {
 
             if (hechosFuente.isEmpty()) {break;}
 

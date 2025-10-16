@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
+<th:block th:fragment="cssExtra">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- CSS específico para hecho-detail -->
+    <link rel="stylesheet" th:href="@{/css/hechos/hecho.css}">
+</th:block>
+
+<th:block th:fragment="contenido">
+    <!-- Si no existe el hecho mostramos mensaje de no encontrado -->
+    <div th:if="${hecho != null}">
+        <section id="hecho-detail" class="card">
+            <div class="content-wrapper">
+                <!-- Columna izquierda -->
+                <div class="left-column">
+                    <div class="title-fecha">
+                        <h1 id="hecho-title"
+                            th:text="${hecho.titulo != null ? hecho.titulo : 'Hecho sin título'}">
+                            Título del Hecho
+                        </h1>
+
+                        <div class="fechas">
+                            <span id="hecho-fecha" class="fecha"
+                                  th:if="${hecho.fechaDeOcurrencia != null}"
+                                  th:text="${#temporals.format(hecho.fechaDeOcurrencia, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
+                            </span>
+                            <span th:unless="${hecho.fechaDeOcurrencia != null}">Fecha no especificada</span>
+
+                            <span th:if="${hecho.fechaDeCarga != null}" class="fecha-carga"
+                                  th:text="${' · Publicado el ' + #temporals.format(hecho.fechaDeCarga, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Categoría -->
+                    <div class="info-item categories-row">
+                        <div class="tags-header">Categoría:</div>
+                        <ul id="hecho-categorias" class="tags">
+                            <li th:if="${hecho.categoria != null}"
+                                th:text="${hecho.categoria.nombre}">Categoría</li>
+                            <li th:unless="${hecho.categoria != null}">Sin categoría</li>
+                        </ul>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Descripción -->
+                    <div class="info-item">
+                        <p id="hecho-description"
+                           th:text="${hecho.descripcion != null ? hecho.descripcion : 'Sin descripción disponible.'}">
+                            Aquí irá la descripción del hecho cargada dinámicamente.
+                        </p>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Ubicación -->
+                    <div class="info-item">
+                        <div class="tags-header">Ubicación:</div>
+                        <p id="hecho-ubicacion" class="ubicacion">
+                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
+                                <span th:if="${hecho.ubicacion.provincia != null}"
+                                      th:text="${hecho.ubicacion.provincia}"></span>
+                                <span th:if="${hecho.ubicacion.departamento != null}"
+                                      th:text="${hecho.ubicacion.departamento}"></span>
+                                <span th:if="${hecho.ubicacion.calle != null}"
+                                      th:text="${' - ' + hecho.ubicacion.calle}"></span>
+                                <span th:if="${hecho.ubicacion.numero != null}"
+                                      th:text="${' ' + hecho.ubicacion.numero}"></span>
+                            </span>
+                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
+                        </p>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Etiquetas -->
+                    <div class="info-item" th:if="${origenAgregador == true}">
+                        <div class="tags-header">Etiquetas:</div>
+
+                        <!-- Caso sin etiquetas -->
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
+                            <li>Sin etiquetas</li>
+                        </ul>
+
+                        <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
+                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
+                            <li th:each="etiqueta : ${hecho?.etiquetas}"
+                                th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
+                                Etiqueta
+                            </li>
+                        </ul>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Contribuyente -->
+                    <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
+                        <div class="tags-header">Contribuyente:</div>
+                        <p id="hecho-contribuyente" class="contribuyente">
+                            <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
+                            <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
+                            <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
+                                Nombre Apellido
+                            </span>
+
+                        </p>
+                    </div>
+
+                    <!-- Acciones solo para usuarios logueados -->
+                    <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item" style="margin-top:12px;" >
+                        <!-- Botón solicitar eliminación (usuarios logueados) -->
+                        <button sec:authorize="isAuthenticated()" id="deleteBtn" class="btn-delete-request">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Solicitar eliminación
+                        </button>
+
+                        <!-- Botón para DESTACAR (si NO está destacado) -->
+                        <form sec:authorize="hasRole('ADMIN')"
+                              th:if="${!hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
+                            <input type="hidden" name="_method" value="put" />
+                            <button type="submit" class="btn-destacar">
+                                <i class="fas fa-star"></i>
+                                Destacar
+                            </button>
+                        </form>
+
+                        <!-- Botón para QUITAR DESTACADO (si SÍ está destacado) -->
+                        <form sec:authorize="hasRole('ADMIN')"
+                              th:if="${hecho.destacado}"
+                              th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
+                              method="post"
+                              style="margin: 0;">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn-destacar quitar">
+                                <i class="fas fa-star-half-alt"></i>
+                                Quitar destacado
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Separador vertical -->
+                <div class="vertical-separator"></div>
+
+                <!-- Columna derecha -->
+                <div class="right-column">
+                    <div class="multimedia-wrapper">
+                        <div id="hecho-multimedia" class="multimedia-container">
+                            <!-- Si hay contenido multimedia -->
+                            <div th:if="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
+                                <div th:each="contenido : ${hecho.contenidoMultimedia}">
+                                    <img th:src="${contenido.url}"
+                                         th:alt="${contenido.descripcion != null ? contenido.descripcion : (hecho.titulo != null ? hecho.titulo : 'Multimedia')}"
+                                         class="multimedia-item">
+                                </div>
+                            </div>
+
+                            <!-- Si no hay contenido -->
+                            <div th:unless="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}"
+                                 class="placeholder">
+                                No hay contenido multimedia disponible
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="separator">
+
+                    <div class="map-wrapper">
+                        <div id="hecho-map"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Mensaje de error si no se encuentra el hecho -->
+    <div th:unless="${hecho != null}" class="error-message">
+        <div class="card">
+            <h2>Hecho no encontrado</h2>
+            <p>El hecho que estás buscando no existe o ha sido eliminado.</p>
+            <a th:href="@{/hechos}" class="btn btn-primary">Volver a Explorar</a>
+        </div>
+    </div>
+
+    <!-- Modal Solicitud de Eliminación -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Solicitar Eliminación del Hecho</h2>
+            <form id="deleteForm" th:action="@{/solicitudesEliminacion}" method="post">
+                <!-- Razón de eliminación -->
+                <label for="reason">Razón de la eliminación:</label>
+                <textarea id="reason"
+                          name="razonEliminacion"
+                          rows="6"
+                          placeholder="Escribe tu razón aquí... (mínimo 500 caracteres)"
+                          required
+                          minlength="500"></textarea>
+
+                <!-- ID del hecho -->
+                <input type="hidden" name="hechoId" th:value="${hecho.id}" />
+
+                <!-- ID del usuario -->
+                <input type="hidden" name="usuarioId" th:value="${userId}" />
+
+                <button type="submit" class="btn-submit-delete">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="jsExtra">
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Pasar datos del hecho a JavaScript (sin expresiones peligrosas) -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const HECHO_DATA = {
+            id: /*[[${hecho != null ? hecho.id : null}]]*/ null,
+            titulo: /*[[${hecho != null && hecho.titulo != null ? hecho.titulo : ''}]]*/ '',
+            descripcion: /*[[${hecho != null && hecho.descripcion != null ? hecho.descripcion : ''}]]*/ '',
+            categoriaNombre: /*[[${hecho != null && hecho.categoria != null && hecho.categoria.nombre != null ? hecho.categoria.nombre : ''}]]*/ '',
+            ubicacion: {
+                provincia: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : ''}]]*/ '',
+                departamento: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.departamento != null ? hecho.ubicacion.departamento : ''}]]*/ '',
+                latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
+                longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
+            },
+            etiquetasPresentes: /*[[${hecho != null && origenAgregador == true && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
+            fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
+            fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
+            contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
+            contribuyenteApellido: /*[[${contribuyente != null && contribuyente.apellido != null ? contribuyente.apellido : ''}]]*/ ''
+        };
+
+        const USER_DATA = {
+            loggedIn: /*[[${logeado == 1}]]*/ false, //TODO ver esto que seguro rompe al no tener mas logeado
+            role: /*[[${rol}]]*/ 0
+        };
+        /*]]>*/
+    </script>
+
+    <!-- Script específico para hecho-detail -->
+    <script th:src="@{/js/hecho-detail.js}"></script>
+</th:block>
+
+</html>

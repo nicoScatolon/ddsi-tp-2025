@@ -60,9 +60,10 @@ public class FuenteDinamica extends Fuente {
         }
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    //var builder = uriBuilder.path("/api/fuenteDinamica/hechos");
+                    uriBuilder = uriBuilder.path("/api/fuenteDinamica/hechos");
+                    uriBuilder.queryParam("estado", "ACEPTADO");
                     if (ultimaActualizacion != null) {
-                        return uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_DATE_TIME)).build();
+                        uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     return uriBuilder.build();
                 })

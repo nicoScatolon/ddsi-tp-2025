@@ -2,7 +2,6 @@ package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.ProcesarSolicitudInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -31,24 +31,38 @@ public class SolicitudesEliminacionController {
         this.solicitudesExecutor = executor;
     }
 
+    // --- API PUBLICA --- //
+
     @PostMapping("/publica")
+    @PreAuthorize("permitAll()")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> crearSolicitudesEliminacion(@RequestBody SolicitudEliminarHechoInputDTO request) {
-        CompletableFuture.runAsync(() -> solicitudesEliminacionService.crearSolicitudDesdeDTO(request), solicitudesExecutor);
-        return ResponseEntity.accepted().build();
+        return solicitudesEliminacionService.crearSolicitudDesdeDTO(request);
+
     }
 
     @GetMapping("/publica")
-    public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes() {
-        return this.solicitudesEliminacionService.findAll();
+    @PreAuthorize("permitAll()")
+    public List<SolicitudEliminarHechoOutputDTO> buscarTodasLasSolicitudes(@RequestParam(required = false) Long idCreador) {
+        return this.solicitudesEliminacionService.findAll(idCreador);
     }
 
     @GetMapping("/publica/{id}")
+    @PreAuthorize("permitAll()")
     public SolicitudEliminarHecho findById(@PathVariable Long id) {
         return solicitudesEliminacionService.findByID(id);
     }
 
+    // --- API PRIVADA --- //
+
+    @GetMapping("/privada")
+    @PreAuthorize("hasRole('ADMIN') ")
+    public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
+        return this.solicitudesEliminacionService.findSinProcesar();
+    }
+
     @PostMapping("/privada/solicitud")
+    @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> procesarSolicitud(
             @RequestBody ProcesarSolicitudInputDTO inputDTO,
             @RequestParam EstadoDeSolicitud accion

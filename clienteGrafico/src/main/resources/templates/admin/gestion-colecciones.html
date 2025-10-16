@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="gestion-colecciones">
+    <section id="gestion-colecciones" class="content-section">
+
+        <!-- Barra superior con botón crear -->
+        <div class="gestion-header">
+            <div class="gestion-stats">
+                <span class="stat-badge">
+                    <strong th:text="${colecciones.size()}">0</strong> colecciones en esta página
+                </span>
+            </div>
+            <a href="/colecciones/create" class="btn-crear-coleccion">
+                <i class="fas fa-plus"></i>
+                Crear Colección
+            </a>
+        </div>
+
+        <!-- Contenedor de colecciones -->
+        <div class="colecciones-gestion-container">
+
+            <!-- Mensaje si no hay colecciones -->
+            <p th:if="${colecciones.isEmpty()}" style="text-align:center; padding:4rem 2rem; color:var(--muted); font-size:1.1rem;">
+                No hay colecciones disponibles en esta página.
+            </p>
+
+            <!-- Grid de colecciones -->
+            <div th:unless="${colecciones.isEmpty()}" class="colecciones-grid">
+                <div th:each="coleccion : ${colecciones}" class="coleccion-card-gestion">
+
+                    <!-- Contenido -->
+                    <div class="coleccion-content">
+                        <h3 class="coleccion-titulo" th:text="${coleccion.titulo}">Título de la colección</h3>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="coleccion-actions">
+                        <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                           class="btn-action btn-view"
+                           title="Ver colección">
+                            <i class="fas fa-eye"></i>
+                            Ver
+                        </a>
+
+                        <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}"
+                           class="btn-action btn-edit"
+                           title="Editar colección">
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </a>
+
+                        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                              method="post"
+                              class="inline-form"
+                              onsubmit="return confirm('¿Seguro que querés eliminar esta colección?');">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn-action btn-delete" title="Eliminar colección">
+                                <i class="fas fa-trash-alt"></i>
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination-controls">
+            <a class="pagination-arrow"
+               th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+               th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+               th:href="@{/admin/colecciones(page=${paginaActual - 1})}">
+                ◀ Anterior
+            </a>
+
+            <div class="pagination-info">
+                <span class="page-number" th:text="${paginaActual + 1}">1</span>
+            </div>
+
+            <a class="pagination-arrow"
+               th:classappend="${colecciones.size() < pageSize} ? ' disabled' : ''"
+               th:onclick="${colecciones.size() < pageSize} ? 'return false;' : ''"
+               th:href="@{/admin/colecciones(page=${paginaActual + 1})}">
+                Siguiente ▶
+            </a>
+        </div>
+
+    </section>
+</th:block>
+</html>

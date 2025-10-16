@@ -21,13 +21,11 @@ public class ConsensoMultipleMencion implements IAlgoritmoConsenso {
     }
 
     @Override
-    public List<Hecho> curar(List<Hecho> listaHechos, List<Fuente> listaFuentes) {
+    public List<Hecho> curar(List<Hecho> listaHechos, List< List<Hecho> > listaHechosFuentes) {
         Map<Hecho, Integer> mapHechos = new HashMap<>();
         listaHechos.forEach(listaHecho -> mapHechos.put(listaHecho, 0));
 
-        for (IFuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
+        for (List<Hecho> hechosFuente : listaHechosFuentes) {
 
             List<Hecho> hechosRepetidos = mapHechos.keySet().stream()
                     .filter(h1 -> hechosFuente.stream()

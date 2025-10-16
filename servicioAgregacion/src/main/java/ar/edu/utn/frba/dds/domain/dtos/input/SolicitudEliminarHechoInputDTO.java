@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos.input;
 
 
-import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +13,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolicitudEliminarHechoInputDTO {
+    private Long idSolicitud;
     private String razonDeEliminacion;
     private Long hechoId;
     private LocalDateTime fechaCreacion;
-    private String nombreCreador;
-    private String apellidoCreador;
+    private Long idCreador;
 }

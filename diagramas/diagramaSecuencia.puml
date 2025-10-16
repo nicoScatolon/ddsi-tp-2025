@@ -1,0 +1,86 @@
+@startuml
+title Sesiones mixtas con identidad central: cookie (Front) + JWT (Back)
+
+actor Usuario as U
+participant "Front SSR\n(Thymeleaf/MVC)" as FRONT
+participant "LoginController" as LCTRL
+participant "SecurityControllerFront" as SCTRL
+participant "ServicioGestionUsuarios\n(API)" as AUTHAPI
+participant "ServicioGestionUsuarios\n(Server)" as AUTHSRV
+database "UsersDB" as UDB
+participant "BAC / MetaMapa API" as BAC
+
+== 1) GET login ==
+U -> FRONT: GET /login
+FRONT -> LCTRL: renderLogin()
+LCTRL --> U: 200 HTML (form)
+
+== 2) POST login (autenticación) ==
+U -> FRONT: POST /login {username, password}
+FRONT -> SCTRL: authenticate(username, password)
+
+SCTRL -> AUTHAPI: POST /auth/login {username, password}
+AUTHAPI -> AUTHSRV: login(username, password)
+AUTHSRV -> UDB: SELECT * FROM usuarios WHERE username=?
+UDB --> AUTHSRV: usuario + hash + roles + permisos
+AUTHSRV -> AUTHSRV: verificar password\nemitir access_token (corto)\n+ refresh_token (largo)
+AUTHSRV --> AUTHAPI: {access_token, refresh_token, roles, permisos}
+AUTHAPI --> SCTRL: idem
+
+SCTRL -> FRONT: crear HttpSession
+SCTRL -> FRONT: guardarEnSesion{ userId, roles, permisos,\n access_token, refresh_token }
+FRONT -> U: Set-Cookie: JSESSIONID=... (httpOnly)
+FRONT --> U: 302 Redirect /home
+
+== 3) Navegación a recurso protegido ==
+U -> FRONT: GET /admin/panel  (con cookie JSESSIONID)
+FRONT -> SCTRL: requireSession()
+SCTRL -> FRONT: obtener tokens desde sesión
+
+alt access_token vencido o ausente
+  SCTRL -> AUTHAPI: POST /auth/refresh {refresh_token}
+  AUTHAPI -> AUTHSRV: refresh(refresh_token)
+  AUTHSRV -> AUTHSRV: validar refresh\nemitir new access_token
+  AUTHSRV --> AUTHAPI: {new access_token}
+  AUTHAPI --> SCTRL: {new access_token}
+  SCTRL -> FRONT: actualizarEnSesion(access_token)
+end
+
+SCTRL -> BAC: GET /admin/panel\nAuthorization: Bearer access_token
+BAC -> BAC: validar firma y exp del JWT\nextraer claims (roles/permisos)
+alt @PreAuthorize falla
+  BAC --> SCTRL: 403 Forbidden
+  SCTRL --> U: 403 (vista "No tenés permiso")
+else OK
+  BAC --> SCTRL: 200 {datos panel}
+  SCTRL -> LCTRL: buildView(datos)
+  LCTRL --> U: 200 HTML (Thymeleaf)
+end
+
+== 4) Logout ==
+U -> FRONT: POST /logout
+FRONT -> SCTRL: invalidateSession()
+SCTRL -> FRONT: borrar tokens de sesión
+SCTRL -> AUTHAPI: POST /auth/logout {refresh_token}
+AUTHAPI -> AUTHSRV: revoke(refresh_token)
+AUTHSRV --> AUTHAPI: 204
+SCTRL --> U: 302 Redirect /
+
+== 5) Cambio de rol mientras la sesión existe ==
+' (Caso ilustrativo: un admin cambia roles en UsersDB)
+AUTHSRV -> UDB: UPDATE roles/permisos de usuario
+note over UDB
+ El access_token vigente NO cambia.
+ Se verán los nuevos roles al emitir
+ uno nuevo (refresh/login).
+end note
+
+... tiempo después ...
+SCTRL -> AUTHAPI: POST /auth/refresh {refresh_token}
+AUTHAPI -> AUTHSRV: refresh(refresh_token)
+AUTHSRV -> UDB: (opcional) re-hidratar claims
+UDB --> AUTHSRV: roles/permisos vigentes
+AUTHSRV --> AUTHAPI: {access_token con nuevos claims}
+AUTHAPI --> SCTRL: entregar nuevo token
+SCTRL -> FRONT: actualizarEnSesion(access_token)
+@enduml

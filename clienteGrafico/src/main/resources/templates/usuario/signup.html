@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/form :: html}">
+
+<div th:fragment="formContent">
+    <div class="form-header">
+        <h1>Crear Cuenta</h1>
+        <p>¡Unite a MetaMapa Ahora!</p>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger">
+        Credenciales invalidas
+    </div>
+
+    <form th:action="@{/signup}" method="post">
+        <div class="form-group">
+            <label for="firstName">Nombre</label>
+            <input type="text" id="firstName" th:field="*{usuario.nombre}" placeholder="John" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Apellido</label>
+            <input type="text" id="lastName" th:field="*{usuario.apellido}" placeholder="Doe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{usuario.email}" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaDeNacimiento">Fecha de Nacimiento</label>
+            <input type="date" id="fechaDeNacimiento" th:field="*{usuario.fechaNacimiento}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" th:field="*{usuario.password}" placeholder="********" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm-password">Confirmar Contraseña</label>
+            <input type="password" id="confirm-password" th:field="*{usuario.confirmPassword}" placeholder="********" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Registrarse</button>
+    </form>
+
+    <div class="form-footer">
+        <p>¿Ya tenes cuenta? <a th:href="@{/login}">Iniciar Sesión</a></p>
+    </div>
+</div>
+
+</html>

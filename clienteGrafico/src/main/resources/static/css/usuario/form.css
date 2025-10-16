@@ -1,0 +1,191 @@
+html, body{
+    height: 100%;
+    background: url("../../img/background-home.jpg")center/cover no-repeat fixed;
+}
+
+/* Wrapper que centra el formulario */
+.form-wrapper {
+    min-height: calc(100vh - var(--desktop-nav-height) - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Card del formulario */
+.form-card {
+    background: rgba(0,0,0,0.7);
+    border-radius: var(--radius-lg, 20px);
+    box-shadow: 0 10px 40px rgba(2, 6, 23, 0.08);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 440px;
+}
+
+/* Encabezado del formulario */
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+}
+
+.form-header p {
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+/* Grupos de formulario */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: var(--radius-sm, 6px);
+    font-size: 0.95rem;
+    transition: all .2s ease;
+    background: #fafbfc;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(47, 96, 244, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Mensajes de error */
+.error-message {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* Alert general */
+.alert {
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-sm, 6px);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+/* Botón submit principal */
+.btn-submit {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--color-accent);
+    color: var(--white);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg, 20px);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .2s ease;
+    margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(47, 96, 244, 0.25);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Link alternativo (ej: "¿Ya tienes cuenta?") */
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-footer p {
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.form-footer a {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.form-footer a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.25rem;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    font-size: 0.9rem;
+    color: #ffffff;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .form-card {
+        padding: 1.75rem;
+    }
+
+    .form-header h1 {
+        font-size: 1.5rem;
+    }
+}

@@ -62,28 +62,31 @@ public class Coleccion {
     private List<Hecho> listaHechosCurados = new ArrayList<>();
 
     //Ahora que persistimos en BD, no harían falta esas listas en memoria
-    @Transient
+    @Column(nullable = false, name = "actualizarHechos")
     @Setter private Boolean actualizarHechos = true;
 
-    @Transient
+    @Column(nullable = false, name = "curarHechos")
     @Setter private Boolean curarHechos = false; //arranca en false porque curo a partir de la lista de hechos, asi que necesito actualizar primero
+
+    @Column (nullable = false, name= "destacada")
+    @Setter private Boolean destacada = false;
 
     public Coleccion(String handle, String titulo, String descripcion, IAlgoritmoConsenso algoritmoConsenso) {
         this.handle = handle;
         this.titulo = titulo;
         this.descripcion = descripcion;
-        if (algoritmoConsenso != null) {
-            this.algoritmoConsenso = algoritmoConsenso;
-        }
+        this.algoritmoConsenso = algoritmoConsenso;
     }
 
     public void agregarCriterio(Criterio criterio) {
         this.listaCriterios.add(criterio);
+        criterio.setColeccion(this);
         actualizarHechos = true;
     }
 
     public void eliminarCriterio(Criterio criterio) {
         this.listaCriterios.remove(criterio);
+        criterio.setColeccion(null);
         actualizarHechos = true;
     }
 
@@ -115,13 +118,15 @@ public class Coleccion {
         List<Fuente> fuentesEliminadas = listaFuentes.stream()
                 .filter(f1 -> !nuevasFuentes.contains(f1))
                 .toList();
+
+        if ( !fuentesEliminadas.isEmpty()) {
+            fuentesEliminadas.forEach(this::eliminarFuente);
+        }
         if ( !fuentesNuevas.isEmpty() ) {
             fuentesNuevas.forEach(this::agregarFuente);
             curarHechos = false; // quiero que primero se actualize y despues cure, para que no quede mal la lista de hechosCurados
         }
-        if ( !fuentesEliminadas.isEmpty()) {
-            fuentesEliminadas.forEach(this::eliminarFuente);
-        }
+
     }
 
     public void setIAlgoritmoConsenso(IAlgoritmoConsenso IAlgoritmoConsenso) {
@@ -138,27 +143,18 @@ public class Coleccion {
                 .collect(Collectors.toList());
     }
 
-    public void actualizarHechos() {
-        List<Hecho> listaAuxiliar = new ArrayList<>();
-        //cargamos todos los hechos de las fuentes
-        for (Fuente fuente : listaFuentes) {
-            FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-            List<Hecho> hechosFuente = adapter.obtenerHechos();
-            if (hechosFuente != null) {
-                listaAuxiliar.addAll(hechosFuente);
-            }
-        }
+    public void actualizarHechos( List<Hecho> hechosFuentes ) {
         // filtramos estos hechos
-        this.listaHechos = this.filtrarHechos(listaAuxiliar);
+        this.listaHechos = this.filtrarHechos(hechosFuentes);
         this.setCurarHechos(true);
     }
 
-    public void curarHechos() {
+    public void curarHechos( List< List<Hecho> > listaHechosFuentes) {
         if (algoritmoConsenso == null) {
             this.listaHechosCurados = this.listaHechos;
         }
         else
-            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaFuentes);
+            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
         setCurarHechos(false);
     }
 

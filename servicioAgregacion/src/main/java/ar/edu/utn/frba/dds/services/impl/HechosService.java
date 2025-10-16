@@ -4,31 +4,32 @@ import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
-import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
 import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.HechoComparator;
-import ar.edu.utn.frba.dds.domain.entities.Hecho.HechoComparator.IComandComparator;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -78,51 +79,65 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO){
+    public List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO, Boolean fueEliminado){
         HechoFilter hechosFilter = DTOConverter.convertirHechoFilterInputDTO(filterDTO);
-        Categoria categoriaEntidad = null; //la inicializo en null
-        //Verifico si la categoria existe
-        if (hechosFilter.getCategoria() != null){
-            categoriaEntidad = categoriaService.findByNombre(hechosFilter.getCategoria());
-            if (categoriaEntidad == null){
-                hechosFilter.setCategoria(null);
-            }
-        }
-        List<Criterio> criterios = this.criterioFactory.crearCriteriosParametros(categoriaEntidad, hechosFilter);
 
         if (filterDTO.getPage() == null) { // no tiene pagina -> devuelvo tod0s los hechos
-            if (criterios.isEmpty()) {
-                return this.findAllOutput();
-            } else {
-                return this.findAll().stream()
-                        .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
-                        .map(DTOConverter::convertirHechoOutputDTO)
-                        .toList();
-            }
+            return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter, fueEliminado))
+                    .stream()
+                    .map(DTOConverter::convertirHechoOutputDTO)
+                    .toList();
         }
 
         Pageable pageable = PageRequest.of(filterDTO.getPage(), pageSize);
 
-        Page<Hecho> hechosPagina = hechosRepository.findAll(pageable);
-
-        if (criterios.isEmpty()) {
-            return hechosPagina.getContent().stream()
-                    .map(DTOConverter::convertirHechoOutputDTO)
-                    .toList();
-        } else {
-            return hechosPagina.getContent().stream()
-                    .filter(h -> criterios.stream().allMatch(c -> c.pertenece(h)))
-                    .map(DTOConverter::convertirHechoOutputDTO)
-                    .toList();
-        }
+        return this.hechosRepository.findAll(buildHechosSpecification(hechosFilter, fueEliminado), pageable)
+                .stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
+                .toList();
     }
 
     @Override
-    public List<HechoMapaOutputDTO> getHechosMapa () {
-        return this.findAll().stream()
-                .map(DTOConverter::convertirHechoMapaOutputDTO)
+    public List<HechoMapaOutputDTO> getHechosMapa() {
+        return hechosRepository.findAllMapaDTO(); // ya filtra solo los que tienen lat/lng
+    }
+
+//    @Override
+//    public List<HechoMapaOutputDTO> getHechosMapa () {
+//        Specification<Hecho> spec = (root, query, cb) -> {
+//            return cb.and(
+//                    cb.isNotNull(root.get("ubicacion")),
+//                    cb.isNotNull(root.get("ubicacion").get("latitud")),
+//                    cb.isNotNull(root.get("ubicacion").get("longitud"))
+//            );
+//        };
+//        return this.hechosRepository.findAllMapaDTO(spec)
+//                .stream()
+//                .map(DTOConverter::convertirHechoMapaOutputDTO)
+//                .toList();
+//    }
+
+    @Override
+    public List<HechoOutputDTO> getHechosDestacados() {
+        return this.hechosRepository.findHechoByDestacado(true)
+                .stream()
+                .map(DTOConverter::convertirHechoOutputDTO)
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> setDestacadoHecho(Long idHecho, Boolean estaDestacado){
+        Optional<Hecho> optionalHecho = hechosRepository.findById(idHecho);
+        if (optionalHecho.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Hecho hecho = optionalHecho.get();
+        hecho.setDestacado(estaDestacado); // Hibernate hará el update al hecho al ser transaccional
+        return ResponseEntity.ok().build();
+    }
+
 
     @Transactional
     @Override
@@ -134,6 +149,7 @@ public class HechosService implements IHechosService {
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
+        /* TODO GEOREFF CAMBIO, OTRA API, LO COMENTAMOS X AHORA
         // 2) preparar ubicaciones y filtrar nulos
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
                 .map(Hecho::getUbicacion)
@@ -151,6 +167,7 @@ public class HechosService implements IHechosService {
             // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
         }
         logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
+        */
 
         // 4) persistir en batches para no saturar la BD
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());
@@ -163,13 +180,15 @@ public class HechosService implements IHechosService {
             from = to;
             logger.info("Persistidos {}/{}", to, hechosActualizados.size());
         }
+
         logger.info("Persistencia terminada en {} ms (total {} ms)",
-                (System.currentTimeMillis() - tg0),
+                //(System.currentTimeMillis() - tg0),
+                (System.currentTimeMillis() - 0L),
                 (System.currentTimeMillis() - t0));
     }
 
-    //TODO hacer configuracion del comparator por datos del properties
-
+    @Override
+    @Transactional
     public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
         if (etiqueta == null || etiqueta.isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -183,6 +202,8 @@ public class HechosService implements IHechosService {
         return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe pasar una URL
     }
 
+    @Override
+    @Transactional
     public ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta){
         if (etiqueta == null || etiqueta.isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -207,5 +228,64 @@ public class HechosService implements IHechosService {
                 logger.info
                         ("Hecho cargado - ID: {} - Titulo: {} -  Descripción: {} -  Categoria: {} -  Fecha De Ocurrencia: {}"
                                 , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
+    }
+
+
+    /*
+    Root es la tabla principal a la que accedemos
+    cb es "CriteriaBuilder", que crea los criterios para los request a la base de datos
+    query es la consulta completa, sirve si necesitamos hacer joins, fetchs, cambiar orden, etc.
+    Los "Predicate" son las consultas logicas que crea el criteriaBuilder
+    */
+    public Specification<Hecho> buildHechosSpecification(HechoFilter hechosFilter, Boolean fueEliminado) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (hechosFilter.getCategoria() != null) {
+                predicates.add(cb.equal(root.get("categoria").get("nombre"), hechosFilter.getCategoria() ));
+            }
+            if (hechosFilter.getFReporteDesde() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("fechaDeCarga"), hechosFilter.getFReporteDesde()));
+            }
+            if (hechosFilter.getFReporteHasta() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("fechaDeCarga"), hechosFilter.getFReporteHasta()));
+            }
+            if (hechosFilter.getFAconDesde() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("fechaDeOcurrencia"), hechosFilter.getFAconDesde()));
+            }
+            if (hechosFilter.getFAconHasta() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("fechaDeOcurrencia"), hechosFilter.getFAconHasta()));
+            }
+            if (hechosFilter.getFuenteId() != null) {
+                predicates.add(cb.equal(root.get("fuente").get("id"), hechosFilter.getFuenteId()));
+            }
+            if (hechosFilter.getProvincia() != null) {
+                predicates.add(cb.equal(root.get("ubicacion").get("provincia"), hechosFilter.getProvincia()));
+            }
+            if (hechosFilter.getEtiqueta() != null && !hechosFilter.getEtiqueta().isBlank()) {
+                // Hacemos un JOIN entre Hecho y Etiqueta
+                Join<Object, Object> joinEtiquetas = root.join("etiquetas", JoinType.INNER);
+                predicates.add( cb.equal( cb.lower( joinEtiquetas.get("nombre") ), hechosFilter.getEtiqueta().toLowerCase() ) );
+            }
+
+            if (fueEliminado != null) {
+                predicates.add(cb.equal(root.get("fueEliminado"), fueEliminado));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    @Override
+    public List<Hecho> findByFuente(Fuente fuente){
+        return this.hechosRepository.findAllByFuente(fuente);
+    }
+
+    public List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable){
+        if (pageable == null){
+            return this.hechosRepository.findAll(spec);
+        } else {
+            return this.hechosRepository.findAll(spec, pageable).getContent();
+        }
     }
 }
