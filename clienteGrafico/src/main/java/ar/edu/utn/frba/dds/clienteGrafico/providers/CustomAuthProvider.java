@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.dds.clienteGrafico.providers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.GestionUsuariosService;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.RolesPermisosDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RolesPermisosDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

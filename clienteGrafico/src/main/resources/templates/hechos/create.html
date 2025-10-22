@@ -73,8 +73,17 @@
             <!-- Dirección -->
             <div class="form-group" id="provinciaGroup" style="display:none;">
                 <label for="provincia">Provincia</label>
-                <input type="text" id="provincia" th:field="*{ubicacion.provincia}" placeholder="Ej: Buenos Aires">
+                <input type="text"
+                       id="provincia"
+                       th:field="*{ubicacion.provincia}"
+                       placeholder="Ej: Buenos Aires"
+                       list="provincias-list"
+                       autocomplete="off">
+                <datalist id="provincias-list">
+                    <option th:each="prov : ${provincias}" th:value="${prov}"></option>
+                </datalist>
             </div>
+
             <div class="form-group" id="localidadGroup" style="display:none;">
                 <label for="localidad">Localidad</label>
                 <input type="text" id="localidad" th:field="*{ubicacion.departamento}" placeholder="Ej: La Plata">

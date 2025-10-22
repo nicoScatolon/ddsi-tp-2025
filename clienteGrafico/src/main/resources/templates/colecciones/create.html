@@ -80,25 +80,39 @@
 
                         <div id="categoriaTemplate" style="display:none;">
                             <label>Buscar categoría</label>
-                            <input type="text" class="criterio-categoria-input" placeholder="Escriba para buscar..." list="listaCategorias">
+                            <input type="text"
+                                   class="criterio-categoria-input"
+                                   placeholder="Escriba para buscar..."
+                                   list="listaCategorias"
+                                   autocomplete="off">
                             <datalist id="listaCategorias">
                                 <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
                             </datalist>
                         </div>
 
-                        <select id="etiquetaTemplate" style="display:none;">
-                            <option value="">-- seleccionar etiqueta --</option>
-                            <option th:each="et : ${etiquetas}"
-                                    th:value="${et.id}"
-                                    th:text="${et.nombre}"></option>
-                        </select>
+                        <div id="etiquetaTemplate" style="display:none;">
+                            <label>Buscar etiqueta</label>
+                            <input type="text"
+                                   class="criterio-etiqueta-input"
+                                   placeholder="Escriba para buscar..."
+                                   list="listaEtiquetas"
+                                   autocomplete="off">
+                            <datalist id="listaEtiquetas">
+                                <option th:each="et : ${etiquetas}" th:value="${et}" th:text="${et}"></option>
+                            </datalist>
+                        </div>
 
-                        <select id="provinciaTemplate" style="display:none;">
-                            <option value="">-- seleccionar provincia --</option>
-                            <option th:each="prov : ${provincias}"
-                                    th:value="${prov}"
-                                    th:text="${prov}"></option>
-                        </select>
+                        <div id="provinciaTemplate" style="display:none;">
+                            <label>Buscar provincia</label>
+                            <input type="text"
+                                   class="criterio-provincia-input"
+                                   placeholder="Escriba para buscar..."
+                                   list="listaProvincias"
+                                   autocomplete="on">
+                            <datalist id="listaProvincias">
+                                <option th:each="prov : ${provincias}" th:value="${prov}" th:text="${prov}"></option>
+                            </datalist>
+                        </div>
 
                         <div id="criteriosContainer"></div>
                     </div>
@@ -117,12 +131,12 @@
                 <div id="generatedHiddenFields" style="display:none;"></div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
                     <button type="submit" class="btn btn-primary">
                         <i th:class="${nueva} ? 'fas fa-save' : 'fas fa-sync'"></i>
                         <span th:text="${nueva ? 'Crear' : 'Actualizar'}">Crear</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i> Cancelar
                     </button>
                 </div>
             </form>

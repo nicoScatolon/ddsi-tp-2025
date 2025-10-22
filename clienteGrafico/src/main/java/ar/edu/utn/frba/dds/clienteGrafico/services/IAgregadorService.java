@@ -23,6 +23,8 @@ public interface IAgregadorService {
     List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado);
 
     List<String> obtenerCategoriasShort();
+    List<String> obtenerProvinciasShort();
+    List<String> obtenerEtiquetasShort();
 
     List<FuenteInputDTO> getFuentesPreview();
 

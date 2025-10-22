@@ -113,7 +113,7 @@
                     <!-- Acciones solo para usuarios logueados -->
                     <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item" style="margin-top:12px;" >
                         <!-- Botón solicitar eliminación (usuarios logueados) -->
-                        <button sec:authorize="isAuthenticated()" id="deleteBtn" class="btn-delete-request">
+                        <button id="deleteBtn" class="btn-delete-request">
                             <i class="fas fa-exclamation-triangle"></i>
                             Solicitar eliminación
                         </button>
@@ -200,9 +200,9 @@
                 <textarea id="reason"
                           name="razonEliminacion"
                           rows="6"
-                          placeholder="Escribe tu razón aquí... (mínimo 500 caracteres)"
+                          th:placeholder="${#authorization.expression('hasAnyRole(''ADMIN'', ''CONTRIBUYENTE'', ''ADMINSUPERIOR'')') ? 'Escribe tu razón aquí...' : 'Escribe tu razón aquí... (mínimo 500 caracteres)'}"
                           required
-                          minlength="500"></textarea>
+                          th:attr="minlength=${#authorization.expression('hasAnyRole(''ADMIN'', ''CONTRIBUYENTE'', ''ADMINSUPERIOR'')') ? null : '500'}"></textarea>
 
                 <!-- ID del hecho -->
                 <input type="hidden" name="hechoId" th:value="${hecho.id}" />

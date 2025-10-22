@@ -147,7 +147,7 @@ public class AgregadorService implements IAgregadorService {
         try {
             webApiCallerService.put(
                     agregadorUrl + "/api/hechos/privada/destacado/" + id,
-                    null,
+                    "",
                     Void.class
             );
             return ResponseEntity.ok().build();
@@ -155,6 +155,7 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al destacar el hecho con id " + id + ": " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public ResponseEntity<Void> eliminarDestacarHecho(Long id) {
@@ -182,20 +183,6 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al obtener las colecciones destacadas: " + e.getMessage(), e);
         }
     }
-
-//    @Override
-//    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
-//        try {
-//            return webApiCallerService.getList(
-//                    agregadorUrl + "/api/colecciones/publica/destacadas",
-//                    ColeccionPreviewInputDTO.class
-//            );
-//        } catch (NotFoundException e) {
-//            throw new NotFoundException("colecciones destacadas", "");
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("Error al obtener las colecciones destacadas: " + e.getMessage(), e);
-//        }
-//    }
 
     @Override
     public ResponseEntity<Void> destacarColeccion(String handle) {
@@ -272,6 +259,42 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al obtener las categorías short: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public  List<String> obtenerEtiquetasShort() {
+        return null; //Todo
+    }
+
+    @Override
+    public List<String> obtenerProvinciasShort() { //Todo, Pienso q se le pida al agregador aunq no es necesario
+        return List.of(
+                "Buenos Aires",
+                "Catamarca",
+                "Chaco",
+                "Chubut",
+                "Ciudad Autónoma de Buenos Aires",
+                "Córdoba",
+                "Corrientes",
+                "Entre Ríos",
+                "Formosa",
+                "Jujuy",
+                "La Pampa",
+                "La Rioja",
+                "Mendoza",
+                "Misiones",
+                "Neuquén",
+                "Río Negro",
+                "Salta",
+                "San Juan",
+                "San Luis",
+                "Santa Cruz",
+                "Santa Fe",
+                "Santiago del Estero",
+                "Tierra del Fuego",
+                "Tucumán"
+        );
+    }
+
 
 
     // --- SOLICITUDES ELIMINACION --- //

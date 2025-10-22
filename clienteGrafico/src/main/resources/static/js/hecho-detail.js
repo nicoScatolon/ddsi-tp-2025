@@ -46,55 +46,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const setupDeleteModal = () => {
         const deleteBtn = document.getElementById('deleteBtn');
         const modal = document.getElementById('deleteModal');
-        if (!deleteBtn || !modal) return;
+        if (!deleteBtn || !modal) {
+            console.log('Botón o modal no encontrado');
+            return;
+        }
 
         const closeBtn = modal.querySelector('.close');
 
+        console.log('Modal setup iniciado correctamente');
+
         // Abrir modal al click
-        deleteBtn.addEventListener('click', () => {
+        deleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Click en botón de eliminar');
             modal.classList.add('open');
         });
 
         // Cerrar modal al click en la "X"
         if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 modal.classList.remove('open');
             });
         }
 
         // Cerrar modal al hacer click fuera del contenido
-        window.addEventListener('click', (e) => {
+        modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.remove('open');
             }
         });
-    };
 
-    // ===== DROPDOWN NAVBAR =====
-    const setupDesktopDropdown = () => {
-        const desktopUserBtn = document.getElementById('desktopUserBtn');
-        const desktopUserDropdown = document.getElementById('desktopUserDropdown');
-        if (!desktopUserBtn || !desktopUserDropdown) return;
-
-        desktopUserBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            const isVisible = desktopUserDropdown.style.display === 'block';
-            desktopUserDropdown.style.display = isVisible ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', () => {
-            if (desktopUserDropdown.style.display === 'block') {
-                desktopUserDropdown.style.display = 'none';
-            }
-        });
+        // Prevenir que clicks dentro del modal-content lo cierren
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
     };
 
     // ===== INICIALIZAR FUNCIONALIDADES =====
-    if (USER_DATA?.loggedIn) {
-        setupDeleteModal();
-    }
-
-    setupDesktopDropdown();
+    setupDeleteModal();
+    // NO inicializamos setupDesktopDropdown aquí - lo maneja navbar.js
 
     console.log('Hecho cargado:', HECHO_DATA);
     console.log('Usuario:', USER_DATA);

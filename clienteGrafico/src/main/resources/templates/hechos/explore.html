@@ -16,15 +16,31 @@
                     <!-- Provincia -->
                     <div class="filter-group">
                         <label for="provincia">Provincia:</label>
-                        <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires"
-                               th:value="${filtros?.provincia}">
+                        <input type="text"
+                               id="provincia"
+                               name="provincia"
+                               placeholder="Ej: Buenos Aires"
+                               th:value="${filtros?.provincia}"
+                               list="provincias-list"
+                               autocomplete="off">
+                        <datalist id="provincias-list">
+                            <option th:each="prov : ${provincias}" th:value="${prov}"></option>
+                        </datalist>
                     </div>
 
                     <!-- Categoría -->
                     <div class="filter-group">
                         <label for="categoria">Categoría:</label>
-                        <input type="text" id="categoria" name="categoria" placeholder="Ej: Robo, Violencia..."
-                               th:value="${filtros?.categoria}">
+                        <input type="text"
+                               id="categoria"
+                               name="categoria"
+                               placeholder="Ej: Robo, Violencia..."
+                               th:value="${filtros?.categoria}"
+                               list="categorias-list"
+                               autocomplete="off">
+                        <datalist id="categorias-list">
+                            <option th:each="cat : ${categorias}" th:value="${cat}"></option>
+                        </datalist>
                     </div>
 
                     <!-- Fechas de reporte -->
@@ -65,9 +81,18 @@
                     <!-- Etiqueta -->
                     <div class="filter-group">
                         <label for="etiqueta">Etiqueta:</label>
-                        <input type="text" id="etiqueta" name="etiqueta" placeholder="Ej: Inseguridad, Tránsito..."
-                               th:value="${filtros?.etiqueta}">
+                        <input type="text"
+                               id="etiqueta"
+                               name="etiqueta"
+                               placeholder="Ej: Inseguridad, Tránsito..."
+                               th:value="${filtros?.etiqueta}"
+                               list="etiquetas-list"
+                               autocomplete="off">
+                        <datalist id="etiquetas-list">
+                            <option th:each="tag : ${etiquetas}" th:value="${tag}"></option>
+                        </datalist>
                     </div>
+
 
                     <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
 

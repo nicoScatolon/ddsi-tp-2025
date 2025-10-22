@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponseDTO {
-    private String accessToken;
+public class RefreshTokenDTO {
     private String refreshToken;
 }

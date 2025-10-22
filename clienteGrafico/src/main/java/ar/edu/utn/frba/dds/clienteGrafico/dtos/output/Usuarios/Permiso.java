@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios;
 
 public enum Permiso {
     SOLICITAR_ELIMINACION, // Visualizador y Contribuyente

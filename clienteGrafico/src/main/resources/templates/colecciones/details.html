@@ -82,18 +82,34 @@
           </div>
 
           <!-- Provincia -->
-          <div class="filter-group">
-            <label for="provincia">Provincia:</label>
-            <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires"
-                   th:value="${filtros?.provincia}">
-          </div>
+            <div class="filter-group">
+                <label for="provincia">Provincia:</label>
+                <input type="text"
+                       id="provincia"
+                       name="provincia"
+                       placeholder="Ej: Buenos Aires"
+                       th:value="${filtros?.provincia}"
+                       list="provincias-list"
+                       autocomplete="off">
+                <datalist id="provincias-list">
+                    <option th:each="prov : ${provincias}" th:value="${prov}"></option>
+                </datalist>
+            </div>
 
-          <!-- Categoría -->
-          <div class="filter-group">
-            <label for="categoria">Categoría:</label>
-            <input type="text" id="categoria" name="categoria" placeholder="Ej: Robo, Violencia..."
-                   th:value="${filtros?.categoria}">
-          </div>
+            <!-- Categoría -->
+            <div class="filter-group">
+                <label for="categoria">Categoría:</label>
+                <input type="text"
+                       id="categoria"
+                       name="categoria"
+                       placeholder="Ej: Robo, Violencia..."
+                       th:value="${filtros?.categoria}"
+                       list="categorias-list"
+                       autocomplete="off">
+                <datalist id="categorias-list">
+                    <option th:each="cat : ${categorias}" th:value="${cat}"></option>
+                </datalist>
+            </div>
 
           <!-- Fechas de reporte -->
           <div class="filter-group">
@@ -131,13 +147,22 @@
           </div>
 
           <!-- Etiqueta -->
-          <div class="filter-group">
-            <label for="etiqueta">Etiqueta:</label>
-            <input type="text" id="etiqueta" name="etiqueta" placeholder="Ej: Inseguridad, Tránsito..."
-                   th:value="${filtros?.etiqueta}">
-          </div>
+            <div class="filter-group">
+                <label for="etiqueta">Etiqueta:</label>
+                <input type="text"
+                       id="etiqueta"
+                       name="etiqueta"
+                       placeholder="Ej: Inseguridad, Tránsito..."
+                       th:value="${filtros?.etiqueta}"
+                       list="etiquetas-list"
+                       autocomplete="off">
+                <datalist id="etiquetas-list">
+                    <option th:each="tag : ${etiquetas}" th:value="${tag}"></option>
+                </datalist>
+            </div>
 
-          <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
+
+            <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
 
           <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
         </form>
@@ -151,19 +176,19 @@
              th:href="@{/hechos/{id}(id=${hecho.id})}"
              th:aria-label="${hecho.titulo}">
 
-            <!-- 1️⃣ Título -->
+            <!-- Título -->
             <div class="card-title" th:text="${hecho.titulo}">
               Título de ejemplo
             </div>
 
-            <!-- 2️⃣ Descripción -->
+            <!-- Descripción -->
             <div class="card-description">
               <p th:text="${#strings.abbreviate(hecho.descripcion, 150)}">
                 Descripción de ejemplo
               </p>
             </div>
 
-            <!-- 3️⃣ Datos extra -->
+            <!-- Datos extra -->
             <div class="card-data">
               <p>
                 <strong>📍</strong>
@@ -188,7 +213,7 @@
 
             </div>
 
-            <!-- 4️⃣ Imagen -->
+            <!-- Imagen -->
             <div class="card-img"
                  th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
                  aria-hidden="true">

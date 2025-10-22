@@ -52,6 +52,13 @@ public class ColeccionesController {
             hechosColeccion = new ArrayList<>();
         }
 
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> categorias = agregadorService.obtenerCategoriasShort(); //Todo podrian ser unicamente las categorias de la coleccion, ahora manda todas
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas
+
+        model.addAttribute("etiquetas", etiquetas);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("titulo", String.format("Coleccion - %s", coleccion.getHandle()));
         model.addAttribute("coleccion", coleccion);
         model.addAttribute("hechos", hechosColeccion);
@@ -68,7 +75,11 @@ public class ColeccionesController {
         ColeccionFormDTO coleccionFormDTO = new ColeccionFormDTO(); // Usar el form DTO
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
 
+        model.addAttribute("etiquetas", etiquetas);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("titulo", "Crear Colección");
         model.addAttribute("coleccionDTO", coleccionFormDTO);
         model.addAttribute("fuentes", fuentes);
@@ -94,7 +105,7 @@ public class ColeccionesController {
     }
 
     @PutMapping()
-    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) {
+    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) { //todo Forbidden
         ColeccionOutputDTO coleccionDTO = DTOConverter.convertirFormToOutput(coleccionFormDTO);
         agregadorService.editarColeccion(coleccionDTO);
 
@@ -105,7 +116,11 @@ public class ColeccionesController {
     public String modificarColeccion(Model model, @PathVariable String handle) {
         String actionUrl = "/colecciones";
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
+
         ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);
 
         // Convertir ColeccionInputDTO a ColeccionFormDTO
@@ -116,6 +131,8 @@ public class ColeccionesController {
                 .map(FuenteInputDTO::getFuenteId)
                 .toList();
 
+        model.addAttribute("provincias", provincias);
+        model.addAttribute("etiquetas", etiquetas);
         model.addAttribute("fuentesSeleccionadas", fuentesSeleccionadas);
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);

@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.RefreshTokenDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RefreshTokenDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

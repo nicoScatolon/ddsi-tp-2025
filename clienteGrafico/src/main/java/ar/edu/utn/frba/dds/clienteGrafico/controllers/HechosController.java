@@ -38,9 +38,17 @@ public class HechosController {
         List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
 
+        List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas
+
+
         model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
+        model.addAttribute("etiquetas", etiquetas);
         model.addAttribute("hechos", hechos);
         model.addAttribute("fuentes", fuentes);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
@@ -51,11 +59,13 @@ public class HechosController {
     public String crearHecho(Model model) {
         HechoInputDTO hechoInputDTO = this.instanciarHecho();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
 
         model.addAttribute("actionUrl", "/hechos/create");
         model.addAttribute("esNuevo", true);
         model.addAttribute("titulo", "Crear Hecho");
         model.addAttribute("hechoDTO", hechoInputDTO);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("categorias", categorias);
         return "/hechos/create";
     }

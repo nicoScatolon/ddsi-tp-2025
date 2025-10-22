@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.RolesPermisosDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RolesPermisosDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.AuthResponseDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.RegisterUsuarioRequestDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UsuarioResponseDTO;
@@ -10,10 +10,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Map;
