@@ -51,7 +51,7 @@
                    th:classappend="${paginaActual == 0} ? ' disabled' : ''"
                    th:onclick="${paginaActual == 0} ? 'return false;' : ''"
                    th:href="@{/colecciones(page=${paginaActual - 1})}">
-                    ◀
+                    <i class="fas fa-chevron-left"></i>
                 </a>
 
                 <!-- Número de página actual -->
@@ -62,7 +62,7 @@
                    th:classappend="${colecciones.size() < 20} ? ' disabled' : ''"
                    th:onclick="${colecciones.size() < 20} ? 'return false;' : ''"
                    th:href="@{/colecciones(page=${paginaActual + 1})}">
-                    ▶
+                    <i class="fas fa-chevron-right"></i>
                 </a>
             </div>
 

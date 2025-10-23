@@ -316,3 +316,35 @@ a {
     justify-content: center;
     font-weight: 600;
 }
+
+/* Botón flotante para crear hecho */
+.fab-create {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #2F60F4;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    z-index: 1000;
+    text-decoration: none;
+}
+
+.fab-create:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(47, 96, 244, 0.5);
+    background: #1746D2;
+    color: #fff;
+}
+
+.fab-create:active {
+    transform: scale(0.95);
+}

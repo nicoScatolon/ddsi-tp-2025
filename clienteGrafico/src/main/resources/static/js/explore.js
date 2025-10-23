@@ -18,4 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     console.log('Eventos de click configurados');
+
+    // Verificar que el botón FAB existe
+    const fabButton = document.querySelector('.fab-create');
+    if (fabButton) {
+        console.log('Botón FAB encontrado:', fabButton);
+    } else {
+        console.warn('Botón FAB no encontrado en el DOM');
+    }
 });

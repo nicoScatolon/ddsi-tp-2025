@@ -7,12 +7,12 @@
     </th:block>
 
     <aside class="sidebar">
-        <h2>Filtros</h2>
+        <h2><strong>Filtros</strong></h2>
 
         <form th:action="@{/hechos}" method="get" >
             <!-- Provincia -->
             <div class="filter-group collapsible collapsed">
-                <label>Provincia</label>
+                <label><i class="fas fa-map-marker-alt" style="color: black; margin-right: 8px;"></i>Provincia</label>
                 <div class="filter-content">
                     <input type="text"
                            id="provincia"
@@ -29,7 +29,7 @@
 
             <!-- Categoría -->
             <div class="filter-group collapsible collapsed">
-                <label>Categoría</label>
+                <label><i class="fas fa-folder" style="color: black; margin-right: 8px;"></i>Categoría</label>
                 <div class="filter-content">
                     <input type="text"
                            id="categoria"
@@ -46,7 +46,7 @@
 
             <!-- Fechas de reporte -->
             <div class="filter-group collapsible collapsed">
-                <label>Fecha de reporte</label>
+                <label><i class="fas fa-calendar-check" style="color: black; margin-right: 8px;"></i>Fecha de reporte</label>
                 <div class="filter-content date-range">
                     <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
                            th:value="${filtros?.fReporteDesde != null ? #temporals.format(filtros.fReporteDesde, 'yyyy-MM-dd') : ''}">
@@ -57,7 +57,7 @@
 
             <!-- Fechas de acontecimiento -->
             <div class="filter-group collapsible collapsed">
-                <label>Fecha del acontecimiento</label>
+                <label><i class="fas fa-calendar-alt" style="color: black; margin-right: 8px;"></i>Fecha del acontecimiento</label>
                 <div class="filter-content date-range">
                     <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
                            th:value="${filtros?.fAconDesde != null ? #temporals.format(filtros.fAconDesde, 'yyyy-MM-dd') : ''}">
@@ -68,7 +68,7 @@
 
             <!-- Fuente -->
             <div class="filter-group collapsible collapsed">
-                <label>Fuente</label>
+                <label><i class="fas fa-newspaper" style="color: black; margin-right: 8px;"></i>Fuente</label>
                 <div class="filter-content">
                     <select id="fuenteId" name="fuenteId">
                         <option value="">-- Seleccionar fuente --</option>
@@ -83,7 +83,7 @@
 
             <!-- Etiqueta -->
             <div class="filter-group collapsible collapsed">
-                <label>Etiqueta</label>
+                <label><i class="fas fa-tags" style="color: black; margin-right: 8px;"></i>Etiqueta</label>
                 <div class="filter-content">
                     <input type="text"
                            id="etiqueta"
@@ -128,23 +128,23 @@
                     <!-- Datos extra -->
                     <div class="card-data">
                         <p>
-                            <strong>📍</strong>
+                            <i class="fas fa-map-marker-alt" style="color: #e74c3c;"></i>
                             <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : '-'}">Ubicación</span>
                         </p>
                         <p>
-                            <strong>🏷️</strong>
+                            <i class="fas fa-folder-open" style="color: #f39c12;"></i>
                             <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : '-'}">Categoría</span>
                         </p>
                         <p>
-                            <strong>🔖</strong>
+                            <i class="fas fa-tag" style="color: #9b59b6;"></i>
                             <span th:text="${#lists.isEmpty(hecho.etiquetas) ? '-' : hecho.etiquetas[0].nombre}">Etiqueta</span>
                         </p>
                         <p>
-                            <strong>📅</strong>
+                            <i class="fas fa-calendar-day" style="color: #3498db;"></i>
                             <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd-MM-yyyy')}">Fecha</span>
                         </p>
                         <p>
-                            <strong>🌐</strong>
+                            <i class="fas fa-globe" style="color: #27ae60;"></i>
                             <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : '-'}">Fuente</span>
                         </p>
 
@@ -179,7 +179,7 @@
                         fuenteId=${filtros.fuenteId},
                         etiqueta=${filtros.etiqueta}
                     )}">
-                        ◀
+                        <i class="fas fa-chevron-left"></i>
                     </a>
 
                     <!-- Número de página actual -->
@@ -200,7 +200,7 @@
                         fuenteId=${filtros.fuenteId},
                         etiqueta=${filtros.etiqueta}
                     )}">
-                        ▶
+                        <i class="fas fa-chevron-right"></i>
                     </a>
 
                 </div>
@@ -208,6 +208,11 @@
             </div>
         </section>
     </div>
+
+    <!-- Botón flotante para crear hecho (visible para todos) -->
+    <a th:href="@{/hechos/create}" class="fab-create" aria-label="Crear hecho">
+        <i class="fas fa-plus"></i>
+    </a>
 
 </div>
 <th:block th:fragment="jsExtra">
