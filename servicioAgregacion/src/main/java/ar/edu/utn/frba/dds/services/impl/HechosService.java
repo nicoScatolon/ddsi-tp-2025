@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -149,7 +151,6 @@ public class HechosService implements IHechosService {
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-        /* TODO GEOREFF CAMBIO, OTRA API, LO COMENTAMOS X AHORA
         // 2) preparar ubicaciones y filtrar nulos
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
                 .map(Hecho::getUbicacion)
@@ -167,7 +168,6 @@ public class HechosService implements IHechosService {
             // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
         }
         logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
-        */
 
         // 4) persistir en batches para no saturar la BD
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());

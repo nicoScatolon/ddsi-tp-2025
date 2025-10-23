@@ -179,54 +179,58 @@
                    th:href="@{/hechos/{id}(id=${hecho.id})}"
                    th:aria-label="${hecho.titulo}">
 
-                    <!-- Título -->
-                    <div class="card-title" th:text="${hecho.titulo}">
-                        Título de ejemplo
+                    <!-- Columna 1: Título y Descripción -->
+                    <div class="card-content">
+                        <div class="card-title" th:text="${hecho.titulo}">
+                            Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones
+                        </div>
+                        <div class="card-description">
+                            <p th:text="${#strings.abbreviate(hecho.descripcion, 220)}">
+                                Descripción de ejemplo que puede ser bastante larga
+                            </p>
+                        </div>
                     </div>
 
-                    <!-- Descripción -->
-                    <div class="card-description">
-                        <p th:text="${#strings.abbreviate(hecho.descripcion, 150)}">
-                            Descripción de ejemplo
-                        </p>
+                    <!-- Columna 2: Metadata -->
+                    <div class="card-metadata">
+                        <div class="card-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : 'Sin ubicación'}">Buenos Aires</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-folder-open"></i>
+                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : 'Sin categoría'}">Categoría</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? 'Sin etiqueta' : hecho.etiquetas[0].nombre}">Etiqueta</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-calendar-day"></i>
+                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd/MM/yyyy')}">23/10/2025</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-globe"></i>
+                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : 'Sin fuente'}">Fuente</span>
+                        </div>
                     </div>
 
-                    <!-- Datos extra -->
-                    <div class="card-data">
-                        <p>
-                            <i class="fas fa-map-marker-alt" style="color: #e74c3c;"></i>
-                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : '-'}">Ubicación</span>
-                        </p>
-                        <p>
-                            <i class="fas fa-folder-open" style="color: #f39c12;"></i>
-                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : '-'}">Categoría</span>
-                        </p>
-                        <p>
-                            <i class="fas fa-tag" style="color: #9b59b6;"></i>
-                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? '-' : hecho.etiquetas[0].nombre}">Etiqueta</span>
-                        </p>
-                        <p>
-                            <i class="fas fa-calendar-day" style="color: #3498db;"></i>
-                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd-MM-yyyy')}">Fecha</span>
-                        </p>
-                        <p>
-                            <i class="fas fa-globe" style="color: #27ae60;"></i>
-                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : '-'}">Fuente</span>
-                        </p>
-
-                    </div>
-
-                    <!-- Imagen -->
-                    <div class="card-img"
-                         th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
-                         aria-hidden="true">
-                        <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
-                             th:alt="${hecho.titulo}"/>
+                    <!-- Columna 3: Imagen -->
+                    <div class="card-image">
+                        <div class="card-img"
+                             th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}">
+                            <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
+                                 th:alt="${hecho.titulo}"/>
+                        </div>
+                        <div class="card-img-placeholder"
+                             th:unless="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}">
+                            <i class="fas fa-image"></i>
+                        </div>
                     </div>
 
                 </a>
 
-                <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">
+                <div id="pagination-controls">
 
                     <!-- Botón Anterior -->
                     <a class="pagination-arrow"
@@ -249,7 +253,9 @@
                     </a>
 
                     <!-- Número de página actual -->
-                    <div class="pagination-page-number" th:text="${paginaActual+1}"> Numero Pagina </div>
+                    <div class="pagination-page-number">
+                        <span>Página <strong th:text="${paginaActual+1}">1</strong></span>
+                    </div>
 
                     <!-- Botón Siguiente -->
                     <a class="pagination-arrow"
