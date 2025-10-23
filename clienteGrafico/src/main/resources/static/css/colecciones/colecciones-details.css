@@ -14,25 +14,152 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Layout principal */
-main {
-    margin: 1rem;
-    margin-top: 2rem;
-    padding: 0;
+/* --- SIDEBAR LATERAL FIJO --- */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    padding: 6rem 1.5rem 1.5rem 1.5rem; /* padding-top para el navbar */
+    z-index: 100;
 }
 
-.explore-layout {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 1.5rem;
-    padding: 0 2rem 1rem 2rem;
-    align-items: start;
+.sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+/* === FILTROS COLAPSABLES === */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+/* Filtros colapsables */
+.filter-group.collapsible label {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 24px;
+    transition: color 0.2s;
+}
+
+.filter-group.collapsible label::after {
+    content: '▼';
+    position: absolute;
+    right: 0;
+    font-size: 0.75rem;
+    transition: transform 0.25s ease;
+}
+
+.filter-group.collapsible.collapsed label::after {
+    transform: rotate(-90deg);
+}
+
+.filter-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: #444;
+    font-weight: 500;
+}
+
+/* Contenido del filtro */
+.filter-content {
+    max-height: 200px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 1;
+}
+
+.filter-group.collapsible.collapsed .filter-content {
+    max-height: 0;
+    opacity: 0;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #2F60F4;
+}
+
+.btn-filter {
+    width: 100%;
+    background: #2F60F4;
+    border: none;
+    padding: 0.8rem;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-filter:hover {
+    background: #1746D2;
+}
+
+.date-range {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.date-range input {
+    flex: 1;
+    width: 100%;
+}
+
+/* Scrollbar personalizada para el sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.content-wrapper {
+    margin-left: 280px;
+    min-height: 100vh;
+}
+
+#collection-detail {
+    padding: 2rem;
 }
 
 /* Cabecera de la colección */
 .collection-header {
-    grid-column: 1 / -1;
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 #collection-title {
@@ -48,16 +175,16 @@ main {
     margin-bottom: 0;
 }
 
-/* ====== Botones de acción - ARRIBA A LA DERECHA ====== */
+/* ====== Botones de acción ====== */
 .card-actions {
-    grid-column: 2;
     display: flex;
     gap: 0.8rem;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     padding: 0;
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .inline-form {
@@ -65,11 +192,11 @@ main {
 }
 
 .btn-action {
-    padding: 12px 28px;
+    padding: 10px 24px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease;
     text-align: center;
@@ -80,12 +207,12 @@ main {
     gap: 0.5rem;
     line-height: 1;
     box-sizing: border-box;
-    height: 44px;
-    min-width: 120px;
+    height: 40px;
+    min-width: 110px;
 }
 
 .btn-action i {
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .btn-action:hover {
@@ -130,75 +257,6 @@ main {
 .btn-delete:hover {
     background: #c92a2a;
     color: #fff;
-}
-
-/* --- FILTROS --- */
-.filter-box {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    height: fit-content;
-}
-
-.filter-box h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-    color: #333;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-.filter-group label {
-    font-size: 0.9rem;
-    margin-bottom: 0.4rem;
-    color: #444;
-}
-
-.filter-group input,
-.filter-group select {
-    padding: 0.6rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.btn-filter {
-    width: 100%;
-    background: #2F60F4;
-    border: none;
-    padding: 0.8rem;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: background 0.2s;
-}
-
-.btn-filter:hover {
-    background: #1746D2;
-}
-
-.date-range {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.date-range input {
-    flex: 1;
-    width: 100%;
-}
-
-/* --- CONTENIDO DE LA COLECCIÓN --- */
-.collection-content {
-    grid-column: 2;
 }
 
 /* --- CARDS: contenedor y separación --- */
