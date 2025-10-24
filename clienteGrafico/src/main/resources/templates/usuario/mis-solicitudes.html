@@ -22,7 +22,7 @@
             </div>
             <div>
               <span class="label">Fecha de solicitud:</span>
-              <span th:text="${#dates.format(solicitud.fechaCreacion, 'yyyy-MM-dd')}">Fecha Creacion</span>
+                <span th:text="${#temporals.format(solicitud.fechaCreacion, 'yyyy-MM-dd HH:mm')}">Fecha Creacion</span>
             </div>
           </div>
 

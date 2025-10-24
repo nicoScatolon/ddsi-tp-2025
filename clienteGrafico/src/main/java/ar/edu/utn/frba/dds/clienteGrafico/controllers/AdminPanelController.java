@@ -116,6 +116,25 @@ public class AdminPanelController {
         return "admin/panel-base";
      }
 
+     @PostMapping("/categorias")
+     public String crearCategoria(){
+
+         return "redirect:/admin/categorias";
+     }
+
+    @DeleteMapping("/categorias")
+    public String eliminarCategoria(){
+
+        return "redirect:/admin/categorias";
+    }
+
+    @PutMapping("/categorias")
+    public String editarCategoria(){
+
+
+        return "redirect:/admin/categorias";
+    }
+
     @GetMapping("/solicitudes")
     public String solicitudesEliminacion(Model model) {
         List<SolicitudEliminarHechoInputDTO> solicitudes = agregadorService.obtenerSolicitudesEliminacionPendientes();

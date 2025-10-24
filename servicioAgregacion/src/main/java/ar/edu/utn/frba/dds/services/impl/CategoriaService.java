@@ -118,17 +118,4 @@ public class CategoriaService implements ICategoriaService {
     public void eliminarEquivalentes(String equivalente){
         equivalenteCatRepository.deleteByEquivalente(equivalente);
     }
-
-
-    private String normalizarNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre no puede ser nulo ni vacío.");
-        }
-
-        return nombre
-                .trim()
-                .toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")  // reemplaza caracteres no alfanuméricos por guiones
-                .replaceAll("^-+|-+$", "");     // quita guiones al inicio o final
-    }
 }
