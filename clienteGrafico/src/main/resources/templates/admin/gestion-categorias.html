@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="gestion-categorias">
+    <section class="categorias-section">
+
+        <!-- Mensajes Flash -->
+        <div th:if="${mensaje}"
+             class="alert-message"
+             th:classappend="${tipoMensaje == 'success'} ? 'alert-success' : 'alert-error'">
+            <i th:class="${tipoMensaje == 'success'} ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+            <span th:text="${mensaje}"></span>
+            <button class="alert-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Header con búsqueda y botón crear -->
+        <div class="categorias-header">
+            <div class="search-container">
+                <input type="text"
+                       id="searchInput"
+                       class="search-input"
+                       placeholder="Buscar categoría...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button class="btn-crear" id="btnCrearCategoria">
+                <i class="fas fa-plus"></i>
+                Nueva Categoría
+            </button>
+        </div>
+
+        <!-- Contador de resultados -->
+        <div class="resultados-info">
+            <span id="resultadosCount">Mostrando <strong th:text="${#lists.size(categorias)}">0</strong> categorías</span>
+        </div>
+
+        <!-- Lista de categorías -->
+        <div class="categorias-grid" id="categoriasGrid">
+            <div class="categoria-card"
+                 th:each="categoria : ${categorias}"
+                 th:attr="data-nombre=${categoria.nombre}">
+
+                <div class="categoria-info">
+                    <h3 class="categoria-nombre" th:text="${categoria.nombre}">Categoría</h3>
+                    <span class="categoria-id" th:text="'ID: ' + ${categoria.id}">ID: 1</span>
+                </div>
+
+                <div class="categoria-actions">
+                    <button class="btn-action btn-editar"
+                            th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
+                            title="Editar categoría">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action btn-eliminar"
+                            th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
+                            title="Eliminar categoría">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje cuando no hay resultados -->
+        <div class="no-resultados hidden" id="noResultados">
+            <div class="no-resultados-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <p>No se encontraron categorías con ese criterio de búsqueda</p>
+        </div>
+
+        <!-- Mensaje cuando la lista está vacía -->
+        <div class="lista-vacia" th:if="${#lists.isEmpty(categorias)}">
+            <div class="vacia-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <p>No hay categorías creadas aún</p>
+            <button class="btn-crear-inline" onclick="document.getElementById('btnCrearCategoria').click()">
+                <i class="fas fa-plus"></i>
+                Crear primera categoría
+            </button>
+        </div>
+
+    </section>
+
+    <!-- Modal para crear/editar categoría -->
+    <div class="modal-overlay hidden" id="modalCategoria">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Nueva Categoría</h2>
+                <button class="modal-close" id="btnCerrarModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="formCategoria" th:action="@{/admin/categorias}" method="post" class="modal-form">
+                <input type="hidden" id="categoriaId" name="id">
+
+                <div class="form-group">
+                    <label for="categoriaNombre">
+                        <i class="fas fa-tag"></i>
+                        Nombre de la categoría:
+                    </label>
+                    <input type="text"
+                           id="categoriaNombre"
+                           name="nombre"
+                           class="form-input"
+                           placeholder="Ej: Historia, Política, Cultura..."
+                           required
+                           maxlength="100">
+                    <small class="form-hint">Máximo 100 caracteres</small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" id="btnCancelar">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-guardar">
+                        <i class="fas fa-save"></i>
+                        <span id="btnGuardarTexto">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div class="modal-overlay hidden" id="modalEliminar">
+        <div class="modal-content modal-small">
+            <div class="modal-header modal-header-danger">
+                <h2>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirmar Eliminación
+                </h2>
+                <button class="modal-close" id="btnCerrarEliminar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="formEliminar" method="post" class="modal-body">
+                <input type="hidden" id="categoriaIdEliminar" name="id">
+
+                <p>¿Estás seguro de que deseas eliminar la categoría <strong id="categoriaEliminarNombre"></strong>?</p>
+                <p class="warning-text">
+                    <i class="fas fa-info-circle"></i>
+                    Esta acción no se puede deshacer.
+                </p>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" id="btnCancelarEliminar">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-eliminar-confirm">
+                        <i class="fas fa-trash"></i>
+                        Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</th:block>
+</html>

@@ -24,6 +24,7 @@ public interface IHechosService {
 
     List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO, Boolean fueEliminado);
     List<HechoMapaOutputDTO> getHechosMapa();
+    List<HechoMapaOutputDTO> getHechosMapaPorProvincia(String provincia);
     List<HechoOutputDTO> getHechosDestacados();
 
     ResponseEntity<Void> setDestacadoHecho(Long idHecho, Boolean estaDestacado);

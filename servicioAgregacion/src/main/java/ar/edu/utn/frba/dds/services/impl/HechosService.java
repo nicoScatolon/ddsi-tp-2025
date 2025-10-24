@@ -29,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -104,20 +105,10 @@ public class HechosService implements IHechosService {
         return hechosRepository.findAllMapaDTO(); // ya filtra solo los que tienen lat/lng
     }
 
-//    @Override
-//    public List<HechoMapaOutputDTO> getHechosMapa () {
-//        Specification<Hecho> spec = (root, query, cb) -> {
-//            return cb.and(
-//                    cb.isNotNull(root.get("ubicacion")),
-//                    cb.isNotNull(root.get("ubicacion").get("latitud")),
-//                    cb.isNotNull(root.get("ubicacion").get("longitud"))
-//            );
-//        };
-//        return this.hechosRepository.findAllMapaDTO(spec)
-//                .stream()
-//                .map(DTOConverter::convertirHechoMapaOutputDTO)
-//                .toList();
-//    }
+    @Override
+    public List<HechoMapaOutputDTO> getHechosMapaPorProvincia(String provincia) {
+        return hechosRepository.findAllPorProvinciaDTO(provincia);
+    }
 
     @Override
     public List<HechoOutputDTO> getHechosDestacados() {
@@ -147,44 +138,73 @@ public class HechosService implements IHechosService {
         final long t0 = System.currentTimeMillis();
         logger.info("Se van a persistir {} hechos", hechosActualizados.size());
 
-        // 1) categorías
+        // 1) Cargar categorías
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-        // 2) preparar ubicaciones y filtrar nulos
+        // 2) Limpiar contribuyente_id inválidos
+        limpiarContribuyentesInvalidos(hechosActualizados);
+
+        // 3) Preparar ubicaciones y filtrar las que ya tienen provincia
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
                 .map(Hecho::getUbicacion)
-                .filter(Objects::nonNull)        // evitá NPE
+                .filter(Objects::nonNull)
                 .toList();
 
-        // 3) geolocalización por lotes
-        logger.info("Geolocalizando {} ubicaciones en batch...", ubicaciones.size());
-        long tg0 = System.currentTimeMillis();
-        try {
-            // bloqueamos aquí para tener tod0 georreferenciado antes de persistir
-            geolocalizador.geolocalizarBatchAsync(ubicaciones).block();
-        } catch (Exception e) {
-            logger.error("Fallo geolocalizando en batch: {}", e.getMessage(), e);
-            // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
-        }
-        logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
+        List<Ubicacion> ubicacionesSinProvincia = ubicaciones.stream()
+                .filter(u -> u.getProvincia() == null || u.getProvincia().isBlank())
+                .toList();
 
-        // 4) persistir en batches para no saturar la BD
+        logger.info("Total ubicaciones: {}, sin provincia: {}",
+                ubicaciones.size(), ubicacionesSinProvincia.size());
+
+        // 4) Geolocalización solo de las que no tienen provincia
+        if (!ubicacionesSinProvincia.isEmpty()) {
+            logger.info("Geolocalizando {} ubicaciones...", ubicacionesSinProvincia.size());
+            try {
+                geolocalizador.geolocalizarBatchAsync(ubicacionesSinProvincia)
+                        .timeout(Duration.ofMinutes(10)) // Aumentar timeout
+                        .block();
+                logger.info("Geolocalización completada");
+            } catch (Exception e) {
+                logger.error("Error en geolocalización batch: {}", e.getMessage());
+            }
+        } else {
+            logger.info("Todas las ubicaciones ya tienen provincia, saltando geolocalización");
+        }
+
+        // 5) Persistir hechos en batches
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());
         final int BATCH_DB = 1000;
         int from = 0;
         while (from < hechosActualizados.size()) {
             int to = Math.min(from + BATCH_DB, hechosActualizados.size());
             List<Hecho> slice = hechosActualizados.subList(from, to);
-            this.hechosRepository.saveAll(slice);
+
+            try {
+                this.hechosRepository.saveAll(slice);
+                logger.info("Persistidos {}/{}", to, hechosActualizados.size());
+            } catch (Exception e) {
+                logger.error("Error persistiendo batch {}-{}: {}", from, to, e.getMessage());
+            }
+
             from = to;
-            logger.info("Persistidos {}/{}", to, hechosActualizados.size());
         }
 
-        logger.info("Persistencia terminada en {} ms (total {} ms)",
-                //(System.currentTimeMillis() - tg0),
-                (System.currentTimeMillis() - 0L),
-                (System.currentTimeMillis() - t0));
+        logger.info("Persistencia terminada en {} ms", System.currentTimeMillis() - t0);
+    }
+
+    private void limpiarContribuyentesInvalidos(List<Hecho> hechos) {
+        int limpiados = 0;
+        for (Hecho hecho : hechos) {
+            if (hecho.getContribuyenteId() != null) {
+                hecho.setContribuyenteId(null);
+                limpiados++;
+            }
+        }
+        if (limpiados > 0) {
+            logger.info("Se limpiaron {} contribuyente_id", limpiados);
+        }
     }
 
     @Override

@@ -17,6 +17,7 @@ public interface IAgregadorService {
     HechoInputDTO getHechoById(Long id);
     List<HechoInputDTO> getAllHechos(Integer paginaActual, HechosFilterInputDTO filter);
     List<HechoMapaInputDTO> getHechosMapa();
+    List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia);
 
     List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual);
     ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle);
@@ -25,6 +26,9 @@ public interface IAgregadorService {
     List<String> obtenerCategoriasShort();
     List<String> obtenerProvinciasShort();
     List<String> obtenerEtiquetasShort();
+
+    List<CategoriaInputDTO> obtenerCategorias();
+    List<EtiquetaInputDTO> obtenerEtiquetas();
 
     List<FuenteInputDTO> getFuentesPreview();
 

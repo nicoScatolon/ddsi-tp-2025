@@ -8,7 +8,7 @@
 
 <div th:fragment="contenido">
     <aside class="sidebar">
-        <div class="sidebar-brand"><h2>Panel Administración</h2></div>
+        <div class="sidebar-brand"><h2><strong>Panel Administración</strong></h2></div>
         <ul class="sidebar-menu">
             <li th:classappend="${contentTemplate == 'actividad'} ? ' active'" class="menu-item">
                 <a href="/admin/actividad">Resumen Actividad</a>
@@ -25,6 +25,9 @@
             <li th:classappend="${contentTemplate == 'solicitudes-eliminacion'} ? ' active'" class="menu-item">
                 <a href="/admin/solicitudes">Solicitudes de Eliminación</a>
             </li>
+            <li th:classappend="${contentTemplate == 'gestion-categorias'} ? ' active'" class="menu-item">
+                <a href="/admin/categorias">Gestión de Categorías</a>
+            </li>
         </ul>
     </aside>
 
@@ -38,6 +41,7 @@
 
 <th:block th:fragment="jsExtra">
     <script th:src="@{/js/importar-hechos.js}"></script>
+    <script th:src="@{/js/gestion-categorias.js}"></script>
 </th:block>
 
 </html>

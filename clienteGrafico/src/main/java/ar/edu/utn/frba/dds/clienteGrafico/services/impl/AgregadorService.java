@@ -75,7 +75,18 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
-        // --- COLECCIONES --- //
+    @Override
+    public List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia) {
+        try {
+            String url = agregadorUrl + "/api/hechos/publica/mapa?provincia=" + provincia;
+            return webApiCallerService.getPublicList(url, HechoMapaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener los hechos del mapa por provincia: " + e.getMessage(), e);
+        }
+    }
+
+
+    // --- COLECCIONES --- //
 
     @Override
     public ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO) {
@@ -263,6 +274,23 @@ public class AgregadorService implements IAgregadorService {
     @Override
     public  List<String> obtenerEtiquetasShort() {
         return null; //Todo
+    }
+
+    @Override
+    public List<CategoriaInputDTO> obtenerCategorias() {
+        try {
+            return webApiCallerService.getPublicList(
+                    agregadorUrl + "/api/privada/categorias",
+                    CategoriaInputDTO.class
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las categorías: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<EtiquetaInputDTO> obtenerEtiquetas() {
+        return List.of(); //Todo
     }
 
     @Override

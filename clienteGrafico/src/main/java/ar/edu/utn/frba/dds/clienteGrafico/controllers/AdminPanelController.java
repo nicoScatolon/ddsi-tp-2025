@@ -37,7 +37,7 @@ public class AdminPanelController {
 
     @GetMapping
     public String adminPanel(){
-        return "redirect:/admin/hechos";
+        return "redirect:/admin/actividad";
     }
 
     @GetMapping("/actividad")
@@ -106,6 +106,15 @@ public class AdminPanelController {
         model.addAttribute("contentTemplate", "gestion-colecciones");
         return "admin/panel-base";
     }
+
+     @GetMapping("/categorias")
+     public String gestionCategorias(Model model) {
+        model.addAttribute("categorias", agregadorService.obtenerCategorias());
+        model.addAttribute("titulo", "Gestión de Categorías");
+        model.addAttribute("contentTemplate", "gestion-categorias");
+
+        return "admin/panel-base";
+     }
 
     @GetMapping("/solicitudes")
     public String solicitudesEliminacion(Model model) {

@@ -3,7 +3,6 @@ package ar.edu.utn.frba.dds.domain.entities.Geolocalizadores;
 import ar.edu.utn.frba.dds.domain.dtos.input.geolocalizador.GeorefCoordenadasInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.geolocalizador.GeorefDireccionInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
-import ar.edu.utn.frba.dds.services.impl.HechosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -16,7 +15,7 @@ import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Georef implements IGeoLocalizador {
@@ -25,9 +24,11 @@ public class Georef implements IGeoLocalizador {
     private final WebClient webClient;
 
     private static final String BASE_URL = "https://apis.datos.gob.ar/georef/api";
-    private static final int BATCH_SIZE = 50;         // tamaño de lote recomendado
-    private static final int MAX_MEMORY_BYTES = 4 * 1024 * 1024; // 4MB para evitar DataBufferLimit
+    private static final int BATCH_SIZE = 50;
+    private static final int MAX_MEMORY_BYTES = 4 * 1024 * 1024; // 4MB
 
+    // Cache simple para normalizaciones (las provincias no cambian)
+    private final Map<String, String> provinciasCache = new ConcurrentHashMap<>();
 
     public Georef() {
         this.webClient = WebClient.builder()
@@ -43,12 +44,15 @@ public class Georef implements IGeoLocalizador {
     //----------------------------- METODOS SINCRONICOS -----------------------------
 
     public Ubicacion geolocalizar(Ubicacion ubi) {
-        if ( (ubi.getLatitud() == null || ubi.getLongitud() == null)
+        if ((ubi.getLatitud() == null || ubi.getLongitud() == null)
                 && ubi.getDepartamento() != null
                 && ubi.getProvincia() != null
                 && ubi.getCalle() != null
                 && ubi.getNumero() != null) {
-            // caso A -> no tenemos latitud y longitud pero tenemos provincia, departamento, calle y numer
+            // caso A -> no tenemos latitud y longitud pero tenemos provincia, departamento, calle y numero
+            // Normalizar provincia antes de buscar coordenadas
+            String provinciaNormalizada = normalizarProvinciaSincrono(ubi.getProvincia());
+            ubi.setProvincia(provinciaNormalizada);
             return this.obtenerCoordenadas(ubi);
         } else if ((ubi.getDepartamento() == null || ubi.getProvincia() == null)
                 && ubi.getLatitud() != null
@@ -60,11 +64,10 @@ public class Georef implements IGeoLocalizador {
                 && ubi.getDepartamento() != null
                 && ubi.getProvincia() != null
                 && ubi.getCalle() != null
-                && ubi.getNumero() != null){
+                && ubi.getNumero() != null) {
             // caso C -> la ubicacion esta completa, no necesito nada
             return ubi;
-        }
-        else {
+        } else {
             throw new RuntimeException("La ubicación no es apta para geolocalizar");
         }
     }
@@ -73,56 +76,117 @@ public class Georef implements IGeoLocalizador {
         if (ubicacion.getLatitud() == null || ubicacion.getLongitud() == null) {
             throw new IllegalArgumentException("Latitud o longitud nulas en Ubicacion: " + ubicacion);
         }
-        GeorefDireccionInputDTO georefDireccionDTO =  this.webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/ubicacion")
-                        .queryParam("lat", ubicacion.getLatitud())
-                        .queryParam("lon", ubicacion.getLongitud())
-                        .build())
-                .retrieve()
-                .bodyToMono(GeorefDireccionInputDTO.class)
-                .block();
 
-        if (georefDireccionDTO == null) {
-            throw new RuntimeException("No se pudo obtener respuesta del servicio Georef");
-        }
+        try {
+            GeorefDireccionInputDTO georefDireccionDTO = this.webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/ubicacion")
+                            .queryParam("lat", ubicacion.getLatitud())
+                            .queryParam("lon", ubicacion.getLongitud())
+                            .build())
+                    .retrieve()
+                    .bodyToMono(GeorefDireccionInputDTO.class)
+                    .timeout(Duration.ofSeconds(10))
+                    .block();
 
-        if (georefDireccionDTO.getProvincia() == null) {
+            if (georefDireccionDTO == null) {
+                throw new RuntimeException("No se pudo obtener respuesta del servicio Georef");
+            }
+
+            if (georefDireccionDTO.getProvincia() == null) {
+                ubicacion.setProvincia("DESCONOCIDA");
+                ubicacion.setDepartamento(null);
+                ubicacion.setCalle(null);
+                ubicacion.setNumero(null);
+            } else {
+                ubicacion.setProvincia(georefDireccionDTO.getProvincia());
+            }
+
+            ubicacion.setDepartamento(georefDireccionDTO.getDepartamento());
+            return ubicacion;
+        } catch (Exception e) {
+            logger.error("Error obteniendo dirección para lat={}, lon={}: {}",
+                    ubicacion.getLatitud(), ubicacion.getLongitud(), e.getMessage());
             ubicacion.setProvincia("DESCONOCIDA");
             ubicacion.setDepartamento(null);
-            ubicacion.setCalle(null);
-            ubicacion.setNumero(null);
-        } else {
-            ubicacion.setProvincia(georefDireccionDTO.getProvincia());
+            return ubicacion;
         }
-
-        ubicacion.setDepartamento( georefDireccionDTO.getDepartamento() );
-        return ubicacion;
     }
 
-    public Ubicacion obtenerCoordenadas(Ubicacion ubicacion){
+    public Ubicacion obtenerCoordenadas(Ubicacion ubicacion) {
         String direccion = buildDireccion(ubicacion.getCalle(), ubicacion.getNumero());
 
-        GeorefCoordenadasInputDTO georefCoordenadasDTO =  this.webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/direcciones")
-                        .queryParam("direccion", direccion)
-                        .queryParam("provincia", ubicacion.getProvincia())
-                        .queryParam("departamento", ubicacion.getDepartamento())
-                        .queryParam("max", 1) // opcional: limitar resultados
-                        .build())
-                .retrieve()
-                .bodyToMono(GeorefCoordenadasInputDTO.class)
-                .block();
-        if (georefCoordenadasDTO.getLatitud(0) == null || georefCoordenadasDTO.getLongitud(0) == null){
-            throw new RuntimeException("Latitud y longitud no validos");
-        }
+        try {
+            GeorefCoordenadasInputDTO georefCoordenadasDTO = this.webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/direcciones")
+                            .queryParam("direccion", direccion)
+                            .queryParam("provincia", ubicacion.getProvincia())
+                            .queryParam("departamento", ubicacion.getDepartamento())
+                            .queryParam("max", 1)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(GeorefCoordenadasInputDTO.class)
+                    .timeout(Duration.ofSeconds(10))
+                    .block();
 
-        ubicacion.setLatitud( georefCoordenadasDTO.getLatitud(0) );
-        ubicacion.setLongitud( georefCoordenadasDTO.getLongitud(0) );
-        return ubicacion;
+            if (georefCoordenadasDTO == null
+                    || georefCoordenadasDTO.getLatitud(0) == null
+                    || georefCoordenadasDTO.getLongitud(0) == null) {
+                logger.warn("No se encontraron coordenadas para: {}, {}, {}",
+                        direccion, ubicacion.getProvincia(), ubicacion.getDepartamento());
+                return ubicacion;
+            }
+
+            ubicacion.setLatitud(georefCoordenadasDTO.getLatitud(0));
+            ubicacion.setLongitud(georefCoordenadasDTO.getLongitud(0));
+            return ubicacion;
+        } catch (Exception e) {
+            logger.error("Error obteniendo coordenadas para dirección {}: {}", direccion, e.getMessage());
+            return ubicacion;
+        }
     }
 
+    /**
+     * Normaliza el nombre de una provincia de forma síncrona con cache
+     */
+    private String normalizarProvinciaSincrono(String nombreProvincia) {
+        if (nombreProvincia == null || nombreProvincia.isBlank()) {
+            return "DESCONOCIDA";
+        }
+
+        // Verificar cache
+        String cached = provinciasCache.get(nombreProvincia.toLowerCase().trim());
+        if (cached != null) {
+            return cached;
+        }
+
+        try {
+            ProvinciasResponse response = this.webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/provincias")
+                            .queryParam("nombre", nombreProvincia)
+                            .queryParam("max", 1)
+                            .queryParam("campos", "nombre")
+                            .build())
+                    .retrieve()
+                    .bodyToMono(ProvinciasResponse.class)
+                    .timeout(Duration.ofSeconds(5))
+                    .block();
+
+            if (response != null && response.provincias != null && !response.provincias.isEmpty()) {
+                String normalizado = response.provincias.get(0).nombre;
+                // Guardar en cache
+                provinciasCache.put(nombreProvincia.toLowerCase().trim(), normalizado);
+                return normalizado;
+            }
+        } catch (Exception e) {
+            logger.warn("Error normalizando provincia '{}': {}", nombreProvincia, e.getMessage());
+        }
+
+        // Si falla, devolver el original
+        return nombreProvincia;
+    }
 
     private String buildDireccion(String calle, Integer numero) {
         if (calle == null || calle.isBlank()) {
@@ -134,7 +198,6 @@ public class Georef implements IGeoLocalizador {
         return calle.trim();
     }
 
-
     // ---------------------------------- METODOS ASINCRÓNICOS ----------------------------------
 
     public Mono<List<Ubicacion>> geolocalizarBatchAsync(List<Ubicacion> ubicaciones) {
@@ -142,26 +205,75 @@ public class Georef implements IGeoLocalizador {
             return Mono.just(Collections.emptyList());
         }
 
-        // ---------- AJUSTES MINIMOS PARA LLAMAR CONCURRENTEMENTE Y QUE GEOREF NO EXPLOTE ----------
-        final int CONCURRENCIA = 4;
-        final Duration PAUSA_ENTRE_CHUNKS = Duration.ofMillis(150);
-        final Retry RETRY_SUAVE = Retry.backoff(2, Duration.ofSeconds(1))
-                .maxBackoff(Duration.ofSeconds(5))
-                .jitter(0.3)
+        logger.info("Iniciando geolocalización batch de {} ubicaciones", ubicaciones.size());
+
+        // Primero normalizar provincias de forma reactiva
+        return Flux.fromIterable(ubicaciones)
+                .flatMap(this::normalizarProvinciaAsync)
+                .collectList()
+                .flatMap(this::geolocalizarBatchAsyncInternal)
+                .doOnSuccess(result -> logger.info("Geolocalización batch completada: {} ubicaciones", result.size()))
+                .doOnError(e -> logger.error("Error en geolocalización batch: {}", e.getMessage()));
+    }
+
+    /**
+     * Normaliza la provincia de una ubicación de forma asíncrona
+     */
+    private Mono<Ubicacion> normalizarProvinciaAsync(Ubicacion ubicacion) {
+        if (ubicacion.getProvincia() == null || ubicacion.getProvincia().isBlank()) {
+            return Mono.just(ubicacion);
+        }
+
+        String key = ubicacion.getProvincia().toLowerCase().trim();
+
+        // Verificar cache
+        if (provinciasCache.containsKey(key)) {
+            ubicacion.setProvincia(provinciasCache.get(key));
+            return Mono.just(ubicacion);
+        }
+
+        // Normalizar via API
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/provincias")
+                        .queryParam("nombre", ubicacion.getProvincia())
+                        .queryParam("max", 1)
+                        .queryParam("campos", "nombre")
+                        .build())
+                .retrieve()
+                .bodyToMono(ProvinciasResponse.class)
+                .timeout(Duration.ofSeconds(5))
+                .map(response -> {
+                    if (response.provincias != null && !response.provincias.isEmpty()) {
+                        String normalizado = response.provincias.get(0).nombre;
+                        provinciasCache.put(key, normalizado);
+                        ubicacion.setProvincia(normalizado);
+                    }
+                    return ubicacion;
+                })
+                .onErrorReturn(ubicacion); // Si falla, devolver sin cambios
+    }
+
+    private Mono<List<Ubicacion>> geolocalizarBatchAsyncInternal(List<Ubicacion> ubicaciones) {
+        // Configuración de concurrencia y reintentos más conservadora
+        final int CONCURRENCIA = 2;
+        final Duration PAUSA_ENTRE_CHUNKS = Duration.ofSeconds(1); // 1 segundo entre chunks
+        final Retry RETRY_SUAVE = Retry.backoff(3, Duration.ofSeconds(2))
+                .maxBackoff(Duration.ofSeconds(10))
+                .jitter(0.5)
                 .filter(ex -> ex instanceof WebClientResponseException w &&
                         (w.getStatusCode().value() == 429 || w.getStatusCode().is5xxServerError()));
-        // -------------------------------------
 
         // Separar por casos
         List<Ubicacion> casoA = new ArrayList<>(); // direccion -> coords
         List<Ubicacion> casoB = new ArrayList<>(); // coords -> jurisdicciones
-        List<Ubicacion> casoC = new ArrayList<>();
+        List<Ubicacion> casoC = new ArrayList<>(); // completas
 
         for (Ubicacion u : ubicaciones) {
             if (u == null) continue;
 
-            boolean tieneCoords  = u.getLatitud() != null && u.getLongitud() != null;
-            boolean tieneJurisd  = u.getProvincia() != null && u.getDepartamento() != null;
+            boolean tieneCoords = u.getLatitud() != null && u.getLongitud() != null;
+            boolean tieneJurisd = u.getProvincia() != null && u.getDepartamento() != null;
             boolean tieneDirecc = u.getCalle() != null && u.getNumero() != null;
 
             if (!tieneCoords && tieneJurisd && tieneDirecc) {
@@ -173,43 +285,33 @@ public class Georef implements IGeoLocalizador {
             }
         }
 
-        // Armar flujos con FLUX
+        logger.info("Casos - A (dirección->coords): {}, B (coords->jurisdicción): {}, C (completas): {}",
+                casoA.size(), casoB.size(), casoC.size());
 
+        // Armar flujos con FLUX
         Flux<Ubicacion> completasFlux = Flux.fromIterable(casoC);
 
         Flux<Ubicacion> forwardFlux = chunk(casoA, BATCH_SIZE)
                 .delayElements(PAUSA_ENTRE_CHUNKS)
-                .flatMap(list ->
-                                callDireccionesBulk(list)
-                                        .retryWhen(RETRY_SUAVE),
-                                CONCURRENCIA)
+                .flatMap(list -> callDireccionesBulk(list).retryWhen(RETRY_SUAVE), CONCURRENCIA)
                 .onErrorContinue((ex, obj) -> {
                     logger.error("Error en /direcciones bulk: {}", ex.getMessage());
                 });
 
         Flux<Ubicacion> reverseFlux = chunk(casoB, BATCH_SIZE)
                 .delayElements(PAUSA_ENTRE_CHUNKS)
-                .flatMap(list ->
-                                callUbicacionBulk(list)
-                                        .retryWhen(RETRY_SUAVE),
-                        CONCURRENCIA)
+                .flatMap(list -> callUbicacionBulk(list).retryWhen(RETRY_SUAVE))
                 .onErrorContinue((ex, obj) -> {
-                    logger.error("Error en /ubicacion bulk: {}", ex.getMessage());
+                    logger.error("Error en /ubicacion: {}", ex.getMessage());
                 });
 
         return Flux.merge(completasFlux, forwardFlux, reverseFlux)
-                // Volvemos en el mismo orden de entrada
                 .collectList()
-                .map(updated -> {
-                    Map<Ubicacion, Ubicacion> indexByIdentity = updated.stream()
-                            .collect(Collectors.toMap(Function.identity(), Function.identity(), (a, b) -> a, LinkedHashMap::new));
-                    // No cambiamos referencias originales: se actualiza in-place en los bulks
-                    return ubicaciones;
-                });
+                .map(updated -> ubicaciones); // Las ubicaciones se modifican in-place
     }
 
     // -----------------------------
-    // Llamadas BULK reales (POST) --> Manipulación asincrónica para hacer el Post de muchas ubicaciones en simultaneo
+    // Llamadas BULK reales (POST)
     // -----------------------------
 
     /**
@@ -224,8 +326,8 @@ public class Georef implements IGeoLocalizador {
                     DireccionesRequest.Item it = new DireccionesRequest.Item();
                     it.direccion = buildDireccion(u.getCalle(), u.getNumero());
                     it.max = 1;
-                    it.campos = "basico"; // alcanza para lat/lon + jurisdicciones
-                    if (u.getProvincia() != null)   it.provincia = u.getProvincia();
+                    it.campos = "basico";
+                    if (u.getProvincia() != null) it.provincia = u.getProvincia();
                     if (u.getDepartamento() != null) it.departamento = u.getDepartamento();
                     return it;
                 })
@@ -237,22 +339,30 @@ public class Georef implements IGeoLocalizador {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(DireccionesResponse.class)
+                .timeout(Duration.ofSeconds(30))
                 .flatMapMany(resp -> mapDireccionesResponse(resp, lote))
                 .onErrorResume(ex -> {
-                    logger.error("Fallo /direcciones: {}", ex.getMessage());
-                    return Flux.fromIterable(lote); // devolvemos sin cambios
+                    logger.error("Fallo /direcciones para {} ubicaciones: {}", lote.size(), ex.getMessage());
+                    return Flux.fromIterable(lote);
                 });
     }
 
     private Flux<Ubicacion> mapDireccionesResponse(DireccionesResponse resp, List<Ubicacion> originales) {
         if (resp == null || resp.resultados == null) return Flux.fromIterable(originales);
 
-        // El API devuelve resultados preservando el orden de entrada
         List<Ubicacion> updated = new ArrayList<>();
         int idx = 0;
 
         for (DireccionesResponse.Result r : resp.resultados) {
-            if (r.direcciones == null) continue;
+            if (r.direcciones == null || r.direcciones.isEmpty()) {
+                if (idx < originales.size()) {
+                    logger.warn("No se encontraron resultados para: {}", originales.get(idx));
+                    updated.add(originales.get(idx));
+                    idx++;
+                }
+                continue;
+            }
+
             for (DireccionesResponse.Direccion d : r.direcciones) {
                 if (idx >= originales.size()) break;
                 Ubicacion u = originales.get(idx++);
@@ -270,79 +380,91 @@ public class Georef implements IGeoLocalizador {
                 updated.add(u);
             }
         }
+
         return Flux.fromIterable(updated.isEmpty() ? originales : updated);
     }
 
     /**
-     * POST /ubicacion – georreferenciación inversa => set provincia/departamento
+     * GET /ubicacion – georreferenciación inversa individual => set provincia/departamento
+     * Con rate limiting para evitar 429 Too Many Requests
      */
-
     private Flux<Ubicacion> callUbicacionBulk(List<Ubicacion> lote) {
         if (lote == null || lote.isEmpty()) return Flux.empty();
 
-        UbicacionRequest body = new UbicacionRequest();
-        body.ubicaciones = lote.stream()
-                .map(u -> {
-                    UbicacionRequest.Item it = new UbicacionRequest.Item();
-                    it.lat = u.getLatitud();
-                    it.lon = u.getLongitud();
-                    it.campos = "completo";
-                    return it;
-                })
-                .collect(Collectors.toList());
-        body.aplanar = false; // mantenemos estructura estándar
+        logger.info("Procesando {} ubicaciones con /ubicacion (GET individual)", lote.size());
 
-        return webClient.post()
-                .uri("/ubicacion")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(UbicacionResponse.class)
-                .flatMapMany(resp -> mapUbicacionResponse(resp, lote))
-                .onErrorResume(ex -> {
-                    logger.error("Fallo /ubicacion: {}", ex.getMessage());
-                    // marcar desconocidos para que no bloquee el flujo
-                    lote.forEach(u -> {
-                        if (u.getProvincia() == null) u.setProvincia("DESCONOCIDA");
-                        if (u.getDepartamento() == null) u.setDepartamento(null);
-                    });
-                    return Flux.fromIterable(lote);
-                });
+        return Flux.fromIterable(lote)
+                .delayElements(Duration.ofMillis(100)) // 100ms entre cada request = max 10 req/seg
+                .flatMap(u -> {
+                    if (u.getLatitud() == null || u.getLongitud() == null) {
+                        u.setProvincia("DESCONOCIDA");
+                        return Mono.just(u);
+                    }
+
+                    return webClient.get()
+                            .uri(uriBuilder -> uriBuilder
+                                    .path("/ubicacion")
+                                    .queryParam("lat", u.getLatitud())
+                                    .queryParam("lon", u.getLongitud())
+                                    .build())
+                            .retrieve()
+                            .bodyToMono(UbicacionGetResponse.class)
+                            .timeout(Duration.ofSeconds(10))
+                            .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                                    .maxBackoff(Duration.ofSeconds(10))
+                                    .filter(ex -> ex instanceof WebClientResponseException w &&
+                                            w.getStatusCode().value() == 429))
+                            .map(resp -> {
+                                if (resp != null && resp.ubicacion != null) {
+                                    if (resp.ubicacion.provincia != null && resp.ubicacion.provincia.nombre != null) {
+                                        u.setProvincia(resp.ubicacion.provincia.nombre);
+                                    } else {
+                                        u.setProvincia("DESCONOCIDA");
+                                    }
+
+                                    if (resp.ubicacion.departamento != null && resp.ubicacion.departamento.nombre != null) {
+                                        u.setDepartamento(resp.ubicacion.departamento.nombre);
+                                    }
+                                } else {
+                                    u.setProvincia("DESCONOCIDA");
+                                }
+                                return u;
+                            })
+                            .onErrorResume(ex -> {
+                                if (ex instanceof WebClientResponseException w && w.getStatusCode().value() == 429) {
+                                    logger.warn("Rate limit alcanzado, seteando DESCONOCIDA para lat={}, lon={}",
+                                            u.getLatitud(), u.getLongitud());
+                                } else {
+                                    logger.warn("Error obteniendo ubicación para lat={}, lon={}: {}",
+                                            u.getLatitud(), u.getLongitud(), ex.getMessage());
+                                }
+                                u.setProvincia("DESCONOCIDA");
+                                return Mono.just(u);
+                            });
+                }, 3); // Reducir concurrencia a 3 requests simultáneos
     }
 
     private Flux<Ubicacion> mapUbicacionResponse(UbicacionResponse resp, List<Ubicacion> originales) {
-        if (resp == null || resp.resultados == null) return Flux.fromIterable(originales);
+        // Este método ya no se usa - se eliminó el POST bulk
+        return Flux.fromIterable(originales);
+    }
 
-        List<Ubicacion> updated = new ArrayList<>();
-        int idx = 0;
+    // ====== DTO para GET /ubicacion (singular) ======
+    static class UbicacionGetResponse {
+        public UbicacionData ubicacion;
+        public Map<String, Object> parametros;
 
-        for (UbicacionResponse.Result r : resp.resultados) {
-            if (r.ubicaciones == null) continue;
-            for (UbicacionResponse.Item it : r.ubicaciones) {
-                if (idx >= originales.size()) break;
-                Ubicacion u = originales.get(idx++);
-                if (it.ubicacion != null) {
-                    if (it.ubicacion.provincia != null && it.ubicacion.provincia.nombre != null) {
-                        u.setProvincia(it.ubicacion.provincia.nombre);
-                    } else if (u.getProvincia() == null) {
-                        u.setProvincia("DESCONOCIDA");
-                    }
-                    if (it.ubicacion.departamento != null && it.ubicacion.departamento.nombre != null) {
-                        u.setDepartamento(it.ubicacion.departamento.nombre);
-                    }
-                    // municipio está disponible si lo necesitás
-                } else {
-                    if (u.getProvincia() == null) u.setProvincia("DESCONOCIDA");
-                    u.setDepartamento(null);
-                }
-                updated.add(u);
-            }
+        static class UbicacionData {
+            public Double lat;
+            public Double lon;
+            public Jurisdiccion provincia;
+            public Jurisdiccion departamento;
+            public Jurisdiccion municipio;
         }
-        return Flux.fromIterable(updated.isEmpty() ? originales : updated);
     }
 
     // -----------------------------
-    // Helpers y DTOs internos
+    // Helpers
     // -----------------------------
 
     private static <T> Flux<List<T>> chunk(List<T> list, int size) {
@@ -355,26 +477,16 @@ public class Georef implements IGeoLocalizador {
         return Flux.fromIterable(partes);
     }
 
+    // ====== DTOs /provincias (normalización) ======
+    static class ProvinciasResponse {
+        public List<Provincia> provincias;
+        public Integer cantidad;
+        public Integer total;
 
-    // Para no cambiar referencias del caller en el método sync
-    private static Ubicacion cloneUbicacion(Ubicacion u) {
-        Ubicacion c = new Ubicacion();
-        c.setProvincia(u.getProvincia());
-        c.setDepartamento(u.getDepartamento());
-        c.setCalle(u.getCalle());
-        c.setNumero(u.getNumero());
-        c.setLatitud(u.getLatitud());
-        c.setLongitud(u.getLongitud());
-        return c;
-    }
-
-    private static void copyUbicacion(Ubicacion src, Ubicacion dst) {
-        if (src.getProvincia() != null)   dst.setProvincia(src.getProvincia());
-        if (src.getDepartamento() != null) dst.setDepartamento(src.getDepartamento());
-        if (src.getLatitud() != null)     dst.setLatitud(src.getLatitud());
-        if (src.getLongitud() != null)    dst.setLongitud(src.getLongitud());
-        if (src.getCalle() != null)       dst.setCalle(src.getCalle());
-        if (src.getNumero() != null)      dst.setNumero(src.getNumero());
+        static class Provincia {
+            public String id;
+            public String nombre;
+        }
     }
 
     // ====== DTOs /direcciones ======
@@ -383,10 +495,10 @@ public class Georef implements IGeoLocalizador {
 
         static class Item {
             public String direccion;
-            public Integer max;         // normalmente 1
-            public String campos;       // "basico" o "completo"
-            public String provincia;    // opcional
-            public String departamento; // opcional
+            public Integer max;
+            public String campos;
+            public String provincia;
+            public String departamento;
         }
     }
 
@@ -403,28 +515,39 @@ public class Georef implements IGeoLocalizador {
 
         static class Direccion {
             public Altura altura;
-            public Calle  calle;
+            public Calle calle;
             public String nomenclatura;
-            public Punto  ubicacion;
+            public Punto ubicacion;
             public Jurisdiccion provincia;
             public Jurisdiccion departamento;
-            // hay más campos (localidad_censal, etc.) si los necesitás
         }
 
-        static class Altura { public Integer valor; public String unidad; }
-        static class Calle { public String id; public String nombre; public String categoria; }
-        static class Punto { public Double lat; public Double lon; }
+        static class Altura {
+            public Integer valor;
+            public String unidad;
+        }
+
+        static class Calle {
+            public String id;
+            public String nombre;
+            public String categoria;
+        }
+
+        static class Punto {
+            public Double lat;
+            public Double lon;
+        }
     }
 
     // ====== DTOs /ubicacion ======
     static class UbicacionRequest {
         public List<Item> ubicaciones;
-        public Boolean aplanar; // true/false
+        public Boolean aplanar;
 
         static class Item {
             public Double lat;
             public Double lon;
-            public String campos; // "basico" o "completo"
+            public String campos;
         }
     }
 
@@ -456,5 +579,3 @@ public class Georef implements IGeoLocalizador {
         public String nombre;
     }
 }
-
-

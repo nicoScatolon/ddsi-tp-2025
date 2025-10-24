@@ -40,9 +40,16 @@ public class HechosController {
 
     @GetMapping("/publica/mapa")
     @PreAuthorize("permitAll()")
-    public List<HechoMapaOutputDTO> getHechosMapa() {
-        return hechosService.getHechosMapa();
+    public List<HechoMapaOutputDTO> getHechosMapa(
+            @RequestParam(required = false) String provincia) {
+
+        if (provincia != null && !provincia.isBlank()) {
+            return hechosService.getHechosMapaPorProvincia(provincia);
+        } else {
+            return hechosService.getHechosMapa();
+        }
     }
+
 
     @GetMapping("/publica/destacados")
     @PreAuthorize("permitAll()")

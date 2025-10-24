@@ -17,7 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/hechos")
@@ -138,10 +140,16 @@ public class HechosController {
 
     @GetMapping("/map")
     public String mapaHechos(Model model) {
-        List<HechoMapaInputDTO> hechosMapa = agregadorService.getHechosMapa();
-        model.addAttribute("hechosMapa", hechosMapa);
+        model.addAttribute("provincias",this.ObtenerProvincias());
+        model.addAttribute("listaProvincias",  agregadorService.obtenerProvinciasShort());
         model.addAttribute("titulo", "Mapa de Hechos");
         return "hechos/map";
+    }
+
+    @GetMapping("/mapa-por-provincia")
+    @ResponseBody
+    public List<HechoMapaInputDTO> getHechosMapaPorProvincia(@RequestParam String provincia) {
+        return agregadorService.getHechosMapaPorProvincia(provincia);
     }
 
     @GetMapping("/fuenteDinamica/{id}")
@@ -234,5 +242,34 @@ public class HechosController {
                 .fechaNacimiento(LocalDate.now())
                 .id(17L)
                 .build();
+    }
+
+    private Map<String, Map<String, Double>> ObtenerProvincias(){
+        Map<String, Map<String, Double>> provincias = new LinkedHashMap<>();
+
+        provincias.put("Buenos Aires", Map.of("lat", -34.6037, "lng", -58.3816));
+        provincias.put("Córdoba", Map.of("lat", -31.4201, "lng", -64.1888));
+        provincias.put("Santa Fe", Map.of("lat", -31.6333, "lng", -60.7000));
+        provincias.put("Mendoza", Map.of("lat", -32.8895, "lng", -68.8458));
+        provincias.put("Tucumán", Map.of("lat", -26.8083, "lng", -65.2176));
+        provincias.put("Salta", Map.of("lat", -24.7859, "lng", -65.4117));
+        provincias.put("Entre Ríos", Map.of("lat", -31.7333, "lng", -60.5297));
+        provincias.put("Misiones", Map.of("lat", -27.3621, "lng", -55.9008));
+        provincias.put("Corrientes", Map.of("lat", -27.4692, "lng", -58.8306));
+        provincias.put("Chaco", Map.of("lat", -27.4514, "lng", -58.9867));
+        provincias.put("Santiago del Estero", Map.of("lat", -27.7834, "lng", -64.2642));
+        provincias.put("Jujuy", Map.of("lat", -24.1858, "lng", -65.2995));
+        provincias.put("Catamarca", Map.of("lat", -28.4696, "lng", -65.7795));
+        provincias.put("La Rioja", Map.of("lat", -29.4131, "lng", -66.8558));
+        provincias.put("San Juan", Map.of("lat", -31.5375, "lng", -68.5364));
+        provincias.put("San Luis", Map.of("lat", -33.2950, "lng", -66.3356));
+        provincias.put("Neuquén", Map.of("lat", -38.9516, "lng", -68.0591));
+        provincias.put("Río Negro", Map.of("lat", -40.8135, "lng", -62.9967));
+        provincias.put("Chubut", Map.of("lat", -43.2951, "lng", -65.1091));
+        provincias.put("Santa Cruz", Map.of("lat", -48.8154, "lng", -69.9611));
+        provincias.put("Tierra del Fuego", Map.of("lat", -54.8019, "lng", -68.3029));
+        provincias.put("Formosa", Map.of("lat", -26.1775, "lng", -58.1781));
+        provincias.put("La Pampa", Map.of("lat", -36.6167, "lng", -64.2833));
+        return provincias;
     }
 }
