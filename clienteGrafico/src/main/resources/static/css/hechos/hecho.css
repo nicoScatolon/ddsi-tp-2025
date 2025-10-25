@@ -151,6 +151,7 @@
 #hecho-detail .carousel-container {
     position: relative;
     width: 100%;
+    height: 400px;
     overflow: hidden;
     border-radius: 12px;
     background: var(--bg);
@@ -159,44 +160,57 @@
 #hecho-detail .carousel {
     position: relative;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 #hecho-detail .carousel-track {
-    display: flex;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 #hecho-detail .carousel-item {
-    min-width: 100%;
-    max-width: 100%;
-    flex-shrink: 0;
-    flex-grow: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    flex-basis: 100% !important;
+    display: block !important;
+    position: relative;
     background: var(--bg);
-    height: 100%;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* Contenido multimedia dentro del carrusel */
 #hecho-detail .media-content {
     width: 100%;
-    height: 400px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
+    padding: 0;
 }
 
 /* IMÁGENES */
 #hecho-detail .multimedia-img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    border-radius: 12px;
+    display: block;
 }
 
 /* VIDEOS */
@@ -649,13 +663,19 @@
         height: 250px;
     }
 
-    #hecho-detail .media-content {
+    #hecho-detail .carousel {
         height: 300px;
     }
 
     #hecho-detail .carousel-btn {
         width: 36px;
         height: 36px;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 3rem;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
     }
 
     #hecho-detail button.btn-delete-request,
@@ -691,7 +711,7 @@
         justify-content: center;
     }
 
-    #hecho-detail .media-content {
+    #hecho-detail .carousel {
         height: 250px;
     }
 
@@ -706,6 +726,12 @@
     #hecho-detail .carousel-btn {
         width: 32px;
         height: 32px;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 2.5rem;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
     }
 
     #deleteModal .modal-content {

@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCarousel();
     initMap();
     setupDeleteModal();
-    console.log(document.querySelectorAll('.carousel-item').length);
+
     console.log('📊 Hecho cargado:', HECHO_DATA);
     console.log('👤 Usuario:', USER_DATA);
 });
