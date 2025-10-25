@@ -1,24 +1,18 @@
-/* hecho-detail.css
-   Versión que NO sobrescribe estilos de base.css
-   Solo aplica estilos específicos para la vista de detalle del hecho
+/* hecho.css - Vista de detalle con carrusel multimedia
+   Actualizado para seguir el patrón de base.css
 */
 
-/* ===== VARIABLES ESPECÍFICAS PARA HECHO-DETAIL ===== */
+/* ===== VARIABLES ESPECÍFICAS ===== */
 #hecho-detail {
     --card-width: 1400px;
-    --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
-    --tag-grad: linear-gradient(135deg, #6A82FB, #FC5C7D);
-    --danger-grad: linear-gradient(135deg, #f97316, #ea580c);
-    --destacar-grad: linear-gradient(135deg, #fbbf24, #f59e0b);
-    --quitar-destacado-grad: linear-gradient(135deg, #94a3b8, #64748b);
 }
 
-/* ===== CARD PRINCIPAL (ancho fijo, altura flexible) ===== */
+/* ===== CARD PRINCIPAL ===== */
 #hecho-detail.card {
     background: var(--white);
     padding: 2.25rem;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     width: 100%;
     max-width: var(--card-width);
     min-height: 600px;
@@ -62,13 +56,13 @@
     gap: 1rem;
 }
 
-/* ===== TITULO Y FECHA ===== */
+/* ===== TÍTULO Y FECHA ===== */
 #hecho-detail .title-fecha h1 {
     margin: 0;
     font-size: 1.95rem;
     font-weight: 700;
     line-height: 1.2;
-    color: #0f1724;
+    color: var(--text-color);
     word-wrap: break-word;
 }
 
@@ -76,8 +70,7 @@
     margin-top: 0.5rem;
 }
 
-#hecho-detail .title-fecha .fecha,
-#hecho-detail #hecho-fecha,
+#hecho-detail .fecha,
 #hecho-detail .fecha-carga {
     display: inline-block;
     font-size: 0.95rem;
@@ -93,7 +86,7 @@
     margin: 0.8rem 0;
 }
 
-/* ===== TAGS ===== */
+/* ===== TAGS Y CATEGORÍAS ===== */
 #hecho-detail .categories-row {
     display: flex;
     gap: 0.8rem;
@@ -103,7 +96,7 @@
 
 #hecho-detail .tags-header {
     font-weight: 700;
-    color: #333;
+    color: var(--text-color);
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
 }
@@ -120,11 +113,11 @@
 #hecho-detail .tags li {
     padding: 0.35rem 0.8rem;
     border-radius: 999px;
-    background: var(--tag-grad);
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: var(--white);
     font-weight: 600;
     font-size: 0.85rem;
-    box-shadow: 0 4px 12px rgba(106,130,251,0.12);
+    box-shadow: 0 4px 12px rgba(47,96,244,0.12);
     white-space: nowrap;
 }
 
@@ -137,7 +130,7 @@
 
 #hecho-detail .info-item p {
     margin: 0;
-    color: #333;
+    color: var(--text-color);
     line-height: 1.6;
     font-size: 0.98rem;
     word-wrap: break-word;
@@ -145,55 +138,263 @@
 
 #hecho-detail .ubicacion,
 #hecho-detail .contribuyente {
-    color: #555;
+    color: var(--muted);
     font-weight: 500;
 }
 
-/* ===== MULTIMEDIA ===== */
+/* ===== CARRUSEL MULTIMEDIA ===== */
 #hecho-detail .multimedia-wrapper {
     width: 100%;
     overflow: hidden;
 }
 
-#hecho-detail .multimedia-container {
+#hecho-detail .carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+#hecho-detail .carousel {
+    position: relative;
+    width: 100%;
+}
+
+#hecho-detail .carousel-track {
     display: flex;
-    gap: 0.8rem;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    height: 100%;
+}
+
+#hecho-detail .carousel-item {
+    min-width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    height: 100%;
+}
+
+/* Contenido multimedia dentro del carrusel */
+#hecho-detail .media-content {
+    width: 100%;
+    height: 400px;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    justify-content: center;
+    position: relative;
 }
 
-#hecho-detail .multimedia-container img,
-#hecho-detail .multimedia-container .multimedia-item {
+/* IMÁGENES */
+#hecho-detail .multimedia-img {
     width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain;
     border-radius: 12px;
-    transition: transform .22s ease, box-shadow .22s ease;
-    border: 1px solid #f0f0f0;
+}
+
+/* VIDEOS */
+#hecho-detail .multimedia-video {
+    width: 100%;
+    height: 100%;
+    max-height: 400px;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+/* DOCUMENTOS */
+#hecho-detail .document-content {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+#hecho-detail .document-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+#hecho-detail .document-preview i {
+    font-size: 4rem;
+    color: var(--color-primary);
+}
+
+#hecho-detail .document-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+#hecho-detail .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--color-accent);
+    color: var(--white);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+#hecho-detail .btn-download:hover {
+    background: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+/* AUDIO */
+#hecho-detail .audio-content {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+#hecho-detail .audio-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#hecho-detail .audio-preview i {
+    font-size: 3rem;
+    color: var(--color-primary);
+}
+
+#hecho-detail .multimedia-audio {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Descripción de medios */
+#hecho-detail .media-description {
+    position: absolute;
+    bottom: 3.5rem;
+    left: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.85);
+    color: var(--white);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    z-index: 5;
+}
+
+/* Controles del carrusel */
+#hecho-detail .carousel-controls {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#hecho-detail .carousel-btn {
+    pointer-events: all;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: var(--color-accent);
 }
 
-#hecho-detail .multimedia-container img:hover,
-#hecho-detail .multimedia-container .multimedia-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+#hecho-detail .carousel-btn:hover {
+    background: var(--white);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
-/* placeholder multimedia */
+#hecho-detail .carousel-btn i {
+    font-size: 1.2rem;
+}
+
+/* Indicadores */
+#hecho-detail .carousel-indicators {
+    display: flex;
+    gap: 0.5rem;
+    pointer-events: all;
+    justify-content: center;
+    align-items: center;
+}
+
+#hecho-detail .indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+#hecho-detail .indicator.active {
+    background: var(--white);
+    transform: scale(1.3);
+}
+
+#hecho-detail .indicator:hover {
+    background: rgba(255,255,255,0.8);
+}
+
+/* Contador */
+#hecho-detail .carousel-counter {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.7);
+    color: var(--white);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Placeholder (sin contenido) */
 #hecho-detail .placeholder {
     width: 100%;
-    height: 220px;
+    height: 320px;
     border-radius: 12px;
-    background: linear-gradient(135deg,#f8f8f8,#f1f4ff);
-    color: #999;
+    background: var(--bg);
+    color: var(--muted);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     padding: 1rem;
-    border: 2px dashed rgba(0,0,0,0.06);
+    border: 2px dashed rgba(0,0,0,0.1);
+}
+
+#hecho-detail .placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
 /* ===== MAPA ===== */
@@ -207,9 +408,9 @@
     height: 320px;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow-sm);
     border: 1px solid #f0f0f0;
-    background: #eaeffb;
+    background: var(--bg);
 }
 
 /* ===== BOTONES DE ACCIÓN ===== */
@@ -222,120 +423,68 @@
     flex-direction: row !important;
 }
 
-/* Form dentro de actions */
 #hecho-detail #hecho-actions form {
     margin: 0;
     display: inline-block;
 }
 
-/* Botón de Solicitar Eliminación - MAYOR ESPECIFICIDAD */
-#hecho-detail #hecho-actions button.btn-delete-request,
-button.btn-delete-request {
+/* Botón Solicitar Eliminación */
+#hecho-detail button.btn-delete-request {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
     padding: 0.75rem 1.5rem !important;
     background: linear-gradient(135deg, #f97316, #ea580c) !important;
-    color: white !important;
+    color: var(--white) !important;
     border: none !important;
     border-radius: 12px !important;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.18s ease;
     box-shadow: 0 4px 12px rgba(249,115,22,0.3) !important;
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.4;
 }
 
-#hecho-detail #hecho-actions button.btn-delete-request i,
-button.btn-delete-request i {
-    font-size: 1rem;
-}
-
-#hecho-detail #hecho-actions button.btn-delete-request:hover,
-button.btn-delete-request:hover {
+#hecho-detail button.btn-delete-request:hover {
     background: linear-gradient(135deg, #ea580c, #c2410c) !important;
-    color: white !important;
-    border: none !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(249,115,22,0.4) !important;
 }
 
-#hecho-detail #hecho-actions button.btn-delete-request:active,
-button.btn-delete-request:active {
-    transform: translateY(0);
-}
-
-#hecho-detail #hecho-actions button.btn-delete-request:focus,
-button.btn-delete-request:focus {
-    outline: 3px solid rgba(249,115,22,0.3);
-    outline-offset: 2px;
-}
-
-/* Botón de Destacar (solo admin) - MAYOR ESPECIFICIDAD */
-#hecho-detail #hecho-actions button.btn-destacar,
-button.btn-destacar {
+/* Botón Destacar */
+#hecho-detail button.btn-destacar {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
     padding: 0.75rem 1.5rem !important;
-    background: var(--destacar-grad) !important;
-    color: white !important;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+    color: var(--white) !important;
     border: none !important;
     border-radius: 12px !important;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.18s ease;
     box-shadow: 0 4px 12px rgba(251,191,36,0.3) !important;
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.4;
 }
 
-#hecho-detail #hecho-actions button.btn-destacar i,
-button.btn-destacar i {
-    font-size: 1rem;
-}
-
-#hecho-detail #hecho-actions button.btn-destacar:hover,
-button.btn-destacar:hover {
+#hecho-detail button.btn-destacar:hover {
     background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-    color: white !important;
-    border: none !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(251,191,36,0.4) !important;
 }
 
-#hecho-detail #hecho-actions button.btn-destacar:active,
-button.btn-destacar:active {
-    transform: translateY(0);
-}
-
-#hecho-detail #hecho-actions button.btn-destacar:focus,
-button.btn-destacar:focus {
-    outline: 3px solid rgba(251,191,36,0.3);
-    outline-offset: 2px;
-}
-
-/* Botón de Quitar Destacado - ESTILO DISTINTO */
-#hecho-detail #hecho-actions button.btn-destacar.quitar,
-button.btn-destacar.quitar {
-    background: var(--quitar-destacado-grad) !important;
+/* Botón Quitar Destacado */
+#hecho-detail button.btn-destacar.quitar {
+    background: linear-gradient(135deg, #94a3b8, #64748b) !important;
     box-shadow: 0 4px 12px rgba(100,116,139,0.25) !important;
 }
 
-#hecho-detail #hecho-actions button.btn-destacar.quitar:hover,
-button.btn-destacar.quitar:hover {
+#hecho-detail button.btn-destacar.quitar:hover {
     background: linear-gradient(135deg, #64748b, #475569) !important;
     box-shadow: 0 6px 20px rgba(100,116,139,0.35) !important;
-}
-
-#hecho-detail #hecho-actions button.btn-destacar.quitar:focus,
-button.btn-destacar.quitar:focus {
-    outline: 3px solid rgba(100,116,139,0.3);
 }
 
 /* ===== MODAL ===== */
@@ -355,7 +504,7 @@ button.btn-destacar.quitar:focus {
 }
 
 #deleteModal .modal-content {
-    background: #fff;
+    background: var(--white);
     border-radius: 14px;
     padding: 1.75rem;
     width: 100%;
@@ -367,12 +516,12 @@ button.btn-destacar.quitar:focus {
     float: right;
     font-size: 24px;
     cursor: pointer;
-    color: #777;
-    transition: color 0.3s ease;
+    color: var(--muted);
+    transition: color 0.18s ease;
 }
 
 #deleteModal .close:hover {
-    color: #333;
+    color: var(--text-color);
 }
 
 #deleteModal textarea {
@@ -380,7 +529,7 @@ button.btn-destacar.quitar:focus {
     min-height: 140px;
     resize: vertical;
     padding: 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid #e6e6e6;
     font-size: 0.95rem;
     margin: 1rem 0;
@@ -390,20 +539,18 @@ button.btn-destacar.quitar:focus {
 #deleteModal label {
     display: block;
     font-weight: 600;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 0.5rem;
 }
 
 #deleteModal h2 {
     margin: 0 0 1rem 0;
-    color: #333;
+    color: var(--text-color);
     font-size: 1.5rem;
 }
 
-/* Botón de Enviar Solicitud (en el modal) - MAYOR ESPECIFICIDAD */
-#deleteModal form button.btn-submit-delete,
-#deleteModal button.btn-submit-delete,
-button.btn-submit-delete {
+/* Botón enviar solicitud */
+#deleteModal button.btn-submit-delete {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
@@ -411,46 +558,21 @@ button.btn-submit-delete {
     width: 100% !important;
     padding: 0.85rem 1.5rem !important;
     background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-    color: white !important;
+    color: var(--white) !important;
     border: none !important;
     border-radius: 12px !important;
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.18s ease;
     box-shadow: 0 4px 16px rgba(239,68,68,0.3) !important;
-    font-family: 'Poppins', sans-serif;
     margin-top: 0.5rem;
-    line-height: 1.4;
 }
 
-#deleteModal form button.btn-submit-delete i,
-#deleteModal button.btn-submit-delete i,
-button.btn-submit-delete i {
-    font-size: 1.05rem;
-}
-
-#deleteModal form button.btn-submit-delete:hover,
-#deleteModal button.btn-submit-delete:hover,
-button.btn-submit-delete:hover {
+#deleteModal button.btn-submit-delete:hover {
     background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-    color: white !important;
-    border: none !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(239,68,68,0.4) !important;
-}
-
-#deleteModal form button.btn-submit-delete:active,
-#deleteModal button.btn-submit-delete:active,
-button.btn-submit-delete:active {
-    transform: translateY(0);
-}
-
-#deleteModal form button.btn-submit-delete:focus,
-#deleteModal button.btn-submit-delete:focus,
-button.btn-submit-delete:focus {
-    outline: 3px solid rgba(239,68,68,0.3);
-    outline-offset: 2px;
 }
 
 /* ===== ERROR MESSAGE ===== */
@@ -466,7 +588,7 @@ button.btn-submit-delete:focus {
     text-align: center;
     padding: 3rem;
     background: var(--white);
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     max-width: 600px;
     margin: 0 auto;
@@ -474,7 +596,7 @@ button.btn-submit-delete:focus {
 
 .error-message h2 {
     margin: 0 0 1rem 0;
-    color: #333;
+    color: var(--text-color);
 }
 
 .error-message p {
@@ -527,9 +649,17 @@ button.btn-submit-delete:focus {
         height: 250px;
     }
 
-    button.btn-delete-request,
-    button.btn-destacar,
-    button.btn-submit-delete {
+    #hecho-detail .media-content {
+        height: 300px;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar {
         font-size: 0.9rem !important;
         padding: 0.7rem 1.3rem !important;
     }
@@ -555,20 +685,27 @@ button.btn-submit-delete:focus {
         width: 100%;
     }
 
-    button.btn-delete-request,
-    button.btn-destacar {
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar {
         width: 100% !important;
         justify-content: center;
     }
 
-    #hecho-detail .multimedia-container img,
-    #hecho-detail .multimedia-container .multimedia-item,
-    #hecho-detail .placeholder {
-        max-height: 180px;
+    #hecho-detail .media-content {
+        height: 250px;
     }
 
     #hecho-detail #hecho-map {
         height: 200px;
+    }
+
+    #hecho-detail .carousel-controls {
+        padding: 0 0.5rem;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 32px;
+        height: 32px;
     }
 
     #deleteModal .modal-content {

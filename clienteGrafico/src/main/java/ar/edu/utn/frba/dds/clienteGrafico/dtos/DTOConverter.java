@@ -12,9 +12,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutpu
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.CriterioOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.CriterioFormDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 
@@ -71,7 +69,7 @@ public class DTOConverter {
 
     public static ContenidoMultimediaOutputDTO convertirContenidoMultimediaInputDTO(ContenidoMultimediaInputDTO contenidoMultimediaInputDTO) {
         return ContenidoMultimediaOutputDTO.builder()
-                .Id(contenidoMultimediaInputDTO.getId())
+                .id(contenidoMultimediaInputDTO.getId())
                 .url(contenidoMultimediaInputDTO.getUrl())
                 .descripcion(contenidoMultimediaInputDTO.getDescripcion())
                 .build();

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 <th:block th:fragment="cssExtra">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -82,12 +82,12 @@
                         <div class="tags-header">Etiquetas:</div>
 
                         <!-- Caso sin etiquetas -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
+                        <ul class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
                             <li>Sin etiquetas</li>
                         </ul>
 
                         <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
-                        <ul id="hecho-etiquetas" class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
+                        <ul class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
                             <li th:each="etiqueta : ${hecho?.etiquetas}"
                                 th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
                                 Etiqueta
@@ -101,12 +101,10 @@
                     <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
                         <div class="tags-header">Contribuyente:</div>
                         <p id="hecho-contribuyente" class="contribuyente">
-                            <!-- No usamos cargadoAnonimamente: si contribuyente es null lo consideramos anónimo -->
                             <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
                             <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
                                 Nombre Apellido
                             </span>
-
                         </p>
                     </div>
 
@@ -154,18 +152,98 @@
                     <div class="multimedia-wrapper">
                         <div id="hecho-multimedia" class="multimedia-container">
                             <!-- Si hay contenido multimedia -->
-                            <div th:if="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
-                                <div th:each="contenido : ${hecho.contenidoMultimedia}">
-                                    <img th:src="${contenido.url}"
-                                         th:alt="${contenido.descripcion != null ? contenido.descripcion : (hecho.titulo != null ? hecho.titulo : 'Multimedia')}"
-                                         class="multimedia-item">
+                            <div th:if="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}" class="carousel-container">
+                                <!-- Carrusel -->
+                                <div class="carousel">
+                                    <div class="carousel-track" th:attr="data-total=${#lists.size(hecho.contenidoMultimedia)}">
+                                        <div th:each="contenido, iterStat : ${hecho.contenidoMultimedia}"
+                                             class="carousel-item"
+                                             th:attr="data-index=${iterStat.index}">
+
+                                            <!-- FOTO -->
+                                            <div th:if="${contenido.tipoContenido.name() == 'IMAGEN'}" class="media-content">
+                                                <img th:src="${contenido.url}"
+                                                     th:alt="${contenido.descripcion != null ? contenido.descripcion : 'Imagen'}"
+                                                     class="multimedia-img"
+                                                     loading="eager">
+                                                <div th:if="${contenido.descripcion != null}" class="media-description">
+                                                    <i class="fas fa-image"></i>
+                                                    <span th:text="${contenido.descripcion}"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- VIDEO -->
+                                            <div th:if="${contenido.tipoContenido.name() == 'VIDEO'}" class="media-content">
+                                                <video controls class="multimedia-video">
+                                                    <source th:src="${contenido.url}" type="video/mp4">
+                                                    Tu navegador no soporta videos.
+                                                </video>
+                                                <div th:if="${contenido.descripcion != null}" class="media-description">
+                                                    <i class="fas fa-video"></i>
+                                                    <span th:text="${contenido.descripcion}"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- DOCUMENTO -->
+                                            <div th:if="${contenido.tipoContenido.name() == 'DOCUMENTO'}" class="media-content document-content">
+                                                <div class="document-preview">
+                                                    <i class="fas fa-file-alt"></i>
+                                                    <p class="document-title" th:text="${contenido.descripcion != null ? contenido.descripcion : 'Documento'}"></p>
+                                                    <a th:href="${contenido.url}"
+                                                       target="_blank"
+                                                       download
+                                                       class="btn-download">
+                                                        <i class="fas fa-download"></i>
+                                                        Descargar
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- AUDIO -->
+                                            <div th:if="${contenido.tipoContenido.name() == 'AUDIO'}" class="media-content audio-content">
+                                                <div class="audio-preview">
+                                                    <i class="fas fa-music"></i>
+                                                    <audio controls class="multimedia-audio">
+                                                        <source th:src="${contenido.url}">
+                                                        Tu navegador no soporta audio.
+                                                    </audio>
+                                                </div>
+                                                <div th:if="${contenido.descripcion != null}" class="media-description">
+                                                    <i class="fas fa-headphones"></i>
+                                                    <span th:text="${contenido.descripcion}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Controles del carrusel (solo si hay más de 1 item) -->
+                                    <div th:if="${#lists.size(hecho.contenidoMultimedia) > 1}" class="carousel-controls">
+                                        <button class="carousel-btn prev" aria-label="Anterior">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <div class="carousel-indicators">
+                                            <span th:each="contenido, iterStat : ${hecho.contenidoMultimedia}"
+                                                  class="indicator"
+                                                  th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                                                  th:attr="data-index=${iterStat.index}"></span>
+                                        </div>
+                                        <button class="carousel-btn next" aria-label="Siguiente">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Contador -->
+                                    <div th:if="${#lists.size(hecho.contenidoMultimedia) > 1}" class="carousel-counter">
+                                        <span class="current">1</span> / <span class="total" th:text="${#lists.size(hecho.contenidoMultimedia)}">1</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Si no hay contenido -->
                             <div th:unless="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}"
                                  class="placeholder">
-                                No hay contenido multimedia disponible
+                                <i class="fas fa-images"></i>
+                                <p>No hay contenido multimedia disponible</p>
                             </div>
                         </div>
                     </div>
@@ -195,7 +273,6 @@
             <span class="close">&times;</span>
             <h2>Solicitar Eliminación del Hecho</h2>
             <form id="deleteForm" th:action="@{/solicitudesEliminacion}" method="post">
-                <!-- Razón de eliminación -->
                 <label for="reason">Razón de la eliminación:</label>
                 <textarea id="reason"
                           name="razonEliminacion"
@@ -204,10 +281,7 @@
                           required
                           th:attr="minlength=${#authorization.expression('hasAnyRole(''ADMIN'', ''CONTRIBUYENTE'', ''ADMINSUPERIOR'')') ? null : '500'}"></textarea>
 
-                <!-- ID del hecho -->
                 <input type="hidden" name="hechoId" th:value="${hecho.id}" />
-
-                <!-- ID del usuario -->
                 <input type="hidden" name="usuarioId" th:value="${userId}" />
 
                 <button type="submit" class="btn-submit-delete">
@@ -223,7 +297,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Pasar datos del hecho a JavaScript (sin expresiones peligrosas) -->
+    <!-- Pasar datos del hecho a JavaScript -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         const HECHO_DATA = {
@@ -245,7 +319,7 @@
         };
 
         const USER_DATA = {
-            loggedIn: /*[[${logeado == 1}]]*/ false, //TODO ver esto que seguro rompe al no tener mas logeado
+            loggedIn: /*[[${logeado == 1}]]*/ false,
             role: /*[[${rol}]]*/ 0
         };
         /*]]>*/

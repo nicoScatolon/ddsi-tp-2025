@@ -10,8 +10,8 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Est
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteEstaticaService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ import java.util.List;
 public class AdminPanelController {
     private final IAgregadorService agregadorService;
     private final IFuenteDinamicaService fuenteDinamicaService;
-    private final IFuenteEstaticaService fuenteEstaticaService;
+    private final IFileSystemService fileSystemService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -60,7 +60,7 @@ public class AdminPanelController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            fuenteEstaticaService.importarArchivoCSV(archivo);
+            fileSystemService.importarArchivoCSV(archivo);
 
             redirectAttributes.addFlashAttribute("success",
                     "Archivo importado exitosamente: " + archivo.getOriginalFilename());

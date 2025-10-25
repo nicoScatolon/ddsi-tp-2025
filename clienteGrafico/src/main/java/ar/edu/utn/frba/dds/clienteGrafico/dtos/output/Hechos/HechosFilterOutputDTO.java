@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos.output;
+package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos;
 import lombok.*;
 
 import java.time.LocalDateTime;

@@ -32,6 +32,7 @@
 		<module>servicioEstadisticas</module>
         <module>ClienteGrafico</module>
         <module>servicioUsuarios</module>
+        <module>fileSystem</module>
     </modules>
 
 	<dependencies>

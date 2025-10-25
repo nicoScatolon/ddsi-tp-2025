@@ -13,10 +13,14 @@
         <h1 th:text="${titulo}"></h1>
 
         <!-- Form con action dinámico según si es nuevo o edición -->
-        <form th:action="@{${actionUrl}}" th:object="${hechoDTO}" method="post" id="hechoForm">
+        <!-- IMPORTANTE: agregado enctype="multipart/form-data" -->
+        <form th:action="@{${actionUrl}}"
+              th:object="${hechoDTO}"
+              method="post"
+              id="hechoForm"
+              enctype="multipart/form-data">
 
-
-        <input th:if="${!esNuevo}" type="hidden" name="_method" value="put">
+            <input th:if="${!esNuevo}" type="hidden" name="_method" value="put">
             <!-- ID oculto para edición -->
             <input type="hidden" th:field="*{id}" th:if="${!esNuevo}">
             <input type="hidden" th:field="*{contribuyenteId}" th:if="${!esNuevo}">
@@ -195,6 +199,5 @@
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script th:src="@{/js/hecho-create.js}"></script>
-
 </th:block>
 </html>

@@ -374,10 +374,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const fd = new FormData(form);
 
         // Agregar archivos multimedia nuevos al FormData
-        multimediaFiles.forEach((item, index) => {
-            fd.append(`multimedia[${index}].file`, item.file);
-            fd.append(`multimedia[${index}].tipoContenido`, item.tipoContenido);
-            fd.append(`multimedia[${index}].descripcion`, item.descripcion || '');
+        // Spring espera listas paralelas, así que agregamos todos los archivos primero,
+        // luego todos los tipos, y finalmente todas las descripciones
+        multimediaFiles.forEach((item) => {
+            fd.append('multimedia', item.file);
+        });
+        multimediaFiles.forEach((item) => {
+            fd.append('tipoContenido', item.tipoContenido);
+        });
+        multimediaFiles.forEach((item) => {
+            // Usar 'descripcionMultimedia' para diferenciar de la descripción del hecho
+            // Solo enviar descripción si tiene contenido, sino enviar cadena vacía
+            fd.append('descripcionMultimedia', item.descripcion && item.descripcion.trim() ? item.descripcion.trim() : '');
         });
 
         try {
@@ -412,9 +420,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Fetch error:', err);
             const doFallback = confirm('No se pudo conectar con el servidor vía AJAX. ¿Intentar envío tradicional?');
             if (doFallback) {
-                // retirar este listener y hacer submit clásico
-                form.removeEventListener('submit', arguments.callee);
-                form.submit();
+                // Crear un formulario temporal sin el listener
+                const tempForm = form.cloneNode(true);
+                form.parentNode.replaceChild(tempForm, form);
+                tempForm.submit();
             }
         } finally {
             submitBtn.disabled = false;
