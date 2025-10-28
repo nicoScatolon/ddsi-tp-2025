@@ -7,12 +7,16 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPrevie
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechosFilterOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -104,7 +108,7 @@ public class AgregadorService implements IAgregadorService {
     public ColeccionInputDTO obtenerColeccion(String handle) {
         try {
             return webApiCallerService.get(
-                    agregadorUrl + "/api/colecciones/publica/editable/" + handle,
+                    agregadorUrl + "/api/colecciones/privada/editable/" + handle,
                     ColeccionInputDTO.class
             );
         } catch (NotFoundException e) {
@@ -211,6 +215,58 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public List<CategoriaEquivalenteInputDTO> obtenerCatEquivalentes() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    CategoriaEquivalenteInputDTO.class
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener las categorías equivalentes: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> crearEquivalencia(CategoriaEquivalenteOutputDTO categoria) {
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    categoria,
+                    CategoriaEquivalenteInputDTO.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarEquivalencia(String categoria) {
+        try {
+            webApiCallerService.delete(
+                    agregadorUrl + "/api/privada/categorias/equivalentes/" + categoria
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> editarEquivalencia(CategoriaEquivalenteOutputDTO categoria) {
+        try {
+            webApiCallerService.put(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    categoria,
+                    CategoriaEquivalenteInputDTO.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
 
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
@@ -244,22 +300,25 @@ public class AgregadorService implements IAgregadorService {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
         String url = construirUrlHechosColeccion(handle, paginaActual, filter, curado);
 
-        return webApiCallerService.getList(url, HechoInputDTO.class);
+        return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
     // --- CATEGORIAS --- //
 
     @Override
     public List<String> obtenerCategoriasShort() {
         try {
-            return webApiCallerService.getStringList(
-                    agregadorUrl + "/api/privada/categorias/short"
+            String raw = webApiCallerService.getPublic(
+                    agregadorUrl + "/api/privada/categorias/short",
+                    String.class
             );
-        } catch (NotFoundException e) {
-            throw new NotFoundException("categorías", "short");
-        } catch (RuntimeException e) {
+            //Esto lo tuve q implementar porq devolvía todas las categorías en una sola posición
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(raw, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
             throw new RuntimeException("Error al obtener las categorías short: " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public  List<String> obtenerEtiquetasShort() {
@@ -397,6 +456,39 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> crearCategoria(CategoriaOutputDTO categoria) {
+        try {
+            String url = agregadorUrl + "/api/privada/categorias";
+
+            webApiCallerService.post(
+                    url,
+                    categoria,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear la categoria: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> editarCategoria(CategoriaOutputDTO categoria) {
+        try {
+            String url = agregadorUrl + "/api/privada/categorias";
+
+            webApiCallerService.put(
+                    url,
+                    categoria,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al editar la categoria: " + e.getMessage(), e);
+        }
+    }
 
 
     // --- METODOS PRIVADOS --- //

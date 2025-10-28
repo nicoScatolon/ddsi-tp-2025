@@ -14,102 +14,101 @@
             <div class="content-wrapper">
                 <!-- Columna izquierda -->
                 <div class="left-column">
-                    <div class="title-fecha">
-                        <h1 id="hecho-title"
-                            th:text="${hecho.titulo != null ? hecho.titulo : 'Hecho sin título'}">
-                            Título del Hecho
-                        </h1>
+                    <div class="left-content">
+                        <div class="title-fecha">
+                            <h1 id="hecho-title"
+                                th:text="${hecho.titulo != null ? hecho.titulo : 'Hecho sin título'}">
+                                Título del Hecho
+                            </h1>
 
-                        <div class="fechas">
-                            <span id="hecho-fecha" class="fecha"
-                                  th:if="${hecho.fechaDeOcurrencia != null}"
-                                  th:text="${#temporals.format(hecho.fechaDeOcurrencia, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
-                            </span>
-                            <span th:unless="${hecho.fechaDeOcurrencia != null}">Fecha no especificada</span>
+                            <div class="fechas">
+                                <span id="hecho-fecha" class="fecha"
+                                      th:if="${hecho.fechaDeOcurrencia != null}"
+                                      th:text="${#temporals.format(hecho.fechaDeOcurrencia, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
+                                </span>
+                                <span th:unless="${hecho.fechaDeOcurrencia != null}">Fecha no especificada</span>
 
-                            <span th:if="${hecho.fechaDeCarga != null}" class="fecha-carga"
-                                  th:text="${' · Publicado el ' + #temporals.format(hecho.fechaDeCarga, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
-                            </span>
+                                <span th:if="${hecho.fechaDeCarga != null}" class="fecha-carga"
+                                      th:text="${' · Publicado el ' + #temporals.format(hecho.fechaDeCarga, 'dd MMMM yyyy', T(java.util.Locale).forLanguageTag('es'))}">
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Categoría -->
+                        <div class="info-item categories-row">
+                            <span class="tags-header">Categoría: </span>
+                            <span th:if="${hecho.categoria != null}"
+                                  class="categoria-nombre"
+                                  th:text="${hecho.categoria.nombre}">Categoría</span>
+                            <span th:unless="${hecho.categoria != null}"
+                                  class="categoria-nombre">Sin categoría</span>
+                        </div>
+                        <hr class="separator">
+
+                        <!-- Descripción -->
+                        <div class="info-item">
+                            <p id="hecho-description"
+                               th:text="${hecho.descripcion != null ? hecho.descripcion : 'Sin descripción disponible.'}">
+                                Aquí irá la descripción del hecho cargada dinámicamente.
+                            </p>
+                        </div>
+
+                        <hr class="separator">
+
+                        <!-- Ubicación -->
+                        <div class="info-item">
+                            <div class="tags-header">Ubicación:</div>
+                            <p id="hecho-ubicacion" class="ubicacion">
+                                <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
+                                    <span th:if="${hecho.ubicacion.provincia != null}"
+                                          th:text="${hecho.ubicacion.provincia}"></span>
+                                    <span th:if="${hecho.ubicacion.departamento != null}"
+                                          th:text="${hecho.ubicacion.departamento}"></span>
+                                    <span th:if="${hecho.ubicacion.calle != null}"
+                                          th:text="${' - ' + hecho.ubicacion.calle}"></span>
+                                    <span th:if="${hecho.ubicacion.numero != null}"
+                                          th:text="${' ' + hecho.ubicacion.numero}"></span>
+                                </span>
+                                <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
+                            </p>
+                        </div>
+
+                        <hr class="separator" th:if="${origenAgregador == true}">
+
+                        <!-- Etiquetas -->
+                        <div class="info-item" th:if="${origenAgregador == true}">
+                            <div class="tags-header">Etiquetas:</div>
+
+                            <!-- Caso sin etiquetas -->
+                            <ul class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
+                                <li>Sin etiquetas</li>
+                            </ul>
+
+                            <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
+                            <ul class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
+                                <li th:each="etiqueta : ${hecho?.etiquetas}"
+                                    th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
+                                    Etiqueta
+                                </li>
+                            </ul>
+                        </div>
+
+                        <hr class="separator" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
+
+                        <!-- Contribuyente -->
+                        <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
+                            <div class="tags-header">Contribuyente:</div>
+                            <p id="hecho-contribuyente" class="contribuyente">
+                                <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
+                                <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
+                                    Nombre Apellido
+                                </span>
+                            </p>
                         </div>
                     </div>
 
-                    <hr class="separator">
-
-                    <!-- Categoría -->
-                    <div class="info-item categories-row">
-                        <div class="tags-header">Categoría:</div>
-                        <ul id="hecho-categorias" class="tags">
-                            <li th:if="${hecho.categoria != null}"
-                                th:text="${hecho.categoria.nombre}">Categoría</li>
-                            <li th:unless="${hecho.categoria != null}">Sin categoría</li>
-                        </ul>
-                    </div>
-
-                    <hr class="separator">
-
-                    <!-- Descripción -->
-                    <div class="info-item">
-                        <p id="hecho-description"
-                           th:text="${hecho.descripcion != null ? hecho.descripcion : 'Sin descripción disponible.'}">
-                            Aquí irá la descripción del hecho cargada dinámicamente.
-                        </p>
-                    </div>
-
-                    <hr class="separator">
-
-                    <!-- Ubicación -->
-                    <div class="info-item">
-                        <div class="tags-header">Ubicación:</div>
-                        <p id="hecho-ubicacion" class="ubicacion">
-                            <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
-                                <span th:if="${hecho.ubicacion.provincia != null}"
-                                      th:text="${hecho.ubicacion.provincia}"></span>
-                                <span th:if="${hecho.ubicacion.departamento != null}"
-                                      th:text="${hecho.ubicacion.departamento}"></span>
-                                <span th:if="${hecho.ubicacion.calle != null}"
-                                      th:text="${' - ' + hecho.ubicacion.calle}"></span>
-                                <span th:if="${hecho.ubicacion.numero != null}"
-                                      th:text="${' ' + hecho.ubicacion.numero}"></span>
-                            </span>
-                            <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
-                        </p>
-                    </div>
-
-                    <hr class="separator">
-
-                    <!-- Etiquetas -->
-                    <div class="info-item" th:if="${origenAgregador == true}">
-                        <div class="tags-header">Etiquetas:</div>
-
-                        <!-- Caso sin etiquetas -->
-                        <ul class="tags" th:if="${hecho?.etiquetas == null or #lists.isEmpty(hecho?.etiquetas)}">
-                            <li>Sin etiquetas</li>
-                        </ul>
-
-                        <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
-                        <ul class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
-                            <li th:each="etiqueta : ${hecho?.etiquetas}"
-                                th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
-                                Etiqueta
-                            </li>
-                        </ul>
-                    </div>
-
-                    <hr class="separator">
-
-                    <!-- Contribuyente -->
-                    <div class="info-item" th:if="${hecho.contribuyenteId != null && contribuyente != null}">
-                        <div class="tags-header">Contribuyente:</div>
-                        <p id="hecho-contribuyente" class="contribuyente">
-                            <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
-                            <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
-                                Nombre Apellido
-                            </span>
-                        </p>
-                    </div>
-
                     <!-- Acciones solo para usuarios logueados -->
-                    <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item" style="margin-top:12px;" >
+                    <div id="hecho-actions" th:if="${origenAgregador == true}" class="info-item actions-container">
                         <!-- Botón solicitar eliminación (usuarios logueados) -->
                         <button id="deleteBtn" class="btn-delete-request">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -191,10 +190,9 @@
                                                     <p class="document-title" th:text="${contenido.descripcion != null ? contenido.descripcion : 'Documento'}"></p>
                                                     <a th:href="${contenido.url}"
                                                        target="_blank"
-                                                       download
                                                        class="btn-download">
-                                                        <i class="fas fa-download"></i>
-                                                        Descargar
+                                                        <i class="fas fa-external-link-alt"></i>
+                                                        Abrir
                                                     </a>
                                                 </div>
                                             </div>
@@ -325,7 +323,6 @@
         /*]]>*/
     </script>
 
-    <!-- Script específico para hecho-detail -->
     <script th:src="@{/js/hecho-detail.js}"></script>
 </th:block>
 

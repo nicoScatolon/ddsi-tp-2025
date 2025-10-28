@@ -1,15 +1,12 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.FileUploadOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.TipoContenido;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/hechos")
@@ -79,7 +75,7 @@ public class HechosController {
         return "/hechos/create";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create") //Todo si no estas logeado da error
     public String guardarHecho(
             @ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO,
             @RequestParam(value = "multimedia", required = false) List<MultipartFile> multimediaFiles,
@@ -244,7 +240,7 @@ public class HechosController {
         creadorHecho.setApellido("BBBB");
         //TODO obtener datos del usuario con el id desde el hecho
 
-        model.addAttribute("titulo", "Hecho Fuente Dinamica");
+        model.addAttribute("titulo", "Dinamica: "+ hecho.getTitulo());
         model.addAttribute("hecho", hecho);
         model.addAttribute("contribuyente", creadorHecho);
         model.addAttribute("userId", userId);
@@ -270,7 +266,7 @@ public class HechosController {
             @ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO,
             @RequestParam(value = "multimedia", required = false) List<MultipartFile> multimediaFiles,
             @RequestParam(value = "tipoContenido", required = false) List<String> tiposContenido,
-            @RequestParam(value = "descripcion", required = false) List<String> descripciones,
+            @RequestParam(value = "descripcionMultimedia", required = false) List<String> descripcionesMultimedia,
             Model model,
             HttpSession session) {
 
@@ -281,25 +277,61 @@ public class HechosController {
             }
             hechoDTO.setContribuyenteId(userId);
 
-            // Filtrar multimedia marcado para eliminar
-            if (hechoDTO.getContenidoMultimedia() != null) {
-                List<ContenidoMultimediaOutputDTO> contenidoFiltrado = hechoDTO.getContenidoMultimedia();
-                hechoDTO.setContenidoMultimedia(contenidoFiltrado);
-            }
-
-            // Agregar nuevos archivos multimedia
+            // Procesar nuevos archivos multimedia
             if (multimediaFiles != null && !multimediaFiles.isEmpty()) {
-                List<ContenidoMultimediaOutputDTO> contenidoList = fileSystemService.guardarContenidoMultimedia(multimediaFiles, tiposContenido, descripciones);
+                // Filtrar archivos vacíos
+                List<MultipartFile> archivosValidos = new ArrayList<>();
+                List<String> tiposValidos = new ArrayList<>();
+                List<String> descripcionesValidas = new ArrayList<>();
 
-                hechoDTO.setContenidoMultimedia(contenidoList);
+                for (int i = 0; i < multimediaFiles.size(); i++) {
+                    MultipartFile file = multimediaFiles.get(i);
+                    if (!file.isEmpty() && file.getSize() > 0) {
+                        archivosValidos.add(file);
+
+                        if (tiposContenido != null && i < tiposContenido.size()) {
+                            tiposValidos.add(tiposContenido.get(i));
+                        }
+
+                        // Convertir descripciones vacías a null
+                        if (descripcionesMultimedia != null && i < descripcionesMultimedia.size()) {
+                            String desc = descripcionesMultimedia.get(i);
+                            String descripcionFinal = (desc == null || desc.trim().isEmpty()) ? null : desc.trim();
+                            descripcionesValidas.add(descripcionFinal);
+                        } else {
+                            descripcionesValidas.add(null);
+                        }
+                    }
+                }
+
+                if (!archivosValidos.isEmpty()) {
+                    System.out.println("Archivos válidos a procesar: " + archivosValidos.size());
+                    List<ContenidoMultimediaOutputDTO> contenidoList =
+                            fileSystemService.guardarContenidoMultimedia(
+                                    archivosValidos,
+                                    tiposValidos,
+                                    descripcionesValidas
+                            );
+                    // Reemplazar toda la multimedia con la nueva
+                    hechoDTO.setContenidoMultimedia(contenidoList);
+                }
+            } else {
+                // Si no hay archivos nuevos, mantener la lista existente o vacía
+                if (hechoDTO.getContenidoMultimedia() == null) {
+                    hechoDTO.setContenidoMultimedia(new ArrayList<>());
+                }
             }
 
             fuenteDinamicaService.editarHecho(hechoDTO);
             return "redirect:/hechos/fuenteDinamica/" + hechoDTO.getId();
 
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("error", "No se pudo editar el hecho: " + e.getMessage());
-            return "redirect:/hechos/mis-hechos";
+            model.addAttribute("esNuevo", false);
+            model.addAttribute("categorias", agregadorService.obtenerCategoriasShort());
+            model.addAttribute("provincias", agregadorService.obtenerProvinciasShort());
+            return "hechos/create";
         }
     }
 

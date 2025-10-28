@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.config;
 import ar.edu.utn.frba.dds.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,13 +36,14 @@ public class SecurityConfig {
                                 "/api/colecciones/publica/**",
                                 "/api/hechos/publica",
                                 "/api/hechos/publica/**",
-                                "/api/privada/categorias",
                                 "/api/privada/categorias/short",
                                 "/api/solicitudes-eliminacion/publica",
                                 "/api/fuente/publica/preview",
                                 "/api/fuente/test/**",
                                 "/api/colecciones/test/**"
                         ).permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/privada/categorias").permitAll()
 
                         .anyRequest().authenticated()
                 )

@@ -5,7 +5,6 @@ import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.services.IHechosService;
-import ar.edu.utn.frba.dds.services.ISeederService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,9 @@ import java.util.List;
 @RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
-    private final ISeederService seederService;
 
-    public HechosController(IHechosService hechosService, ISeederService seederService) {
+    public HechosController(IHechosService hechosService) {
         this.hechosService = hechosService;
-        this.seederService = seederService;
     }
 
     // --- API Publica --- //
@@ -50,7 +47,6 @@ public class HechosController {
         }
     }
 
-
     @GetMapping("/publica/destacados")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> getHechosDestacados() {
@@ -58,7 +54,6 @@ public class HechosController {
     }
 
     // --- API Privada --- //
-
     @GetMapping("/privada")
     @PreAuthorize("hasRole('ADMIN')")
     public List<HechoOutputDTO> getHechosPrivada(@ModelAttribute HechosFilterDTO hechosFilterDTO, @RequestParam(required = false) Boolean fueEliminado) {
@@ -89,20 +84,5 @@ public class HechosController {
     public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, false);
     }
-
-    // --- TEST --- //
-
-    /*
-    @GetMapping("/pruebas")
-    public List<HechoOutputDTO> getHechosPrueba() {
-        return hechosService.findAllOutput();
-    }
-
-    @GetMapping("/inicializar")
-    public boolean inicializarDatos(){
-        this.seederService.init();
-        return true;
-    }
-    */
 
 }

@@ -44,7 +44,7 @@ public class ColeccionesController {
     }
 
     @GetMapping("/privada")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
         return coleccionesService.findAll();
     }

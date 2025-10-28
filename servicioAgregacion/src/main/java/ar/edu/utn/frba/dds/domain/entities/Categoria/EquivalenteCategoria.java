@@ -19,15 +19,15 @@ public class EquivalenteCategoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     Long id;
 
-    @Column(name = "equivalente", nullable = false)
-    String equivalente;
+    @Column(name = "nombreEquivalente", nullable = false)
+    String nombreEquivalente;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "categoria_id", nullable = false)
     Categoria categoria;
 
     public EquivalenteCategoria(String nombreEquivalente, Categoria categoria) {
-       this.equivalente = normalizarTexto(nombreEquivalente);
+       this.nombreEquivalente = normalizarTexto(nombreEquivalente);
        this.categoria = categoria;
     }
 

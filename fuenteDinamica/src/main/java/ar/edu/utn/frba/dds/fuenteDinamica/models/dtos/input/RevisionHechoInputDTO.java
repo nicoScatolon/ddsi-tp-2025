@@ -1,10 +1,12 @@
 package ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input;
 
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

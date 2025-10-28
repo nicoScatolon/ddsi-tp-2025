@@ -135,6 +135,7 @@ public class HechosService implements IHechosService {
     @Transactional
     @Override
     public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
+        //TODO: hacer try catch para evitar errores x consola
         final long t0 = System.currentTimeMillis();
         logger.info("Se van a persistir {} hechos", hechosActualizados.size());
 

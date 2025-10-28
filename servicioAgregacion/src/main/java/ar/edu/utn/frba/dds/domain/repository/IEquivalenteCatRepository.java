@@ -1,23 +1,17 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
-import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface IEquivalenteCatRepository extends JpaRepository<EquivalenteCategoria, Long> {
+    void deleteByNombreEquivalente(String nombreEquivalente);
 
-    boolean existsByEquivalente(String equivalente);
+    Optional<EquivalenteCategoria> findByCategoria_CodigoCategoriaAndNombreEquivalente(String codigoCategoria, String nombreEquivalente);
 
+    boolean existsByCategoria_CodigoCategoriaAndNombreEquivalente(String codigoCategoria, String nombreEquivalente);
 
-    EquivalenteCategoria findWithCategoriaByEquivalente(String equivalente);
-
-
-    Optional<String> findNombreCategoriaByEquivalente(String equivalente);
-
-    void deleteByEquivalente(String equivalente);
+    void deleteByCategoria_CodigoCategoriaAndNombreEquivalente(String codigoCategoria, String nombreEquivalente);
 }
+

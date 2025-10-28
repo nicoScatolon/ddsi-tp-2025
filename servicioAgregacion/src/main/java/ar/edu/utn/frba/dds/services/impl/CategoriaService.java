@@ -1,7 +1,9 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOConverter;
+import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.output.EquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
@@ -9,14 +11,14 @@ import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IEquivalenteCatRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 
 @Setter
@@ -55,7 +57,7 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
-    public List<Hecho> cargarCategoriasHechos( List<Hecho> hechosActualizados ) {
+    public List<Hecho> cargarCategoriasHechos(List<Hecho> hechosActualizados) {
         List<Categoria> categoriasGuardadas = this.categoriasRepository.findAll();
         List<EquivalenteCategoria> equivalenteCategorias = this.equivalenteCatRepository.findAll();
 
@@ -64,40 +66,15 @@ public class CategoriaService implements ICategoriaService {
         for (Hecho hecho : hechosActualizados) {
             Categoria catHecho = hecho.getCategoria();
 
-            if (catHecho.getNombre() == null && catHecho.getCodigoCategoria() == null) { throw new IllegalArgumentException("La categoría esta vacia"); }
+            Categoria categoriaFinal = this.cargarCategoria(catHecho, equivalenteCategorias, categoriasGuardadas);
 
-            //normalizamos el nombre para obtener el id en nuestra base de datos
-            String nombreNormalizado = NormalizadorTexto.normalizarTexto(catHecho.getNombre());
-            if (catHecho.getCodigoCategoria() != null && !Objects.equals(catHecho.getCodigoCategoria(), nombreNormalizado) )
-                { catHecho.setCodigoCategoria(nombreNormalizado); }
-            if (catHecho.getCodigoCategoria() == null)
-                { catHecho.setCodigoCategoria(nombreNormalizado); }
-
-
-            //verificar si existe la categoria
-            var categoriaExistente = categoriasGuardadas.stream()
-                    .filter(c -> ( c.getCodigoCategoria().equals(catHecho.getCodigoCategoria()) ) )
-                    .findFirst();
-            if (categoriaExistente.isPresent()) {
-                hecho.setCategoria(categoriaExistente.get());
-                continue;
+            // Si es una categoría nueva, la agregamos a las listas
+            if (!categoriasGuardadas.contains(categoriaFinal)) {
+                categoriasGuardadas.add(categoriaFinal);
+                nuevasCategorias.add(categoriaFinal);
             }
 
-            // si no la encontramos, verificamos sus equivalentes a ver si existe
-            var categoriaEquivalente = equivalenteCategorias.stream()
-                    .filter(e -> e.getEquivalente().equals(catHecho.getCodigoCategoria()))
-                    .findFirst();
-            if (categoriaEquivalente.isPresent()) {
-                hecho.setCategoria( categoriaEquivalente.get().getCategoria() );
-                continue;
-            }
-            //
-
-            if (catHecho.getNombre() == null) { throw new IllegalArgumentException("No se puede crear una categoria sin nombre"); }
-
-            // si no existe ni la categoria ni el equivalente, la creamos
-            categoriasGuardadas.add(catHecho); //para que la proxima iteracion conoczca la nueva categoria
-            nuevasCategorias.add(catHecho); //para guardarlas despues
+            hecho.setCategoria(categoriaFinal);
         }
 
         this.categoriasRepository.saveAll(nuevasCategorias);
@@ -105,17 +82,147 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
-    public void agregarEquivalentes(String codigoCategoria, String equivalente){
+    public ResponseEntity<Void> crearCategoria(CategoriaInputDTO categoriaInputDTO) {
+        try {
+            List<Categoria> categoriasGuardadas = this.categoriasRepository.findAll();
+            List<EquivalenteCategoria> equivalenteCategorias = this.equivalenteCatRepository.findAll();
+            Categoria categoria= DTOConverter.categoriaInputDTO(categoriaInputDTO);
+
+            Categoria categoriaActualizada = this.cargarCategoria(categoria, equivalenteCategorias, categoriasGuardadas);
+
+            // Solo guardamos si es una categoría nueva
+            if (!categoriasGuardadas.contains(categoriaActualizada)) {
+                this.categoriasRepository.save(categoriaActualizada);
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public List<EquivalenteOutputDTO> findAllEquivalentes() {
+        return DTOConverter.categoriaEquivalenteOutput(equivalenteCatRepository.findAll());
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> editarEquivalentes(String codigoCategoria, String nombreEquivalente, String nuevoNombre) {
+        Optional<EquivalenteCategoria> optEquivalente =
+                equivalenteCatRepository.findByCategoria_CodigoCategoriaAndNombreEquivalente(codigoCategoria, nombreEquivalente);
+
+        if (optEquivalente.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        // 2) Si el nuevo nombre es igual al actual, no hace falta nada
+        EquivalenteCategoria existente = optEquivalente.get();
+        if (existingNameEqualsCurrent(existente, nuevoNombre)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+
+        // 3) Verificar colisión: ¿ya existe otro equivalente con ese nuevoNombre en la misma categoría?
+        boolean collision = equivalenteCatRepository.existsByCategoria_CodigoCategoriaAndNombreEquivalente(codigoCategoria, nuevoNombre);
+        if (collision) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        existente.setNombreEquivalente(nuevoNombre);
+        equivalenteCatRepository.save(existente);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    private boolean existingNameEqualsCurrent(EquivalenteCategoria existente, String nuevoNombre) {
+        if (nuevoNombre == null) return false;
+        return nuevoNombre.trim().equalsIgnoreCase(
+                existente.getNombreEquivalente() == null ? "" : existente.getNombreEquivalente().trim()
+        );
+    }
+
+
+
+    @Override
+    public ResponseEntity<Void> editarCategoria(CategoriaInputDTO dto) {
+        if (dto == null || dto.getCodigoCategoria() == null || dto.getNuevoNombre() == null || dto.getNuevoNombre().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        String nuevoNombre = dto.getNuevoNombre();
+
+        // Buscar la categoría original por su código
+        Optional<Categoria> categoriaOpt = categoriasRepository.findCategoriaByCodigoCategoria(dto.getCodigoCategoria());
+        if (categoriaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Categoria categoria = categoriaOpt.get();
+
+        // Verificar que el nuevo nombre no exista
+        if (categoriasRepository.existsByNombre(nuevoNombre)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        categoria.setNombre(nuevoNombre);
+        categoriasRepository.save(categoria);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    // Analiza si la categoria existe, analiza si existe una equivalente, sino la crea.
+    private Categoria cargarCategoria(Categoria categoria, List<EquivalenteCategoria> equivalenteCategorias, List<Categoria> categoriasGuardadas) {
+        if (categoria.getNombre() == null && categoria.getCodigoCategoria() == null) {
+            throw new IllegalArgumentException("La categoría esta vacia");
+        }
+
+        //normalizamos el nombre para obtener el id en nuestra base de datos
+        String nombreNormalizado = NormalizadorTexto.normalizarTexto(categoria.getNombre());
+        if (categoria.getCodigoCategoria() != null && !Objects.equals(categoria.getCodigoCategoria(), nombreNormalizado)) {
+            categoria.setCodigoCategoria(nombreNormalizado);
+        }
+        if (categoria.getCodigoCategoria() == null) {
+            categoria.setCodigoCategoria(nombreNormalizado);
+        }
+
+        //verificar si existe la categoria
+        var categoriaExistente = categoriasGuardadas.stream()
+                .filter(c -> c.getCodigoCategoria().equals(categoria.getCodigoCategoria()))
+                .findFirst();
+        if (categoriaExistente.isPresent()) {
+            return categoriaExistente.get();
+        }
+
+        // si no la encontramos, verificamos sus equivalentes a ver si existe
+        var categoriaEquivalente = equivalenteCategorias.stream()
+                .filter(e -> e.getNombreEquivalente().equals(categoria.getCodigoCategoria()))
+                .findFirst();
+        if (categoriaEquivalente.isPresent()) {
+            return categoriaEquivalente.get().getCategoria();
+        }
+
+        if (categoria.getNombre() == null) {
+            throw new IllegalArgumentException("No se puede crear una categoria sin nombre");
+        }
+
+        return categoria;
+    }
+
+    @Override
+    @Transactional
+    public void agregarEquivalentes(String codigoCategoria, String nombreEquivalente){
         Categoria categoria = categoriasRepository.findCategoriaByCodigoCategoria(codigoCategoria)
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada: " + codigoCategoria));
 
-        EquivalenteCategoria equivalenteEntidad = new EquivalenteCategoria(equivalente, categoria);
+        EquivalenteCategoria equivalenteEntidad = new EquivalenteCategoria(nombreEquivalente, categoria);
 
         equivalenteCatRepository.save(equivalenteEntidad);
     }
 
     @Override
+    @Transactional
     public void eliminarEquivalentes(String equivalente){
-        equivalenteCatRepository.deleteByEquivalente(equivalente);
+        equivalenteCatRepository.deleteByNombreEquivalente(equivalente);
     }
 }

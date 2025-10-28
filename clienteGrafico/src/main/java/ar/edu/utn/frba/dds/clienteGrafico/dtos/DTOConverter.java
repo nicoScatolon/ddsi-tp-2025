@@ -44,7 +44,7 @@ public class DTOConverter {
 
     public static CategoriaOutputDTO convertirCategoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
         return CategoriaOutputDTO.builder()
-                .id(categoriaInputDTO.getId())
+                .codigoCategoria(categoriaInputDTO.getCodigoCategoria())
                 .nombre(categoriaInputDTO.getNombre())
                 .build();
     }

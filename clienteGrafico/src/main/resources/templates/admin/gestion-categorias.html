@@ -1,164 +1,251 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="gestion-categorias">
+    <!-- SECCIÓN DE CATEGORÍAS -->
     <section class="categorias-section">
 
-        <!-- Mensajes Flash -->
-        <div th:if="${mensaje}"
-             class="alert-message"
-             th:classappend="${tipoMensaje == 'success'} ? 'alert-success' : 'alert-error'">
-            <i th:class="${tipoMensaje == 'success'} ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
-            <span th:text="${mensaje}"></span>
-            <button class="alert-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <!-- Header con búsqueda y botón crear -->
+        <!-- HEADER CON BÚSQUEDA Y BOTÓN -->
         <div class="categorias-header">
             <div class="search-container">
-                <input type="text"
-                       id="searchInput"
-                       class="search-input"
-                       placeholder="Buscar categoría...">
                 <i class="fas fa-search search-icon"></i>
+                <input
+                        type="text"
+                        id="searchInput"
+                        class="search-input"
+                        placeholder="Buscar categorías o equivalentes..."
+                        autocomplete="off"
+                >
             </div>
-            <button class="btn-crear" id="btnCrearCategoria">
+
+            <button type="button" id="btnCrearCategoria" class="btn-crear">
                 <i class="fas fa-plus"></i>
                 Nueva Categoría
             </button>
         </div>
 
-        <!-- Contador de resultados -->
-        <div class="resultados-info">
-            <span id="resultadosCount">Mostrando <strong th:text="${#lists.size(categorias)}">0</strong> categorías</span>
-        </div>
+        <!-- CONTENEDOR DE DOS COLUMNAS CON SCROLL -->
+        <div class="dual-scroll-container">
 
-        <!-- Lista de categorías -->
-        <div class="categorias-grid" id="categoriasGrid">
-            <div class="categoria-card"
-                 th:each="categoria : ${categorias}"
-                 th:attr="data-nombre=${categoria.nombre}">
-
-                <div class="categoria-info">
-                    <h3 class="categoria-nombre" th:text="${categoria.nombre}">Categoría</h3>
-                    <span class="categoria-id" th:text="'ID: ' + ${categoria.id}">ID: 1</span>
+            <!-- COLUMNA IZQUIERDA: CATEGORÍAS -->
+            <div class="scroll-section categorias-section-scroll">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-folder"></i>
+                        Categorías
+                    </h2>
+                    <span class="count-badge" id="categoriasCount">0</span>
                 </div>
+                <div class="scroll-content">
+                    <div class="items-list" id="categoriasList">
+                        <!-- TARJETAS DE CATEGORÍAS -->
+                        <div class="item-card categoria-card"
+                             th:each="categoria : ${categorias}"
+                             th:attr="data-nombre=${categoria.nombre}, data-codigo=${categoria.codigoCategoria}">
+                            <div class="item-info">
+                                <h3 class="item-name" th:text="${categoria.nombre}">Nombre</h3>
+                                <p class="item-id" th:text="'ID: ' + ${categoria.codigoCategoria}">ID: 123</p>
+                            </div>
+                            <div class="item-actions">
+                                <button
+                                        type="button"
+                                        class="btn-action btn-agregar-equivalente"
+                                        th:attr="data-codigo=${categoria.codigoCategoria}, data-nombre=${categoria.nombre}"
+                                        title="Agregar equivalente">
+                                    <i class="fas fa-plus-circle"></i>
+                                </button>
+                                <button
+                                        type="button"
+                                        class="btn-action btn-editar"
+                                        th:attr="data-codigo=${categoria.codigoCategoria}, data-nombre=${categoria.nombre}"
+                                        title="Editar categoría">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="categoria-actions">
-                    <button class="btn-action btn-editar"
-                            th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
-                            title="Editar categoría">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-action btn-eliminar"
-                            th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
-                            title="Eliminar categoría">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <!-- Mensaje cuando está vacío -->
+                    <div class="empty-state" th:if="${#lists.isEmpty(categorias)}" id="categoriasEmpty">
+                        <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                        <p style="font-weight: 600;">No hay categorías</p>
+                        <p style="font-size: 0.9rem;">Crea tu primera categoría</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Mensaje cuando no hay resultados -->
-        <div class="no-resultados hidden" id="noResultados">
-            <div class="no-resultados-icon">
-                <i class="fas fa-search"></i>
-            </div>
-            <p>No se encontraron categorías con ese criterio de búsqueda</p>
-        </div>
+            <!-- COLUMNA DERECHA: EQUIVALENTES -->
+            <div class="scroll-section equivalentes-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-tags"></i>
+                        Equivalentes
+                    </h2>
+                    <span class="count-badge" id="equivalentesCount">0</span>
+                </div>
+                <div class="scroll-content">
+                    <div class="items-list" id="equivalentesList">
+                        <!-- TARJETAS DE EQUIVALENTES -->
+                        <div class="item-card equivalente-card"
+                             th:each="equivalente : ${equivalentes}"
+                             th:attr="data-nombre=${equivalente.nombre}, data-codigo=${equivalente.codigoCategoria}">
+                            <div class="item-info">
+                                <h3 class="item-name" th:text="${equivalente.nombre}">Nombre Equivalente</h3>
+                                <p class="item-id">
+                                    Categoría: <span th:text="${equivalente.codigoCategoria}">CAT-123</span>
+                                </p>
+                            </div>
+                            <div class="item-actions">
+                                <button
+                                        type="button"
+                                        class="btn-action btn-editar-equivalente"
+                                        th:attr="data-nombre=${equivalente.nombre}, data-codigo=${equivalente.codigoCategoria}"
+                                        title="Editar equivalente">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button
+                                        type="button"
+                                        class="btn-action btn-eliminar"
+                                        th:attr="data-nombre=${equivalente.nombre}"
+                                        title="Eliminar equivalente">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Mensaje cuando la lista está vacía -->
-        <div class="lista-vacia" th:if="${#lists.isEmpty(categorias)}">
-            <div class="vacia-icon">
-                <i class="fas fa-folder-open"></i>
+                    <!-- Mensaje cuando está vacío -->
+                    <div class="empty-state" th:if="${#lists.isEmpty(equivalentes)}" id="equivalentesEmpty">
+                        <div class="empty-icon"><i class="fas fa-tags"></i></div>
+                        <p style="font-weight: 600;">No hay equivalentes</p>
+                        <p style="font-size: 0.9rem;">Agrega equivalentes a tus categorías</p>
+                    </div>
+                </div>
             </div>
-            <p>No hay categorías creadas aún</p>
-            <button class="btn-crear-inline" onclick="document.getElementById('btnCrearCategoria').click()">
-                <i class="fas fa-plus"></i>
-                Crear primera categoría
-            </button>
+
         </div>
 
     </section>
 
-    <!-- Modal para crear/editar categoría -->
-    <div class="modal-overlay hidden" id="modalCategoria">
+    <!-- ============================================ -->
+    <!-- MODAL: CREAR/EDITAR CATEGORÍA -->
+    <!-- ============================================ -->
+    <div id="modalCategoria" class="modal-overlay hidden">
         <div class="modal-content">
+
+            <!-- HEADER DEL MODAL -->
             <div class="modal-header">
                 <h2 id="modalTitulo">Nueva Categoría</h2>
-                <button class="modal-close" id="btnCerrarModal">
+                <button type="button" id="btnCerrarModal" class="modal-close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <form id="formCategoria" th:action="@{/admin/categorias}" method="post" class="modal-form">
-                <input type="hidden" id="categoriaId" name="id">
+            <!-- FORMULARIO -->
+            <form id="formCategoria" method="POST" action="/admin/categorias" class="modal-form">
+                <!-- TOKEN CSRF - REQUERIDO POR SPRING SECURITY -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <input type="hidden" name="_method" id="formMethod" value="">
+
+                <input type="hidden" id="codigoCategoria" name="codigoCategoria" value="">
+
+                <input type="hidden" id="categoriaNombreOriginal" name="nombre" value="">
+
+                <input type="hidden" id="categoriaNuevoNombre" name="nuevoNombre" value="">
 
                 <div class="form-group">
-                    <label for="categoriaNombre">
+                    <label for="categoriaNombreInput">
                         <i class="fas fa-tag"></i>
-                        Nombre de la categoría:
+                        Nombre de la categoría
                     </label>
-                    <input type="text"
-                           id="categoriaNombre"
-                           name="nombre"
-                           class="form-input"
-                           placeholder="Ej: Historia, Política, Cultura..."
-                           required
-                           maxlength="100">
-                    <small class="form-hint">Máximo 100 caracteres</small>
+                    <input
+                            type="text"
+                            id="categoriaNombreInput"
+                            class="form-input"
+                            placeholder="Ej: Tecnología, Deportes, Entretenimiento..."
+                            required
+                            maxlength="100"
+                            autocomplete="off"
+                    >
+                    <span class="form-hint">El nombre debe ser único y descriptivo</span>
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-cancelar" id="btnCancelar">
+                    <button type="button" id="btnCancelar" class="btn-cancelar">
                         <i class="fas fa-times"></i>
                         Cancelar
                     </button>
                     <button type="submit" class="btn-guardar">
                         <i class="fas fa-save"></i>
-                        <span id="btnGuardarTexto">Guardar</span>
+                        <span id="btnGuardarTexto">Crear</span>
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 
-    <!-- Modal de confirmación de eliminación -->
-    <div class="modal-overlay hidden" id="modalEliminar">
+    <!-- ============================================ -->
+    <!-- MODAL: AGREGAR/EDITAR EQUIVALENTE -->
+    <!-- ============================================ -->
+    <div id="modalEquivalente" class="modal-overlay hidden">
         <div class="modal-content modal-small">
-            <div class="modal-header modal-header-danger">
-                <h2>
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Confirmar Eliminación
-                </h2>
-                <button class="modal-close" id="btnCerrarEliminar">
+
+            <!-- HEADER DEL MODAL -->
+            <div class="modal-header">
+                <h2 id="modalEquivalenteTitulo">Agregar Equivalente</h2>
+                <button type="button" id="btnCerrarModalEquivalente" class="modal-close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <form id="formEliminar" method="post" class="modal-body">
-                <input type="hidden" id="categoriaIdEliminar" name="id">
+            <!-- FORMULARIO -->
+            <form id="formEquivalente" method="POST" action="/admin/categorias/equivalente" class="modal-form">
+                <!-- TOKEN CSRF -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                <p>¿Estás seguro de que deseas eliminar la categoría <strong id="categoriaEliminarNombre"></strong>?</p>
-                <p class="warning-text">
-                    <i class="fas fa-info-circle"></i>
-                    Esta acción no se puede deshacer.
-                </p>
+                <input type="hidden" name="_method" id="formEquivalenteMethod" value="">
+
+                <input type="hidden" id="equivalenteCodigoCategoria" name="codigoCategoria" value="">
+
+                <input type="hidden" id="equivalenteNombreOriginal" name="nombre" value="">
+
+                <input type="hidden" id="equivalenteNuevoNombre" name="nuevoNombre" value="">
+
+                <div class="form-group">
+                    <label for="equivalenteNombreInput">
+                        <i class="fas fa-tags"></i>
+                        Nombre del equivalente
+                    </label>
+                    <input
+                            type="text"
+                            id="equivalenteNombreInput"
+                            class="form-input"
+                            placeholder="Ej: Tech, Tecnología, Technology..."
+                            required
+                            maxlength="100"
+                            autocomplete="off"
+                    >
+                    <span class="form-hint">Agrega términos alternativos para esta categoría</span>
+                </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-cancelar" id="btnCancelarEliminar">
+                    <button type="button" id="btnCancelarEquivalente" class="btn-cancelar">
                         <i class="fas fa-times"></i>
                         Cancelar
                     </button>
-                    <button type="submit" class="btn-eliminar-confirm">
-                        <i class="fas fa-trash"></i>
-                        Eliminar
+                    <button type="submit" class="btn-guardar">
+                        <i class="fas fa-save"></i>
+                        <span id="btnGuardarEquivalenteTexto">Agregar</span>
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 
+    <!-- Token CSRF para requests AJAX -->
+    <input type="hidden" id="csrfToken" th:value="${_csrf.token}"/>
+    <input type="hidden" id="csrfHeader" th:value="${_csrf.headerName}"/>
 </th:block>
 </html>

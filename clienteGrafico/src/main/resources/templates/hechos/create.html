@@ -8,12 +8,9 @@
 
 <th:block th:fragment="contenido">
     <section class="form-container"
-             sec:authorize="isAuthenticated()"
              th:attr="data-es-nuevo=${esNuevo}">
         <h1 th:text="${titulo}"></h1>
 
-        <!-- Form con action dinámico según si es nuevo o edición -->
-        <!-- IMPORTANTE: agregado enctype="multipart/form-data" -->
         <form th:action="@{${actionUrl}}"
               th:object="${hechoDTO}"
               method="post"
@@ -165,7 +162,7 @@
                 <div class="multimedia-preview" id="multimediaPreview"></div>
             </div>
 
-            <div class="form-group checkbox">
+            <div class="form-group checkbox" sec:authorize="isAuthenticated()">
                 <input type="checkbox" id="esAnonimo" th:field="*{cargadoAnonimamente}">
                 <label for="esAnonimo">Publicar como anónimo</label>
             </div>
@@ -182,17 +179,6 @@
             </div>
         </form>
     </section>
-
-    <div sec:authorize="!isAuthenticated()" id="loginModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h2>¡Debes identificarte!</h2>
-            <p>Para crear un hecho debes iniciar sesión o registrarte.</p>
-            <div class="modal-actions">
-                <a th:href="@{/login}" class="btn-modal">Iniciar sesión</a>
-                <a th:href="@{/signup}" class="btn-modal-secondary">Registrarme</a>
-            </div>
-        </div>
-    </div>
 </th:block>
 
 <th:block th:fragment="jsExtra">

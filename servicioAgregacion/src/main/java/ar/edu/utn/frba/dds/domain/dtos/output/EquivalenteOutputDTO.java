@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.dds.clienteGrafico.dtos.input;
+package ar.edu.utn.frba.dds.domain.dtos.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaInputDTO {
-    private String nombre;
-    private String codigoCategoria;
+public class EquivalenteOutputDTO {
+    String nombre;
+    String codigoCategoria;
 }

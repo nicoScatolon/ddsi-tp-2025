@@ -1,4 +1,6 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: html}">
 
 <div th:fragment="contenido">
 
@@ -79,9 +81,12 @@
     </section>
 
     <!-- Botón flotante para crear colección -->
-    <a href="/colecciones/create" class="fab-create" aria-label="Crear colección">
-        <i class="fas fa-plus"></i>
-    </a>
+    <div sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')">
+        <a href="/colecciones/create" class="fab-create" aria-label="Crear colección">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+
 </div>
 
 <th:block th:fragment="jsExtra">

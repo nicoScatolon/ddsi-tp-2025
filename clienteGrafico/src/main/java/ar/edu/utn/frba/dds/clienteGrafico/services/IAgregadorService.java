@@ -7,6 +7,8 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,9 @@ public interface IAgregadorService {
 
     List<FuenteInputDTO> getFuentesPreview();
 
+    ResponseEntity<Void> crearCategoria(CategoriaOutputDTO categoria);
+    ResponseEntity<Void> editarCategoria(CategoriaOutputDTO categoria);
+
     ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion);
     List<SolicitudEliminarHechoInputDTO>obtenerSolicitudesEliminacionPendientes();
     List<SolicitudEliminarHechoInputDTO> obtenerSolicitudesEliminacionUsuario(Long userId);
@@ -54,4 +59,10 @@ public interface IAgregadorService {
     List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas();
     ResponseEntity<Void>destacarColeccion(String handle);
     ResponseEntity<Void> eliminarDestacarColeccion(String handle);
+
+    List<CategoriaEquivalenteInputDTO> obtenerCatEquivalentes();
+    ResponseEntity<Void> crearEquivalencia(CategoriaEquivalenteOutputDTO categoria);
+    ResponseEntity<Void> eliminarEquivalencia(String categoria);
+
+    ResponseEntity<Void> editarEquivalencia(CategoriaEquivalenteOutputDTO categoria);
 }

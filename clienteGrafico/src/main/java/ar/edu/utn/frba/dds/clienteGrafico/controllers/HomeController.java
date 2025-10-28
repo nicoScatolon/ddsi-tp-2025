@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
@@ -46,6 +45,18 @@ public class HomeController {
     @GetMapping("/404")
     public String notFound(Model model) {
         model.addAttribute("titulo", "No encontrado");
-        return "404";
+        return "errores/404";
+    }
+
+    @GetMapping("/403")
+    public String forbidden (Model model) {
+        model.addAttribute("titulo", "Acceso Prohibido");
+        return "errores/403";
+    }
+
+    @GetMapping("/500")
+    public String internalError (Model model) {
+        model.addAttribute("titulo", "Acceso Prohibido");
+        return "errores/500";
     }
 }

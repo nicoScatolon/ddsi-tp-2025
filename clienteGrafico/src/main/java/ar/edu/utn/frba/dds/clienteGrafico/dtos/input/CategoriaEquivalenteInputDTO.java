@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaInputDTO {
-    private String nombre;
-    private String codigoCategoria;
+public class CategoriaEquivalenteInputDTO {
+    String nombre;
+    String codigoCategoria;
 }

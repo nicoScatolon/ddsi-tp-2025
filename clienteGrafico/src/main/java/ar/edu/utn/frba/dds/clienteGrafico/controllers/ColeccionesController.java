@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +70,7 @@ public class ColeccionesController {
         return "/colecciones/details";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ADMINSUPERIOR')")
     @GetMapping("/create")
     public String crearColeccion(Model model) {
         String actionUrl = "/colecciones/create";
@@ -79,6 +81,7 @@ public class ColeccionesController {
         List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
 
         model.addAttribute("etiquetas", etiquetas);
+        
         model.addAttribute("provincias", provincias);
         model.addAttribute("titulo", "Crear Colección");
         model.addAttribute("coleccionDTO", coleccionFormDTO);

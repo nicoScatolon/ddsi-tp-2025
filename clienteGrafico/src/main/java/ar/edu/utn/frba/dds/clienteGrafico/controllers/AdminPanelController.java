@@ -6,6 +6,8 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
@@ -82,13 +84,14 @@ public class AdminPanelController {
         if (estado == null) {estado = EstadoHecho.PENDIENTE;}
         List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamica(estado);
 
+        model.addAttribute("estado", estado);
         model.addAttribute("titulo", "Gestión de Hechos");
         model.addAttribute("hechos", hechos);
         model.addAttribute("contentTemplate", "gestion-hechos");
         return "admin/panel-base";
     }
 
-    @PostMapping("/hechos")
+    @PostMapping("/hechos") //Todo la sugerencia la hacemos aca porq agregar el botón dentro del hecho-detail hay q modificar muchos controllers
     public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho, HttpSession session){
         Long adminId = (Long) session.getAttribute("userId");
         this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
@@ -110,30 +113,48 @@ public class AdminPanelController {
      @GetMapping("/categorias")
      public String gestionCategorias(Model model) {
         model.addAttribute("categorias", agregadorService.obtenerCategorias());
+        model.addAttribute("equivalentes", agregadorService.obtenerCatEquivalentes());
+
         model.addAttribute("titulo", "Gestión de Categorías");
         model.addAttribute("contentTemplate", "gestion-categorias");
-
+        //Todo estaría bueno q este paginado
         return "admin/panel-base";
      }
 
-     @PostMapping("/categorias")
-     public String crearCategoria(){
-
-         return "redirect:/admin/categorias";
-     }
-
-    @DeleteMapping("/categorias")
-    public String eliminarCategoria(){
+    @PostMapping("/categorias")
+    public String crearCategoria(@ModelAttribute CategoriaOutputDTO categoria) {
+        agregadorService.crearCategoria(categoria);
 
         return "redirect:/admin/categorias";
     }
 
     @PutMapping("/categorias")
-    public String editarCategoria(){
+    public String editarCategoria(@ModelAttribute CategoriaOutputDTO categoria){
+        agregadorService.editarCategoria(categoria);
+        return "redirect:/admin/categorias";
+    }
 
+    @PostMapping("/categorias/equivalente")
+    public String crearEquivalencia(@ModelAttribute CategoriaEquivalenteOutputDTO categoria) {
+        agregadorService.crearEquivalencia(categoria);
 
         return "redirect:/admin/categorias";
     }
+
+    @PutMapping("/categorias/equivalente")
+    public String editarEquivalencia(@ModelAttribute CategoriaEquivalenteOutputDTO categoria) {
+        agregadorService.editarEquivalencia(categoria);
+
+        return "redirect:/admin/categorias";
+    }
+
+    @DeleteMapping("/categorias/equivalente/{nombre}")
+    public String crearEquivalencia(@PathVariable String nombre) {
+        agregadorService.eliminarEquivalencia(nombre);
+
+        return "redirect:/admin/categorias";
+    }
+
 
     @GetMapping("/solicitudes")
     public String solicitudesEliminacion(Model model) {

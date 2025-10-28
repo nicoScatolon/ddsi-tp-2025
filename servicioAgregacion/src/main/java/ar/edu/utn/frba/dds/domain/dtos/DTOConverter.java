@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
@@ -199,7 +200,7 @@ public class DTOConverter {
 
     public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
         return CategoriaOutputDTO.builder()
-                .id(categoria.getCodigoCategoria())
+                .codigoCategoria(categoria.getCodigoCategoria())
                 .nombre(categoria.getNombre())
                 .build();
     }
@@ -209,7 +210,7 @@ public class DTOConverter {
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
-                .codigoCategoria(categoriaInputDTO.getCodigoCat())
+                .codigoCategoria(categoriaInputDTO.getCodigoCategoria())
                 .build();
     }
 
@@ -362,5 +363,18 @@ public class DTOConverter {
 
         dto.setParametros(params);
         return dto;
+    }
+
+    public static List<EquivalenteOutputDTO> categoriaEquivalenteOutput(List<EquivalenteCategoria> all) {
+        List<EquivalenteOutputDTO> dtos = new ArrayList<>();
+
+        all.forEach(equivalente -> {
+            EquivalenteOutputDTO dto = EquivalenteOutputDTO.builder()
+                    .nombre(equivalente.getNombreEquivalente())
+                    .codigoCategoria(equivalente.getCategoria().getNombre())
+                    .build();
+            dtos.add(dto);
+        });
+        return dtos;
     }
 }
