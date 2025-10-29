@@ -550,7 +550,31 @@
     box-shadow: 0 6px 20px rgba(100,116,139,0.35);
 }
 
-/* ===== MODAL ===== */
+/* Botón Modificar Etiquetas */
+.btn-modificar-etiquetas-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-modificar-etiquetas-action:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ===== MODAL DE ELIMINACIÓN ===== */
 #deleteModal.modal {
     display: none;
     position: fixed;
@@ -612,7 +636,6 @@
     font-size: 1.5rem;
 }
 
-/* Botón enviar solicitud */
 #deleteModal button.btn-submit-delete {
     display: inline-flex;
     align-items: center;
@@ -636,184 +659,6 @@
     background: linear-gradient(135deg, #dc2626, #b91c1c);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(239,68,68,0.4);
-}
-
-/* ===== ERROR MESSAGE ===== */
-.error-message {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
-    padding: 2rem;
-}
-
-.error-message .card {
-    text-align: center;
-    padding: 3rem;
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.error-message h2 {
-    margin: 0 0 1rem 0;
-    color: var(--text-color);
-}
-
-.error-message p {
-    margin: 0 0 1.5rem 0;
-    color: var(--muted);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
-    #hecho-detail.card {
-        max-width: 95%;
-    }
-
-    #hecho-detail .content-wrapper {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    #hecho-detail .vertical-separator {
-        display: none;
-    }
-
-    #hecho-detail .right-column {
-        flex: 1 1 100%;
-        width: 100%;
-        min-width: 0;
-    }
-
-    #hecho-detail .left-column {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    #hecho-detail.card {
-        padding: 1.5rem;
-        border-radius: 16px;
-    }
-
-    #hecho-detail .title-fecha h1 {
-        font-size: 1.5rem;
-    }
-
-    #hecho-detail .actions-container {
-        flex-wrap: wrap;
-        gap: 0.8rem;
-    }
-
-    #hecho-detail #hecho-map {
-        height: 250px;
-    }
-
-    #hecho-detail .carousel {
-        height: 300px;
-    }
-
-    #hecho-detail .carousel-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    #hecho-detail .media-description {
-        bottom: 3rem;
-        font-size: 0.85rem;
-        padding: 0.6rem 0.8rem;
-    }
-
-    #hecho-detail button.btn-delete-request,
-    #hecho-detail button.btn-destacar {
-        font-size: 0.9rem;
-        padding: 0.7rem 1.3rem;
-    }
-}
-
-@media (max-width: 480px) {
-    #hecho-detail.card {
-        padding: 1rem;
-        border-radius: 14px;
-    }
-
-    #hecho-detail .title-fecha h1 {
-        font-size: 1.3rem;
-    }
-
-    #hecho-detail .tags li {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.5rem;
-    }
-
-    #hecho-detail .actions-container {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    #hecho-detail button.btn-delete-request,
-    #hecho-detail button.btn-destacar {
-        width: 100%;
-        justify-content: center;
-    }
-
-    #hecho-detail .carousel {
-        height: 250px;
-    }
-
-    #hecho-detail #hecho-map {
-        height: 200px;
-    }
-
-    #hecho-detail .carousel-controls {
-        padding: 0 0.5rem;
-    }
-
-    #hecho-detail .carousel-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-    #hecho-detail .media-description {
-        bottom: 2.5rem;
-        font-size: 0.8rem;
-        padding: 0.5rem 0.7rem;
-    }
-
-    #deleteModal .modal-content {
-        padding: 1.25rem;
-    }
-
-    #deleteModal h2 {
-        font-size: 1.25rem;
-    }
-}
-
-/* ===== BOTÓN MODIFICAR ETIQUETAS EN ACCIONES ===== */
-.btn-modificar-etiquetas-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: var(--white);
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-.btn-modificar-etiquetas-action:hover {
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 /* ===== MODAL DE ETIQUETAS ===== */
@@ -896,6 +741,7 @@
 .modal-etiquetas-body {
     padding: 2rem;
 }
+
 .form-group-etiquetas {
     margin-bottom: 1.5rem;
 }
@@ -914,64 +760,13 @@
     color: var(--color-primary);
 }
 
-/* Contenedor de etiquetas disponibles */
-.etiquetas-disponibles-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 1rem;
-    background: var(--bg);
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-}
-
-.etiqueta-checkbox-hecho {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.8rem;
-    background: var(--white);
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-
-.etiqueta-checkbox-hecho:hover {
-    border-color: var(--color-primary);
-    background: rgba(47, 96, 244, 0.05);
-}
-
-.etiqueta-checkbox-hecho input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-}
-
-.etiqueta-checkbox-hecho input[type="checkbox"]:checked + .etiqueta-label-hecho {
-    color: var(--color-primary);
-    font-weight: 600;
-}
-
-.etiqueta-label-hecho {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    transition: all 0.2s ease;
-}
-
-/* Input para nueva etiqueta */
-.nueva-etiqueta-input-hecho {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
+/* Input wrapper con sugerencias */
+.etiqueta-input-wrapper {
+    position: relative;
 }
 
 .form-input-etiqueta {
-    flex: 1;
+    width: 100%;
     padding: 0.8rem 1rem;
     font-size: 0.95rem;
     font-family: 'Poppins', sans-serif;
@@ -985,29 +780,290 @@
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.1);
+    border-radius: 10px 10px 0 0;
 }
 
-.btn-add-etiqueta-hecho {
-    padding: 0.8rem 1.5rem;
-    background: var(--color-primary);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Poppins', sans-serif;
-    white-space: nowrap;
-    display: inline-flex;
+/* Hint del input */
+.input-hint {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
 }
 
-.btn-add-etiqueta-hecho:hover {
-    background: var(--color-accent);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.3);
+.input-hint i {
+    color: var(--color-primary);
+    font-size: 0.9rem;
+}
+
+/* Sugerencias dropdown */
+.etiquetas-sugerencias {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 2px solid var(--color-primary);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: -2px;
+}
+
+.etiquetas-sugerencias.hidden {
+    display: none !important;
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    padding: 2rem;
+}
+
+.error-message .card {
+    text-align: center;
+    padding: 3rem;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.error-message h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+}
+
+.error-message p {
+    margin: 0 0 1.5rem 0;
+    color: var(--muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    #hecho-detail.card {
+        max-width: 95%;
+    }
+
+    #hecho-detail .content-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    #hecho-detail .vertical-separator {
+        display: none;
+    }
+
+    #hecho-detail .right-column {
+        flex: 1 1 100%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #hecho-detail .left-column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #hecho-detail.card {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.5rem;
+    }
+
+    #hecho-detail .actions-container {
+        position: static;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 250px;
+    }
+
+    #hecho-detail .carousel-container {
+        height: 300px;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 3rem;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar,
+    .btn-modificar-etiquetas-action {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.3rem;
+    }
+
+    /* Modal etiquetas responsive */
+    .modal-etiquetas-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .modal-etiquetas-header,
+    .modal-etiquetas-body,
+    .modal-etiquetas-actions {
+        padding: 1.5rem;
+    }
+
+    .modal-etiquetas-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancelar-etiquetas,
+    .btn-guardar-etiquetas {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    #hecho-detail.card {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.3rem;
+    }
+
+    #hecho-detail .tags li {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    #hecho-detail .actions-container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar,
+    .btn-modificar-etiquetas-action {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #hecho-detail .carousel-container {
+        height: 250px;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 200px;
+    }
+
+    #hecho-detail .carousel-controls {
+        padding: 0 0.5rem;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 2.5rem;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
+    }
+
+    #deleteModal .modal-content {
+        padding: 1.25rem;
+    }
+
+    #deleteModal h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Modal etiquetas mobile */
+    .etiqueta-pill-hecho {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.7rem;
+    }
+
+    .sugerencia-item {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .form-input-etiqueta {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.9rem;
+    }
+}
+
+
+.sugerencia-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sugerencia-item:last-child {
+    border-bottom: none;
+}
+
+.sugerencia-item:hover {
+    background: rgba(47, 96, 244, 0.08);
+}
+
+.sugerencia-item i {
+    color: var(--color-primary);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.sugerencia-item span {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.sugerencia-item.nueva {
+    background: rgba(16, 185, 129, 0.05);
+    border-left: 3px solid #10b981;
+}
+
+.sugerencia-item.nueva i {
+    color: #10b981;
+}
+
+.sugerencia-item.nueva strong {
+    color: #10b981;
+}
+
+.sugerencia-item small {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    flex-shrink: 0;
 }
 
 /* Etiquetas seleccionadas */
@@ -1022,6 +1078,9 @@
     color: #065f46;
     font-weight: 600;
     margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .etiquetas-pills-hecho {
@@ -1119,13 +1178,121 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
-
 .hidden {
     display: none !important;
 }
 
-/* ===== RESPONSIVE PARA MODAL DE ETIQUETAS ===== */
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    padding: 2rem;
+}
+
+.error-message .card {
+    text-align: center;
+    padding: 3rem;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.error-message h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+}
+
+.error-message p {
+    margin: 0 0 1.5rem 0;
+    color: var(--muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    #hecho-detail.card {
+        max-width: 95%;
+    }
+
+    #hecho-detail .content-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    #hecho-detail .vertical-separator {
+        display: none;
+    }
+
+    #hecho-detail .right-column {
+        flex: 1 1 100%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #hecho-detail .left-column {
+        width: 100%;
+        min-height: auto;
+    }
+
+    #hecho-detail .actions-container {
+        position: static;
+        margin-top: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
+    #hecho-detail.card {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.5rem;
+    }
+
+    #hecho-detail .actions-container {
+        position: static;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        left: auto;
+        bottom: auto;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 250px;
+    }
+
+    #hecho-detail .carousel-container {
+        height: 300px;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    #hecho-detail .carousel-btn i {
+        font-size: 1rem;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 3rem;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar,
+    .btn-modificar-etiquetas-action {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.3rem;
+    }
+
+    /* Modal etiquetas responsive */
     .modal-etiquetas-content {
         width: 95%;
         margin: 1rem;
@@ -1137,22 +1304,13 @@
         padding: 1.5rem;
     }
 
-    .etiquetas-disponibles-container {
-        grid-template-columns: 1fr;
-        max-height: 200px;
-    }
-
-    .nueva-etiqueta-input-hecho {
-        flex-direction: column;
-    }
-
-    .form-input-etiqueta,
-    .btn-add-etiqueta-hecho {
-        width: 100%;
+    .modal-etiquetas-header h2 {
+        font-size: 1.2rem;
     }
 
     .modal-etiquetas-actions {
         flex-direction: column;
+        gap: 0.75rem;
     }
 
     .btn-cancelar-etiquetas,
@@ -1163,9 +1321,90 @@
 }
 
 @media (max-width: 480px) {
-    .etiqueta-checkbox-hecho {
-        padding: 0.5rem;
+    #hecho-detail.card {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+
+    #hecho-detail .title-fecha h1 {
+        font-size: 1.3rem;
+    }
+
+    #hecho-detail .fecha,
+    #hecho-detail .fecha-carga {
         font-size: 0.85rem;
+    }
+
+    #hecho-detail .tags li {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    #hecho-detail .actions-container {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.6rem;
+    }
+
+    #hecho-detail button.btn-delete-request,
+    #hecho-detail button.btn-destacar,
+    .btn-modificar-etiquetas-action {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.85rem;
+        padding: 0.65rem 1rem;
+    }
+
+    #hecho-detail .carousel-container {
+        height: 250px;
+    }
+
+    #hecho-detail #hecho-map {
+        height: 200px;
+    }
+
+    #hecho-detail .carousel-controls {
+        padding: 0 0.5rem;
+    }
+
+    #hecho-detail .carousel-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    #hecho-detail .carousel-btn i {
+        font-size: 0.9rem;
+    }
+
+    #hecho-detail .media-description {
+        bottom: 2.5rem;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
+    }
+
+    #hecho-detail .carousel-counter {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    #deleteModal .modal-content {
+        padding: 1.25rem;
+    }
+
+    #deleteModal h2 {
+        font-size: 1.25rem;
+    }
+
+    #deleteModal textarea {
+        font-size: 0.9rem;
+        min-height: 120px;
+    }
+
+    /* Modal etiquetas mobile */
+    .modal-etiquetas-header,
+    .modal-etiquetas-body,
+    .modal-etiquetas-actions {
+        padding: 1rem;
     }
 
     .etiqueta-pill-hecho {
@@ -1173,8 +1412,23 @@
         padding: 0.4rem 0.7rem;
     }
 
-    .btn-modificar-etiquetas-action {
+    .sugerencia-item {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .form-input-etiqueta {
         font-size: 0.9rem;
-        padding: 0.7rem 1.3rem;
+        padding: 0.7rem 0.9rem;
+    }
+
+    .input-hint {
+        font-size: 0.8rem;
+    }
+
+    .btn-cancelar-etiquetas,
+    .btn-guardar-etiquetas {
+        font-size: 0.9rem;
+        padding: 0.65rem 1.2rem;
     }
 }

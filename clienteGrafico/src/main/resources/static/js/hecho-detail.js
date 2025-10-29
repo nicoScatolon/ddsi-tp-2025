@@ -1,4 +1,4 @@
-// hecho-detail.js - Gestión de detalle de hechos con Carrusel Multimedia y Etiquetas
+// hecho-detail.js - Gestión de detalle de hechos con Carrusel Multimedia y Etiquetas Simplificadas
 
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar que tenemos datos del hecho
@@ -14,23 +14,133 @@ document.addEventListener('DOMContentLoaded', () => {
     let map = null;
     let marker = null;
 
-    // ===== MODAL DE ETIQUETAS =====
+    // ===== MODAL DE ETIQUETAS SIMPLIFICADO =====
     const modalEtiquetas = document.getElementById('modalEtiquetas');
     const btnModificarEtiquetas = document.getElementById('btnModificarEtiquetas');
     const btnCerrarModalEtiquetas = document.getElementById('btnCerrarModalEtiquetas');
     const btnCancelarEtiquetas = document.getElementById('btnCancelarEtiquetas');
     const btnGuardarEtiquetas = document.getElementById('btnGuardarEtiquetas');
-    const btnAgregarEtiquetaHecho = document.getElementById('btnAgregarEtiquetaHecho');
-    const nuevaEtiquetaHechoInput = document.getElementById('nuevaEtiquetaHecho');
+    const inputEtiqueta = document.getElementById('inputEtiqueta');
+    const etiquetasSugerencias = document.getElementById('etiquetasSugerencias');
     const listaEtiquetasSeleccionadasHecho = document.getElementById('listaEtiquetasSeleccionadasHecho');
     const etiquetasSeleccionadasContainerHecho = document.getElementById('etiquetasSeleccionadasHecho');
 
     // Array para almacenar etiquetas seleccionadas
     let etiquetasSeleccionadas = [];
 
+    // Obtener etiquetas disponibles del servidor
+    const etiquetasDisponibles = typeof ETIQUETAS_DISPONIBLES !== 'undefined' ? ETIQUETAS_DISPONIBLES : [];
+
     // Inicializar etiquetas actuales del hecho
     if (HECHO_DATA.etiquetasActuales && Array.isArray(HECHO_DATA.etiquetasActuales)) {
         etiquetasSeleccionadas = HECHO_DATA.etiquetasActuales.map(etiq => etiq.nombre).filter(Boolean);
+    }
+
+    // Función para normalizar texto (para búsqueda)
+    function normalizarTexto(texto) {
+        return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    }
+
+    // Función para mostrar sugerencias
+    function mostrarSugerencias(valor) {
+        if (!valor || valor.length < 1) {
+            etiquetasSugerencias.classList.add('hidden');
+            return;
+        }
+
+        const valorNormalizado = normalizarTexto(valor);
+
+        // Filtrar etiquetas disponibles que no estén ya seleccionadas
+        const sugerencias = etiquetasDisponibles.filter(etiq => {
+            const etiqNormalizada = normalizarTexto(etiq);
+            return etiqNormalizada.includes(valorNormalizado) &&
+                !etiquetasSeleccionadas.includes(etiq);
+        });
+
+        if (sugerencias.length === 0) {
+            etiquetasSugerencias.innerHTML = `
+                <div class="sugerencia-item nueva">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Crear nueva etiqueta: <strong>"${valor}"</strong></span>
+                    <small>Presiona Enter</small>
+                </div>
+            `;
+            etiquetasSugerencias.classList.remove('hidden');
+        } else {
+            etiquetasSugerencias.innerHTML = sugerencias.map(etiq => `
+                <div class="sugerencia-item" data-etiqueta="${etiq}">
+                    <i class="fas fa-tag"></i>
+                    <span>${etiq}</span>
+                </div>
+            `).join('');
+            etiquetasSugerencias.classList.remove('hidden');
+
+            // Agregar eventos a las sugerencias
+            etiquetasSugerencias.querySelectorAll('.sugerencia-item:not(.nueva)').forEach(item => {
+                item.addEventListener('click', () => {
+                    agregarEtiqueta(item.dataset.etiqueta);
+                });
+            });
+        }
+    }
+
+    // Función para agregar etiqueta
+    function agregarEtiqueta(etiqueta) {
+        const etiquetaLimpia = etiqueta.trim();
+
+        if (!etiquetaLimpia) {
+            return;
+        }
+
+        if (etiquetasSeleccionadas.includes(etiquetaLimpia)) {
+            inputEtiqueta.value = '';
+            etiquetasSugerencias.classList.add('hidden');
+            return;
+        }
+
+        etiquetasSeleccionadas.push(etiquetaLimpia);
+        actualizarVistaEtiquetasHecho();
+
+        // Limpiar input y ocultar sugerencias
+        inputEtiqueta.value = '';
+        etiquetasSugerencias.classList.add('hidden');
+        inputEtiqueta.focus();
+    }
+
+    // Eventos del input de etiquetas
+    if (inputEtiqueta) {
+        // Buscar mientras escribe
+        inputEtiqueta.addEventListener('input', (e) => {
+            mostrarSugerencias(e.target.value);
+        });
+
+        // Agregar con Enter
+        inputEtiqueta.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const valor = inputEtiqueta.value.trim();
+                if (valor) {
+                    agregarEtiqueta(valor);
+                }
+            } else if (e.key === 'Escape') {
+                etiquetasSugerencias.classList.add('hidden');
+                inputEtiqueta.blur();
+            }
+        });
+
+        // Ocultar sugerencias al perder foco (con delay para permitir click)
+        inputEtiqueta.addEventListener('blur', () => {
+            setTimeout(() => {
+                etiquetasSugerencias.classList.add('hidden');
+            }, 200);
+        });
+
+        // Mostrar sugerencias al hacer foco
+        inputEtiqueta.addEventListener('focus', (e) => {
+            if (e.target.value) {
+                mostrarSugerencias(e.target.value);
+            }
+        });
     }
 
     // Abrir modal de etiquetas
@@ -43,73 +153,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 etiquetasSeleccionadas = [];
             }
 
-            // Marcar checkboxes que corresponden a etiquetas actuales
-            const checkboxes = document.querySelectorAll('.etiqueta-check');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = etiquetasSeleccionadas.includes(checkbox.value);
-            });
+            // Limpiar input
+            if (inputEtiqueta) inputEtiqueta.value = '';
 
-            // Limpiar input de nueva etiqueta
-            if (nuevaEtiquetaHechoInput) nuevaEtiquetaHechoInput.value = '';
+            // Ocultar sugerencias
+            if (etiquetasSugerencias) etiquetasSugerencias.classList.add('hidden');
 
             // Actualizar vista
             actualizarVistaEtiquetasHecho();
 
             // Abrir modal
             abrirModalEtiquetas();
-        });
-    }
 
-    // Manejar selección de etiquetas existentes
-    if (modalEtiquetas) {
-        const checkboxes = document.querySelectorAll('.etiqueta-check');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const etiqueta = e.target.value;
-                if (e.target.checked) {
-                    if (!etiquetasSeleccionadas.includes(etiqueta)) {
-                        etiquetasSeleccionadas.push(etiqueta);
-                    }
-                } else {
-                    etiquetasSeleccionadas = etiquetasSeleccionadas.filter(et => et !== etiqueta);
-                }
-                actualizarVistaEtiquetasHecho();
-            });
-        });
-    }
-
-    // Agregar nueva etiqueta
-    if (btnAgregarEtiquetaHecho) {
-        btnAgregarEtiquetaHecho.addEventListener('click', () => {
-            const nuevaEtiqueta = nuevaEtiquetaHechoInput.value.trim();
-
-            if (!nuevaEtiqueta) {
-                alert('Por favor, escribe el nombre de la etiqueta');
-                return;
-            }
-
-            if (etiquetasSeleccionadas.includes(nuevaEtiqueta)) {
-                alert('Esta etiqueta ya está seleccionada');
-                return;
-            }
-
-            // Agregar a la lista
-            etiquetasSeleccionadas.push(nuevaEtiqueta);
-            actualizarVistaEtiquetasHecho();
-
-            // Limpiar input
-            nuevaEtiquetaHechoInput.value = '';
-            nuevaEtiquetaHechoInput.focus();
-        });
-    }
-
-    // Permitir agregar etiqueta con Enter
-    if (nuevaEtiquetaHechoInput) {
-        nuevaEtiquetaHechoInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                btnAgregarEtiquetaHecho.click();
-            }
+            // Enfocar input
+            setTimeout(() => inputEtiqueta.focus(), 100);
         });
     }
 
@@ -141,11 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pill.querySelector('button').addEventListener('click', (e) => {
                 const etiquetaAEliminar = e.currentTarget.getAttribute('data-etiqueta');
                 etiquetasSeleccionadas = etiquetasSeleccionadas.filter(et => et !== etiquetaAEliminar);
-
-                // Desmarcar checkbox si existe
-                const checkbox = document.querySelector(`.etiqueta-check[value="${etiquetaAEliminar}"]`);
-                if (checkbox) checkbox.checked = false;
-
                 actualizarVistaEtiquetasHecho();
             });
         });
@@ -398,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ===== INICIALIZAR FUNCIONALIDADES =====
-    console.log('🚀 Inicializando hecho-detail.js con carrusel y etiquetas');
+    console.log('🚀 Inicializando hecho-detail.js con carrusel y etiquetas simplificadas');
 
     initCarousel();
     initMap();
