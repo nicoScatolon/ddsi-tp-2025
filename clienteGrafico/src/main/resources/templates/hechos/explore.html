@@ -135,7 +135,12 @@
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-tag"></i>
-                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? 'Sin etiqueta' : hecho.etiquetas[0].nombre}"></span>
+                            <span th:if="${#lists.isEmpty(hecho.etiquetas)}">Sin etiqueta</span>
+                            <span th:each="etiqueta, iterStat : ${hecho.etiquetas}"
+                                  th:if="${iterStat.index < 3}">
+                                    <span th:text="'#' + ${etiqueta.nombre}"></span>
+                                    <span th:if="${iterStat.index < 2 and iterStat.index + 1 < hecho.etiquetas.size()}">, </span>
+                                </span>
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-calendar-day"></i>

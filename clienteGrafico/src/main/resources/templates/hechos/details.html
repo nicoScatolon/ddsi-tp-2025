@@ -87,8 +87,8 @@
                             <!-- Caso con etiquetas: solo renderizamos este bloque si la lista existe y no está vacía -->
                             <ul class="tags" th:if="${hecho?.etiquetas != null and !#lists.isEmpty(hecho?.etiquetas)}">
                                 <li th:each="etiqueta : ${hecho?.etiquetas}"
-                                    th:text="${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'}">
-                                    Etiqueta
+                                    th:text="'#' + (${etiqueta.nombre != null ? etiqueta.nombre : 'Etiqueta'})">
+                                    #Etiqueta
                                 </li>
                             </ul>
                         </div>
