@@ -169,7 +169,7 @@
                                              th:attr="data-index=${iterStat.index}">
 
                                             <!-- FOTO -->
-                                            <div th:if="${contenido.tipoContenido.name() == 'IMAGEN'}" class="media-content">
+                                            <div th:if="${contenido.tipoContenido?.name() == 'IMAGEN'}" class="media-content">
                                                 <img th:src="${contenido.url}"
                                                      th:alt="${contenido.descripcion != null ? contenido.descripcion : 'Imagen'}"
                                                      class="multimedia-img"
@@ -181,7 +181,7 @@
                                             </div>
 
                                             <!-- VIDEO -->
-                                            <div th:if="${contenido.tipoContenido.name() == 'VIDEO'}" class="media-content">
+                                            <div th:if="${contenido.tipoContenido?.name() == 'VIDEO'}" class="media-content">
                                                 <video controls class="multimedia-video">
                                                     <source th:src="${contenido.url}" type="video/mp4">
                                                     Tu navegador no soporta videos.
@@ -193,7 +193,7 @@
                                             </div>
 
                                             <!-- DOCUMENTO -->
-                                            <div th:if="${contenido.tipoContenido.name() == 'DOCUMENTO'}" class="media-content document-content">
+                                            <div th:if="${contenido.tipoContenido?.name() == 'DOCUMENTO'}" class="media-content document-content">
                                                 <div class="document-preview">
                                                     <i class="fas fa-file-alt"></i>
                                                     <p class="document-title" th:text="${contenido.descripcion != null ? contenido.descripcion : 'Documento'}"></p>
@@ -207,7 +207,7 @@
                                             </div>
 
                                             <!-- AUDIO -->
-                                            <div th:if="${contenido.tipoContenido.name() == 'AUDIO'}" class="media-content audio-content">
+                                            <div th:if="${contenido.tipoContenido?.name() == 'AUDIO'}" class="media-content audio-content">
                                                 <div class="audio-preview">
                                                     <i class="fas fa-music"></i>
                                                     <audio controls class="multimedia-audio">

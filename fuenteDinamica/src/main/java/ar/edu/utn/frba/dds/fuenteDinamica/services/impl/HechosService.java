@@ -235,7 +235,7 @@ public class HechosService implements IHechosService {
             ContenidoMultimediaOutputDTO contenidoMultimediaOutputDTO1 = ContenidoMultimediaOutputDTO.builder()
                     .id(contenidoMultimedia.getId())
                     .url(contenidoMultimedia.getUrl())
-                    .tipo(contenidoMultimedia.getTipoContenido())
+                    .tipoContenido(contenidoMultimedia.getTipoContenido())
                     .descripcion(contenidoMultimedia.getDescripcion())
                     .build();
 
