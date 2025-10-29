@@ -89,6 +89,10 @@ public class Hecho {
         etiquetas.remove(etiqueta);
     }
 
+    public void modificarEtiquetas(List<Etiqueta> nuevasEtiquetas){
+        etiquetas = nuevasEtiquetas;
+    }
+
     public void actualizarse(Hecho hechoNuevo) {
         if (!Objects.equals(hechoNuevo.getOrigenId(), this.origenId)) { throw new RuntimeException("no somos el mismo hecho"); }
         titulo = hechoNuevo.getTitulo();

@@ -267,6 +267,20 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> modificarEtiquetas(Long id, List<String> etiquetas) {
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/hechos/privada/"+id+"/etiquetas",
+                    etiquetas,
+                    String.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al modificar las etiquetas: " + e.getMessage(), e);
+        }
+    }
+
 
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
@@ -322,7 +336,17 @@ public class AgregadorService implements IAgregadorService {
 
     @Override
     public  List<String> obtenerEtiquetasShort() {
-        return null; //Todo
+        try {
+            String raw = webApiCallerService.getPublic(
+                    agregadorUrl + "/api/hechos/publica/etiquetas",
+                    String.class
+            );
+            //Esto lo tuve q implementar porq devolvía todas las categorías en una sola posición
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(raw, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener las etiquetas short: " + e.getMessage(), e);
+        }
     }
 
     @Override

@@ -166,17 +166,26 @@ public class HechosController {
             creadorHecho.setApellido("BBBB");
             //TODO obtener datos del usuario con el id desde el hecho --> pedir al servicio de usuarios el nombre, apellido linkeados al contribuyenteId que tiene el hecho
 
+            List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
+
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
+            model.addAttribute("etiquetas", etiquetas);
             model.addAttribute("contribuyente", creadorHecho);
             model.addAttribute("userId", userId);
             model.addAttribute("origenAgregador",true);
         } catch (NotFoundException e) {
             model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
             model.addAttribute("urlRedirect", "/hechos");
-            return "404";
+            return "errores/404";
         }
         return "hechos/details";
+    }
+
+    @PostMapping("/{id}/modificarEtiquetas")
+    public String etiquetas(@PathVariable("id") Long id, @RequestBody List<String> etiquetas) {
+        agregadorService.modificarEtiquetas(id, etiquetas);
+        return "redirect:/hechos/"+id;
     }
 
     @PutMapping("/destacar/{id}")

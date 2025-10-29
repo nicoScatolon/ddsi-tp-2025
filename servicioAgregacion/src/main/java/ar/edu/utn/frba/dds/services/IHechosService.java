@@ -33,4 +33,6 @@ public interface IHechosService {
     ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta);
 
     List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable);
+
+    ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas);
 }

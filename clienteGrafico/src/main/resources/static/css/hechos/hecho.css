@@ -791,3 +791,390 @@
         font-size: 1.25rem;
     }
 }
+
+/* ===== BOTÓN MODIFICAR ETIQUETAS EN ACCIONES ===== */
+.btn-modificar-etiquetas-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-modificar-etiquetas-action:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ===== MODAL DE ETIQUETAS ===== */
+.modal-etiquetas {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.modal-etiquetas.open {
+    display: flex;
+}
+
+.modal-etiquetas-content {
+    background: var(--white);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUpEtiquetas 0.3s ease;
+}
+
+@keyframes slideUpEtiquetas {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-etiquetas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid var(--bg);
+}
+
+.modal-etiquetas-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--color-primary);
+}
+
+.modal-etiquetas-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.modal-etiquetas-close:hover {
+    background: var(--bg);
+    color: var(--text-color);
+    transform: rotate(90deg);
+}
+
+.modal-etiquetas-body {
+    padding: 2rem;
+}
+.form-group-etiquetas {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-etiquetas label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.form-group-etiquetas label i {
+    color: var(--color-primary);
+}
+
+/* Contenedor de etiquetas disponibles */
+.etiquetas-disponibles-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+.etiqueta-checkbox-hecho {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--white);
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.etiqueta-checkbox-hecho:hover {
+    border-color: var(--color-primary);
+    background: rgba(47, 96, 244, 0.05);
+}
+
+.etiqueta-checkbox-hecho input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.etiqueta-checkbox-hecho input[type="checkbox"]:checked + .etiqueta-label-hecho {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.etiqueta-label-hecho {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+/* Input para nueva etiqueta */
+.nueva-etiqueta-input-hecho {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.form-input-etiqueta {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input-etiqueta:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.1);
+}
+
+.btn-add-etiqueta-hecho {
+    padding: 0.8rem 1.5rem;
+    background: var(--color-primary);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-add-etiqueta-hecho:hover {
+    background: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.3);
+}
+
+/* Etiquetas seleccionadas */
+.etiquetas-seleccionadas-container-hecho {
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.08);
+    border-radius: 8px;
+    border: 2px solid #10b981;
+}
+
+.etiquetas-seleccionadas-container-hecho label {
+    color: #065f46;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.etiquetas-pills-hecho {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.etiqueta-pill-hecho {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.etiqueta-pill-hecho button {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.etiqueta-pill-hecho button:hover {
+    background: var(--color-primary);
+    color: var(--white);
+}
+
+/* Acciones del modal */
+.modal-etiquetas-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem 2rem;
+    border-top: 2px solid var(--bg);
+}
+
+.btn-cancelar-etiquetas {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    background: var(--white);
+    color: var(--muted);
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-cancelar-etiquetas:hover {
+    background: var(--bg);
+    border-color: var(--muted);
+    color: var(--text-color);
+}
+
+.btn-guardar-etiquetas {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    background: #10b981;
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-guardar-etiquetas:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ===== RESPONSIVE PARA MODAL DE ETIQUETAS ===== */
+@media (max-width: 768px) {
+    .modal-etiquetas-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .modal-etiquetas-header,
+    .modal-etiquetas-body,
+    .modal-etiquetas-actions {
+        padding: 1.5rem;
+    }
+
+    .etiquetas-disponibles-container {
+        grid-template-columns: 1fr;
+        max-height: 200px;
+    }
+
+    .nueva-etiqueta-input-hecho {
+        flex-direction: column;
+    }
+
+    .form-input-etiqueta,
+    .btn-add-etiqueta-hecho {
+        width: 100%;
+    }
+
+    .modal-etiquetas-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancelar-etiquetas,
+    .btn-guardar-etiquetas {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .etiqueta-checkbox-hecho {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .etiqueta-pill-hecho {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.7rem;
+    }
+
+    .btn-modificar-etiquetas-action {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.3rem;
+    }
+}

@@ -377,4 +377,12 @@ public class DTOConverter {
         });
         return dtos;
     }
+
+    public static List<String> convertirEtiquetas(List<Etiqueta> all) {
+        List<String> dtos = new ArrayList<>();
+
+        all.forEach(etiqueta -> {dtos.add(etiqueta.getNombre());});
+
+        return dtos;
+    }
 }

@@ -65,4 +65,6 @@ public interface IAgregadorService {
     ResponseEntity<Void> eliminarEquivalencia(String categoria);
 
     ResponseEntity<Void> editarEquivalencia(CategoriaEquivalenteOutputDTO categoria);
+
+    ResponseEntity<Void> modificarEtiquetas(Long id, List<String> etiquetas);
 }

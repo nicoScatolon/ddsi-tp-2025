@@ -4,6 +4,7 @@ package ar.edu.utn.frba.dds.controllers;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechosFilterDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoMapaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.services.IEtiquetasService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +17,11 @@ import java.util.List;
 @RequestMapping("/api/hechos")
 public class HechosController {
     private final IHechosService hechosService;
+    private final IEtiquetasService etiquetasService;
 
-    public HechosController(IHechosService hechosService) {
+    public HechosController(IHechosService hechosService, IEtiquetasService etiquetasService) {
         this.hechosService = hechosService;
+        this.etiquetasService = etiquetasService;
     }
 
     // --- API Publica --- //
@@ -53,6 +56,10 @@ public class HechosController {
         return hechosService.getHechosDestacados();
     }
 
+    @GetMapping("/publica/etiquetas")
+    public List<String> getEtiquetasShort(){
+        return etiquetasService.findAllNombres();
+    }
     // --- API Privada --- //
     @GetMapping("/privada")
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,18 +67,12 @@ public class HechosController {
         return hechosService.getHechos(hechosFilterDTO, fueEliminado);
     }
 
-    @PutMapping("/privada/{id}/etiquetas")
+    @PostMapping("/privada/{id}/etiquetas")
     @PreAuthorize("hasRole('ADMIN') ")
-    public ResponseEntity<Void> agregarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
-        return hechosService.agregarEtiquetaHecho(id, etiqueta);
+    public ResponseEntity<Void> agregarEtiquetas(@PathVariable Long id, @RequestBody List<String> etiquetas){
+        return hechosService.agregarEtiquetasHecho(id, etiquetas);
     }
 
-    @DeleteMapping ("/privada/{id}/etiquetas")
-    @PreAuthorize("hasRole('ADMIN') ")
-    public ResponseEntity<Void> eliminarEtiqueta(@PathVariable Long id, @RequestParam String etiqueta){
-        return hechosService.eliminarEtiquetaHecho(id, etiqueta);
-
-    }
 
     @PutMapping("/privada/destacado/{id}")
     @PreAuthorize("hasRole('ADMIN') ")

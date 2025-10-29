@@ -140,6 +140,15 @@
                                 Quitar destacado
                             </button>
                         </form>
+
+                        <!-- Botón Modificar Etiquetas (solo ADMIN y ADMINSUPERIOR) -->
+                        <button sec:authorize="hasAnyRole('ADMIN', 'ADMINSUPERIOR')"
+                                type="button"
+                                id="btnModificarEtiquetas"
+                                class="btn-modificar-etiquetas-action">
+                            <i class="fas fa-tags"></i>
+                            Modificar Etiquetas
+                        </button>
                     </div>
                 </div>
 
@@ -289,6 +298,71 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal Modificar Etiquetas -->
+    <div id="modalEtiquetas" class="modal-etiquetas">
+        <div class="modal-etiquetas-content">
+            <div class="modal-etiquetas-header">
+                <h2>Modificar Etiquetas</h2>
+                <button type="button" id="btnCerrarModalEtiquetas" class="modal-etiquetas-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-etiquetas-body">
+                <!-- Etiquetas existentes (si las hay) -->
+                <div class="form-group-etiquetas" th:if="${etiquetas != null and !#lists.isEmpty(etiquetas)}">
+                    <label>
+                        <i class="fas fa-tags"></i>
+                        Etiquetas disponibles
+                    </label>
+                    <div id="etiquetasDisponibles" class="etiquetas-disponibles-container">
+                        <label th:each="etiqueta : ${etiquetas}" class="etiqueta-checkbox-hecho">
+                            <input type="checkbox" th:value="${etiqueta}" class="etiqueta-check">
+                            <span class="etiqueta-label-hecho" th:text="${etiqueta}">Etiqueta</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Agregar nueva etiqueta -->
+                <div class="form-group-etiquetas">
+                    <label for="nuevaEtiquetaHecho">
+                        <i class="fas fa-plus-circle"></i>
+                        Agregar nueva etiqueta
+                    </label>
+                    <div class="nueva-etiqueta-input-hecho">
+                        <input type="text"
+                               id="nuevaEtiquetaHecho"
+                               class="form-input-etiqueta"
+                               placeholder="Escribe el nombre de la nueva etiqueta...">
+                        <button type="button" id="btnAgregarEtiquetaHecho" class="btn-add-etiqueta-hecho">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Etiquetas seleccionadas -->
+                <div id="etiquetasSeleccionadasHecho" class="etiquetas-seleccionadas-container-hecho hidden">
+                    <label>
+                        <i class="fas fa-check-circle"></i>
+                        Etiquetas seleccionadas:
+                    </label>
+                    <div id="listaEtiquetasSeleccionadasHecho" class="etiquetas-pills-hecho"></div>
+                </div>
+            </div>
+
+            <div class="modal-etiquetas-actions">
+                <button type="button" id="btnCancelarEtiquetas" class="btn-cancelar-etiquetas">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" id="btnGuardarEtiquetas" class="btn-guardar-etiquetas">
+                    <i class="fas fa-save"></i>
+                    Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
 </th:block>
 
 <th:block th:fragment="jsExtra">
@@ -310,6 +384,7 @@
                 longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
             },
             etiquetasPresentes: /*[[${hecho != null && origenAgregador == true && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
+            etiquetasActuales: /*[[${hecho != null && hecho.etiquetas != null ? hecho.etiquetas : null}]]*/ null,
             fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
             fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
             contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
@@ -320,6 +395,9 @@
             loggedIn: /*[[${logeado == 1}]]*/ false,
             role: /*[[${rol}]]*/ 0
         };
+
+        const CSRF_TOKEN = /*[[${_csrf.token}]]*/ '';
+        const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ '';
         /*]]>*/
     </script>
 

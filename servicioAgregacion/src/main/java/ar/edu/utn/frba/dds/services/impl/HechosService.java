@@ -220,7 +220,7 @@ public class HechosService implements IHechosService {
         }
         Etiqueta nuevaEtiqueta = etiquetaService.verificarEtiqueta(etiqueta);
         hechoModificado.agregarEtiqueta(nuevaEtiqueta);
-        return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe pasar una URL
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -308,5 +308,35 @@ public class HechosService implements IHechosService {
         } else {
             return this.hechosRepository.findAll(spec, pageable).getContent();
         }
+    }
+
+    @Override
+    public ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas) {
+        if (etiquetas == null || etiquetas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Hecho hecho = hechosRepository.getHechoById(id);
+        if (hecho == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Etiqueta> etiquetasVerificadas = new ArrayList<>();
+        for (String nombreEtiqueta : etiquetas) {
+            if (nombreEtiqueta != null && !nombreEtiqueta.isBlank()) {
+                Etiqueta etiqueta = etiquetaService.verificarEtiqueta(nombreEtiqueta);
+                etiquetasVerificadas.add(etiqueta);
+            }
+        }
+
+        if (etiquetasVerificadas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        hecho.modificarEtiquetas(etiquetasVerificadas);
+
+        hechosRepository.save(hecho);
+
+        return ResponseEntity.ok().build();
     }
 }

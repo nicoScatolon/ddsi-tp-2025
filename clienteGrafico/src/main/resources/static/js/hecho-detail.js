@@ -1,4 +1,4 @@
-// hecho-detail.js - Gestión de detalle de hechos con Carrusel Multimedia
+// hecho-detail.js - Gestión de detalle de hechos con Carrusel Multimedia y Etiquetas
 
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar que tenemos datos del hecho
@@ -13,6 +13,201 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variables para el mapa
     let map = null;
     let marker = null;
+
+    // ===== MODAL DE ETIQUETAS =====
+    const modalEtiquetas = document.getElementById('modalEtiquetas');
+    const btnModificarEtiquetas = document.getElementById('btnModificarEtiquetas');
+    const btnCerrarModalEtiquetas = document.getElementById('btnCerrarModalEtiquetas');
+    const btnCancelarEtiquetas = document.getElementById('btnCancelarEtiquetas');
+    const btnGuardarEtiquetas = document.getElementById('btnGuardarEtiquetas');
+    const btnAgregarEtiquetaHecho = document.getElementById('btnAgregarEtiquetaHecho');
+    const nuevaEtiquetaHechoInput = document.getElementById('nuevaEtiquetaHecho');
+    const listaEtiquetasSeleccionadasHecho = document.getElementById('listaEtiquetasSeleccionadasHecho');
+    const etiquetasSeleccionadasContainerHecho = document.getElementById('etiquetasSeleccionadasHecho');
+
+    // Array para almacenar etiquetas seleccionadas
+    let etiquetasSeleccionadas = [];
+
+    // Inicializar etiquetas actuales del hecho
+    if (HECHO_DATA.etiquetasActuales && Array.isArray(HECHO_DATA.etiquetasActuales)) {
+        etiquetasSeleccionadas = HECHO_DATA.etiquetasActuales.map(etiq => etiq.nombre).filter(Boolean);
+    }
+
+    // Abrir modal de etiquetas
+    if (btnModificarEtiquetas) {
+        btnModificarEtiquetas.addEventListener('click', () => {
+            // Resetear etiquetas seleccionadas a las actuales
+            if (HECHO_DATA.etiquetasActuales && Array.isArray(HECHO_DATA.etiquetasActuales)) {
+                etiquetasSeleccionadas = HECHO_DATA.etiquetasActuales.map(etiq => etiq.nombre).filter(Boolean);
+            } else {
+                etiquetasSeleccionadas = [];
+            }
+
+            // Marcar checkboxes que corresponden a etiquetas actuales
+            const checkboxes = document.querySelectorAll('.etiqueta-check');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = etiquetasSeleccionadas.includes(checkbox.value);
+            });
+
+            // Limpiar input de nueva etiqueta
+            if (nuevaEtiquetaHechoInput) nuevaEtiquetaHechoInput.value = '';
+
+            // Actualizar vista
+            actualizarVistaEtiquetasHecho();
+
+            // Abrir modal
+            abrirModalEtiquetas();
+        });
+    }
+
+    // Manejar selección de etiquetas existentes
+    if (modalEtiquetas) {
+        const checkboxes = document.querySelectorAll('.etiqueta-check');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const etiqueta = e.target.value;
+                if (e.target.checked) {
+                    if (!etiquetasSeleccionadas.includes(etiqueta)) {
+                        etiquetasSeleccionadas.push(etiqueta);
+                    }
+                } else {
+                    etiquetasSeleccionadas = etiquetasSeleccionadas.filter(et => et !== etiqueta);
+                }
+                actualizarVistaEtiquetasHecho();
+            });
+        });
+    }
+
+    // Agregar nueva etiqueta
+    if (btnAgregarEtiquetaHecho) {
+        btnAgregarEtiquetaHecho.addEventListener('click', () => {
+            const nuevaEtiqueta = nuevaEtiquetaHechoInput.value.trim();
+
+            if (!nuevaEtiqueta) {
+                alert('Por favor, escribe el nombre de la etiqueta');
+                return;
+            }
+
+            if (etiquetasSeleccionadas.includes(nuevaEtiqueta)) {
+                alert('Esta etiqueta ya está seleccionada');
+                return;
+            }
+
+            // Agregar a la lista
+            etiquetasSeleccionadas.push(nuevaEtiqueta);
+            actualizarVistaEtiquetasHecho();
+
+            // Limpiar input
+            nuevaEtiquetaHechoInput.value = '';
+            nuevaEtiquetaHechoInput.focus();
+        });
+    }
+
+    // Permitir agregar etiqueta con Enter
+    if (nuevaEtiquetaHechoInput) {
+        nuevaEtiquetaHechoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnAgregarEtiquetaHecho.click();
+            }
+        });
+    }
+
+    // Actualizar la vista de etiquetas seleccionadas
+    function actualizarVistaEtiquetasHecho() {
+        if (!listaEtiquetasSeleccionadasHecho) return;
+
+        listaEtiquetasSeleccionadasHecho.innerHTML = '';
+
+        if (etiquetasSeleccionadas.length === 0) {
+            etiquetasSeleccionadasContainerHecho.classList.add('hidden');
+            return;
+        }
+
+        etiquetasSeleccionadasContainerHecho.classList.remove('hidden');
+
+        etiquetasSeleccionadas.forEach(etiqueta => {
+            const pill = document.createElement('div');
+            pill.className = 'etiqueta-pill-hecho';
+            pill.innerHTML = `
+                <span>${etiqueta}</span>
+                <button type="button" data-etiqueta="${etiqueta}" title="Eliminar">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            listaEtiquetasSeleccionadasHecho.appendChild(pill);
+
+            // Evento para eliminar etiqueta
+            pill.querySelector('button').addEventListener('click', (e) => {
+                const etiquetaAEliminar = e.currentTarget.getAttribute('data-etiqueta');
+                etiquetasSeleccionadas = etiquetasSeleccionadas.filter(et => et !== etiquetaAEliminar);
+
+                // Desmarcar checkbox si existe
+                const checkbox = document.querySelector(`.etiqueta-check[value="${etiquetaAEliminar}"]`);
+                if (checkbox) checkbox.checked = false;
+
+                actualizarVistaEtiquetasHecho();
+            });
+        });
+    }
+
+    // Guardar etiquetas
+    if (btnGuardarEtiquetas) {
+        btnGuardarEtiquetas.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/hechos/${HECHO_DATA.id}/modificarEtiquetas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [CSRF_HEADER]: CSRF_TOKEN
+                    },
+                    body: JSON.stringify(etiquetasSeleccionadas)
+                });
+
+                if (response.ok) {
+                    // Recargar la página para mostrar los cambios
+                    window.location.reload();
+                } else {
+                    alert('Error al guardar las etiquetas. Por favor, intenta nuevamente.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar las etiquetas. Por favor, intenta nuevamente.');
+            }
+        });
+    }
+
+    // Cerrar modal de etiquetas
+    function cerrarModalEtiquetas() {
+        if (modalEtiquetas) {
+            modalEtiquetas.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function abrirModalEtiquetas() {
+        if (modalEtiquetas) {
+            modalEtiquetas.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    if (btnCerrarModalEtiquetas) {
+        btnCerrarModalEtiquetas.addEventListener('click', cerrarModalEtiquetas);
+    }
+
+    if (btnCancelarEtiquetas) {
+        btnCancelarEtiquetas.addEventListener('click', cerrarModalEtiquetas);
+    }
+
+    // Cerrar al hacer clic fuera
+    if (modalEtiquetas) {
+        modalEtiquetas.addEventListener('click', (e) => {
+            if (e.target === modalEtiquetas) {
+                cerrarModalEtiquetas();
+            }
+        });
+    }
 
     // ===== CARRUSEL MULTIMEDIA =====
     const initCarousel = () => {
@@ -191,14 +386,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('open')) {
-                modal.classList.remove('open');
+            if (e.key === 'Escape') {
+                if (modal.classList.contains('open')) {
+                    modal.classList.remove('open');
+                }
+                if (modalEtiquetas && modalEtiquetas.classList.contains('open')) {
+                    cerrarModalEtiquetas();
+                }
             }
         });
     };
 
     // ===== INICIALIZAR FUNCIONALIDADES =====
-    console.log('🚀 Inicializando hecho-detail.js con carrusel');
+    console.log('🚀 Inicializando hecho-detail.js con carrusel y etiquetas');
 
     initCarousel();
     initMap();
