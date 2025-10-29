@@ -43,6 +43,8 @@ public class HechosController {
         List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
 
+        fileSystemService.procesarImagenPrincipalListaHechos(hechos);
+
         List<String> categorias = agregadorService.obtenerCategoriasShort();
         List<String> provincias = agregadorService.obtenerProvinciasShort();
         List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas

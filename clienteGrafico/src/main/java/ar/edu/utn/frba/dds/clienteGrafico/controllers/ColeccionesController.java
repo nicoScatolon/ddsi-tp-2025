@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ColeccionesController {
     private final IAgregadorService agregadorService;
+    private final IFileSystemService fileSystemService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -30,6 +32,9 @@ public class ColeccionesController {
     @GetMapping
     public String listarColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
+
+        fileSystemService.procesarImagenPrincipalListaColecciones(colecciones);
+
         model.addAttribute("titulo", String.format("Colecciones - Pagina %d", paginaActual+1));
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);
@@ -45,6 +50,8 @@ public class ColeccionesController {
                                     Model model) {
         ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreviewIndividual(handle);
         List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(handle, paginaActual, filtros, curado);
+
+        fileSystemService.procesarImagenPrincipalListaHechos(hechosColeccion);
 
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa

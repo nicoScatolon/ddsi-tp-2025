@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.*;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -186,7 +188,7 @@ public class HechosService implements IHechosService {
                 .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaDeCarga(hecho.getFechaDeCarga())
-                .contenidoMultimedia(hecho.getContenidoMultimedia())
+                .contenidoMultimedia(this.contenidoMultimediaOutputDTO(hecho.getContenidoMultimedia()))
                 .cargadoAnonimamente(hecho.getCargadoAnonimamente())
                 .fechaDeModificacion(hecho.getFechaDeModificacion())
                 .contribuyenteId(hecho.getContribuyenteId())
@@ -224,6 +226,23 @@ public class HechosService implements IHechosService {
         categoriaOutputDTO.setId(categoria.getId());
         categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
+    }
+
+    private List<ContenidoMultimediaOutputDTO> contenidoMultimediaOutputDTO(List<ContenidoMultimedia> contenidosMultimedia) {
+        List<ContenidoMultimediaOutputDTO> contenidoMultimediaOutputDTO = new ArrayList<>();
+
+        contenidosMultimedia.forEach(contenidoMultimedia -> {
+            ContenidoMultimediaOutputDTO contenidoMultimediaOutputDTO1 = ContenidoMultimediaOutputDTO.builder()
+                    .id(contenidoMultimedia.getId())
+                    .url(contenidoMultimedia.getUrl())
+                    .tipo(contenidoMultimedia.getTipoContenido())
+                    .descripcion(contenidoMultimedia.getDescripcion())
+                    .build();
+
+            contenidoMultimediaOutputDTO.add(contenidoMultimediaOutputDTO1);
+        });
+
+        return contenidoMultimediaOutputDTO;
     }
 
     // Test

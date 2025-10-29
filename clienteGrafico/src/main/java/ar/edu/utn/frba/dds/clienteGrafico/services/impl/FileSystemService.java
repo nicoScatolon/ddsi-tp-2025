@@ -1,5 +1,8 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.FileUploadOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.TipoContenido;
@@ -9,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FileSystemService implements IFileSystemService {
@@ -90,6 +90,43 @@ public class FileSystemService implements IFileSystemService {
         }
 
         this.enviarRutaAFuenteEstatica(rutaArchivo);
+    }
+
+    @Override
+    public void procesarImagenPrincipalListaHechos(List<HechoInputDTO> listaHechosDTO) {
+        listaHechosDTO.forEach(hecho -> {
+            if (hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty()) {
+                // Buscar la primera imagen
+                Optional<ContenidoMultimediaInputDTO> primeraImagen = hecho.getContenidoMultimedia().stream()
+                        .filter(c -> c.getTipoContenido() == TipoContenido.IMAGEN)
+                        .findFirst();
+
+                if (primeraImagen.isPresent()) {
+                    ContenidoMultimediaInputDTO imagen = primeraImagen.get();
+                    String urlCompleta = this.construirUrlMultimedia(imagen.getUrl());
+                    imagen.setUrl(urlCompleta);
+                    hecho.setContenidoMultimedia(List.of(imagen));
+                } else {
+                    hecho.setContenidoMultimedia(Collections.emptyList());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void procesarImagenPrincipalListaColecciones(List<ColeccionPreviewInputDTO> listaColeccionesDTO) {
+        listaColeccionesDTO.forEach(coleccion -> {
+            ContenidoMultimediaInputDTO contenido = coleccion.getContenidoMultimedia();
+
+            if (contenido != null) {
+                if (contenido.getTipoContenido() == TipoContenido.IMAGEN) {
+                    String urlCompleta = this.construirUrlMultimedia(contenido.getUrl());
+                    contenido.setUrl(urlCompleta);
+                } else {
+                    coleccion.setContenidoMultimedia(null);
+                }
+            }
+        });
     }
 
     private String subirArchivoAlFileSystem(MultipartFile file, String tipoContenido) throws IOException {

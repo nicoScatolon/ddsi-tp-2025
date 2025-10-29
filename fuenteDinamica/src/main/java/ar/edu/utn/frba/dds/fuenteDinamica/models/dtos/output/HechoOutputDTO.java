@@ -25,10 +25,12 @@ public class HechoOutputDTO {
     private UbicacionOutputDTO ubicacion;
     private LocalDateTime fechaDeOcurrencia;
     private LocalDateTime fechaDeCarga;
-    private List<ContenidoMultimedia> contenidoMultimedia;
-    private LocalDateTime fechaDeModificacion;
+    private Boolean cargadoAnonimamente;
+    private List<ContenidoMultimediaOutputDTO> contenidoMultimedia;
     private Long contribuyenteId;
+
+    //no los toma el agregador
+    private LocalDateTime fechaDeModificacion;
     private EstadoHecho estado;
     private String sugerencia;
-    private Boolean cargadoAnonimamente;
 }

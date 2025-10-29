@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final IAgregadorService agregadorService;
+    private final IFileSystemService fileSystemService;
     @GetMapping("/")
     public String home() {
         return "redirect:/index";
@@ -23,6 +25,9 @@ public class HomeController {
     public String index(Model model) {
         List<ColeccionPreviewInputDTO> listaColeccionesDestacadasDTO = agregadorService.obtenerColeccionesDestacadas();
         List<HechoInputDTO> listaHechosDestacadosDTO = agregadorService.obtenerHechosDestacados();
+
+        fileSystemService.procesarImagenPrincipalListaHechos(listaHechosDestacadosDTO);
+        fileSystemService.procesarImagenPrincipalListaColecciones(listaColeccionesDestacadasDTO);
 
         model.addAttribute("colecciones", listaColeccionesDestacadasDTO);
         model.addAttribute("hechos", listaHechosDestacadosDTO);

@@ -218,12 +218,12 @@
                     <!-- Columna 3: Imagen -->
                     <div class="card-image">
                         <div class="card-img"
-                             th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}">
-                            <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
+                             th:if="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
+                            <img th:src="${hecho.contenidoMultimedia[0].url}"
                                  th:alt="${hecho.titulo}"/>
                         </div>
                         <div class="card-img-placeholder"
-                             th:unless="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}">
+                             th:unless="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
                             <i class="fas fa-image"></i>
                         </div>
                     </div>

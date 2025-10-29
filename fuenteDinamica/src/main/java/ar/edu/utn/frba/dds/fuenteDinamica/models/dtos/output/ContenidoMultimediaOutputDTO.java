@@ -1,18 +1,18 @@
-package ar.edu.utn.frba.dds.domain.dtos.output;
+package ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output;
 
-import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.TipoContenido;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.TipoContenido;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ContenidoMultimediaOutputDTO {
     private Long id;
     private String url;
     private String descripcion;
-    private TipoContenido tipoContenido;
+    private TipoContenido tipo;
 }
