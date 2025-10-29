@@ -154,7 +154,7 @@ public class DTOConverter {
                 .descripcion(contenidoMultimediaInputDTO.getDescripcion())
                 .url(contenidoMultimediaInputDTO.getUrl())
                 .hecho(hecho)
-                .tipoContenido(contenidoMultimediaInputDTO.getTipo())
+                .tipoContenido(contenidoMultimediaInputDTO.getTipoContenido())
                 .build();
     }
 

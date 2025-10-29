@@ -15,5 +15,5 @@ public class ContenidoMultimediaInputDTO {
     private Long id;
     private String url;
     private String descripcion;
-    private TipoContenido tipo;
+    private TipoContenido tipoContenido;
 }
