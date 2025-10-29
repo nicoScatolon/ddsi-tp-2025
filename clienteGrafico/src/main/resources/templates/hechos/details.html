@@ -358,40 +358,51 @@
 <th:block th:fragment="jsExtra">
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <!-- Pasar datos del hecho a JavaScript -->
-        <script th:inline="javascript">
-            const HECHO_DATA = {
-                id: /*[[${hecho != null ? hecho.id : null}]]*/ null,
-                titulo: /*[[${hecho != null && hecho.titulo != null ? hecho.titulo : ''}]]*/ '',
-                descripcion: /*[[${hecho != null && hecho.descripcion != null ? hecho.descripcion : ''}]]*/ '',
-                categoriaNombre: /*[[${hecho != null && hecho.categoria != null && hecho.categoria.nombre != null ? hecho.categoria.nombre : ''}]]*/ '',
-                ubicacion: {
-                    provincia: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : ''}]]*/ '',
-                    departamento: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.departamento != null ? hecho.ubicacion.departamento : ''}]]*/ '',
-                    latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
-                    longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
-                },
-                etiquetasPresentes: /*[[${hecho != null && origenAgregador == true && hecho.etiquetas != null && !#lists.isEmpty(hecho.etiquetas) ? true : false}]]*/ false,
-                etiquetasActuales: /*[[${hecho != null && hecho.etiquetas != null ? hecho.etiquetas : null}]]*/ null,
-                fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
-                fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
-                contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
-                contribuyenteApellido: /*[[${contribuyente != null && contribuyente.apellido != null ? contribuyente.apellido : ''}]]*/ ''
-            };
 
-            const USER_DATA = {
-                loggedIn: /*[[${logeado == 1}]]*/ false,
-                role: /*[[${rol}]]*/ 0
-            };
+    <!-- Pasar datos del hecho a JavaScript -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const HECHO_DATA = {
+            id: /*[[${hecho != null ? hecho.id : null}]]*/ null,
+            titulo: /*[[${hecho != null && hecho.titulo != null ? hecho.titulo : ''}]]*/ '',
+            descripcion: /*[[${hecho != null && hecho.descripcion != null ? hecho.descripcion : ''}]]*/ '',
+            categoriaNombre: /*[[${hecho != null && hecho.categoria != null && hecho.categoria.nombre != null ? hecho.categoria.nombre : ''}]]*/ '',
+            ubicacion: {
+                provincia: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : ''}]]*/ '',
+                departamento: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.departamento != null ? hecho.ubicacion.departamento : ''}]]*/ '',
+                latitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.latitud != null ? hecho.ubicacion.latitud : null}]]*/ null,
+                longitud: /*[[${hecho != null && hecho.ubicacion != null && hecho.ubicacion.longitud != null ? hecho.ubicacion.longitud : null}]]*/ null
+            },
+            etiquetasPresentes: false,
+            etiquetasActuales: [],
+            fechaOcurrencia: /*[[${hecho != null && hecho.fechaDeOcurrencia != null ? hecho.fechaDeOcurrencia : null}]]*/ null,
+            fechaCarga: /*[[${hecho != null && hecho.fechaDeCarga != null ? hecho.fechaDeCarga : null}]]*/ null,
+            contribuyenteNombre: /*[[${contribuyente != null && contribuyente.nombre != null ? contribuyente.nombre : ''}]]*/ '',
+            contribuyenteApellido: /*[[${contribuyente != null && contribuyente.apellido != null ? contribuyente.apellido : ''}]]*/ ''
+        };
 
-            const CSRF_TOKEN = /*[[${_csrf.token}]]*/ '';
-            const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ '';
+        const USER_DATA = {
+            loggedIn: /*[[${logeado == 1}]]*/ false,
+            role: /*[[${rol}]]*/ 0
+        };
 
-            // Pasar etiquetas disponibles a JavaScript
-            const ETIQUETAS_DISPONIBLES = /*[[${etiquetas}]]*/ [];
-            /*]]>*/
-        </script>
+        const CSRF_TOKEN = /*[[${_csrf.token}]]*/ '';
+        const CSRF_HEADER = /*[[${_csrf.headerName}]]*/ '';
+
+        // Pasar etiquetas disponibles a JavaScript (solo si existen)
+        let ETIQUETAS_DISPONIBLES = [];
+        /*[# th:if="${etiquetas != null && !#lists.isEmpty(etiquetas)}"]*/
+        ETIQUETAS_DISPONIBLES = /*[[${etiquetas}]]*/ [];
+        /*[/]*/
+
+        console.log('📊 Datos iniciales cargados:', {
+            hecho: HECHO_DATA,
+            user: USER_DATA,
+            etiquetasDisponibles: ETIQUETAS_DISPONIBLES
+        });
+        /*]]>*/
+    </script>
+
     <script th:src="@{/js/hecho-detail.js}"></script>
 </th:block>
-
 </html>
