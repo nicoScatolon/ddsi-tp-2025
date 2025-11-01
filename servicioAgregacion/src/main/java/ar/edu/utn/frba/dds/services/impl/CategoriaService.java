@@ -80,6 +80,7 @@ public class CategoriaService implements ICategoriaService {
         }
 
         this.categoriasRepository.saveAll(nuevasCategorias);
+        this.categoriasRepository.flush();
         return hechosActualizados;
     }
 

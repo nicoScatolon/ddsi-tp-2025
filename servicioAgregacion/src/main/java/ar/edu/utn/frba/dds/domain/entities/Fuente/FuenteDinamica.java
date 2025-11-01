@@ -44,7 +44,10 @@ public class FuenteDinamica extends Fuente {
     public List<Hecho> updateHechos(List<Hecho> hechosPersistidosFuente){
         List<HechoInputDinamicaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream()
+                .map(DTOConverter::convertirHechoInputDTO)
+                .peek(h -> h.setFuente(this))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         this.actualizarHechos(nuevosHechos, hechosPersistidosFuente);
 
@@ -76,6 +79,9 @@ public class FuenteDinamica extends Fuente {
     public void actualizarHechos(List<Hecho> hechosNuevos, List<Hecho> hechosPersistidosFuente){
         List<Long> listaOrigenesId = hechosPersistidosFuente.stream().map(Hecho::getOrigenId).toList();
 
+        List<Hecho> hechosAEliminar = new ArrayList<>();
+        List<Hecho> hechosAActualizar = new ArrayList<>();
+
         for (Hecho hechoActual : hechosNuevos){
             if ( listaOrigenesId.contains( hechoActual.getOrigenId() ) ) { // si el origenId ya esta en la base de datos, es que estoy actualizando
                 Hecho hechoExistente = hechosPersistidosFuente.stream()
@@ -84,8 +90,12 @@ public class FuenteDinamica extends Fuente {
                         .get(); // por la verificacion anterior, no puede ser nulo
 
                 hechoExistente.actualizarse(hechoActual);
+                hechosAActualizar.add(hechoExistente);
+                hechosAEliminar.add(hechoActual);
             }
-            // Si el hecho ya existe lo actualizamos (le ponemos el id del existente), y sino lo cargamos normalmente
         }
+
+        hechosNuevos.removeAll(hechosAEliminar);
+        hechosNuevos.addAll(hechosAActualizar);
     }
 }

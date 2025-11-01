@@ -99,9 +99,13 @@ public class FuentesService implements IFuentesService {
                 fuentesActualizadas.add(fuente);
             }
         }
-        this.hechosService.actualizarHechosRepository(hechosAActualizar);
+        if (hechosAActualizar != null && !hechosAActualizar.isEmpty()){
+            this.hechosService.actualizarHechosRepository(hechosAActualizar);
+        }
+        if (fuentesActualizadas != null && !fuentesActualizadas.isEmpty()){
+            coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
+        }
 
-        coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
     }
 
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
