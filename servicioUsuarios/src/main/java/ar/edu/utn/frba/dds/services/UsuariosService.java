@@ -1,8 +1,7 @@
 package ar.edu.utn.frba.dds.services;
 
 import ar.edu.utn.frba.dds.exceptions.NotFoundException;
-import ar.edu.utn.frba.dds.models.dtos.RegistroAdminDTO;
-import ar.edu.utn.frba.dds.models.dtos.RegistroContribuyenteDTO;
+import ar.edu.utn.frba.dds.models.dtos.RegistroUsuarioDTO;
 import ar.edu.utn.frba.dds.models.entities.Permiso;
 import ar.edu.utn.frba.dds.models.entities.Rol;
 import ar.edu.utn.frba.dds.models.entities.Usuario;
@@ -12,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -24,40 +25,55 @@ public class UsuariosService {
 
 
     @Transactional
-    public Usuario registrarContribuyente(RegistroContribuyenteDTO dto) {
-        if (usuarios.existsByNombre(dto.getUsername()))
-            throw new IllegalArgumentException("Usuario ya existe");
+    public Usuario registrarUsuario(RegistroUsuarioDTO dto, Rol rol) {
+        if (usuarios.existsByNombre(dto.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya existe");
+        }
 
-        Usuario u = new Usuario();
-        u.setUsername(dto.getUsername());
-        u.setPassword(encoder.encode(dto.getPassword()));
-        u.setNombre(dto.getNombre());
-        u.setApellido(dto.getApellido());
-        u.setEmail(dto.getEmail());
-        u.setRol(Rol.CONTRIBUYENTE);
+        if (usuarios.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado");
+        }
 
-        return usuarios.save(u);
-    }
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        }
 
-    @Transactional
-    public Usuario altaAdmin(RegistroAdminDTO dto) {
-        if (usuarios.existsByNombre(dto.getUsername()))
-            throw new IllegalArgumentException("Usuario ya existe");
+        LocalDate hoy = LocalDate.now();
+        if (dto.getFecha_nacimiento() == null || !dto.getFecha_nacimiento().isBefore(hoy)) {
+            throw new IllegalArgumentException("La fecha de nacimiento no es válida");
+        }
 
-        Usuario u = new Usuario();
-        u.setNombre(dto.getUsername());
-        u.setPassword(encoder.encode(dto.getPassword()));
-        u.setRol(Rol.ADMIN);
-        u.setNombre(dto.getUsername());
-        u.setApellido(dto.getApellido());
-        u.setEmail(dto.getEmail());
-        u.setPermisos(Arrays.stream(Permiso.values())
-                .collect(Collectors.toCollection(ArrayList::new)));
-        return usuarios.save(u);
+        Usuario nuevoUsuario = registroUsuarioDTO(dto);
+
+        if (rol.equals(Rol.ADMIN)) {
+            nuevoUsuario.setPermisos(Arrays.stream(Permiso.values())
+                    .collect(Collectors.toCollection(ArrayList::new)));
+        } else if (!rol.equals(Rol.CONTRIBUYENTE)) {
+            throw new IllegalArgumentException("El rol ingresado no es válido");
+        }
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        nuevoUsuario.setPassword(encoder.encode(dto.getPassword()));
+
+        nuevoUsuario.setRol(rol);
+
+        nuevoUsuario.setCreadoEn(LocalDateTime.now());
+
+        return usuarios.save(nuevoUsuario);
     }
 
     public Usuario obtenerPorId(Long id) {
         return usuarios.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario", String.valueOf(id)));
+    }
+
+    private Usuario registroUsuarioDTO(RegistroUsuarioDTO dto){
+        return Usuario.builder()
+                .nombre(dto.getUsername())
+                .apellido(dto.getApellido())
+                .email(dto.getEmail())
+                .username(dto.getUsername())
+                .fechaNacimiento(dto.getFecha_nacimiento())
+                .build();
     }
 }

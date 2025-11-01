@@ -6,14 +6,17 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RegisterUsuarioRequestDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +36,7 @@ public class AdminPanelController {
     private final IAgregadorService agregadorService;
     private final IFuenteDinamicaService fuenteDinamicaService;
     private final IFileSystemService fileSystemService;
+    private final IGestionUsuariosService gestionUsuariosService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -42,6 +46,7 @@ public class AdminPanelController {
         return "redirect:/admin/actividad";
     }
 
+    // Resumen actividad
     @GetMapping("/actividad")
     public String resumenActividad(Model model) {
         model.addAttribute("titulo", "Resumen Actividad");
@@ -49,6 +54,7 @@ public class AdminPanelController {
         return "admin/panel-base";
     }
 
+    // Importar archivos
     @GetMapping("/importar")
     public String importarHechos(Model model) {
         model.addAttribute("titulo", "Importar Hechos");
@@ -79,6 +85,7 @@ public class AdminPanelController {
         return "redirect:/admin/importar";
     }
 
+    //Gestión de hechos
     @GetMapping("/hechos")
     public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model) {
         if (estado == null) {estado = EstadoHecho.PENDIENTE;}
@@ -98,6 +105,7 @@ public class AdminPanelController {
         return "redirect:/admin/hechos";
     }
 
+    // Gestión de colecciones
     @GetMapping("/colecciones")
     public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
@@ -110,6 +118,7 @@ public class AdminPanelController {
         return "admin/panel-base";
     }
 
+    //Gestión de categorias
      @GetMapping("/categorias")
      public String gestionCategorias(Model model) {
         model.addAttribute("categorias", agregadorService.obtenerCategorias());
@@ -155,7 +164,23 @@ public class AdminPanelController {
         return "redirect:/admin/categorias";
     }
 
+    //Gestión Usuarios
+    @GetMapping("/usuarios")
+    public String gestionUsuarios(Model model) {
+        model.addAttribute("titulo", "Gestión de Usuarios");
+        model.addAttribute("contentTemplate", "gestion-usuarios");
 
+        return "admin/panel-base";
+    }
+
+    @PostMapping("/crear-admin")
+    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario) {
+        gestionUsuariosService.crearAdmin(usuario);
+
+        return "redirect:/admin/usuarios";
+    }
+
+    //Gestión solicitudes de eliminación
     @GetMapping("/solicitudes")
     public String solicitudesEliminacion(Model model) {
         List<SolicitudEliminarHechoInputDTO> solicitudes = agregadorService.obtenerSolicitudesEliminacionPendientes();

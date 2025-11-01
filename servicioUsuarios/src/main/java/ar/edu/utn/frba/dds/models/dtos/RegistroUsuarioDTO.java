@@ -5,14 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class RegistroContribuyenteDTO {
+public class RegistroUsuarioDTO {
     String username;
     String password;
+    String confirmPassword;
     String nombre;
     String apellido;
     String email;
+    LocalDate fecha_nacimiento;
 }

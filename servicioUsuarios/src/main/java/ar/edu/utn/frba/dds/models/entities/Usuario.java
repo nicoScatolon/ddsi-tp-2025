@@ -1,11 +1,9 @@
 package ar.edu.utn.frba.dds.models.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name="usuarios")
 public class Usuario {
 
@@ -22,7 +21,7 @@ public class Usuario {
     private Long id;
 
     @Column(name = "username", nullable = true)
-    private String username;
+    private String username; //todo agregar al registro
 
     @Column(name = "contrasenia", nullable = false)
     private String password;
@@ -45,6 +44,7 @@ public class Usuario {
             name = "usuario_permisos",
             joinColumns = @JoinColumn(name = "usuario_id")
     )
+
     @Column(name = "permiso", nullable = false)
     @Enumerated(EnumType.STRING)
     private List<Permiso> permisos;
@@ -52,5 +52,10 @@ public class Usuario {
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn = LocalDateTime.now();
 
+    @Column(name = "ultimo_acceso")
+    private LocalDateTime ultimoAcceso;
+
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
 }
 

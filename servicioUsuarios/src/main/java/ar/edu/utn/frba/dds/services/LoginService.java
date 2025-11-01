@@ -21,18 +21,23 @@ public class LoginService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
+    // Buscar por email o username
     public Usuario autenticar(String username, String contrasenia) {
         Optional<Usuario> usuarioOpcional = usuariosRepository.findByEmail(username);
 
         if (usuarioOpcional.isEmpty()) {
-            throw new NotFoundException("Usuario", username);
+            usuarioOpcional = usuariosRepository.findByNombre(username);
+        }
+
+        if (usuarioOpcional.isEmpty()) {
+            throw new NotFoundException("Usuario no encontrado: " + username);
         }
 
         Usuario usuario = usuarioOpcional.get();
 
         // Verificar la contraseña usando BCrypt
         if (!passwordEncoder.matches(contrasenia, usuario.getPassword())) {
-            throw new NotFoundException("Usuario", username);
+            throw new IllegalArgumentException("Credenciales inválidas");
         }
 
         return usuario;

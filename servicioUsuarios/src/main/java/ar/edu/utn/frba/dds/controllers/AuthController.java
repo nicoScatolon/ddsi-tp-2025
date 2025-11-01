@@ -31,7 +31,7 @@ public class AuthController {
             String username = credentials.get("username");
             String password = credentials.get("password");
 
-            log.info("Llegan este usuario y esta contrasenia" + username, password);
+            log.info("Llegan usuario: {} y contraseña: {}", username, password);
 
             // Validación básica de credenciales
             if (username == null || username.trim().isEmpty() ||
