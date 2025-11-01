@@ -89,7 +89,7 @@ public class FuenteEstatica extends Fuente {
                         .filter(h -> Objects.equals(h.getOrigenId(), hechoActual.getOrigenId()))
                         .findFirst()
                         .get(); // por la verificacion anterior, no puede ser nulo
-                hechoActual.setId(hechoExistente.getId());
+                hechoExistente.actualizarse(hechoActual);
             }
             // Si el hecho ya existe lo actualizamos (le ponemos el id del existente), y sino lo cargamos normalmente
         }

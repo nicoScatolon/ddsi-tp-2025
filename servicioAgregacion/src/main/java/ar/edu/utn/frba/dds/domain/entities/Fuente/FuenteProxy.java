@@ -76,7 +76,7 @@ public class FuenteProxy extends Fuente {
             Hecho hechoExistente = hechosPersistidosFuente.stream().filter(h -> compararHechos(h, hechoActual)).findFirst().orElse(null);
 
             if (hechoExistente != null ) {
-                hechoActual.setId(hechoExistente.getId());
+                hechoExistente.actualizarse(hechoActual);
             }
         }
     }

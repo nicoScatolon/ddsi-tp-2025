@@ -98,9 +98,19 @@ public class Hecho {
         titulo = hechoNuevo.getTitulo();
         descripcion = hechoNuevo.getDescripcion();
         categoria = hechoNuevo.getCategoria();
+        ubicacion = hechoNuevo.getUbicacion();
         fechaDeOcurrencia = hechoNuevo.getFechaDeOcurrencia();
         fechaDeCarga = hechoNuevo.getFechaDeCarga();
-        contenidoMultimedia = hechoNuevo.getContenidoMultimedia();
+        if (hechoNuevo.cargadoAnonimamente != null) {
+            cargadoAnonimamente = hechoNuevo.getCargadoAnonimamente();
+        }
+        if (hechoNuevo.contenidoMultimedia != null) {
+            this.contenidoMultimedia.clear();
+            for (ContenidoMultimedia contenidoNuevo : hechoNuevo.getContenidoMultimedia()) {
+                contenidoNuevo.setHecho(this);
+                this.contenidoMultimedia.add(contenidoNuevo);
+            }
+        }
     }
 }
 

@@ -11,12 +11,13 @@ import ar.edu.utn.frba.dds.domain.entities.Normalizadores.NormalizadorTexto;
 import ar.edu.utn.frba.dds.domain.repository.ICategoriasRepository;
 import ar.edu.utn.frba.dds.domain.repository.IEquivalenteCatRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.util.*;
 
@@ -57,6 +58,7 @@ public class CategoriaService implements ICategoriaService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Hecho> cargarCategoriasHechos(List<Hecho> hechosActualizados) {
         List<Categoria> categoriasGuardadas = this.categoriasRepository.findAll();
         List<EquivalenteCategoria> equivalenteCategorias = this.equivalenteCatRepository.findAll();
