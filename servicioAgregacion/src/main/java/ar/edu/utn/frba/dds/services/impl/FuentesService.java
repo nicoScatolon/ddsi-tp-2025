@@ -89,8 +89,11 @@ public class FuentesService implements IFuentesService {
         List<Fuente> fuentesActualizadas = new ArrayList<>();
         List<Hecho> hechosAActualizar = new ArrayList<>();
         for (Fuente fuente : fuentes){
-            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
-            logger.info("Fuente actualizada {}", fuente.getTipo());
+            List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
+
+            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
+            logger.info("Fuente {} actualizada con {} hechos", fuente.getId(), hechosFuente.size());
+
             if (hechosFuente != null && !hechosFuente.isEmpty()){
                 hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
@@ -103,7 +106,8 @@ public class FuentesService implements IFuentesService {
 
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
         Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
-        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
+        List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
+        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
         logger.info("Fuente actualizada {}", fuente.getTipo());
 
         if (hechosFuente != null && !hechosFuente.isEmpty()){

@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -32,23 +33,21 @@ public class FuenteDinamica extends Fuente {
     @JsonIgnore
     private WebClient webClient;
 
-    @Transient
-    @JsonIgnore
-    private Map<Long, Hecho> mapHechos = new HashMap<>();
     @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteDinamica(String url) {
         this.url = url;
         this.webClient = WebClient.builder().baseUrl(url).build();
-        mapHechos = new HashMap<>();
     }
 
-    public List<Hecho> updateHechos(){
+    public List<Hecho> updateHechos(List<Hecho> hechosPersistidosFuente){
         List<HechoInputDinamicaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
         List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
-        this.actualizarHechos(nuevosHechos);
+
+        this.actualizarHechos(nuevosHechos, hechosPersistidosFuente);
+
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
@@ -74,18 +73,18 @@ public class FuenteDinamica extends Fuente {
     }
 
 
-    public void actualizarHechos(List<Hecho> hechosNuevos){
-        for (Hecho hechoActual : hechosNuevos){
-            Hecho hechoExistente = mapHechos.get( hechoActual.getOrigenId() );
+    public void actualizarHechos(List<Hecho> hechosNuevos, List<Hecho> hechosPersistidosFuente){
+        List<Long> listaOrigenesId = hechosPersistidosFuente.stream().map(Hecho::getOrigenId).toList();
 
-            if (hechoExistente == null) {
-                // no existe, lo cargamos
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
-            } else {
-                //existe -> mismo origenId, lo actualizamos
+        for (Hecho hechoActual : hechosNuevos){
+            if ( listaOrigenesId.contains( hechoActual.getOrigenId() ) ) { // si el origenId ya esta en la base de datos, es que estoy actualizando
+                Hecho hechoExistente = hechosPersistidosFuente.stream()
+                        .filter(h -> Objects.equals(h.getOrigenId(), hechoActual.getOrigenId()))
+                        .findFirst()
+                        .get(); // por la verificacion anterior, no puede ser nulo
                 hechoActual.setId(hechoExistente.getId());
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
             }
+            // Si el hecho ya existe lo actualizamos (le ponemos el id del existente), y sino lo cargamos normalmente
         }
     }
 }

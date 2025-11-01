@@ -21,8 +21,8 @@ public class FuenteDinamicaAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<Hecho> actualizarHechos() {
-        return fuenteDinamica.updateHechos();
+    public List<Hecho> actualizarHechos(List<Hecho> hechosFuente) {
+        return fuenteDinamica.updateHechos(hechosFuente);
     }
 
     @Override

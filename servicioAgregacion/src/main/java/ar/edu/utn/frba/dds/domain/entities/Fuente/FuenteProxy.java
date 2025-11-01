@@ -45,11 +45,12 @@ public class FuenteProxy extends Fuente {
         listaHechos = new ArrayList<>();
     }
 
-    public List<Hecho> updateHechos(){
+    public List<Hecho> updateHechos(List<Hecho> hechosPersistidosFuente){
         List<HechoInputProxyDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
         List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
-        this.actualizarHechos(nuevosHechos);
+
+        this.actualizarHechos(nuevosHechos, hechosPersistidosFuente);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
@@ -70,16 +71,12 @@ public class FuenteProxy extends Fuente {
     }
 
 
-    public void actualizarHechos(List<Hecho> hechosNuevos) {
+    public void actualizarHechos(List<Hecho> hechosNuevos, List<Hecho> hechosPersistidosFuente) {
         for (Hecho hechoActual : hechosNuevos) {
-            Hecho hechoExistente = this.listaHechos.stream().filter(h -> compararHechos(h, hechoActual)).findFirst().orElse(null);
+            Hecho hechoExistente = hechosPersistidosFuente.stream().filter(h -> compararHechos(h, hechoActual)).findFirst().orElse(null);
 
-            if (hechoExistente == null) {
-                listaHechos.add(hechoActual);
-            } else {
+            if (hechoExistente != null ) {
                 hechoActual.setId(hechoExistente.getId());
-                listaHechos.add(hechoActual);
-                listaHechos.remove(hechoExistente);
             }
         }
     }
