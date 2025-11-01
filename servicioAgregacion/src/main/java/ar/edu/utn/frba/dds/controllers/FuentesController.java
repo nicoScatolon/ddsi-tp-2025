@@ -58,4 +58,16 @@ public class FuentesController {
     public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
     }
+
+    @GetMapping("/test/general")
+    @PreAuthorize("permitAll()")
+    public void probarActualizarFuenteGeneral () {
+        fuenteService.actualizarHechosFuentesScheduler();
+    }
+
+    @PutMapping("/test/agregar")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Void> agregarUnaFuenteTest (@RequestBody FuenteInputDTO fuenteInputDTO) {
+        return fuenteService.agregarFuente(fuenteInputDTO);
+    }
 }

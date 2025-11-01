@@ -47,8 +47,9 @@ public class Hecho {
     @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
 
+    @Builder.Default
     @Column(nullable = false, name = "anonimo")
-    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true
+    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true si no me llega nada
 
     //Metadata
     @Column(name = "fecha-modificacion")
@@ -65,6 +66,9 @@ public class Hecho {
 
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
+
+    @Column(name = "fecha-gestion")
+    private LocalDateTime fechaDeGestion = null; //fecha cuando el admin decidio gestionar el hecho
 
     @Column(name = "sugerencia")
     private String sugerencia = null;
@@ -101,6 +105,7 @@ public class Hecho {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}
+        this.setFechaDeGestion(LocalDateTime.now());
     }
 
     private void sincronizarContenidoMultimedia(List<ContenidoMultimedia> nuevos) {

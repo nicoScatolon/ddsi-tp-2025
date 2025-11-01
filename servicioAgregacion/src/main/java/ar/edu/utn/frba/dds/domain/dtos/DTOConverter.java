@@ -107,6 +107,7 @@ public class DTOConverter {
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contribuyenteId(dto.getContribuyenteId())
+                .cargadoAnonimamente(dto.getCargadoAnonimamente())
                 .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();

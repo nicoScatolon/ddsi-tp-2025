@@ -60,10 +60,9 @@ public class FuenteDinamica extends Fuente {
         }
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    uriBuilder = uriBuilder.path("/api/fuenteDinamica/hechos");
-                    uriBuilder.queryParam("estado", "ACEPTADO");
+                    uriBuilder = uriBuilder.path("/api/fuenteDinamica/hechos/privada");
                     if (ultimaActualizacion != null) {
-                        uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        uriBuilder.queryParam("fechaDeGestion", ultimaActualizacion.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     return uriBuilder.build();
                 })
@@ -73,6 +72,7 @@ public class FuenteDinamica extends Fuente {
                 .blockOptional()
                 .orElse(Collections.emptyList());
     }
+
 
     public void actualizarHechos(List<Hecho> hechosNuevos){
         for (Hecho hechoActual : hechosNuevos){
