@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.PanelActividadViewDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
@@ -12,6 +13,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Est
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IEstadisticasFacade;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +35,7 @@ public class AdminPanelController {
     private final IAgregadorService agregadorService;
     private final IFuenteDinamicaService fuenteDinamicaService;
     private final IFileSystemService fileSystemService;
+    private final IEstadisticasFacade facade;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -43,9 +46,15 @@ public class AdminPanelController {
     }
 
     @GetMapping("/actividad")
-    public String resumenActividad(Model model) {
+    public String actividad(
+            @RequestParam(value = "coleccion", required = false, defaultValue = "default") String coleccion,
+            Model model
+    ) {
+        PanelActividadViewDTO panel = facade.getPanelActividad(coleccion);
         model.addAttribute("titulo", "Resumen Actividad");
         model.addAttribute("contentTemplate", "actividad");
+        model.addAttribute("coleccion", coleccion);
+        model.addAttribute("resumen", panel);
         return "admin/panel-base";
     }
 
