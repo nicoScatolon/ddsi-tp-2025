@@ -1,0 +1,151 @@
+:root {
+    --cards-gap: 1rem;
+    --card-min-height: 340px;
+}
+
+/* Contenedor principal del fragmento */
+.estadisticas-actividad {
+    display: block;
+}
+
+/* Título */
+.estadisticas-actividad .titulo {
+    margin: 0 0 1rem 0;
+    color: var(--color-accent);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+/* Grid de cards */
+.estadisticas-actividad .cards {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--cards-gap);
+}
+
+/* Card genérica para cada bloque de métrica/gráfico */
+.estadisticas-actividad .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 1rem 1.25rem 1rem;
+    min-height: var(--card-min-height);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Distribución por defecto: 2 gráficos grandes y 1 card ancha abajo */
+.estadisticas-actividad .card:nth-child(1),
+.estadisticas-actividad .card:nth-child(2) {
+    grid-column: span 6;
+}
+.estadisticas-actividad .card:nth-child(3) {
+    grid-column: span 12;
+    min-height: 140px;
+}
+
+/* Títulos dentro de cards */
+.estadisticas-actividad .card h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+/* Canvases de Chart.js */
+.estadisticas-actividad canvas {
+    /* Chart.js respeta el height del canvas con maintainAspectRatio=false */
+    width: 100% !important;
+    height: 320px !important;
+    display: block;
+    border-radius: var(--radius-sm);
+}
+
+/* KPI simple (solicitudes de eliminación) */
+.estadisticas-actividad .kpi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--bg);
+    border: 1px dashed rgba(0,0,0,0.08);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    min-height: 90px;
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.estadisticas-actividad .kpi::before {
+    content: "Estado";
+    opacity: 0.6;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Microinteracciones */
+.estadisticas-actividad .card {
+    transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+.estadisticas-actividad .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.06);
+}
+
+/* Ajustes para cuando el fragmento vive dentro de .panel-card */
+.panel-card .estadisticas-actividad .card {
+    background: var(--white);
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+    :root { --card-min-height: 300px; }
+    .estadisticas-actividad canvas { height: 300px !important; }
+}
+
+@media (max-width: 1024px) {
+    .estadisticas-actividad .cards {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .estadisticas-actividad .card:nth-child(1),
+    .estadisticas-actividad .card:nth-child(2) {
+        grid-column: span 6;
+    }
+    .estadisticas-actividad .card:nth-child(3) {
+        grid-column: span 6;
+    }
+}
+
+@media (max-width: 768px) {
+    :root { --card-min-height: 260px; }
+    .estadisticas-actividad .cards {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+    }
+    .estadisticas-actividad .card {
+        grid-column: span 4 !important;
+    }
+    .estadisticas-actividad canvas { height: 260px !important; }
+    .estadisticas-actividad .titulo { font-size: 1.25rem; }
+}
+
+@media (max-width: 480px) {
+    .estadisticas-actividad .cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    .estadisticas-actividad .card {
+        grid-column: span 2 !important;
+        padding: 0.85rem;
+    }
+    .estadisticas-actividad canvas { height: 240px !important; }
+}
+
+/* Accesibilidad mínima: foco visible si hay elementos interactivos adentro */
+.estadisticas-actividad .card:focus-within {
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+    outline-offset: 2px;
+}
