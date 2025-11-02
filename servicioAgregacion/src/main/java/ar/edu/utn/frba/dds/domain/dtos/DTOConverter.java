@@ -51,6 +51,7 @@ public class DTOConverter {
                 .cargadoAninimamente(hecho.getCargadoAnonimamente())
                 .fuente(convertirFuentePreviewOutputDTO(hecho.getFuente()))
                 .destacado(hecho.getDestacado())
+                .contribuyenteId(hecho.getContribuyenteId())
                 .build();
     }
 

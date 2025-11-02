@@ -149,10 +149,11 @@ public class HechosService implements IHechosService {
                     cb.greaterThan(root.get("fechaDeGestion"), fechaDeGestion));
         }
 
-        return hechosRepository.findAll(spec)
+        List<HechoOutputDTO> hechoOutputDTOS = hechosRepository.findAll(spec)
                 .stream()
                 .map(this::hechoOutputDTO)
                 .toList();
+        return hechoOutputDTOS;
     }
 
     @Override

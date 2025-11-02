@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +82,7 @@ public class FuentesService implements IFuentesService {
         */
     }
 
+    @Transactional
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");
@@ -94,15 +96,15 @@ public class FuentesService implements IFuentesService {
             List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
             logger.info("Fuente {} actualizada con {} hechos", fuente.getId(), hechosFuente.size());
 
-            if (hechosFuente != null && !hechosFuente.isEmpty()){
+            if (!hechosFuente.isEmpty()){
                 hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }
         }
-        if (hechosAActualizar != null && !hechosAActualizar.isEmpty()){
+        if (!hechosAActualizar.isEmpty()){
             this.hechosService.actualizarHechosRepository(hechosAActualizar);
         }
-        if (fuentesActualizadas != null && !fuentesActualizadas.isEmpty()){
+        if (!fuentesActualizadas.isEmpty()){
             coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
         }
 

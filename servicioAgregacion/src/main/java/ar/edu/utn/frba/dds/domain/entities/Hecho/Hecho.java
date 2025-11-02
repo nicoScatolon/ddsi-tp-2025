@@ -63,9 +63,8 @@ public class Hecho {
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
-    @Builder.Default
-    @Column (name = "contribuyenteId")
-    private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios
+    @Column(name = "contribuyente_id")
+    private Long contribuyenteId;
 
     @Builder.Default
     @Column (name= "cargado-anonimamente")
@@ -101,6 +100,7 @@ public class Hecho {
         ubicacion = hechoNuevo.getUbicacion();
         fechaDeOcurrencia = hechoNuevo.getFechaDeOcurrencia();
         fechaDeCarga = hechoNuevo.getFechaDeCarga();
+        contribuyenteId = hechoNuevo.getContribuyenteId();
         if (hechoNuevo.cargadoAnonimamente != null) {
             cargadoAnonimamente = hechoNuevo.getCargadoAnonimamente();
         }

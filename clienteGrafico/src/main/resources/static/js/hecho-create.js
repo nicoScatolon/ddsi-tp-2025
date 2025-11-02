@@ -5,12 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const tipoUbicacionSelect = document.getElementById('tipoUbicacion');
 
     // Campos de ubicación
-    const provinciaGroup = document.getElementById('provinciaGroup');
-    const localidadGroup = document.getElementById('localidadGroup');
-    const calleGroup = document.getElementById('calleGroup');
-    const numeroGroup = document.getElementById('numeroGroup');
-    const mapaGroup = document.getElementById('mapaGroup');
-
     const provinciaInput = document.getElementById('provincia');
     const localidadInput = document.getElementById('localidad');
     const calleInput = document.getElementById('calle');
@@ -19,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const longitudInput = document.getElementById('longitudUbicacion');
 
     // Elementos del mapa
+    const mapaGroup = document.getElementById('mapaGroup');
     const coordenadasDisplay = document.getElementById('coordenadasDisplay');
     const latDisplay = document.getElementById('latDisplay');
     const lngDisplay = document.getElementById('lngDisplay');
@@ -26,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos multimedia
     const multimediaInput = document.getElementById('multimediaInput');
     const addFileBtn = document.getElementById('addFileBtn');
-    const multimediaPreview = document.getElementById('multimediaPreview');
-    const existingMultimedia = document.getElementById('existingMultimedia');
+    const multimediaContainer = document.getElementById('multimediaContainer');
+    const multimediaSection = document.getElementById('multimediaSection');
 
     const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -40,6 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // IDs de multimedia a eliminar
     let multimediaToDelete = [];
+
+    // Variable para drag & drop
+    let draggedElement = null;
 
     // Configuración de tipos de archivo permitidos
     const ALLOWED_TYPES = {
@@ -77,6 +75,127 @@ document.addEventListener('DOMContentLoaded', function() {
                 removeExistingMedia(mediaId);
             });
         });
+
+        // Manejar cambios en descripciones de multimedia existente
+        document.querySelectorAll('.desc-input-existing').forEach(input => {
+            const mediaId = input.dataset.mediaId;
+
+            input.addEventListener('input', function(e) {
+                console.log(`Descripción actualizada para ID ${mediaId}:`, e.target.value);
+            });
+        });
+
+        // Inicializar drag & drop para multimedia existente
+        initDragAndDrop();
+        updatePortadaBadge();
+    }
+
+    // ===== DRAG & DROP FUNCTIONALITY =====
+    function initDragAndDrop() {
+        const allItems = document.querySelectorAll('.multimedia-item');
+
+        allItems.forEach(item => {
+            setupDragAndDrop(item);
+        });
+    }
+
+    function setupDragAndDrop(item) {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragleave', handleDragLeave);
+    }
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+
+        // Remover clase drag-over de todos los items
+        document.querySelectorAll('.multimedia-item').forEach(item => {
+            item.classList.remove('drag-over');
+        });
+
+        draggedElement = null;
+        updatePortadaBadge();
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        e.dataTransfer.dropEffect = 'move';
+
+        if (this !== draggedElement) {
+            this.classList.add('drag-over');
+        }
+
+        return false;
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        this.classList.remove('drag-over');
+
+        if (draggedElement !== this) {
+            // Determinar si insertar antes o después basado en la posición del mouse
+            const rect = this.getBoundingClientRect();
+            const midpoint = rect.left + rect.width / 2;
+
+            if (e.clientX < midpoint) {
+                // Insertar antes
+                this.parentNode.insertBefore(draggedElement, this);
+            } else {
+                // Insertar después
+                this.parentNode.insertBefore(draggedElement, this.nextSibling);
+            }
+
+            updatePortadaBadge();
+        }
+
+        return false;
+    }
+
+    function updatePortadaBadge() {
+        // Remover todos los badges existentes
+        document.querySelectorAll('.portada-badge').forEach(badge => {
+            badge.style.display = 'none';
+        });
+
+        // Obtener todos los items de multimedia del contenedor unificado
+        const allMediaItems = Array.from(document.querySelectorAll('#multimediaContainer .multimedia-item')).filter(item => item.style.display !== 'none');
+
+        // Encontrar la primera imagen
+        const firstImage = allMediaItems.find(item => {
+            const tipo = item.dataset.mediaTipo || item.dataset.tipo;
+            return tipo === 'IMAGEN';
+        });
+
+        if (firstImage) {
+            let badge = firstImage.querySelector('.portada-badge');
+            if (!badge) {
+                // Crear badge si no existe
+                badge = document.createElement('div');
+                badge.className = 'portada-badge';
+                badge.innerHTML = '<i class="fas fa-star"></i><span>PORTADA</span>';
+                firstImage.insertBefore(badge, firstImage.firstChild);
+            }
+            badge.style.display = 'flex';
+        }
     }
 
     function showDireccionFields() {
@@ -85,10 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         calleInput.required = true;
         numeroInput.required = true;
 
-        provinciaGroup.style.display = 'flex';
-        localidadGroup.style.display = 'flex';
-        calleGroup.style.display = 'flex';
-        numeroGroup.style.display = 'flex';
+        document.querySelector('.direccion-fields').style.display = 'grid';
     }
 
     function showMapaFields() {
@@ -170,13 +286,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function removeExistingMedia(mediaId) {
         const itemDiv = document.querySelector(`.existing-item[data-media-id="${mediaId}"]`);
         if (itemDiv) {
-            // Marcar como eliminado
-            const eliminarFlag = itemDiv.querySelector('.eliminar-flag');
-            if (eliminarFlag) {
-                eliminarFlag.value = 'true';
-            }
             itemDiv.style.display = 'none';
             multimediaToDelete.push(mediaId);
+            console.log('Marcado para eliminar:', mediaId);
+            updatePortadaBadge();
         }
     }
 
@@ -194,10 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para resetear campos de ubicación
     function resetUbicacionFields() {
-        provinciaGroup.style.display = 'none';
-        localidadGroup.style.display = 'none';
-        calleGroup.style.display = 'none';
-        numeroGroup.style.display = 'none';
+        document.querySelector('.direccion-fields').style.display = 'none';
         mapaGroup.style.display = 'none';
         coordenadasDisplay.style.display = 'none';
 
@@ -273,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         multimediaInput.value = '';
+        updatePortadaBadge();
     });
 
     // Renderizar preview del archivo multimedia
@@ -280,6 +391,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'multimedia-item';
         itemDiv.dataset.fileId = fileId;
+        itemDiv.dataset.tipo = tipoContenido;
+        itemDiv.draggable = true;
 
         let previewContent = '';
 
@@ -296,11 +409,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         itemDiv.innerHTML = `
-            ${previewContent}
+            <div class="portada-badge" style="display: none;">
+                <i class="fas fa-star"></i>
+                <span>PORTADA</span>
+            </div>
+            <div class="drag-handle">
+                <i class="fas fa-grip-vertical"></i>
+            </div>
+            <div class="media-preview">
+                ${previewContent}
+            </div>
             <button type="button" class="remove-btn" data-file-id="${fileId}">&times;</button>
             <div class="file-info">
-                <strong>${tipoContenido}</strong><br>
-                ${file.name} (${formatFileSize(file.size)})
+                <strong>${tipoContenido}</strong>
+                <span>${file.name} (${formatFileSize(file.size)})</span>
             </div>
             <div class="file-desc">
                 <input type="text" 
@@ -311,7 +433,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        multimediaPreview.appendChild(itemDiv);
+        multimediaContainer.appendChild(itemDiv);
+
+        // Setup drag and drop para el nuevo item
+        setupDragAndDrop(itemDiv);
 
         // Event listener para el botón de eliminar
         itemDiv.querySelector('.remove-btn').addEventListener('click', function() {
@@ -345,6 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (video) URL.revokeObjectURL(video.src);
 
             itemDiv.remove();
+            updatePortadaBadge();
         }
     }
 
@@ -354,6 +480,70 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fileItem) {
             fileItem.descripcion = descripcion;
         }
+    }
+
+    // Preparar datos de multimedia existente antes de enviar
+    function prepararMultimediaExistente() {
+        const existingItems = document.querySelectorAll('.existing-item');
+        const ids = [];
+        const urls = [];
+        const tipos = [];
+        const descs = [];
+
+        existingItems.forEach(item => {
+            // Solo incluir items que NO están marcados para eliminar (display !== 'none')
+            if (item.style.display !== 'none') {
+                const mediaId = item.dataset.mediaId;
+                ids.push(mediaId);
+                urls.push(item.dataset.mediaUrl);
+                tipos.push(item.dataset.mediaTipo);
+
+                // Obtener la descripción del input (puede haber sido modificada)
+                const descInput = item.querySelector('.desc-input-existing');
+                const descripcion = descInput ? descInput.value : '';
+                descs.push(descripcion || '');
+
+                console.log(`Media ID ${mediaId}: descripción = "${descripcion}"`);
+            }
+        });
+
+        // Usar separador único que no aparezca en URLs
+        document.getElementById('multimediaExistenteIds').value = ids.join('|||');
+        document.getElementById('multimediaExistenteUrls').value = urls.join('|||');
+        document.getElementById('multimediaExistenteTipos').value = tipos.join('|||');
+        document.getElementById('multimediaExistenteDescs').value = descs.join('|||');
+        document.getElementById('multimediaEliminarIds').value = multimediaToDelete.join(',');
+
+        console.log('=== MULTIMEDIA EXISTENTE PREPARADA ===');
+        console.log('IDs:', ids);
+        console.log('URLs:', urls);
+        console.log('Tipos:', tipos);
+        console.log('Descripciones:', descs);
+        console.log('A eliminar:', multimediaToDelete);
+    }
+
+    // Preparar datos de multimedia nueva (respetando orden del DOM)
+    function prepararMultimediaNueva() {
+        const newItems = Array.from(document.querySelectorAll('#multimediaContainer .multimedia-item[data-file-id]'));
+
+        // Reordenar multimediaFiles según el orden en el DOM
+        const orderedFiles = [];
+
+        newItems.forEach(item => {
+            const fileId = item.dataset.fileId;
+            const fileItem = multimediaFiles.find(f => f.id === fileId);
+            if (fileItem) {
+                orderedFiles.push(fileItem);
+            }
+        });
+
+        // Actualizar multimediaFiles con el orden correcto
+        multimediaFiles = orderedFiles;
+
+        console.log('=== MULTIMEDIA NUEVA ORDENADA ===');
+        multimediaFiles.forEach((item, index) => {
+            console.log(`${index + 1}. ${item.tipoContenido} - ${item.file.name}`);
+        });
     }
 
     // Manejar envío del formulario
@@ -373,9 +563,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const actionUrl = form.getAttribute('action') || (esNuevo ? '/hechos/create' : '/hechos/editar');
         const fd = new FormData(form);
 
-        // Agregar archivos multimedia nuevos al FormData
-        // Spring espera listas paralelas, así que agregamos todos los archivos primero,
-        // luego todos los tipos, y finalmente todas las descripciones
+        // === MODO EDICIÓN: Preparar multimedia existente ===
+        if (!esNuevo) {
+            prepararMultimediaExistente();
+
+            // Agregar manualmente los campos ocultos actualizados
+            fd.set('multimediaExistenteIds', document.getElementById('multimediaExistenteIds').value);
+            fd.set('multimediaExistenteUrls', document.getElementById('multimediaExistenteUrls').value);
+            fd.set('multimediaExistenteTipos', document.getElementById('multimediaExistenteTipos').value);
+            fd.set('multimediaExistenteDescs', document.getElementById('multimediaExistenteDescs').value);
+            fd.set('multimediaEliminarIds', document.getElementById('multimediaEliminarIds').value);
+        }
+
+        // === AGREGAR NUEVOS ARCHIVOS MULTIMEDIA (en orden del DOM) ===
+        prepararMultimediaNueva();
+
         multimediaFiles.forEach((item) => {
             fd.append('multimedia', item.file);
         });
@@ -383,10 +585,18 @@ document.addEventListener('DOMContentLoaded', function() {
             fd.append('tipoContenido', item.tipoContenido);
         });
         multimediaFiles.forEach((item) => {
-            // Usar 'descripcionMultimedia' para diferenciar de la descripción del hecho
-            // Solo enviar descripción si tiene contenido, sino enviar cadena vacía
             fd.append('descripcionMultimedia', item.descripcion && item.descripcion.trim() ? item.descripcion.trim() : '');
         });
+
+        // DEBUG: Ver qué se está enviando
+        console.log('=== CONTENIDO DEL FORMDATA ===');
+        for (let pair of fd.entries()) {
+            if (pair[1] instanceof File) {
+                console.log(pair[0], ':', pair[1].name, `(${pair[1].size} bytes)`);
+            } else {
+                console.log(pair[0], ':', pair[1]);
+            }
+        }
 
         try {
             const response = await fetch(actionUrl, {
@@ -414,13 +624,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 let text = '';
                 try { text = await response.text(); } catch (err) {}
                 console.error('Error al procesar hecho:', response.status, text);
-                alert('No se pudo procesar el hecho. Estado: ' + response.status);
+                alert('No se pudo procesar el hecho. Estado: ' + response.status + '\n' + text);
             }
         } catch (err) {
             console.error('Fetch error:', err);
             const doFallback = confirm('No se pudo conectar con el servidor vía AJAX. ¿Intentar envío tradicional?');
             if (doFallback) {
-                // Crear un formulario temporal sin el listener
                 const tempForm = form.cloneNode(true);
                 form.parentNode.replaceChild(tempForm, form);
                 tempForm.submit();
@@ -450,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 multimediaFiles = [];
-                multimediaPreview.innerHTML = '';
+                multimediaContainer.querySelectorAll('.multimedia-item[data-file-id]').forEach(item => item.remove());
                 multimediaInput.value = '';
             } else {
                 // En modo edición, volver a los valores originales

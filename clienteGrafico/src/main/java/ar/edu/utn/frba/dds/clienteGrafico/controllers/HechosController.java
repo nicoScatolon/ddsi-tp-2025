@@ -1,16 +1,19 @@
 package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.TipoContenido;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.impl.WebApiCallerService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class HechosController {
     private final IFuenteDinamicaService fuenteDinamicaService;
     private final IFileSystemService fileSystemService;
     private final WebApiCallerService webApiCallerService;
+    private final IGestionUsuariosService gestionUsuariosService;
 
     @Value("${app.hechos.page.size}")
     private Integer pageSize;
@@ -161,12 +165,10 @@ public class HechosController {
                     contenido.setUrl(urlCompleta);
                 });
             }
-
-            ContribuyenteInputDTO creadorHecho = new ContribuyenteInputDTO();
-            creadorHecho.setId(hecho.getContribuyenteId());
-            creadorHecho.setNombre("AAAA");
-            creadorHecho.setApellido("BBBB");
-            //TODO obtener datos del usuario con el id desde el hecho --> pedir al servicio de usuarios el nombre, apellido linkeados al contribuyenteId que tiene el hecho
+            UsuarioInputDTO creadorHecho = new UsuarioInputDTO();
+            if (hecho.getContribuyenteId() != null) {
+                creadorHecho = gestionUsuariosService.obtenerUsuarioPorId(hecho.getContribuyenteId());
+            }
 
             List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
 
@@ -263,12 +265,35 @@ public class HechosController {
     public String editar(@PathVariable("id") Long id, Model model) {
         HechoDinamicaInputDTO hecho = fuenteDinamicaService.obtenerHechoDinamicaId(id);
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+
+        // Crear lista de multimedia con URLs completas SOLO para la vista
+        List<Map<String, Object>> multimediaParaVista = new ArrayList<>();
+
+        if (hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty()) {
+            for (int i = 0; i < hecho.getContenidoMultimedia().size(); i++) {
+                ContenidoMultimediaInputDTO contenido = hecho.getContenidoMultimedia().get(i);
+
+                Map<String, Object> mediaMap = new HashMap<>();
+                mediaMap.put("id", contenido.getId());
+                mediaMap.put("tipoContenido", contenido.getTipoContenido().toString());
+                mediaMap.put("descripcion", contenido.getDescripcion() != null ? contenido.getDescripcion() : "");
+                mediaMap.put("url", contenido.getUrl()); // URL ORIGINAL (relativa)
+                mediaMap.put("urlCompleta", fileSystemService.construirUrlMultimedia(contenido.getUrl())); // URL completa para vista
+                mediaMap.put("index", i);
+
+                multimediaParaVista.add(mediaMap);
+            }
+        }
 
         model.addAttribute("actionUrl", "/hechos/editar");
         model.addAttribute("esNuevo", false);
         model.addAttribute("categorias", categorias);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("hechoDTO", hecho);
+        model.addAttribute("multimediaExistente", multimediaParaVista);
         model.addAttribute("titulo", "Editar Hecho");
+
         return "hechos/create";
     }
 
@@ -278,6 +303,12 @@ public class HechosController {
             @RequestParam(value = "multimedia", required = false) List<MultipartFile> multimediaFiles,
             @RequestParam(value = "tipoContenido", required = false) List<String> tiposContenido,
             @RequestParam(value = "descripcionMultimedia", required = false) List<String> descripcionesMultimedia,
+            // Parámetros para multimedia existente
+            @RequestParam(value = "multimediaExistenteIds", required = false) String multimediaExistenteIds,
+            @RequestParam(value = "multimediaExistenteUrls", required = false) String multimediaExistenteUrls,
+            @RequestParam(value = "multimediaExistenteTipos", required = false) String multimediaExistenteTipos,
+            @RequestParam(value = "multimediaExistenteDescs", required = false) String multimediaExistenteDescs,
+            @RequestParam(value = "multimediaEliminarIds", required = false) String multimediaEliminarIds,
             Model model,
             HttpSession session) {
 
@@ -288,9 +319,48 @@ public class HechosController {
             }
             hechoDTO.setContribuyenteId(userId);
 
-            // Procesar nuevos archivos multimedia
+
+            // Lista final de multimedia
+            List<ContenidoMultimediaOutputDTO> multimediaFinal = new ArrayList<>();
+
+            // PROCESAR MULTIMEDIA EXISTENTE
+            Set<Long> idsAEliminar = new HashSet<>();
+            if (multimediaEliminarIds != null && !multimediaEliminarIds.isEmpty()) {
+                String[] idsArray = multimediaEliminarIds.split(",");
+                for (String id : idsArray) {
+                    if (!id.trim().isEmpty()) {
+                        idsAEliminar.add(Long.parseLong(id.trim()));
+                    }
+                }
+            }
+
+            if (multimediaExistenteIds != null && !multimediaExistenteIds.isEmpty()) {
+                String[] ids = multimediaExistenteIds.split("\\|\\|\\|");
+                String[] urls = multimediaExistenteUrls != null ? multimediaExistenteUrls.split("\\|\\|\\|") : new String[0];
+                String[] tipos = multimediaExistenteTipos != null ? multimediaExistenteTipos.split("\\|\\|\\|") : new String[0];
+                String[] descs = multimediaExistenteDescs != null ? multimediaExistenteDescs.split("\\|\\|\\|", -1) : new String[0];
+
+
+                for (int i = 0; i < ids.length; i++) {
+                    Long mediaId = Long.parseLong(ids[i].trim());
+
+                    // Si NO está marcado para eliminar, mantenerlo
+                    if (!idsAEliminar.contains(mediaId)) {
+                        ContenidoMultimediaOutputDTO contenido = new ContenidoMultimediaOutputDTO();
+                        contenido.setId(mediaId);
+                        contenido.setUrl(i < urls.length ? urls[i].trim() : ""); // URL ORIGINAL
+                        contenido.setTipoContenido(i < tipos.length ? TipoContenido.valueOf(tipos[i].trim()) : TipoContenido.IMAGEN);
+                        contenido.setDescripcion(i < descs.length && !descs[i].trim().isEmpty() ? descs[i].trim() : null);
+
+                        multimediaFinal.add(contenido);
+                    } else {
+                        // fileSystemService.eliminarArchivo(urls[i]); //Todo
+                    }
+                }
+            }
+
+            // PROCESAR NUEVOS ARCHIVOS
             if (multimediaFiles != null && !multimediaFiles.isEmpty()) {
-                // Filtrar archivos vacíos
                 List<MultipartFile> archivosValidos = new ArrayList<>();
                 List<String> tiposValidos = new ArrayList<>();
                 List<String> descripcionesValidas = new ArrayList<>();
@@ -302,9 +372,10 @@ public class HechosController {
 
                         if (tiposContenido != null && i < tiposContenido.size()) {
                             tiposValidos.add(tiposContenido.get(i));
+                        } else {
+                            tiposValidos.add("IMAGEN");
                         }
 
-                        // Convertir descripciones vacías a null
                         if (descripcionesMultimedia != null && i < descripcionesMultimedia.size()) {
                             String desc = descripcionesMultimedia.get(i);
                             String descripcionFinal = (desc == null || desc.trim().isEmpty()) ? null : desc.trim();
@@ -316,24 +387,24 @@ public class HechosController {
                 }
 
                 if (!archivosValidos.isEmpty()) {
-                    System.out.println("Archivos válidos a procesar: " + archivosValidos.size());
-                    List<ContenidoMultimediaOutputDTO> contenidoList =
+                    List<ContenidoMultimediaOutputDTO> contenidoNuevo =
                             fileSystemService.guardarContenidoMultimedia(
                                     archivosValidos,
                                     tiposValidos,
                                     descripcionesValidas
                             );
-                    // Reemplazar toda la multimedia con la nueva
-                    hechoDTO.setContenidoMultimedia(contenidoList);
-                }
-            } else {
-                // Si no hay archivos nuevos, mantener la lista existente o vacía
-                if (hechoDTO.getContenidoMultimedia() == null) {
-                    hechoDTO.setContenidoMultimedia(new ArrayList<>());
+
+                    // Agregar los nuevos a la lista final
+                    multimediaFinal.addAll(contenidoNuevo);
                 }
             }
 
+            // Asignar la lista final al DTO
+            hechoDTO.setContenidoMultimedia(multimediaFinal);
+
+            // Guardar los cambios
             fuenteDinamicaService.editarHecho(hechoDTO);
+
             return "redirect:/hechos/fuenteDinamica/" + hechoDTO.getId();
 
         } catch (Exception e) {
