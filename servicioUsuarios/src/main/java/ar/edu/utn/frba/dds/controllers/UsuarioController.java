@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.controllers;
 
 import ar.edu.utn.frba.dds.models.dtos.RegistroUsuarioDTO;
+import ar.edu.utn.frba.dds.models.dtos.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.models.dtos.UsuarioMapper;
 import ar.edu.utn.frba.dds.models.dtos.UsuarioResponseDTO;
 import ar.edu.utn.frba.dds.models.entities.Rol;
@@ -32,6 +33,15 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponse(u));
     }
 
+    @PutMapping({"{id}"})
+    public ResponseEntity<?> actualizarUsuario(@PathVariable("id") Long id, @RequestBody UsuarioInputDTO usuarioDTO) {
+        try{
+            Usuario u = usuarioService.actualizarUsuario(id,usuarioDTO);
+            return ResponseEntity.ok(UsuarioMapper.toResponse(u));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
     @GetMapping("/publica/{id}")
     public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Long id) {

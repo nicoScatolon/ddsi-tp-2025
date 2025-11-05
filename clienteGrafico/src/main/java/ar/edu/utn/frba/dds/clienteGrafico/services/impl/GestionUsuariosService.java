@@ -96,9 +96,9 @@ public class GestionUsuariosService implements IGestionUsuariosService {
         return response;
     }
 
-    /*
+
     @Override
-    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioOutputDTO usuarioDTO) {
         UsuarioResponseDTO response = webApiCallerService.put(
                 authServiceUrl + "/usuarios/" + id,
                 usuarioDTO,
@@ -108,7 +108,7 @@ public class GestionUsuariosService implements IGestionUsuariosService {
             throw new RuntimeException("Error al actualizar usuario en el servicio externo");
         }
         return response;
-    }*/
+    }
 
     @Override
     public void eliminarUsuario(Long id) { //Todo revisar servUsuarios

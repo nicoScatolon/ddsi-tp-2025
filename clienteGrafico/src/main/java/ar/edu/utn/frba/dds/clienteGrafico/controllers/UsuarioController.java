@@ -15,10 +15,12 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -84,6 +86,60 @@ public class UsuarioController {
         Long usuarioId = (Long) session.getAttribute("userId");
 
         return "redirect:/profile/" + usuarioId;
+    }
+
+    @PostMapping("/profile/update")
+    public String perfil(
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("email") String email,
+            @RequestParam(value="birthDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate birthDate,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Long userId = (Long) session.getAttribute("userId");
+
+        try{
+            UsuarioOutputDTO usuarioDTO = UsuarioOutputDTO.builder()
+                    .nombre(firstName)
+                    .apellido(lastName)
+                    .email(email)
+                    .fechaNacimiento(birthDate)
+                    .build();
+
+            gestionUsuariosService.actualizarUsuario(userId,usuarioDTO);
+            redirectAttributes.addFlashAttribute("success", "Usuario actualizado con éxito ✅");
+
+        }catch(Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/profile/"+userId;
+
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmNewPassword") String confirmPassword,
+            HttpSession session,
+            RedirectAttributes redirectAttributes){
+        Long userId = (Long) session.getAttribute("userId");
+
+        try{
+            UsuarioOutputDTO usuarioDTO = UsuarioOutputDTO.builder()
+                    .currentPassword(currentPassword)
+                    .newPassword(newPassword)
+                    .confirmNewPassword(confirmPassword)
+                    .build();
+            gestionUsuariosService.actualizarUsuario(userId,usuarioDTO);
+            redirectAttributes.addFlashAttribute("success","Contraseña actualizada correctamente 🔐");
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/profile/"+userId;
     }
 
     @GetMapping("/mis-hechos")
