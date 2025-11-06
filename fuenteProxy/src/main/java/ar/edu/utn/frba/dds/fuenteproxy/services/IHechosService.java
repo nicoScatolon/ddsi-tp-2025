@@ -23,4 +23,6 @@ public interface IHechosService {
     Mono<Void> cargarHechosFuente(Fuente fuente);
 
     void actualizarHechosScheduler();
+
+    void eliminarHechosDeFuente(Long idFuente);
 }

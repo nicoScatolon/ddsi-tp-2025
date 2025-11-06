@@ -112,5 +112,13 @@ public class Hecho {
             }
         }
     }
+
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaDeCarga == null) {
+            fechaDeCarga = LocalDateTime.now();
+        }
+    }
 }
 

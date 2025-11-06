@@ -30,8 +30,8 @@ public class FuentesController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/fuentes/dds")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PostMapping("/dds")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> agregarFuenteDDS(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteDDS(dto);
         return ResponseEntity.accepted().build();
