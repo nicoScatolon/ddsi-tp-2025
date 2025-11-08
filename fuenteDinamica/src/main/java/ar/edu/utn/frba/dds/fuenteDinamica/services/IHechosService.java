@@ -17,4 +17,5 @@ public interface IHechosService {
     List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado, Integer page);
     ResponseEntity<HechoOutputDTO> getHechoById(Long idHecho);
     List<HechoOutputDTO> getHechosUsuario (Long userId, EstadoHecho estado, Integer page);
+    List<HechoOutputDTO> getHechosForAgregador(LocalDateTime fechaDeCarga);
 }

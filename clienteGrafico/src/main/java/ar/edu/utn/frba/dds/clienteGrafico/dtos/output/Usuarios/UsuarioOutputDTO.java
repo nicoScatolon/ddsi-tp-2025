@@ -15,7 +15,8 @@ public class UsuarioOutputDTO {
     String nombre;
     String apellido;
     String email;
-    String password;
-    String confirmPassword;
+    String currentPassword;
+    String newPassword;
+    String confirmNewPassword;
     LocalDate fechaNacimiento;
 }

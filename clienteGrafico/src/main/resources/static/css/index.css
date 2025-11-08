@@ -29,6 +29,12 @@ main, .container, .content-wrapper {
     background: transparent !important;
 }
 
+/* Resetear padding del main en homepage */
+body:has(#home) main {
+    padding-top: 0 !important;
+    margin: 0 !important;
+}
+
 /* --- HEADER --- */
 header {
     background: rgba(0, 0, 0, 0.6);
@@ -45,6 +51,9 @@ header {
 
 nav {
     font-weight: 500;
+}
+footer {
+    display: none;
 }
 
 /* --- HERO / HOME --- */
@@ -131,7 +140,7 @@ nav {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 6rem 2rem;
+    padding: 2rem;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     background: transparent;

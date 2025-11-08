@@ -10,6 +10,7 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +82,7 @@ public class FuentesService implements IFuentesService {
         */
     }
 
+    @Transactional
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");
@@ -89,21 +91,29 @@ public class FuentesService implements IFuentesService {
         List<Fuente> fuentesActualizadas = new ArrayList<>();
         List<Hecho> hechosAActualizar = new ArrayList<>();
         for (Fuente fuente : fuentes){
-            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
-            logger.info("Fuente actualizada {}", fuente.getTipo());
-            if (hechosFuente != null && !hechosFuente.isEmpty()){
+            List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
+
+            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
+            logger.info("Fuente {} actualizada con {} hechos", fuente.getId(), hechosFuente.size());
+
+            if (!hechosFuente.isEmpty()){
                 hechosAActualizar.addAll(hechosFuente);
                 fuentesActualizadas.add(fuente);
             }
         }
-        this.hechosService.actualizarHechosRepository(hechosAActualizar);
+        if (!hechosAActualizar.isEmpty()){
+            this.hechosService.actualizarHechosRepository(hechosAActualizar);
+        }
+        if (!fuentesActualizadas.isEmpty()){
+            coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
+        }
 
-        coleccionesService.notificarActualizacionFuentes(fuentesActualizadas);
     }
 
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
         Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
-        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos();
+        List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
+        List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
         logger.info("Fuente actualizada {}", fuente.getTipo());
 
         if (hechosFuente != null && !hechosFuente.isEmpty()){

@@ -63,9 +63,8 @@ public class Hecho {
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
-    @Builder.Default
-    @Column (name = "contribuyenteId")
-    private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios
+    @Column(name = "contribuyente_id")
+    private Long contribuyenteId;
 
     @Builder.Default
     @Column (name= "cargado-anonimamente")
@@ -98,9 +97,20 @@ public class Hecho {
         titulo = hechoNuevo.getTitulo();
         descripcion = hechoNuevo.getDescripcion();
         categoria = hechoNuevo.getCategoria();
+        ubicacion = hechoNuevo.getUbicacion();
         fechaDeOcurrencia = hechoNuevo.getFechaDeOcurrencia();
         fechaDeCarga = hechoNuevo.getFechaDeCarga();
-        contenidoMultimedia = hechoNuevo.getContenidoMultimedia();
+        contribuyenteId = hechoNuevo.getContribuyenteId();
+        if (hechoNuevo.cargadoAnonimamente != null) {
+            cargadoAnonimamente = hechoNuevo.getCargadoAnonimamente();
+        }
+        if (hechoNuevo.contenidoMultimedia != null) {
+            this.contenidoMultimedia.clear();
+            for (ContenidoMultimedia contenidoNuevo : hechoNuevo.getContenidoMultimedia()) {
+                contenidoNuevo.setHecho(this);
+                this.contenidoMultimedia.add(contenidoNuevo);
+            }
+        }
     }
 }
 

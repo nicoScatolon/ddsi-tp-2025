@@ -136,6 +136,27 @@ public class HechosService implements IHechosService {
     // API privada //
 
     @Override
+    public List<HechoOutputDTO> getHechosForAgregador(LocalDateTime fechaDeGestion) {
+        // Devuelvo los hechos segun los necesita el agregador
+        // Solo devuelvo Aceptados que tengan aceptacion posterior a la fecha de carga pasada por parametro
+
+        Specification<Hecho> spec = Specification.where(null);
+        spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("estado"), EstadoHecho.ACEPTADO));
+
+        if (fechaDeGestion != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.greaterThan(root.get("fechaDeGestion"), fechaDeGestion));
+        }
+
+        List<HechoOutputDTO> hechoOutputDTOS = hechosRepository.findAll(spec)
+                .stream()
+                .map(this::hechoOutputDTO)
+                .toList();
+        return hechoOutputDTOS;
+    }
+
+    @Override
     @Transactional
     public ResponseEntity<HechoOutputDTO> revisarHecho(Long idAdmin, RevisionHechoInputDTO revisionHechoDTO) {
         Long idHecho = revisionHechoDTO.getIdHecho();
@@ -166,7 +187,7 @@ public class HechosService implements IHechosService {
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
                 .contribuyenteId(hechoDTO.getContribuyenteId())
-                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : false )
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : true )
                 .build();
     }
 

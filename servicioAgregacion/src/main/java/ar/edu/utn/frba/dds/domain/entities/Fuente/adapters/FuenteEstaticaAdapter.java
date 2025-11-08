@@ -19,8 +19,8 @@ public class FuenteEstaticaAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<Hecho> actualizarHechos() {
-        return fuenteEstatica.updateHechos();
+    public List<Hecho> actualizarHechos(List<Hecho> hechosFuente) {
+        return fuenteEstatica.updateHechos(hechosFuente);
     }
 
     @Override

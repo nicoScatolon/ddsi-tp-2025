@@ -1,8 +1,3 @@
-/* =========================
-   MetaMapa - styles.css
-   Versión: limpia - solo desktop
-   ========================= */
-
 :root{
     --color-primary: #2F60F4;
     --color-accent:  #1746D2;
@@ -207,39 +202,149 @@ nav {
 }
 
 /* =========================
-   DESKTOP USER BUTTON & DROPDOWN
+   DESKTOP LOGIN BUTTON & DROPDOWN (VISUALIZADOR - NO AUTENTICADO)
+   ========================= */
+#desktopLoginContainer {
+    position: relative;
+}
+
+/* Botón de Visualizador - Verde azulado */
+.btn-visualizador {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    color: #059669;
+    border: 2px solid #059669;
+    border-radius: var(--radius-lg);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    transition: all .18s ease;
+}
+
+.btn-visualizador:hover {
+    background: #059669;
+    color: var(--white);
+    border-color: var(--white);
+    transform: translateY(-1px);
+}
+
+#desktopLoginDropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    display: none;
+    min-width: 200px;
+    background: linear-gradient(180deg, #10b981, #059669);
+    border-radius: 12px;
+    padding: 8px;
+    z-index: 4000;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.18);
+    overflow: hidden;
+}
+
+.dropdown-login-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    color: var(--white);
+    background: rgba(255,255,255,0.1);
+    margin: 4px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all .18s ease;
+    border: 2px solid transparent;
+}
+
+.dropdown-login-link:hover {
+    background: var(--white);
+    color: #059669;
+    border-color: #059669;
+    transform: translateX(4px);
+}
+
+.dropdown-login-link i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* =========================
+   DESKTOP USER BUTTON & DROPDOWN (AUTENTICADO)
    ========================= */
 #desktopUserContainer {
     position: relative;
 }
 
-/* Botón de usuario (igual estilo que +Create) */
+/* Botón base de usuario - estilo compartido */
 #desktopUserBtn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    border-radius: var(--radius-lg);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    transition: all .18s ease;
+    font-weight: 500;
+}
+
+/* CONTRIBUYENTE - Azul (color principal del sitio) */
+.btn-user-contribuyente {
     background: var(--color-accent);
     color: var(--white);
     border: 2px solid var(--color-accent);
-    border-radius: var(--radius-lg);
-    padding: 0.4rem 0.8rem;
-    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
-    transition: all .18s ease;
 }
 
-#desktopUserBtn:hover {
+.btn-user-contribuyente:hover {
     background: var(--white);
     color: var(--color-accent);
     border-color: var(--color-accent);
     transform: translateY(-1px);
 }
 
-#desktopUserBtn img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--white);
-    object-fit: cover;
+/* ADMIN - Naranja */
+.btn-user-admin {
+    background: #f97316;
+    color: var(--white);
+    border: 2px solid #f97316;
+}
+
+.btn-user-admin:hover {
+    background: var(--white);
+    color: #f97316;
+    border-color: #f97316;
+    transform: translateY(-1px);
+}
+
+.btn-user-admin i {
+    color: var(--white);
+}
+
+.btn-user-admin:hover i {
+    color: #f97316;
+}
+
+/* ADMIN SUPERIOR - Dorado/Oro */
+.btn-user-adminsuperior {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #78350f;
+    border: 2px solid #f59e0b;
+}
+
+.btn-user-adminsuperior:hover {
+    background: var(--white);
+    color: #f59e0b;
+    border-color: #f59e0b;
+    transform: translateY(-1px);
+}
+
+.btn-user-adminsuperior i {
+    color: #78350f;
+}
+
+.btn-user-adminsuperior:hover i {
+    color: #f59e0b;
 }
 
 /* Dropdown */

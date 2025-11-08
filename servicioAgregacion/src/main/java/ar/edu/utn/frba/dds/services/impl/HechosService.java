@@ -143,8 +143,6 @@ public class HechosService implements IHechosService {
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-        // 2) Limpiar contribuyente_id inválidos
-        limpiarContribuyentesInvalidos(hechosActualizados);
 
         // 3) Preparar ubicaciones y filtrar las que ya tienen provincia
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
@@ -195,18 +193,6 @@ public class HechosService implements IHechosService {
         logger.info("Persistencia terminada en {} ms", System.currentTimeMillis() - t0);
     }
 
-    private void limpiarContribuyentesInvalidos(List<Hecho> hechos) {
-        int limpiados = 0;
-        for (Hecho hecho : hechos) {
-            if (hecho.getContribuyenteId() != null) {
-                hecho.setContribuyenteId(null);
-                limpiados++;
-            }
-        }
-        if (limpiados > 0) {
-            logger.info("Se limpiaron {} contribuyente_id", limpiados);
-        }
-    }
 
     @Override
     @Transactional

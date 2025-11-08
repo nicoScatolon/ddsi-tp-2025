@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
     <link rel="stylesheet" th:href="@{/css/admin-panel/base.css}">
@@ -11,39 +11,88 @@
         <ul class="sidebar-menu">
             <!-- Resumen Actividad -->
             <li class="menu-item" th:classappend="${contentTemplate == 'actividad'} ? 'active'">
-                <a th:if="${contentTemplate != 'actividad'}" href="/admin/actividad">Resumen Actividad</a>
-                <span th:if="${contentTemplate == 'actividad'}" class="menu-link-disabled">Resumen Actividad</span>
+                <a th:if="${contentTemplate != 'actividad'}" href="/admin/actividad">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Resumen Actividad</span>
+                </a>
+                <span th:if="${contentTemplate == 'actividad'}" class="menu-link-disabled">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Resumen Actividad</span>
+                </span>
             </li>
 
             <!-- Importar Hechos -->
             <li class="menu-item" th:classappend="${contentTemplate == 'importar-hechos'} ? 'active'">
-                <a th:if="${contentTemplate != 'importar-hechos'}" href="/admin/importar">Importar Hechos</a>
-                <span th:if="${contentTemplate == 'importar-hechos'}" class="menu-link-disabled">Importar Hechos</span>
+                <a th:if="${contentTemplate != 'importar-hechos'}" href="/admin/importar">
+                    <i class="fas fa-file-import"></i>
+                    <span>Importar Hechos</span>
+                </a>
+                <span th:if="${contentTemplate == 'importar-hechos'}" class="menu-link-disabled">
+                    <i class="fas fa-file-import"></i>
+                    <span>Importar Hechos</span>
+                </span>
             </li>
 
             <!-- Gestión de Hechos -->
             <li class="menu-item" th:classappend="${contentTemplate == 'gestion-hechos'} ? 'active'">
-                <a th:if="${contentTemplate != 'gestion-hechos'}" href="/admin/hechos">Gestión de Hechos</a>
-                <span th:if="${contentTemplate == 'gestion-hechos'}" class="menu-link-disabled">Gestión de Hechos</span>
+                <a th:if="${contentTemplate != 'gestion-hechos'}" href="/admin/hechos">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Gestión de Hechos</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-hechos'}" class="menu-link-disabled">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Gestión de Hechos</span>
+                </span>
             </li>
 
             <!-- Gestión de Colecciones -->
             <li class="menu-item" th:classappend="${contentTemplate == 'gestion-colecciones'} ? 'active'">
-                <a th:if="${contentTemplate != 'gestion-colecciones'}" href="/admin/colecciones">Gestión de Colecciones</a>
-                <span th:if="${contentTemplate == 'gestion-colecciones'}" class="menu-link-disabled">Gestión de Colecciones</span>
+                <a th:if="${contentTemplate != 'gestion-colecciones'}" href="/admin/colecciones">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Gestión de Colecciones</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-colecciones'}" class="menu-link-disabled">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Gestión de Colecciones</span>
+                </span>
             </li>
 
             <!-- Solicitudes de Eliminación -->
             <li class="menu-item" th:classappend="${contentTemplate == 'solicitudes-eliminacion'} ? 'active'">
-                <a th:if="${contentTemplate != 'solicitudes-eliminacion'}" href="/admin/solicitudes">Solicitudes de Eliminación</a>
-                <span th:if="${contentTemplate == 'solicitudes-eliminacion'}" class="menu-link-disabled">Solicitudes de Eliminación</span>
+                <a th:if="${contentTemplate != 'solicitudes-eliminacion'}" href="/admin/solicitudes">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Solicitudes de Eliminación</span>
+                </a>
+                <span th:if="${contentTemplate == 'solicitudes-eliminacion'}" class="menu-link-disabled">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Solicitudes de Eliminación</span>
+                </span>
             </li>
 
             <!-- Gestión de Categorías -->
             <li class="menu-item" th:classappend="${contentTemplate == 'gestion-categorias'} ? 'active'">
-                <a th:if="${contentTemplate != 'gestion-categorias'}" href="/admin/categorias">Gestión de Categorías</a>
-                <span th:if="${contentTemplate == 'gestion-categorias'}" class="menu-link-disabled">Gestión de Categorías</span>
+                <a th:if="${contentTemplate != 'gestion-categorias'}" href="/admin/categorias">
+                    <i class="fas fa-tags"></i>
+                    <span>Gestión de Categorías</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-categorias'}" class="menu-link-disabled">
+                    <i class="fas fa-tags"></i>
+                    <span>Gestión de Categorías</span>
+                </span>
             </li>
+
+            <sec:authorize access="hasRole('ADMIN_SUPERIOR')">
+                <li class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
+                    <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Gestión de Usuarios</span>
+                    </a>
+                    <span th:if="${contentTemplate == 'gestion-usuarios'}" class="menu-link-disabled">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Gestión de Usuarios</span>
+                    </span>
+                </li>
+            </sec:authorize>
         </ul>
     </aside>
 
@@ -56,6 +105,7 @@
 </div>
 
 <th:block th:fragment="jsExtra">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/gestion-hechos.js}"></script>
     <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/importar-hechos.js}"></script>
     <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/gestion-categorias.js}"></script>

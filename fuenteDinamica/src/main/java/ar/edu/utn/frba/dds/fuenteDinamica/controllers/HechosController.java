@@ -46,6 +46,15 @@ public class HechosController {
         return hechosService.getHechos(fechaDeCarga, estado, page);
     }
 
+    @GetMapping("/privada")
+    @PreAuthorize("permitAll()")
+    public List<HechoOutputDTO> obtenerHechosPrivada(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeGestion)
+    {
+        // se llama privada para diferenciarla de la otra, la diferencia esta en como filtra los hechos.
+        return hechosService.getHechosForAgregador(fechaDeGestion);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {

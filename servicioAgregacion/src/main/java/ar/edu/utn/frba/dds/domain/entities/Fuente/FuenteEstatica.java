@@ -46,11 +46,12 @@ public class FuenteEstatica extends Fuente {
         mapHechos = new HashMap<>();
     }
 
-    public List<Hecho> updateHechos(){
+    public List<Hecho> updateHechos(List<Hecho> hechosPersistidosFuente){
         List<HechoInputEstaticaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
         List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
-        this.actualizarHechos(nuevosHechos);
+
+        this.actualizarHechos(nuevosHechos, hechosPersistidosFuente);
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
@@ -79,16 +80,18 @@ public class FuenteEstatica extends Fuente {
 
     }
 
-    public void actualizarHechos(List<Hecho> hechosNuevos) {
-        for (Hecho hechoActual : hechosNuevos) {
-            Hecho hechoExistente = mapHechos.get(hechoActual.getOrigenId());
+    public void actualizarHechos(List<Hecho> hechosNuevos, List<Hecho> hechosPersistidosFuente){
+        List<Long> listaOrigenesId = hechosPersistidosFuente.stream().map(Hecho::getOrigenId).toList();
 
-            if (hechoExistente == null) {
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
-            } else {
-                hechoActual.setId(hechoExistente.getId());
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
+        for (Hecho hechoActual : hechosNuevos){
+            if ( listaOrigenesId.contains( hechoActual.getOrigenId() ) ) { // si el origenId ya esta en la base de datos, es que estoy actualizando
+                Hecho hechoExistente = hechosPersistidosFuente.stream()
+                        .filter(h -> Objects.equals(h.getOrigenId(), hechoActual.getOrigenId()))
+                        .findFirst()
+                        .get(); // por la verificacion anterior, no puede ser nulo
+                hechoExistente.actualizarse(hechoActual);
             }
+            // Si el hecho ya existe lo actualizamos (le ponemos el id del existente), y sino lo cargamos normalmente
         }
     }
 }
