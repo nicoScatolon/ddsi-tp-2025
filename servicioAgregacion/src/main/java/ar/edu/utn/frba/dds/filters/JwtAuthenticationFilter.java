@@ -45,6 +45,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 
         return p.startsWith("/v3/api-docs")
                 || p.equals("/api/colecciones/publica")
+                || p.equals("/api/colecciones/privada")
                 || p.startsWith("/api/colecciones/publica/")
                 || p.equals("/api/hechos/publica")
                 || p.startsWith("/api/hechos/publica/")

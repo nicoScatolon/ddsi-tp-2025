@@ -21,12 +21,13 @@ public class CategoriasService implements ICategoriasService {
 
     private final WebClient webClient;
 
-    @Value("agregador.base-url")
-    private String urlAgregador;
+    @Value("${agregador.base-url}") private String urlAgregador;
 
-    public CategoriasService(ICategoriasRepository categoriasRepository) {
+    public CategoriasService(ICategoriasRepository categoriasRepository, WebClient.Builder webClientBuilder,
+                             @Value("${agregador.base-url}") String urlAgregador) {
         this.categoriasRepository = categoriasRepository;
-        this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
+        this.urlAgregador = urlAgregador;
+        this.webClient = webClientBuilder.baseUrl(urlAgregador).build();
     }
 
     public Categoria findById(String idCategoria) {
@@ -37,7 +38,7 @@ public class CategoriasService implements ICategoriasService {
     @Transactional
     public void actualizarCategorias(){
         List<CategoriaInputDTO> categoriasDTO = webClient.get()
-                .uri("/api/categorias")
+                .uri("/api/privada/categorias")
                 .retrieve()
                 .bodyToFlux(CategoriaInputDTO.class)
                 .collectList()
@@ -50,7 +51,7 @@ public class CategoriasService implements ICategoriasService {
         // Busco por cambios y nuevas categorias
         for (CategoriaInputDTO categoriaDTO : categoriasDTO) {
             var categoriaExistente = categoriasExistentes.stream()
-                    .filter(c -> c.getId().equals(categoriaDTO.getId()))
+                    .filter(c -> c.getCodigoCategoria().equals(categoriaDTO.getCodigoCategoria()))
                     .findFirst();
 
             categoriaExistente.ifPresentOrElse(categoria -> {
@@ -71,10 +72,10 @@ public class CategoriasService implements ICategoriasService {
         }
 
         //ahora busco las que fueron eliminadas -> no me llegaron cuando las pedi
-        List<String> idsDTOs = categoriasDTO.stream().map(CategoriaInputDTO::getId).toList();
+        List<String> idsDTOs = categoriasDTO.stream().map(CategoriaInputDTO::getCodigoCategoria).toList();
 
         categoriasExistentes.stream()
-                .filter( c -> ! idsDTOs.contains(c.getId()) )
+                .filter( c -> ! idsDTOs.contains(c.getCodigoCategoria()) )
                 .forEach(categoriasRepository::delete);
     }
 
@@ -89,7 +90,7 @@ public class CategoriasService implements ICategoriasService {
         // Busco por cambios y nuevas categorias
         for (Categoria categoriaInput : categorias) {
             var categoriaExistente = categoriasExistentes.stream()
-                    .filter(c -> c.getId().equals(categoriaInput.getId()))
+                    .filter(c -> c.getCodigoCategoria().equals(categoriaInput.getCodigoCategoria()))
                     .findFirst();
 
             categoriaExistente.ifPresentOrElse(categoria -> {
@@ -110,10 +111,10 @@ public class CategoriasService implements ICategoriasService {
         }
 
         //ahora busco las que fueron eliminadas -> no me llegaron cuando las pedi
-        List<String> idsDTOs = categorias.stream().map(Categoria::getId).toList();
+        List<String> idsDTOs = categorias.stream().map(Categoria::getCodigoCategoria).toList();
 
         categoriasExistentes.stream()
-                .filter( c -> ! idsDTOs.contains(c.getId()) )
+                .filter( c -> ! idsDTOs.contains(c.getCodigoCategoria()) )
                 .forEach(categoriasRepository::delete);
     }
 }

@@ -26,26 +26,30 @@ public class EstadisticasFacade implements IEstadisticasFacade {
 
     private final WebApiCallerService webApi;
 
-    @Value("${services.estadisticas.base-url}")
-    private String baseUrl; // ej: http://servicio-estadisticas:8080/api/estadisticas
+    @Value("${servicio.estadisticas.url}")
+    private String baseUrl;
+
+    private String api(String path) {
+        // siempre cuelgo de /api/estadisticas
+        return baseUrl + "/api/estadisticas" + path;
+    }
 
     @Override
     public PanelActividadViewDTO getPanelActividad(String coleccion) {
         try {
-            // Endpoints del micro (ajustá a tus rutas reales)
-            String urlMayorProvCat       = baseUrl + "/mayor-provincia-por-categoria?coleccion=" + coleccion;
-            String urlMayorProvColeccion = baseUrl + "/mayor-provincia-por-coleccion?coleccion=" + coleccion;
-            String urlSolicitudesSpam    = baseUrl + "/solicitudes-eliminacion?coleccion=" + coleccion;
+            String urlMayorProvCat       = baseUrl + "/mayor_provincia_por_categoria?coleccion=" + coleccion;
+            String urlMayorProvColeccion = baseUrl + "/mayor_provincia_por_coleccion?coleccion=" + coleccion;
+            String urlSolicitudesSpam    = baseUrl + "/solicitudes_eliminacion?coleccion=" + coleccion;
 
             // Llamadas HTTP
             List<MayorProvPorCatInputDTO> mayorPorCat =
                     webApi.getList(urlMayorProvCat, MayorProvPorCatInputDTO.class);
 
             MayorProvPorColeccionInputDTO mayorPorColeccion =
-                    webApi.getPublic(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
+                    webApi.get(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
 
             SolicitudesSpamInputDTO spamRaw =
-                    webApi.getPublic(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
+                    webApi.get(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
 
             // Derivados para la vista
             List<ParClaveValorDTO> porCategoria = (mayorPorCat == null ? Collections.<MayorProvPorCatInputDTO>emptyList() : mayorPorCat)

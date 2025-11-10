@@ -2,7 +2,9 @@ package ar.edu.utn.frba.dds.schedulers;
 
 import ar.edu.utn.frba.dds.services.IEstadisticasService;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EstadisticasScheduler {
     private final IEstadisticasService estadisticasService;
 

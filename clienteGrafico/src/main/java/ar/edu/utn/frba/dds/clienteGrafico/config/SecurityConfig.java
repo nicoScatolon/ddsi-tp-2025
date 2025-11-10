@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/hechos", "/hechos/create", "/hechos/{id}", "/hechos/map", "/hechos/fuenteDinamica/**") .permitAll()
                         .requestMatchers(HttpMethod.GET, "/colecciones", "/colecciones/{handle}").permitAll()
                         .requestMatchers("/solicitudesEliminacion").permitAll()
+
                         // Rutas Admin
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
