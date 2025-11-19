@@ -33,7 +33,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponse(u));
     }
 
-    @PutMapping({"{id}"})
+    @PutMapping({"/{id}"})
     public ResponseEntity<?> actualizarUsuario(@PathVariable("id") Long id, @RequestBody UsuarioInputDTO usuarioDTO) {
         try{
             Usuario u = usuarioService.actualizarUsuario(id,usuarioDTO);

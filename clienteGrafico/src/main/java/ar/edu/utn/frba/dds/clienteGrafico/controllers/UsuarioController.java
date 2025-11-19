@@ -88,35 +88,22 @@ public class UsuarioController {
         return "redirect:/profile/" + usuarioId;
     }
 
-    @PostMapping("/profile/update")
+    @PostMapping("/profile")
     public String perfil(
-            @RequestParam("firstName") String firstName,
-            @RequestParam("lastName") String lastName,
-            @RequestParam("email") String email,
-            @RequestParam(value="birthDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate birthDate,
+            @ModelAttribute UsuarioOutputDTO usuario,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
         Long userId = (Long) session.getAttribute("userId");
 
         try{
-            UsuarioOutputDTO usuarioDTO = UsuarioOutputDTO.builder()
-                    .nombre(firstName)
-                    .apellido(lastName)
-                    .email(email)
-                    .fechaNacimiento(birthDate)
-                    .build();
-
-            gestionUsuariosService.actualizarUsuario(userId,usuarioDTO);
+            gestionUsuariosService.actualizarUsuario(userId,usuario);
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado con éxito ✅");
 
         }catch(Exception e){
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/profile/"+userId;
-
     }
 
     @PostMapping("/profile/change-password")

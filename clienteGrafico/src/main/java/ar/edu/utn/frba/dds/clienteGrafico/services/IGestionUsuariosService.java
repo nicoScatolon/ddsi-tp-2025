@@ -11,7 +11,7 @@ public interface IGestionUsuariosService {
     List<UsuarioResponseDTO> obtenerTodosLosUsuarios();
     UsuarioInputDTO obtenerUsuarioPorId(Long id);
     UsuarioResponseDTO crearUsuario(RegisterUsuarioRequestDTO usuarioDTO);
-    UsuarioResponseDTO actualizarUsuario(Long id, UsuarioOutputDTO usuarioDTO); //todo revisar
+    UsuarioResponseDTO actualizarUsuario(Long id, UsuarioOutputDTO usuarioDTO);
     void eliminarUsuario(Long id);
     Boolean existeUsuario(Long id);
     UsuarioResponseDTO crearAdmin(RegisterUsuarioRequestDTO usuario);
