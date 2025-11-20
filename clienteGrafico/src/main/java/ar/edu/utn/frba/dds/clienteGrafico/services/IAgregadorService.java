@@ -3,9 +3,11 @@ package ar.edu.utn.frba.dds.clienteGrafico.services;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
@@ -20,7 +22,7 @@ public interface IAgregadorService {
     List<HechoMapaInputDTO> getHechosMapa();
     List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia);
 
-    List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual);
+    List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso consenso);
     ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle);
     List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado);
 

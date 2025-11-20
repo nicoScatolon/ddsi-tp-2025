@@ -4,9 +4,11 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechosFilterOutputDTO;
@@ -282,9 +284,19 @@ public class AgregadorService implements IAgregadorService {
     }
 
 
+
     @Override
-    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso filtroConsenso) {
         String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+
+        // Solo agregar parámetro si no es "TODOS"
+        if (filtroConsenso != null && filtroConsenso != FiltroConsenso.TODOS) {
+            if (filtroConsenso == FiltroConsenso.SIN_CONSENSO) {
+                url += "&consenso=NINGUNO"; // o el valor que uses en el backend
+            } else {
+                url += "&consenso=" + filtroConsenso.name();
+            }
+        }
 
         try {
             return webApiCallerService.getPublicList(url, ColeccionPreviewInputDTO.class);
@@ -294,6 +306,7 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al obtener las colecciones preview: " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {

@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -126,8 +127,26 @@ public class ColeccionesController {
 
     @GetMapping("/publica/preview")
     @PreAuthorize("permitAll()")
-    public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(@RequestParam(required = false) Integer page) {
-        return this.coleccionesService.findAllPreview(page);
+    public List<ColeccionPreviewOutputDTO> obtenerColeccionesPreview(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) String consenso) {
+
+        TipoAlgoritmoConsenso tipoConsenso = null;
+        Boolean filtrarSinConsenso = false;
+
+        if (consenso != null && !consenso.isBlank()) {
+            if (consenso.equalsIgnoreCase("NINGUNO") || consenso.equalsIgnoreCase("SIN_CONSENSO")) {
+                filtrarSinConsenso = true;
+            } else {
+                try {
+                    tipoConsenso = TipoAlgoritmoConsenso.valueOf(consenso.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // Valor inválido, ignorar
+                }
+            }
+        }
+
+        return this.coleccionesService.findAllPreview(page, tipoConsenso, filtrarSinConsenso);
     }
 
     @GetMapping("/publica/preview/{handle}")

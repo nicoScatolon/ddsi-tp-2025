@@ -26,6 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
         'ContenidoMultimedia': 'fa-image'
     };
 
+    // Nombres amigables para cada tipo de criterio
+    const nombresAmigables = {
+        'Titulo': 'Título',
+        'Categoria': 'Categoría',
+        'Etiqueta': 'Etiquetas',
+        'Provincia': 'Provincia',
+        'CargaEntreFechas': 'Carga entre fechas',
+        'OcurrenciaEntreFechas': 'Ocurrencia entre fechas',
+        'ContenidoMultimedia': 'Contenido Multimedia'
+    };
+
     // Mapeo de tipos backend a frontend
     const tipoMap = {
         'titulo': 'Titulo',
@@ -150,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const title = document.createElement('div');
         title.className = 'criterio-item-title';
-        title.innerHTML = `<i class="fas ${iconos[tipo]}"></i><span>${tipo}</span>`;
+        title.innerHTML = `<i class="fas ${iconos[tipo]}"></i><span>${nombresAmigables[tipo] || tipo}</span>`;
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';

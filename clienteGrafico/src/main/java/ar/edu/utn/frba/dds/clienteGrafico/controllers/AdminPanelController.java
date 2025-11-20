@@ -108,7 +108,7 @@ public class AdminPanelController {
     // Gestión de colecciones
     @GetMapping("/colecciones")
     public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
-        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
+        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual, null);
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
