@@ -91,14 +91,18 @@ public class FuentesService implements IFuentesService {
         List<Fuente> fuentesActualizadas = new ArrayList<>();
         List<Hecho> hechosAActualizar = new ArrayList<>();
         for (Fuente fuente : fuentes){
-            List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
+            try {
+                List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
 
-            List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
-            logger.info("Fuente {} actualizada con {} hechos", fuente.getId(), hechosFuente.size());
+                List<Hecho> hechosFuente = fuente.getTipo().crearAdapter(fuente).actualizarHechos(hechosPersistidosFuenteActual);
+                logger.info("Fuente {} actualizada con {} hechos", fuente.getId(), hechosFuente.size());
 
-            if (!hechosFuente.isEmpty()){
-                hechosAActualizar.addAll(hechosFuente);
-                fuentesActualizadas.add(fuente);
+                if (!hechosFuente.isEmpty()){
+                    hechosAActualizar.addAll(hechosFuente);
+                    fuentesActualizadas.add(fuente);
+                }
+            } catch (Exception e) {
+                logger.info("No se pudo conectar a la fuente, error: {}", e.getMessage());
             }
         }
         if (!hechosAActualizar.isEmpty()){
