@@ -3,11 +3,11 @@ package ar.edu.utn.frba.dds.domain.entities.Criterio.impl;
 
 import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("ContenidoMultimedia")
@@ -15,11 +15,21 @@ import lombok.NoArgsConstructor;
 
 public class CriterioContenidoMultimedia extends Criterio {
 
-    @ManyToOne
-    @JoinColumn(name = "contenidoMultimedia_id", nullable = true)
-    private ContenidoMultimedia contenido;
+    @Column(name = "tenerMultimedia", nullable = true)
+    @Getter
+    private Boolean tenerMultimedia;
+
+    public CriterioContenidoMultimedia(Boolean tenerMultimedia) {
+        this.tenerMultimedia = tenerMultimedia;
+    }
     @Override
     public Boolean pertenece(Hecho hecho) {
-        return hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty();
+        List<ContenidoMultimedia> multimedia = hecho.getContenidoMultimedia();
+
+        if (tenerMultimedia) {
+            return multimedia != null && !multimedia.isEmpty();
+        } else {
+            return multimedia == null || multimedia.isEmpty();
+        }
     }
 }

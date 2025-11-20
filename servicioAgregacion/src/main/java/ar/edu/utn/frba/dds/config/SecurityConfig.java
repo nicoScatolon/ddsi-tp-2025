@@ -40,8 +40,7 @@ public class SecurityConfig {
                                 "/api/solicitudes-eliminacion/publica",
                                 "/api/fuente/publica/preview",
                                 "/api/fuente/test/**",
-                                "/api/colecciones/test/**",
-                                "/api/colecciones/privada"
+                                "/api/colecciones/test/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/privada/categorias").permitAll()

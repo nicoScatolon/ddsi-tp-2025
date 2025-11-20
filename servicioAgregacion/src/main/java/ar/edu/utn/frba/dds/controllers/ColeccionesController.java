@@ -39,7 +39,7 @@ public class ColeccionesController {
     @PostMapping("/privada")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
-        CompletableFuture.runAsync(() -> coleccionesService.crearColeccion(coleccionInputDTO), executor);
+        coleccionesService.crearColeccion(coleccionInputDTO);
         return ResponseEntity.accepted().build();
     }
 

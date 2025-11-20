@@ -3,17 +3,28 @@ package ar.edu.utn.frba.dds.services.impl;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.CriterioInputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
+import ar.edu.utn.frba.dds.domain.entities.Etiqueta;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
-import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
+import ar.edu.utn.frba.dds.domain.repository.IEtiquetasRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class CriterioFactory {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private IEtiquetasRepository etiquetaRepository;
 
     public Criterio crear(CriterioInputDTO criterioInputDTO) {
         String tipo = criterioInputDTO.getTipo();
@@ -35,8 +46,18 @@ public class CriterioFactory {
                 Categoria cat = new Categoria(nombre);
                 return new CriterioCategoria(cat);
             }
+            case "etiqueta": {
+                List<String> nombresEtiquetas = parsearEtiquetas(p.get("etiquetas"));
+                List<Etiqueta> etiquetas = buscarEtiquetasPorNombres(nombresEtiquetas);
+                return new CriterioEtiqueta(etiquetas);
+            }
+            case "provincia": {
+                String nombreProvincia = p.get("provincia");
+                return new CriterioProvincia(nombreProvincia);
+            }
             case "contenidoMultimedia": {
-                return new CriterioContenidoMultimedia();
+                boolean tenerMultimedia = Boolean.parseBoolean(p.get("tenerMultimedia"));
+                return new CriterioContenidoMultimedia(tenerMultimedia);
             }
             case "titulo": {
                 String titulo = p.get("titulo");
@@ -45,6 +66,35 @@ public class CriterioFactory {
             default:
                 throw new IllegalArgumentException("Tipo de criterio desconocido: " + tipo);
         }
+    }
+
+
+    private List<String> parsearEtiquetas(String etiquetasJson) {
+        if (etiquetasJson == null || etiquetasJson.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Si viene como JSON array
+        if (etiquetasJson.startsWith("[")) {
+            try {
+                return objectMapper.readValue(etiquetasJson, new TypeReference<List<String>>() {});
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Error parseando etiquetas JSON: " + etiquetasJson, e);
+            }
+        }
+
+        // Si viene como string simple (fallback)
+        return Collections.singletonList(etiquetasJson);
+    }
+
+    private List<Etiqueta> buscarEtiquetasPorNombres(List<String> nombres) {
+        if (nombres == null || nombres.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return nombres.stream()
+                .flatMap(nombre -> etiquetaRepository.findByNombre(nombre).stream())
+                .collect(Collectors.toList());
     }
 
     public List<Criterio> crearVarios(List<CriterioInputDTO> criterios){
