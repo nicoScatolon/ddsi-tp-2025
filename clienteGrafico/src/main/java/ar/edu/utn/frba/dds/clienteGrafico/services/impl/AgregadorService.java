@@ -287,16 +287,7 @@ public class AgregadorService implements IAgregadorService {
 
     @Override
     public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso filtroConsenso) {
-        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
-
-        // Solo agregar parámetro si no es "TODOS"
-        if (filtroConsenso != null && filtroConsenso != FiltroConsenso.TODOS) {
-            if (filtroConsenso == FiltroConsenso.SIN_CONSENSO) {
-                url += "&consenso=NINGUNO"; // o el valor que uses en el backend
-            } else {
-                url += "&consenso=" + filtroConsenso.name();
-            }
-        }
+        String url = getString(paginaActual, filtroConsenso);
 
         try {
             return webApiCallerService.getPublicList(url, ColeccionPreviewInputDTO.class);
@@ -305,6 +296,20 @@ public class AgregadorService implements IAgregadorService {
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener las colecciones preview: " + e.getMessage(), e);
         }
+    }
+
+    private String getString(Integer paginaActual, FiltroConsenso filtroConsenso) {
+        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+
+        if (filtroConsenso == null || filtroConsenso == FiltroConsenso.TODOS) {
+            return url;
+        }
+
+        if (filtroConsenso == FiltroConsenso.SIN_CONSENSO) {
+            return url + "&consenso=NINGUNO";
+        }
+
+        return url + "&consenso=" + filtroConsenso.name();
     }
 
 

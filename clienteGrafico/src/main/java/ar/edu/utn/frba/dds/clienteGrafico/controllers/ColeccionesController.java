@@ -39,6 +39,7 @@ public class ColeccionesController {
 
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(page, consenso);
 
+        model.addAttribute("titulo", "Colecciones");
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", page);
         model.addAttribute("filtroActual", consenso);
