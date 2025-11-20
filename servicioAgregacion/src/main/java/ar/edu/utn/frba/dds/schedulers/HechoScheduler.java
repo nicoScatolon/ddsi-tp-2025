@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.schedulers;
 
 import ar.edu.utn.frba.dds.services.IFuentesService;
-import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.impl.ColeccionesService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
