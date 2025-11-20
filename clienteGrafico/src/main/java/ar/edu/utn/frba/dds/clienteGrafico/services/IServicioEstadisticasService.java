@@ -1,4 +1,4 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services;
 
-public interface IEstadisticasService {
+public interface IServicioEstadisticasService {
 }

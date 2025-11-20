@@ -31,7 +31,7 @@ public class EstadisticasController {
     @GetMapping("/hora_por_categoria")
     @PreAuthorize("hasRole('ADMIN')")
     public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticaHoraPorCategoria( @RequestParam(required = false) String idCategoria) {
-       return serviceEstadisticas.obtenerEstadisticasHoraPorCategoria(idCategoria);
+        return serviceEstadisticas.obtenerEstadisticasHoraPorCategoria(idCategoria);
     }
 
     @GetMapping("/hora_por_categoria/CSV")

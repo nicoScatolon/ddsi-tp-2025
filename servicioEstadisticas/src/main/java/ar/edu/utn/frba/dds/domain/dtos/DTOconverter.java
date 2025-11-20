@@ -28,10 +28,10 @@ public class DTOconverter {
     }
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
-        return Categoria.builder()
-                .id(categoriaInputDTO.getId())
-                .nombre(categoriaInputDTO.getNombre())
-                .build();
+                Categoria c = new Categoria();
+                c.setCodigoCategoria(categoriaInputDTO.getCodigoCategoria());
+                c.setNombre(categoriaInputDTO.getNombre());
+                return c;
     }
 
     public static Ubicacion ubicacionInputDTO(UbicacionInputDTO ubicacionInputDTO) {
@@ -68,7 +68,7 @@ public class DTOconverter {
 
     public static CategoriaOutputDTO categoriaOutputDTO (Categoria categoria) {
         return CategoriaOutputDTO.builder()
-                .id(categoria.getId())
+                .codigoCategoria(categoria.getCodigoCategoria())
                 .nombre(categoria.getNombre())
                 .build();
     }

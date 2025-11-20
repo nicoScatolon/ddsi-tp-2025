@@ -14,6 +14,7 @@ import ar.edu.utn.frba.dds.domain.entities.SolicitudEliminacion;
 import ar.edu.utn.frba.dds.domain.repository.*;
 import ar.edu.utn.frba.dds.services.ICategoriasService;
 import ar.edu.utn.frba.dds.services.IEstadisticasService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EstadisticasService implements IEstadisticasService {
     private final ICategoriasService categoriasService;
 
@@ -34,32 +36,34 @@ public class EstadisticasService implements IEstadisticasService {
     private final IE_MayorProvinciaPorColeccionRepository mayorProvinciaPorColeccionRepository;
 
     private final WebClient webClient;
-
-    @Value("agregador.base-url")
-    private String urlAgregador;
-    @Value("${estadisticas.cantDiasPersistencia}")
-    private Integer cantDiasPersistenciaEstaditicas;
+    @Value("${estadisticas.cantDiasPersistencia}") Integer cantDiasPersistenciaEstaditicas;
 
     public EstadisticasService(ICategoriasService categoriasService,
                                IE_MayorCategoriaRepository mayorCategoriaRepository,
                                IE_SolicitudesSpamRepository solicitudesSpamRepository,
                                IE_HoraOcuPorCategoriaRepository horaOcuPorCategoriaRepository,
                                IE_MayorProvinciaPorCategoriaRepository mayorProvinciaPorCategoriaRepository,
-                               IE_MayorProvinciaPorColeccionRepository mayorProvinciaPorColeccionRepository) {
-        this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
+                               IE_MayorProvinciaPorColeccionRepository mayorProvinciaPorColeccionRepository,
+                               @Value("${agregador.base-url}") String urlAgregador)
+
+        {
         this.categoriasService = categoriasService;
         this.mayorCategoriaRepository = mayorCategoriaRepository;
         this.solicitudesSpamRepository = solicitudesSpamRepository;
         this.horaOcuPorCategoriaRepository = horaOcuPorCategoriaRepository;
         this.mayorProvinciaPorCategoriaRepository  = mayorProvinciaPorCategoriaRepository;
         this.mayorProvinciaPorColeccionRepository = mayorProvinciaPorColeccionRepository;
+
+        this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
     }
 
     public void generarEstadisticas() {
+        log.info("[ESTADISTICAS] Inicio de generación");
         categoriasService.actualizarCategorias(); //primero me actualizo la base de datos de mis categorias
         this.generarEstadisticasColeccion();
         this.generarEstadisticasHecho();
         this.generarEstadisticasSolicitud();
+        log.info("[ESTADISTICAS] Completadas");
     }
 
     public void eliminarEstadisticasAntiguas() {
@@ -180,7 +184,6 @@ public class EstadisticasService implements IEstadisticasService {
     }
 
     private List<Coleccion> obtenerColeccionesAgregador (){
-        //TODO IMPORTANTE, EL AGREGADOR DEBE DEVOLVER LAS COLECCIONES CON SUS HECHOS EN AL MENOS UN ENDPOINT (por ejemplo usar el /privada)
         List<ColeccionInputDTO> coleccionesInputDTO =  webClient.get()
                 .uri("/api/colecciones/privada")
                 .retrieve()

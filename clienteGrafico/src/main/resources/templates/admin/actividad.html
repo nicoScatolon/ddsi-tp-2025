@@ -1,8 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <th:block th:fragment="actividad">
-    <section>
+    <section class="estadisticas-actividad">
+        <h1 class="titulo">Estadísticas</h1>
 
+        <div class="cards">
+            <div class="card">
+                <h2>Hechos por provincia</h2>
+                <canvas id="act-prov"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>Hechos por categoría</h2>
+                <canvas id="act-cat"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>Solicitudes de eliminación</h2>
+                <div id="act-spam" class="kpi"></div>
+            </div>
+        </div>
+
+        <!-- Datos del modelo -->
+        <script th:inline="javascript">
+            const ACT_COLECCION = /*[[${coleccion}]]*/ null;
+            const ACT_RESUMEN_INICIAL = /*[[${resumen}]]*/ {};
+        </script>
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- Lógica -->
+        <script>
+            function toLabelsValues(pares) {
+              const arr = Array.isArray(pares) ? pares : [];
+              return { labels: arr.map(p => p.clave), values: arr.map(p => p.valor) };
+            }
+
+            const provCtx = document.getElementById('act-prov');
+            const catCtx  = document.getElementById('act-cat');
+            let provChart = null, catChart = null;
+
+            function renderResumen(resumen) {
+              const { labels: pL, values: pV } = toLabelsValues(resumen.porProvincia);
+              const { labels: cL, values: cV } = toLabelsValues(resumen.porCategoria);
+
+              if (!provChart) {
+                provChart = new Chart(provCtx, {
+                  type: 'bar',
+                  data: { labels: pL, datasets: [{ label: 'Hechos', data: pV }] },
+                  options: { responsive: true, maintainAspectRatio: false }
+                });
+              } else {
+                provChart.data.labels = pL;
+                provChart.data.datasets[0].data = pV;
+                provChart.update();
+              }
+
+              if (!catChart) {
+                catChart = new Chart(catCtx, {
+                  type: 'pie',
+                  data: { labels: cL, datasets: [{ label: 'Hechos', data: cV }] },
+                  options: { responsive: true, maintainAspectRatio: false }
+                });
+              } else {
+                catChart.data.labels = cL;
+                catChart.data.datasets[0].data = cV;
+                catChart.update();
+              }
+
+              const spam = resumen.spamEliminacion || { spam: 0, total: 0 };
+              const pct  = spam.total ? Math.round(100 * spam.spam / spam.total) : 0;
+              const spamBox = document.getElementById('act-spam');
+              if (spamBox) spamBox.textContent = `${spam.spam}/${spam.total} (${pct}%) marcadas como spam`;
+            }
+
+            renderResumen(ACT_RESUMEN_INICIAL || {});
+
+            async function refreshResumen() {
+              if (!ACT_COLECCION) return;
+              try {
+                const url = `/ui/api/estadisticas/resumen?coleccion=${encodeURIComponent(ACT_COLECCION)}`;
+                const r = await fetch(url, { cache: 'no-store' });
+                if (!r.ok) return;
+                renderResumen(await r.json());
+              } catch (_) {}
+            }
+            setInterval(refreshResumen, 60000);
+        </script>
     </section>
 </th:block>
 </html>
+

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "categoria")
 public class Categoria {
     @Id
-    private String id;
+    private String codigoCategoria;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;

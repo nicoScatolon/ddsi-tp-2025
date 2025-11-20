@@ -99,7 +99,7 @@
     <div class="panel-wrapper">
         <div class="panel-card">
             <h1 th:text="${titulo}"></h1>
-            <div th:replace="~{'admin/' + ${contentTemplate} :: ${contentTemplate}}"></div>
+            <div th:replace="~{${'admin/' + contentTemplate} :: ${contentTemplate}}"></div>
         </div>
     </div>
 </div>

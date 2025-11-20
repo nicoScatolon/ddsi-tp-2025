@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class CategoriaInputDTO {
-    private String id;
+    private String codigoCategoria;
     private String nombre;
 }
