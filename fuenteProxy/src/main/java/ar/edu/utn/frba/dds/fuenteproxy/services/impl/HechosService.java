@@ -142,6 +142,12 @@ public class HechosService implements IHechosService {
     }
 
 
+    @Override
+    public void eliminarHechosDeFuente(Long idFuente){
+        hechosRepository.deleteAllByFuenteId(idFuente);
+    }
+
+
 }
 
 

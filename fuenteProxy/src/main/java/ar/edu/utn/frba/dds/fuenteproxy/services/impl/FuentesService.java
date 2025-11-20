@@ -12,11 +12,11 @@ import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Data
 @Service
@@ -64,8 +64,16 @@ public class FuentesService implements IFuentesService {
 
 
 
+
     @Override
+    @Transactional
     public void eliminarFuente(String nombre) {
+        Fuente fuente = fuentesRepository.findByNombre(nombre);
+
+        if(fuente.getTipo() == TipoFuenteProxy.EXTERNA){
+            hechosService.eliminarHechosDeFuente(fuente.getId());
+        }
+
         fuentesRepository.deleteByNombre(nombre);
     }
 
