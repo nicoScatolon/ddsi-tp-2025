@@ -38,7 +38,7 @@ public class ColeccionesController {
 
     // Operaciones CRUD sobre las colecciones
     @PostMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> crearColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         coleccionesService.crearColeccion(coleccionInputDTO);
         return ResponseEntity.accepted().build();
@@ -50,55 +50,55 @@ public class ColeccionesController {
     }
 
     @PutMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> modificarColeccion(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         return coleccionesService.modificarColeccion(coleccionInputDTO);
     }
 
     @PutMapping("/privada/basica")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ColeccionOutputDTO modificarColeccionBasica(@RequestBody ColeccionInputDTO coleccionInputDTO) {
         return coleccionesService.modificarColeccionBasica(coleccionInputDTO);
     }
 
     @PutMapping("/privada/{handle}/criterios")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> modificarListaCriterio(@RequestBody List<CriterioInputDTO> listaCriterioInputDTO, @PathVariable String handle) {
         return coleccionesService.modificarCriteriosColeccion(handle, listaCriterioInputDTO);
     }
 
     @PutMapping("/privada/{handle}/consenso")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> modificarConsenso(@RequestBody AlgoritmoConsensoDTO consensoDTO, @PathVariable("handle") String handle) {
         return coleccionesService.modificarConsensoColeccion(handle, consensoDTO);
     }
 
     @PutMapping("/privada/{handle}/fuentes")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<Fuente> modificarFuentes(@RequestBody List<FuenteInputDTO> fuentes, @PathVariable String handle) {
         return coleccionesService.modificarFuenteColeccion(handle, fuentes);
     }
 
     @DeleteMapping("/privada/{handle}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> eliminarColeccion(@PathVariable("handle") String handle) {
         return coleccionesService.eliminarColeccion(handle);
     }
 
     @PutMapping("/privada/destacada/{handle}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> destacarColeccion(@PathVariable String handle){
         return coleccionesService.setDestacadaColeccion(handle, true);
     }
 
     @DeleteMapping ("/privada/destacada/{handle}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> eliminarDestacadaColeccion(@PathVariable String handle){
         return coleccionesService.setDestacadaColeccion(handle, false);
     }
 
     @GetMapping("/privada/editable/{handle}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ColeccionEditOutputDTO obtenerColeccionEditable(@PathVariable String handle) {
         return coleccionesService.findByHandleEditable(handle);
     }

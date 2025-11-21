@@ -11,8 +11,9 @@
 
     <div th:if="${error}" class="alert alert-danger">
         <i class="fas fa-exclamation-circle me-2"></i>
-        Credenciales inválidas
+        <span th:text="${error}">Credenciales Invalidas</span>
     </div>
+
 
     <form th:action="@{/login}" method="post">
         <div class="form-group">

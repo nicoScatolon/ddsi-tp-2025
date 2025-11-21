@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
     <link rel="stylesheet" th:href="@{/css/admin-panel/base.css}">
@@ -81,8 +81,7 @@
                 </span>
             </li>
 
-            <sec:authorize access="hasRole('ADMIN_SUPERIOR')">
-                <li class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
+            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
                     <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
                         <i class="fas fa-users-cog"></i>
                         <span>Gestión de Usuarios</span>
@@ -91,8 +90,7 @@
                         <i class="fas fa-users-cog"></i>
                         <span>Gestión de Usuarios</span>
                     </span>
-                </li>
-            </sec:authorize>
+            </li>
         </ul>
     </aside>
 

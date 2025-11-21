@@ -35,17 +35,17 @@ public class FuentesController {
     // --- API PRIVADA --- //
 
     @GetMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
         return fuenteService.agregarFuente(fuenteInputDTO);
     }
 
     @DeleteMapping("/privada/{fuenteId}")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> eliminarUnaFuente (@PathVariable long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
     }

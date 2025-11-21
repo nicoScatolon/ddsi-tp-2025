@@ -43,10 +43,17 @@ public class UsuarioController {
     private final WebApiCallerService webApiCallerService;
 
     @GetMapping("/login")
-    public String login(Model model) {
+    public String login(@RequestParam(value = "error", required = false) String error,
+                        Model model) {
         model.addAttribute("titulo", "Iniciar Sesión");
+
+        if (error != null) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos.");
+        }
+
         return "usuario/login";
     }
+
 
     @GetMapping("/signup")
     public String signup(Model model) {
@@ -66,9 +73,16 @@ public class UsuarioController {
             return "usuario/signup";
         }
 
-        gestionUsuariosService.crearUsuario(request);
+        try {
+            gestionUsuariosService.crearUsuario(request);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("request", request);
+            return "usuario/signup";
+        }
         return "redirect:/login"; // Mejor redirigir al login después del registro
     }
+
 
     @GetMapping("/profile/{id}")
     public String perfil(@PathVariable("id") Long id, Model model, HttpSession session) {

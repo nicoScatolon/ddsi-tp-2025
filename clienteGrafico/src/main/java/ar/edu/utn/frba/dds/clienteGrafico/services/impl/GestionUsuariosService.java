@@ -9,8 +9,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Map;
@@ -85,16 +87,21 @@ public class GestionUsuariosService implements IGestionUsuariosService {
 
     @Override
     public UsuarioResponseDTO crearUsuario(RegisterUsuarioRequestDTO usuarioDTO) {
-        UsuarioResponseDTO response = webApiCallerService.postPublic(
-                authServiceUrl + "/usuarios/publica/registrar",
-                usuarioDTO,
-                UsuarioResponseDTO.class
-        );
-        if (response == null) {
-            throw new RuntimeException("Error al crear usuario en el servicio externo");
+        try {
+            return webApiCallerService.postPublic(
+                    authServiceUrl + "/usuarios/publica/registrar",
+                    usuarioDTO,
+                    UsuarioResponseDTO.class
+            );
+        } catch (WebClientResponseException e) {
+            // ERROR CONTROLADO DEL BACKEND
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new IllegalArgumentException(e.getResponseBodyAsString());
+            }
+            throw new RuntimeException("Error inesperado: " + e.getMessage());
         }
-        return response;
     }
+
 
 
     @Override

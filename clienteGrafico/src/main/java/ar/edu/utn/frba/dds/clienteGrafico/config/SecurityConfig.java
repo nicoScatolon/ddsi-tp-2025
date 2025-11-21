@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .loginPage("/login")    // tu template de login
                         .permitAll()
                         .defaultSuccessUrl("/index", true) // redirigir tras login exitoso
+                        .failureUrl("/login?error=true")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

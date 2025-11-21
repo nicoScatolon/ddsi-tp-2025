@@ -220,6 +220,12 @@ public class HechosController {
         return agregadorService.getHechosMapaPorProvincia(provincia);
     }
 
+    @GetMapping("/map-all")
+    @ResponseBody
+    public List<HechoMapaInputDTO> getAllHechosMapa() {
+        return agregadorService.getHechosMapa();
+    }
+
     @GetMapping("/fuenteDinamica/{id}")
     public String obtenerHechoFuenteDinamica(@PathVariable("id") Long id, Model model, HttpSession session) {
         HechoDinamicaInputDTO hecho = this.fuenteDinamicaService.obtenerHechoDinamicaId(id);
