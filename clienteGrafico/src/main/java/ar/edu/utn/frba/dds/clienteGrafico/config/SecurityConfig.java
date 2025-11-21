@@ -31,16 +31,19 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/img/**").permitAll()
 
                         // Rutas Publicas
-                        .requestMatchers("/", "/index","/legales","/about").permitAll()
-                        .requestMatchers("/hechos", "/hechos/create", "/hechos/{id}", "/hechos/map", "/hechos/fuenteDinamica/**") .permitAll()
+//                        .requestMatchers("/", "/index","/legales","/about").permitAll()
+//                        .requestMatchers("/hechos", "/hechos/create", "/hechos/{id}", "/hechos/map", "/hechos/fuenteDinamica/**") .permitAll()
                         .requestMatchers(HttpMethod.GET, "/colecciones", "/colecciones/{handle}").permitAll()
-                        .requestMatchers("/solicitudesEliminacion").permitAll()
+//                        .requestMatchers("/solicitudesEliminacion").permitAll()
 
                         // Rutas Admin
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         // Lo demás requiere autenticación
+
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
