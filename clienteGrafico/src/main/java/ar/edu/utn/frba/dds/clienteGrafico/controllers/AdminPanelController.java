@@ -232,4 +232,32 @@ public class AdminPanelController {
 
         return "redirect:/admin/solicitudes";
     }
+
+    // Acciones para Admin Superior
+
+    @GetMapping("/adminsuperior")
+    public String accionesAdminSuperior(Model model) {
+        model.addAttribute("titulo", "Gestión de Usuarios");
+        model.addAttribute("contentTemplate", "acciones-adminsuperior");
+
+        return "admin/panel-base";
+    }
+
+    @PostMapping("/adminsuperior/fuentes/actualizar")
+    public String actualizarFuenteForzosamente() {
+        agregadorService.actualizarFuentesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/adminsuperior/colecciones/actualizar")
+    public String actualizarColeccionesForzosamente() {
+        agregadorService.actualizarColeccionesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/adminsuperior/colecciones/curar")
+    public String curarColeccionesForzosamente() {
+        agregadorService.curarColeccionesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
 }

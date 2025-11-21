@@ -162,6 +162,17 @@ public class ColeccionesController {
 
     // ------------------------------------------- TESTEO -------------------------------------------
 
+    @GetMapping("/privada/actualizar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void actualizarColeccionScheduler() {
+        this.coleccionesService.actualizarColeccionesScheduler();
+    }
+
+    @GetMapping("/privada/curar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void curarColeccionScheduler() {
+        this.coleccionesService.curarColeccionesScheduler();
+    }
 
 
     @GetMapping("/test/actualizar/{handle}")

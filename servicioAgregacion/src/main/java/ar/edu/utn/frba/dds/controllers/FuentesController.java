@@ -59,11 +59,12 @@ public class FuentesController {
         return fuenteService.testActualizarFuente(fuenteId);
     }
 
-    @GetMapping("/test/general")
-    @PreAuthorize("permitAll()")
-    public void probarActualizarFuenteGeneral () {
+    @GetMapping("/privada/actualizar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void actualizarFuentesScheduler () {
         fuenteService.actualizarHechosFuentesScheduler();
     }
+
 
     @PutMapping("/test/agregar")
     @PreAuthorize("permitAll()")

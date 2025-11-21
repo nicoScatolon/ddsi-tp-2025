@@ -68,4 +68,8 @@ public interface IAgregadorService {
     ResponseEntity<Void> editarEquivalencia(CategoriaEquivalenteOutputDTO categoria);
 
     ResponseEntity<Void> modificarEtiquetas(Long id, List<String> etiquetas);
+
+    ResponseEntity<Void> actualizarFuentesForzosamente();
+    ResponseEntity<Void> actualizarColeccionesForzosamente();
+    ResponseEntity<Void> curarColeccionesForzosamente();
 }
