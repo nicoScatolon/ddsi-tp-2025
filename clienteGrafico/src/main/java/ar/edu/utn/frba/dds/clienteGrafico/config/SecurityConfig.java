@@ -20,15 +20,18 @@ public class SecurityConfig {
                 .build();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // PRIMERO Y MÁS IMPORTANTE: Páginas de error públicas
+                        .requestMatchers("/error/**").permitAll()
+
                         // Recursos estáticos y login público
-                        .requestMatchers("/login", "/signup","/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/img/**").permitAll()
+
                         // Rutas Publicas
-                        .requestMatchers("/", "/index","/legales","/about","/404", "/403").permitAll()
+                        .requestMatchers("/", "/index","/legales","/about").permitAll()
                         .requestMatchers("/hechos", "/hechos/create", "/hechos/{id}", "/hechos/map", "/hechos/fuenteDinamica/**") .permitAll()
                         .requestMatchers(HttpMethod.GET, "/colecciones", "/colecciones/{handle}").permitAll()
                         .requestMatchers("/solicitudesEliminacion").permitAll()
@@ -41,14 +44,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")    // tu template de login
+                        .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/index", true) // redirigir tras login exitoso
+                        .defaultSuccessUrl("/index", true)
                         .failureUrl("/login?error=true")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout") // redirigir tras logout
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
@@ -58,11 +61,10 @@ public class SecurityConfig {
                         )
                         // Usuario autenticado pero sin permisos → redirigir a página de error
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendRedirect("/403")
+                                response.sendRedirect("/error/403")
                         )
                 );
 
         return http.build();
     }
-
 }

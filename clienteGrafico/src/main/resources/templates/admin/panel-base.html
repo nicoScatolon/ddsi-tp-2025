@@ -82,11 +82,11 @@
             </li>
 
             <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
-                    <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Gestión de Usuarios</span>
-                    </a>
-                    <span th:if="${contentTemplate == 'gestion-usuarios'}" class="menu-link-disabled">
+                <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Gestión de Usuarios</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-usuarios'}" class="menu-link-disabled">
                         <i class="fas fa-users-cog"></i>
                         <span>Gestión de Usuarios</span>
                     </span>

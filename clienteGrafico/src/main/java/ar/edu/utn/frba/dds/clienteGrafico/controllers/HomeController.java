@@ -7,8 +7,11 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Controller
@@ -47,21 +50,5 @@ public class HomeController {
         return "about";
     }
 
-    @GetMapping("/404")
-    public String notFound(Model model) {
-        model.addAttribute("titulo", "No encontrado");
-        return "errores/404";
-    }
 
-    @GetMapping("/403")
-    public String forbidden (Model model) {
-        model.addAttribute("titulo", "Acceso Prohibido");
-        return "errores/403";
-    }
-
-    @GetMapping("/500")
-    public String internalError (Model model) {
-        model.addAttribute("titulo", "Acceso Prohibido");
-        return "errores/500";
-    }
 }

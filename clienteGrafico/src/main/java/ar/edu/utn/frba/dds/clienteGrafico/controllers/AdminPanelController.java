@@ -174,10 +174,32 @@ public class AdminPanelController {
     }
 
     @PostMapping("/crear-admin")
-    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario) {
-        gestionUsuariosService.crearAdmin(usuario);
+    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario, Model model) {
+        // Validación de contraseñas en el frontend
+        if (!usuario.getPassword().equals(usuario.getConfirmPassword())) {
+            model.addAttribute("error", "Las contraseñas no coinciden");
+            model.addAttribute("titulo", "Gestión de Usuarios");
+            model.addAttribute("contentTemplate", "gestion-usuarios");
+            return "admin/panel-base";
+        }
+        try {
+            gestionUsuariosService.crearAdmin(usuario);
+            return "redirect:/admin/usuarios"; // CORRECCIÓN: faltaba el /
 
-        return "redirect:/admin/usuarios";
+        } catch (IllegalArgumentException e) {
+            // Errores de validación del backend (400)
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("titulo", "Gestión de Usuarios");
+            model.addAttribute("contentTemplate", "gestion-usuarios");
+            return "admin/panel-base";
+
+        } catch (Exception e) {
+            // Errores inesperados
+            model.addAttribute("error", "Error inesperado: " + e.getMessage());
+            model.addAttribute("titulo", "Gestión de Usuarios");
+            model.addAttribute("contentTemplate", "gestion-usuarios");
+            return "admin/panel-base";
+        }
     }
 
     //Gestión solicitudes de eliminación
