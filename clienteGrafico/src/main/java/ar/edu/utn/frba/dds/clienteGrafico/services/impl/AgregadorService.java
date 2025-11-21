@@ -532,6 +532,43 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    // --- METODOS ADMIN SUPERIOR --- //
+
+    @Override
+    public ResponseEntity<Void> actualizarFuentesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las fuentes: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> actualizarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> curarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/curar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al curar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+
+
 
     // --- METODOS PRIVADOS --- //
 

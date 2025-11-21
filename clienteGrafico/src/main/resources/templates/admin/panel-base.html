@@ -81,6 +81,7 @@
                 </span>
             </li>
 
+            <!-- Gestión de Usuarios -->
             <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
                 <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
                     <i class="fas fa-users-cog"></i>
@@ -91,6 +92,19 @@
                         <span>Gestión de Usuarios</span>
                     </span>
             </li>
+
+            <!-- Acciones de Administracion Superior -->
+            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'acciones-adminsuperior'} ? 'active'">
+                <a th:if="${contentTemplate != 'acciones-adminsuperior'}" href="/admin/adminsuperior">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Acciones Admin Superior</span>
+                </a>
+                <span th:if="${contentTemplate == 'acciones-adminsuperior'}" class="menu-link-disabled">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Acciones Admin Superior</span>
+                    </span>
+            </li>
+
         </ul>
     </aside>
 

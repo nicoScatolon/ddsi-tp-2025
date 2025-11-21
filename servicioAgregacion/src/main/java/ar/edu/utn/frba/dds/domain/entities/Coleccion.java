@@ -146,6 +146,7 @@ public class Coleccion {
     public void actualizarHechos( List<Hecho> hechosFuentes ) {
         // filtramos estos hechos
         this.listaHechos = this.filtrarHechos(hechosFuentes);
+        this.setActualizarHechos(false);
         this.setCurarHechos(true);
     }
 
