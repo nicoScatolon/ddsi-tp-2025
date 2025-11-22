@@ -26,7 +26,7 @@ public class AuthController {
     private final LoginService loginService;
 
     @PostMapping
-    public ResponseEntity<AuthResponseDTO> loginApi(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<?> loginApi(@RequestBody Map<String, String> credentials) {
         try {
             String username = credentials.get("username");
             String password = credentials.get("password");

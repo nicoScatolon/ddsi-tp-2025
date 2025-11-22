@@ -62,26 +62,26 @@ public class HechosController {
     }
     // --- API Privada --- //
     @GetMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<HechoOutputDTO> getHechosPrivada(@ModelAttribute HechosFilterDTO hechosFilterDTO, @RequestParam(required = false) Boolean fueEliminado) {
         return hechosService.getHechos(hechosFilterDTO, fueEliminado);
     }
 
     @PostMapping("/privada/{id}/etiquetas")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarEtiquetas(@PathVariable Long id, @RequestBody List<String> etiquetas){
         return hechosService.agregarEtiquetasHecho(id, etiquetas);
     }
 
 
     @PutMapping("/privada/destacado/{id}")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> destacarHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, true);
     }
 
     @DeleteMapping ("/privada/destacado/{id}")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> eliminarDestacadoHecho(@PathVariable Long id){
         return hechosService.setDestacadoHecho(id, false);
     }

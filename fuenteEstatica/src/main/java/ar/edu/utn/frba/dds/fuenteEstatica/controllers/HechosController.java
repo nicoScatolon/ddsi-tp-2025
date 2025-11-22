@@ -47,7 +47,7 @@ public class HechosController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<String> importarArchivo(@RequestParam String filename) {
         try {
             Path path = Paths.get(filename);

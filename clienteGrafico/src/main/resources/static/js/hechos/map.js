@@ -15,12 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         maxZoom: 18
     }).addTo(map);
 
-    // Límites de Argentina (aproximados)
-    const argentinaLimites = L.latLngBounds(
-        L.latLng(-55.5, -73.5), // Suroeste
-        L.latLng(-21.5, -53.0)  // Noreste
-    );
-
     // Cluster de marcadores
     const markers = L.markerClusterGroup({
         maxClusterRadius: 50,
@@ -34,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variables de control
     // =========================
     let provinciaActual = null;
-    let limitesActivos = false;
 
     // =========================
     // Elementos DOM
@@ -75,11 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarTodosBtn.addEventListener('click', () => {
         const confirmacion = confirm(
             '¿Estás seguro de que quieres cargar TODOS los hechos?\n\n' +
-            'Esto puede tardar varios segundos y consumir más datos.'
+            'Esto puede tardar varios segundos y consumir más datos.\n' +
+            'Se recomienda cargar por provincia.'
         );
 
         if (confirmacion) {
-            cargarTodasProvincias();
+            cargarTodosLosHechos();
         }
     });
 
@@ -162,7 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Configurar límites con bounce back muy suave
         map.setMaxBounds(limites);
         map.options.maxBoundsViscosity = 0.3; // Resistencia muy suave
-        limitesActivos = true;
+    }
+
+    /**
+     * Restablecer vista general de Argentina
+     */
+    function restablecerVista() {
+        map.setMaxBounds(null);
+        map.setView([-38.0, -63.5], 5);
     }
 
     // =========================
@@ -199,59 +200,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Cargar hechos de todas las provincias
+     * Cargar todos los hechos de una sola vez
      */
-    async function cargarTodasProvincias() {
+    async function cargarTodosLosHechos() {
         // Mostrar advertencia
         warningBox.classList.remove('hidden');
-        setLoading(true, 'Cargando todas las provincias...');
+        setLoading(true, 'Cargando todos los hechos...');
 
-        // Quitar límites del mapa
-        map.setMaxBounds(null);
-        map.setView([-38.0, -63.5], 5);
-        limitesActivos = false;
-
-        const provincias = Object.keys(PROVINCIAS);
-        let todosLosHechos = [];
-        let cargadas = 0;
+        // Restablecer vista
+        restablecerVista();
 
         try {
-            // Cargar de a 3 provincias en paralelo
-            const batchSize = 3;
-            for (let i = 0; i < provincias.length; i += batchSize) {
-                const lote = provincias.slice(i, i + batchSize);
+            const response = await fetch('/hechos/map-all');
 
-                const promesas = lote.map(async (prov) => {
-                    try {
-                        const response = await fetch(`/hechos/mapa-por-provincia?provincia=${encodeURIComponent(prov)}`);
-                        if (!response.ok) throw new Error(`Error en ${prov}`);
-                        return await response.json();
-                    } catch (error) {
-                        console.error(`Error cargando ${prov}:`, error);
-                        return [];
-                    }
-                });
-
-                const resultados = await Promise.all(promesas);
-                resultados.forEach(hechos => {
-                    todosLosHechos.push(...hechos);
-                });
-
-                cargadas += lote.length;
-                loadingText.textContent = `Cargando... (${cargadas}/${provincias.length} provincias)`;
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
             }
 
-            agregarMarcadores(todosLosHechos);
-            updateStats('Todas', todosLosHechos.length);
+            const hechos = await response.json();
+            agregarMarcadores(hechos);
+            updateStats('Todas las provincias', hechos.length);
             provinciaActual = 'Todas';
 
-            console.log(`✅ Total: ${todosLosHechos.length} hechos cargados`);
+            console.log(`✅ Total: ${hechos.length} hechos cargados`);
 
         } catch (error) {
-            console.error('❌ Error cargando todas las provincias:', error);
+            console.error('❌ Error cargando todos los hechos:', error);
             alert('Error al cargar todos los datos. Por favor, intenta nuevamente.');
         } finally {
             setLoading(false);
+            // Ocultar advertencia después de 3 segundos
             setTimeout(() => warningBox.classList.add('hidden'), 3000);
         }
     }

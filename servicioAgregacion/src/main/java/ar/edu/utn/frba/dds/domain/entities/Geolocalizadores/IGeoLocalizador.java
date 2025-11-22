@@ -9,4 +9,4 @@ public interface IGeoLocalizador {
     Ubicacion geolocalizar(Ubicacion ubicacion);
 
     Mono<List<Ubicacion>> geolocalizarBatchAsync(List<Ubicacion> ubicaciones);
-}
+    Ubicacion obtenerDireccionDesdeCache(Ubicacion ubicacion);}

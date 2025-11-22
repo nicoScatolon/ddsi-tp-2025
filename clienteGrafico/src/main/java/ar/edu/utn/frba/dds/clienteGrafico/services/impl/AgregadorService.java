@@ -7,6 +7,8 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPrevie
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechosFilterOutputDTO;
@@ -18,7 +20,10 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -61,6 +66,7 @@ public class AgregadorService implements IAgregadorService {
         return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
 
+    @Cacheable("hechos-mapa")
     public List<HechoMapaInputDTO> getHechosMapa() {
         try {
             return webApiCallerService.getPublicList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
@@ -70,6 +76,7 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    @Cacheable(value = "hechosPorProvincia", key = "#provincia")
     public List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia) {
         try {
             String url = agregadorUrl + "/api/hechos/publica/mapa?provincia=" + provincia;
@@ -77,6 +84,12 @@ public class AgregadorService implements IAgregadorService {
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener los hechos del mapa por provincia: " + e.getMessage(), e);
         }
+    }
+
+    @Scheduled(fixedRate = 30 * 60 * 1000) // cada 30 minutos
+    @CacheEvict(value = {"hechos-mapa", "hechosPorProvincia"}, allEntries = true)
+    public void limpiarCacheHechos() {
+        System.out.println("Cache de hechos invalidado");
     }
 
 
@@ -282,9 +295,10 @@ public class AgregadorService implements IAgregadorService {
     }
 
 
+
     @Override
-    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
-        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso filtroConsenso) {
+        String url = getString(paginaActual, filtroConsenso);
 
         try {
             return webApiCallerService.getPublicList(url, ColeccionPreviewInputDTO.class);
@@ -294,6 +308,21 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al obtener las colecciones preview: " + e.getMessage(), e);
         }
     }
+
+    private String getString(Integer paginaActual, FiltroConsenso filtroConsenso) {
+        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+
+        if (filtroConsenso == null || filtroConsenso == FiltroConsenso.TODOS) {
+            return url;
+        }
+
+        if (filtroConsenso == FiltroConsenso.SIN_CONSENSO) {
+            return url + "&consenso=NINGUNO";
+        }
+
+        return url + "&consenso=" + filtroConsenso.name();
+    }
+
 
     @Override
     public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
@@ -514,6 +543,67 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    // --- METODOS ADMIN SUPERIOR --- //
+
+    @Override
+    public ResponseEntity<Void> actualizarFuentesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las fuentes: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> actualizarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> curarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/curar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al curar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> crearFuente(FuenteOutputDTO fuenteDTO) {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada";
+
+            webApiCallerService.put(
+                    url,
+                    fuenteDTO,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarFuente(Long id) {
+        try {
+            webApiCallerService.delete(agregadorUrl + "/api/fuente/privada/" + id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar la fuente con id " + id + ": " + e.getMessage(), e);
+        }
+    }
 
     // --- METODOS PRIVADOS --- //
 

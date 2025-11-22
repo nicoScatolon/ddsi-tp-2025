@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface IColeccionesService {
     ColeccionOutputDTO findByHandle(String handle);
     List<ColeccionOutputDTO> findAll();
-    List<ColeccionPreviewOutputDTO> findAllPreview(Integer page);
+    public List<ColeccionPreviewOutputDTO> findAllPreview(Integer page, TipoAlgoritmoConsenso consenso, Boolean filtrarSinConsenso);
     ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionInputDTO);
     ResponseEntity<Void> eliminarColeccion(String handle);
     List<HechoOutputDTO> mostrarHechosColeccion(String handle, Boolean curado, HechosFilterDTO hechosFilterDTO);

@@ -12,4 +12,5 @@ import java.util.List;
 
 @Repository
 public interface IHechosRepository extends JpaRepository<Hecho, Long>, JpaSpecificationExecutor<Hecho> {
+    List<Hecho> findAllByEstado(EstadoHecho estado);
 }

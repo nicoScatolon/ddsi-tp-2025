@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
                         .requestMatchers(
-                                "/api/auth/", "/api/auth", "/api/auth/refresh", "/api/usuarios/**"      // todo lo relacionado con usuarios
+                                "/api/auth/", "/api/auth", "/api/auth/refresh", "/api/usuarios/publica/**"    // todo lo relacionado con usuarios
                         ).permitAll()
 
                         // Endpoints que requieren autenticación

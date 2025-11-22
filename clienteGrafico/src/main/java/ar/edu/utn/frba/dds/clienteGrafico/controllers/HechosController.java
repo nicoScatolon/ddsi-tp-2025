@@ -21,8 +21,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Controller
@@ -79,6 +81,16 @@ public class HechosController {
         model.addAttribute("provincias", provincias);
         model.addAttribute("categorias", categorias);
         return "/hechos/create";
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public String handleTipoInvalido(MethodArgumentTypeMismatchException ex) {
+        return "redirect:/error/400";
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public String handleFechaInvalida(DateTimeParseException ex) {
+        return "redirect:/error/400";
     }
 
     @PostMapping("/create") //Todo si no estas logeado da error
@@ -218,6 +230,12 @@ public class HechosController {
     @ResponseBody
     public List<HechoMapaInputDTO> getHechosMapaPorProvincia(@RequestParam String provincia) {
         return agregadorService.getHechosMapaPorProvincia(provincia);
+    }
+
+    @GetMapping("/map-all")
+    @ResponseBody
+    public List<HechoMapaInputDTO> getAllHechosMapa() {
+        return agregadorService.getHechosMapa();
     }
 
     @GetMapping("/fuenteDinamica/{id}")

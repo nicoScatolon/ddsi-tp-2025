@@ -40,32 +40,32 @@ public class CategoriasController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> create(@RequestBody CategoriaInputDTO categoriaInputDTO) {
         return categoriaService.crearCategoria(categoriaInputDTO);
     }
 
     @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> update(@RequestBody CategoriaInputDTO categoriaInputDTO) {
         return categoriaService.editarCategoria(categoriaInputDTO);
     }
 
     @GetMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<EquivalenteOutputDTO> mostrarEquivalentes() {
         return categoriaService.findAllEquivalentes();
     }
 
     @PostMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarEquivalentes( @RequestBody EquivalenteInputDTO equivalenteInputDTO) {
         categoriaService.agregarEquivalentes(equivalenteInputDTO.getCodigoCategoria(), equivalenteInputDTO.getNombre());
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PutMapping("/equivalentes")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> editarEquivalente( @RequestBody EquivalenteInputDTO equivalenteInputDTO) {
         categoriaService.editarEquivalentes(
                 equivalenteInputDTO.getCodigoCategoria(),
@@ -76,7 +76,7 @@ public class CategoriasController {
     }
 
     @DeleteMapping("/equivalentes/{nombreEquivalente}")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> eliminarEquivalentes(@PathVariable String nombreEquivalente) {
         categoriaService.eliminarEquivalentes(nombreEquivalente);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();

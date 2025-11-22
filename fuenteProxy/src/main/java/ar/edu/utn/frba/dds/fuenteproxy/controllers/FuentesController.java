@@ -31,7 +31,7 @@ public class FuentesController {
 
 
     @PostMapping("/metamapa")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarFuenteMetamapa(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteMetamapa(dto);
         return ResponseEntity.ok().build();
@@ -39,6 +39,8 @@ public class FuentesController {
 
     @PostMapping("/externa/dds")
     @PreAuthorize("hasRole('ADMIN') ")
+    @PostMapping("/dds")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarFuenteDDS(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteDDS(dto);
         return ResponseEntity.accepted().build();
@@ -46,7 +48,7 @@ public class FuentesController {
 
 
     @DeleteMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public void eliminarFuente(@PathVariable String nombre) {
         fuenteService.eliminarFuente(nombre);
     }

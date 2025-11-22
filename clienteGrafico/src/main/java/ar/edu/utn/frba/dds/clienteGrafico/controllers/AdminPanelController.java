@@ -3,11 +3,12 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UsuarioInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
@@ -143,7 +144,7 @@ public class AdminPanelController {
     // Gestión de colecciones
     @GetMapping("/colecciones")
     public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
-        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
+        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual, null);
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
@@ -199,21 +200,7 @@ public class AdminPanelController {
         return "redirect:/admin/categorias";
     }
 
-    //Gestión Usuarios
-    @GetMapping("/usuarios")
-    public String gestionUsuarios(Model model) {
-        model.addAttribute("titulo", "Gestión de Usuarios");
-        model.addAttribute("contentTemplate", "gestion-usuarios");
 
-        return "admin/panel-base";
-    }
-
-    @PostMapping("/crear-admin")
-    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario) {
-        gestionUsuariosService.crearAdmin(usuario);
-
-        return "redirect:/admin/usuarios";
-    }
 
     //Gestión solicitudes de eliminación
     @GetMapping("/solicitudes")
@@ -244,5 +231,87 @@ public class AdminPanelController {
         agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.RECHAZADA);
 
         return "redirect:/admin/solicitudes";
+    }
+
+    // Acciones para Admin Superior
+
+    @GetMapping("/adminsuperior")
+    public String accionesAdminSuperior(Model model) {
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+
+        model.addAttribute("titulo", "Acciones Avanzadas");
+        model.addAttribute("fuentes", fuentes);
+        model.addAttribute("contentTemplate", "acciones-avanzadas");
+
+        return "admin/panel-base";
+    }
+
+    @PostMapping("/adminsuperior/fuentes/actualizar")
+    public String actualizarFuenteForzosamente() {
+        agregadorService.actualizarFuentesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/adminsuperior/fuentes")
+    public String crearFuente(@ModelAttribute FuenteOutputDTO fuenteDTO, RedirectAttributes redirectAttributes) {
+        try {
+            agregadorService.crearFuente(fuenteDTO);
+            return "redirect:/admin/adminsuperior";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/adminsuperior";
+        }
+    }
+
+    @DeleteMapping("/adminsuperior/fuentes/{id}")
+    public String eliminarFuente(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            agregadorService.eliminarFuente(id);
+            return "redirect:/admin/adminsuperior";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/adminsuperior";
+        }
+    }
+
+    @PostMapping("/adminsuperior/colecciones/actualizar")
+    public String actualizarColeccionesForzosamente() {
+        agregadorService.actualizarColeccionesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/adminsuperior/colecciones/curar")
+    public String curarColeccionesForzosamente() {
+        agregadorService.curarColeccionesForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/crear-admin")
+    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario, Model model) {
+        // Validación de contraseñas en el frontend
+        if (!usuario.getPassword().equals(usuario.getConfirmPassword())) {
+            model.addAttribute("error", "Las contraseñas no coinciden");
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+        }
+        try {
+            gestionUsuariosService.crearAdmin(usuario);
+            return "redirect:/admin/adminsuperior";
+
+        } catch (IllegalArgumentException e) {
+            // Errores de validación del backend (400)
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+
+        } catch (Exception e) {
+            // Errores inesperados
+            model.addAttribute("error", "Error inesperado: " + e.getMessage());
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+        }
     }
 }

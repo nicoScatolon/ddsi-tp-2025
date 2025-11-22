@@ -56,7 +56,7 @@ public class HechosController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
         log.info("Me llego la peticion de crear un hecho");
         /*
@@ -84,7 +84,7 @@ public class HechosController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public ResponseEntity<?> modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         try {
             if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
@@ -104,7 +104,7 @@ public class HechosController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public List<HechoOutputDTO> obtenerHechosUsuario(
             @PathVariable Long userId,
             @RequestParam(required = false) EstadoHecho estado,
@@ -113,7 +113,7 @@ public class HechosController {
     }
 
     @PostMapping("/admin/{adminId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<HechoOutputDTO> revisarHechoAdmin(@PathVariable Long adminId, @RequestBody RevisionHechoInputDTO revisionHechoInputDTO) {
         return this.hechosService.revisarHecho(adminId, revisionHechoInputDTO);
     }

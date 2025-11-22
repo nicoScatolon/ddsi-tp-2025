@@ -8,11 +8,17 @@
         <h1>¡Bienvenido de vuelta!</h1>
         <p>Inicia sesión con tu cuenta de MetaMapa</p>
     </div>
+    <!-- Agregar este bloque después del error y antes del formulario -->
+    <div th:if="${info}" class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <span th:text="${info}">Debes iniciar sesión</span>
+    </div>
 
     <div th:if="${error}" class="alert alert-danger">
         <i class="fas fa-exclamation-circle me-2"></i>
-        Credenciales inválidas
+        <span th:text="${error}">Credenciales Invalidas</span>
     </div>
+
 
     <form th:action="@{/login}" method="post">
         <div class="form-group">

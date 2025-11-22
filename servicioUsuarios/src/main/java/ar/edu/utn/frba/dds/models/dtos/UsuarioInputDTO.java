@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class UsuarioInputDTO {
     private String nombre;
     private String apellido;
+    private String usuario;
     private String email;
     private String currentPassword;
     private String newPassword;

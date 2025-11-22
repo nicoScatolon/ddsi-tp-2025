@@ -93,18 +93,20 @@
                 </span>
             </li>
 
-            <sec:authorize access="hasRole('ADMIN_SUPERIOR')">
-                <li class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
-                    <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
+            <!-- Gestión de Usuarios -->
+
+            <!-- Acciones de Administracion Superior -->
+            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'acciones-avanzadas'} ? 'active'">
+                <a th:if="${contentTemplate != 'acciones-avanzadas'}" href="/admin/adminsuperior">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Acciones Avanzadas</span>
+                </a>
+                <span th:if="${contentTemplate == 'acciones-avanzadas'}" class="menu-link-disabled">
                         <i class="fas fa-users-cog"></i>
-                        <span>Gestión de Usuarios</span>
-                    </a>
-                    <span th:if="${contentTemplate == 'gestion-usuarios'}" class="menu-link-disabled">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Gestión de Usuarios</span>
+                        <span>Acciones Avanzadas</span>
                     </span>
-                </li>
-            </sec:authorize>
+            </li>
+
         </ul>
     </aside>
 
@@ -122,6 +124,10 @@
     <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/importar-hechos.js}"></script>
     <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/gestion-categorias.js}"></script>
     <script th:if="${contentTemplate == 'fuente-externa'}" th:src="@{/js/fuente-externa.js}"></script>
+    <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/admin/gestion-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/admin/importar-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/admin/gestion-categorias.js}"></script>
+    <script th:if="${contentTemplate == 'acciones-avanzadas'}" th:src="@{/js/admin/acciones-avanzadas.js}"></script>
 </th:block>
 
 </html>

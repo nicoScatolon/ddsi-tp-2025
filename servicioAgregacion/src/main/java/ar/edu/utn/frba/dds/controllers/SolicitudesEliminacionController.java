@@ -56,13 +56,13 @@ public class SolicitudesEliminacionController {
     // --- API PRIVADA --- //
 
     @GetMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<SolicitudEliminarHechoOutputDTO> buscarSolicitudesSinProcesar() {
         return this.solicitudesEliminacionService.findSinProcesar();
     }
 
     @PostMapping("/privada/solicitud")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> procesarSolicitud(
             @RequestBody ProcesarSolicitudInputDTO inputDTO,
             @RequestParam EstadoDeSolicitud accion

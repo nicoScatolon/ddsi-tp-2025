@@ -123,6 +123,7 @@ public class DTOConverter {
         return FuentePreviewOutputDTO.builder()
                 .fuenteId(fuente.getId())
                 .nombre(fuente.getNombre())
+                .tipoFuente(fuente.getTipo())
                 .build();
     }
 
@@ -392,13 +393,18 @@ public class DTOConverter {
             dto.setTipo("provincia");
             params.put("provincia", c.getProvincia());
         }
-        else if (criterio instanceof CriterioEtiqueta c) { // Si tienes este
+        else if (criterio instanceof CriterioEtiqueta c) {
             dto.setTipo("etiqueta");
-            params.put("etiqueta", c.getEtiqueta().getId().toString()); // O como lo manejes
+            String etiquetasJson = c.getEtiquetas().stream()
+                    .map(Etiqueta::getNombre)
+                    .map(nombre -> "\"" + nombre.replace("\"", "\\\"") + "\"") // Escapar comillas
+                    .collect(Collectors.joining(",", "[", "]"));
+
+            params.put("etiquetas", etiquetasJson);
         }
-        else if (criterio instanceof CriterioContenidoMultimedia) {
+        else if (criterio instanceof CriterioContenidoMultimedia c) {
             dto.setTipo("contenidoMultimedia");
-            // este no tiene parámetros
+            params.put("tenerMultimedia", c.getTenerMultimedia().toString());
         }
         else {
             throw new IllegalArgumentException("Tipo de criterio no soportado: " + criterio.getClass().getSimpleName());

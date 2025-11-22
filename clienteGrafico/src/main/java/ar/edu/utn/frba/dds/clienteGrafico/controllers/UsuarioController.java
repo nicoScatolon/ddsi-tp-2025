@@ -43,10 +43,22 @@ public class UsuarioController {
     private final WebApiCallerService webApiCallerService;
 
     @GetMapping("/login")
-    public String login(Model model) {
+    public String login(@RequestParam(value = "error", required = false) String error,
+                        @RequestParam(value = "unauthorized", required = false) String unauthorized,
+                        Model model) {
         model.addAttribute("titulo", "Iniciar Sesión");
+
+        if (error != null) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos.");
+        }
+
+        if (unauthorized != null) {
+            model.addAttribute("info", "Debes iniciar sesión para acceder a esa página.");
+        }
+
         return "usuario/login";
     }
+
 
     @GetMapping("/signup")
     public String signup(Model model) {
@@ -66,9 +78,16 @@ public class UsuarioController {
             return "usuario/signup";
         }
 
-        gestionUsuariosService.crearUsuario(request);
+        try {
+            gestionUsuariosService.crearUsuario(request);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("request", request);
+            return "usuario/signup";
+        }
         return "redirect:/login"; // Mejor redirigir al login después del registro
     }
+
 
     @GetMapping("/profile/{id}")
     public String perfil(@PathVariable("id") Long id, Model model, HttpSession session) {
@@ -88,35 +107,22 @@ public class UsuarioController {
         return "redirect:/profile/" + usuarioId;
     }
 
-    @PostMapping("/profile/update")
+    @PostMapping("/profile")
     public String perfil(
-            @RequestParam("firstName") String firstName,
-            @RequestParam("lastName") String lastName,
-            @RequestParam("email") String email,
-            @RequestParam(value="birthDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate birthDate,
+            @ModelAttribute UsuarioOutputDTO usuario,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
         Long userId = (Long) session.getAttribute("userId");
 
         try{
-            UsuarioOutputDTO usuarioDTO = UsuarioOutputDTO.builder()
-                    .nombre(firstName)
-                    .apellido(lastName)
-                    .email(email)
-                    .fechaNacimiento(birthDate)
-                    .build();
-
-            gestionUsuariosService.actualizarUsuario(userId,usuarioDTO);
+            gestionUsuariosService.actualizarUsuario(userId,usuario);
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado con éxito ✅");
 
         }catch(Exception e){
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/profile/"+userId;
-
     }
 
     @PostMapping("/profile/change-password")

@@ -14,6 +14,7 @@ import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
+import ar.edu.utn.frba.dds.services.IGeorefService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
@@ -39,10 +39,9 @@ import java.util.Optional;
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriaService categoriaService;
-    private final CriterioFactory criterioFactory;
     private final IEtiquetasService etiquetaService;
 
-    private IGeoLocalizador geolocalizador = new Georef();
+    private final IGeoLocalizador geolocalizador;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
@@ -51,12 +50,13 @@ public class HechosService implements IHechosService {
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaService categoriaService,
-                         CriterioFactory criterioFactory,
-                         IEtiquetasService etiquetaService) {
+                         IEtiquetasService etiquetaService,
+                         IGeorefService georefService) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
-        this.criterioFactory = criterioFactory;
         this.etiquetaService = etiquetaService;
+
+        this.geolocalizador = new Georef(georefService);
     }
 
     @Override
@@ -135,16 +135,34 @@ public class HechosService implements IHechosService {
     @Transactional
     @Override
     public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
-        //TODO: hacer try catch para evitar errores x consola
         final long t0 = System.currentTimeMillis();
         logger.info("Se van a persistir {} hechos", hechosActualizados.size());
 
-        // 1) Cargar categorías
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        // 1) Asegurar fechaDeCarga y fechaDeOcurrencia no nulas
+        for (Hecho h : hechosActualizados) {
+            if (h.getFechaDeCarga() == null) {
+                h.setFechaDeCarga(now);
+            }
+            if (h.getFechaDeOcurrencia() == null) { // fallback si viene null
+                h.setFechaDeOcurrencia(h.getFechaDeCarga());
+            }
+        }
+
+        // 2) Log de trazabilidad
+        long nulos = hechosActualizados.stream()
+                .filter(h -> h.getFechaDeOcurrencia() == null)
+                .peek(h -> logger.warn("Hecho sin fechaDeOcurrencia. origenId={}, titulo={}",
+                        h.getOrigenId(), h.getTitulo()))
+                .count();
+        if (nulos > 0) logger.warn("Hechos sin fechaDeOcurrencia detectados: {}", nulos);
+
+        // 3) Cargar categorías
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-
-        // 3) Preparar ubicaciones y filtrar las que ya tienen provincia
+        // 4) Preparar ubicaciones
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
                 .map(Hecho::getUbicacion)
                 .filter(Objects::nonNull)
@@ -157,12 +175,12 @@ public class HechosService implements IHechosService {
         logger.info("Total ubicaciones: {}, sin provincia: {}",
                 ubicaciones.size(), ubicacionesSinProvincia.size());
 
-        // 4) Geolocalización solo de las que no tienen provincia
+        // 5) Geolocalización solo si hace falta
         if (!ubicacionesSinProvincia.isEmpty()) {
             logger.info("Geolocalizando {} ubicaciones...", ubicacionesSinProvincia.size());
             try {
                 geolocalizador.geolocalizarBatchAsync(ubicacionesSinProvincia)
-                        .timeout(Duration.ofMinutes(10)) // Aumentar timeout
+                        .timeout(Duration.ofMinutes(10))
                         .block();
                 logger.info("Geolocalización completada");
             } catch (Exception e) {
@@ -172,7 +190,7 @@ public class HechosService implements IHechosService {
             logger.info("Todas las ubicaciones ya tienen provincia, saltando geolocalización");
         }
 
-        // 5) Persistir hechos en batches
+        // 6) Persistir hechos por batches
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());
         final int BATCH_DB = 1000;
         int from = 0;
@@ -180,11 +198,25 @@ public class HechosService implements IHechosService {
             int to = Math.min(from + BATCH_DB, hechosActualizados.size());
             List<Hecho> slice = hechosActualizados.subList(from, to);
 
+            // redundante pero seguro
+            for (Hecho h : slice) {
+                if (h.getFechaDeCarga() == null) {
+                    h.setFechaDeCarga(now);
+                }
+                if (h.getFechaDeOcurrencia() == null) {
+                    h.setFechaDeOcurrencia(h.getFechaDeCarga());
+                }
+            }
+
             try {
                 this.hechosRepository.saveAll(slice);
                 logger.info("Persistidos {}/{}", to, hechosActualizados.size());
             } catch (Exception e) {
                 logger.error("Error persistiendo batch {}-{}: {}", from, to, e.getMessage());
+                // rollback defensivo
+                org.springframework.transaction.interceptor.TransactionAspectSupport
+                        .currentTransactionStatus().setRollbackOnly();
+                return; // corta para evitar flush sucio
             }
 
             from = to;
@@ -192,6 +224,7 @@ public class HechosService implements IHechosService {
 
         logger.info("Persistencia terminada en {} ms", System.currentTimeMillis() - t0);
     }
+
 
 
     @Override

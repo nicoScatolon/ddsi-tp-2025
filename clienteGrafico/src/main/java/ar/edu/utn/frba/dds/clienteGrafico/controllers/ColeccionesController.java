@@ -4,8 +4,10 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
@@ -15,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +33,19 @@ public class ColeccionesController {
     private Integer pageSize;
 
     @GetMapping
-    public String listarColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
-        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
+    public String listarColecciones(
+            Model model,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false) FiltroConsenso consenso) {
 
-        fileSystemService.procesarImagenPrincipalListaColecciones(colecciones);
+        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(page, consenso);
 
-        model.addAttribute("titulo", String.format("Colecciones - Pagina %d", paginaActual+1));
+        model.addAttribute("titulo", "Colecciones");
         model.addAttribute("colecciones", colecciones);
-        model.addAttribute("paginaActual", paginaActual);
-        model.addAttribute("pageSize", pageSize);
-        return "/colecciones/explore";
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("filtroActual", consenso);
+
+        return "colecciones/explore";
     }
 
     @GetMapping("/{handle}")
@@ -120,6 +126,11 @@ public class ColeccionesController {
         agregadorService.editarColeccion(coleccionDTO);
 
         return "redirect:/colecciones";
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public String handleTipoInvalido(MethodArgumentTypeMismatchException ex) {
+        return "redirect:/error/400";
     }
 
     @GetMapping("/{handle}/editar")

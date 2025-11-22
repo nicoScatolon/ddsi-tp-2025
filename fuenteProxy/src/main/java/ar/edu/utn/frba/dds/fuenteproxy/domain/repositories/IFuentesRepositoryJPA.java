@@ -25,4 +25,5 @@ public interface IFuentesRepositoryJPA extends JpaRepository<Fuente, Long> {
     boolean existsFuenteByBaseUrl(String baseUrl);
 
 
+    Fuente findByNombre(String nombre);
 }

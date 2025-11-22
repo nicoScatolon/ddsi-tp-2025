@@ -1,4 +1,4 @@
-// hecho-detail.js - Gestión de detalle de hechos con Carrusel Multimedia y Etiquetas Simplificadas
+// details.js - Gestión de detalle de hechos con Carrusel Multimedia y Etiquetas Simplificadas
 
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar que tenemos datos del hecho
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ===== INICIALIZAR FUNCIONALIDADES =====
-    console.log('🚀 Inicializando hecho-detail.js con carrusel y etiquetas simplificadas');
+    console.log('🚀 Inicializando details.js con carrusel y etiquetas simplificadas');
 
     initCarousel();
     initMap();
