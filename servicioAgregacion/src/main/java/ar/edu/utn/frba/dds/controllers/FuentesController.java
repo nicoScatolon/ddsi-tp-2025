@@ -46,7 +46,7 @@ public class FuentesController {
 
     @DeleteMapping("/privada/{fuenteId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
-    public ResponseEntity<Void> eliminarUnaFuente (@PathVariable long fuenteId) {
+    public ResponseEntity<String> eliminarUnaFuente (@PathVariable long fuenteId) {
         return fuenteService.eliminarFuente(fuenteId);
     }
 

@@ -9,10 +9,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -101,10 +98,8 @@ public class Coleccion {
     }
 
     public void eliminarFuente(Fuente fuente) {
-        FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-        List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
-        this.listaHechos.removeAll(hechosFuenteEliminada);
-        this.listaHechosCurados.removeAll(hechosFuenteEliminada);
+        this.listaHechos = this.listaHechos.stream().filter(h -> !Objects.equals( h.getFuente().getId(), fuente.getId() ) ).toList();
+        this.listaHechosCurados = this.listaHechosCurados.stream().filter(h -> !Objects.equals( h.getFuente().getId(), fuente.getId() ) ).toList();
         this.listaFuentes.remove(fuente);
         curarHechos = true;
     }

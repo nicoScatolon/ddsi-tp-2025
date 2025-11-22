@@ -25,9 +25,4 @@ public class FuenteDinamicaAdapter implements FuenteAdapter {
         return fuenteDinamica.updateHechos(hechosFuente);
     }
 
-    @Override
-    public List<Hecho> obtenerHechos() {
-        return fuenteDinamica.getMapHechos().values().stream().toList();
-    }
-
 }

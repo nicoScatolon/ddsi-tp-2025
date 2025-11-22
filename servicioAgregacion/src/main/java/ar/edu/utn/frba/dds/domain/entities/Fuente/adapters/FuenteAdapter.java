@@ -8,5 +8,4 @@ import java.util.List;
 public interface FuenteAdapter {
     void setFuente(IFuente fuente);
     List<Hecho> actualizarHechos(List<Hecho> hechosFuente); //pedir los hechos y actualizarlos
-    List<Hecho> obtenerHechos(); //pedir los que estan cargados
 }

@@ -13,6 +13,7 @@ import ar.edu.utn.frba.dds.services.IHechosService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -53,21 +54,33 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public ResponseEntity<Void> eliminarFuente(Long id) {
+    public ResponseEntity<String> eliminarFuente(Long id) {
         Fuente fuente = this.buscarFuentePorId(id);
         if (fuente == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        List<Hecho> hechosFuente = hechosService.findByFuente(fuente);
+
         // Eliminamos los hechos de las colecciones
-        coleccionesService.notificarFuenteEliminada(fuente);
+        try {
+            coleccionesService.notificarFuenteEliminada(fuente);
+        } catch (Exception e) {
+            logger.error("Error al eliminar la fuente de las colecciones" + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error al eliminar la fuente de las colecciones");
+        }
 
         // Eliminamos los hechos en general
-
+        try {
+            hechosService.eliminarHechos(hechosFuente);
+        } catch (Exception e) {
+            logger.error("Error al eliminar los hechos" + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error al eliminar los hechos");
+        }
 
         // Eliminamos la fuente
         fuentesRepository.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Fuente eliminada correctamente");
     }
 
     @Override

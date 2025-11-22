@@ -452,9 +452,12 @@ public class ColeccionesService implements IColeccionesService {
     @Override
     @Transactional
     public void notificarFuenteEliminada(Fuente fuente){
-        List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
-                .filter(c -> c.getListaFuentes().contains(fuente)).toList();
-        colecciones.forEach(c -> c.eliminarFuente(fuente));
+        List<Fuente> fuentes = new ArrayList<>();
+        fuentes.add(fuente);
+
+        List<Coleccion> colecciones = coleccionesRepository.findAllByListaFuentesContaining(fuentes);
+        for (Coleccion c : colecciones) { c.eliminarFuente(fuente); }
+        coleccionesRepository.saveAll(colecciones);
     }
 
 
