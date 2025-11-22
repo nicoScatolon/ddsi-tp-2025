@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
@@ -72,4 +73,6 @@ public interface IAgregadorService {
     ResponseEntity<Void> actualizarFuentesForzosamente();
     ResponseEntity<Void> actualizarColeccionesForzosamente();
     ResponseEntity<Void> curarColeccionesForzosamente();
+
+    ResponseEntity<Void>  crearFuente(FuenteOutputDTO fuenteDTO);
 }

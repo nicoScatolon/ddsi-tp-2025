@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableMethodSecurity(prePostEnabled = true)
@@ -40,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
+                        .requestMatchers("/adminsuperior/**").hasRole("ADMINSUPERIOR")
                         // Lo demás requiere autenticación
 
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()

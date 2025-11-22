@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechosFilterOutputDTO;
@@ -567,7 +568,22 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> crearFuente(FuenteOutputDTO fuenteDTO) {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada";
 
+            webApiCallerService.put(
+                    url,
+                    fuenteDTO,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
 
     // --- METODOS PRIVADOS --- //

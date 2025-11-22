@@ -7,6 +7,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDT
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UsuarioInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
@@ -164,43 +165,7 @@ public class AdminPanelController {
         return "redirect:/admin/categorias";
     }
 
-    //Gestión Usuarios
-    @GetMapping("/usuarios")
-    public String gestionUsuarios(Model model) {
-        model.addAttribute("titulo", "Gestión de Usuarios");
-        model.addAttribute("contentTemplate", "gestion-usuarios");
 
-        return "admin/panel-base";
-    }
-
-    @PostMapping("/crear-admin")
-    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario, Model model) {
-        // Validación de contraseñas en el frontend
-        if (!usuario.getPassword().equals(usuario.getConfirmPassword())) {
-            model.addAttribute("error", "Las contraseñas no coinciden");
-            model.addAttribute("titulo", "Gestión de Usuarios");
-            model.addAttribute("contentTemplate", "gestion-usuarios");
-            return "admin/panel-base";
-        }
-        try {
-            gestionUsuariosService.crearAdmin(usuario);
-            return "redirect:/admin/usuarios"; // CORRECCIÓN: faltaba el /
-
-        } catch (IllegalArgumentException e) {
-            // Errores de validación del backend (400)
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("titulo", "Gestión de Usuarios");
-            model.addAttribute("contentTemplate", "gestion-usuarios");
-            return "admin/panel-base";
-
-        } catch (Exception e) {
-            // Errores inesperados
-            model.addAttribute("error", "Error inesperado: " + e.getMessage());
-            model.addAttribute("titulo", "Gestión de Usuarios");
-            model.addAttribute("contentTemplate", "gestion-usuarios");
-            return "admin/panel-base";
-        }
-    }
 
     //Gestión solicitudes de eliminación
     @GetMapping("/solicitudes")
@@ -237,8 +202,8 @@ public class AdminPanelController {
 
     @GetMapping("/adminsuperior")
     public String accionesAdminSuperior(Model model) {
-        model.addAttribute("titulo", "Gestión de Usuarios");
-        model.addAttribute("contentTemplate", "acciones-adminsuperior");
+        model.addAttribute("titulo", "Acciones Avanzadas");
+        model.addAttribute("contentTemplate", "acciones-avanzadas");
 
         return "admin/panel-base";
     }
@@ -247,6 +212,17 @@ public class AdminPanelController {
     public String actualizarFuenteForzosamente() {
         agregadorService.actualizarFuentesForzosamente();
         return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/adminsuperior/fuentes")
+    public String crearFuente(@ModelAttribute FuenteOutputDTO fuenteDTO, RedirectAttributes redirectAttributes) {
+        try {
+            agregadorService.crearFuente(fuenteDTO);
+            return "redirect:/admin/adminsuperior";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/adminsuperior";
+        }
     }
 
     @PostMapping("/adminsuperior/colecciones/actualizar")
@@ -259,5 +235,34 @@ public class AdminPanelController {
     public String curarColeccionesForzosamente() {
         agregadorService.curarColeccionesForzosamente();
         return "redirect:/admin/adminsuperior";
+    }
+
+    @PostMapping("/crear-admin")
+    public String crearAdmin(@ModelAttribute RegisterUsuarioRequestDTO usuario, Model model) {
+        // Validación de contraseñas en el frontend
+        if (!usuario.getPassword().equals(usuario.getConfirmPassword())) {
+            model.addAttribute("error", "Las contraseñas no coinciden");
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+        }
+        try {
+            gestionUsuariosService.crearAdmin(usuario);
+            return "redirect:/admin/adminsuperior";
+
+        } catch (IllegalArgumentException e) {
+            // Errores de validación del backend (400)
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+
+        } catch (Exception e) {
+            // Errores inesperados
+            model.addAttribute("error", "Error inesperado: " + e.getMessage());
+            model.addAttribute("titulo", "Acciones Avanzadas");
+            model.addAttribute("contentTemplate", "acciones-avanzadas");
+            return "admin/panel-base";
+        }
     }
 }

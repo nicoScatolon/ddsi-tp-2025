@@ -82,26 +82,16 @@
             </li>
 
             <!-- Gestión de Usuarios -->
-            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'gestion-usuarios'} ? 'active'">
-                <a th:if="${contentTemplate != 'gestion-usuarios'}" href="/admin/usuarios">
-                    <i class="fas fa-users-cog"></i>
-                    <span>Gestión de Usuarios</span>
-                </a>
-                <span th:if="${contentTemplate == 'gestion-usuarios'}" class="menu-link-disabled">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Gestión de Usuarios</span>
-                    </span>
-            </li>
 
             <!-- Acciones de Administracion Superior -->
-            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'acciones-adminsuperior'} ? 'active'">
-                <a th:if="${contentTemplate != 'acciones-adminsuperior'}" href="/admin/adminsuperior">
+            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'acciones-avanzadas'} ? 'active'">
+                <a th:if="${contentTemplate != 'acciones-avanzadas'}" href="/admin/adminsuperior">
                     <i class="fas fa-users-cog"></i>
-                    <span>Acciones Admin Superior</span>
+                    <span>Acciones Avanzadas</span>
                 </a>
-                <span th:if="${contentTemplate == 'acciones-adminsuperior'}" class="menu-link-disabled">
+                <span th:if="${contentTemplate == 'acciones-avanzadas'}" class="menu-link-disabled">
                         <i class="fas fa-users-cog"></i>
-                        <span>Acciones Admin Superior</span>
+                        <span>Acciones Avanzadas</span>
                     </span>
             </li>
 
@@ -118,9 +108,10 @@
 
 <th:block th:fragment="jsExtra">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/gestion-hechos.js}"></script>
-    <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/importar-hechos.js}"></script>
-    <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/gestion-categorias.js}"></script>
+    <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/admin/gestion-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/admin/importar-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/admin/gestion-categorias.js}"></script>
+    <script th:if="${contentTemplate == 'acciones-avanzadas'}" th:src="@{/js/admin/acciones-avanzadas.js}"></script>
 </th:block>
 
 </html>
