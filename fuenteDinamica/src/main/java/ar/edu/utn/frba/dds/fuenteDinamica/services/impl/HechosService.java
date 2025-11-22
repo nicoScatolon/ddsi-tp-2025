@@ -40,11 +40,37 @@ public class HechosService implements IHechosService {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
     }
+
     @Value("${hecho.diasModificacion}")
-    private Long diasValidosModificacion;
+    private Long diasValidosModificacion; // la cantidad de dias luego de ser aceptado que un hecho puede permitir ser modificado
+
+    @Value("${hecho.diasSugerencia}")
+    private Long diasSugerenciaPermitida; // los dias que puede pasar un hecho en sugerencia hasta ser eliminado
 
     @Value("${app.pagination.hechos.size}")
     private Integer pageSize;
+
+
+    //  ---  Scheduler --- //
+
+
+    public void rechazarHechosSugerenciasScheduler(){
+        List<Hecho> hechosSugerencias = hechosRepository.findAllByEstado(EstadoHecho.SUGERENCIA);
+        if (hechosSugerencias.isEmpty()) return;
+        LocalDateTime limite = LocalDateTime.now().minusDays(diasSugerenciaPermitida); // la fecha limite, si fuiste gestionado antes de esto, te pasaste del tiempo maximo posible
+        for (Hecho hecho : hechosSugerencias) {
+            // si la fechaDeGestion es anterior al límite → vencido
+            if (hecho.getFechaDeGestion().isBefore(limite)) {
+                hecho.setEstado(EstadoHecho.RECHAZADO);
+                hecho.setFechaDeGestion(LocalDateTime.now());
+            }
+        }
+        hechosRepository.saveAll(hechosSugerencias);
+    }
+
+
+    //  ---  Metodos Controller  ---  //
+
 
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado, Integer page) {
@@ -133,7 +159,7 @@ public class HechosService implements IHechosService {
     }
 
 
-    // API privada //
+    //  ---  API privada  ---  //
 
     @Override
     public List<HechoOutputDTO> getHechosForAgregador(LocalDateTime fechaDeGestion) {
@@ -176,7 +202,9 @@ public class HechosService implements IHechosService {
     }
 
 
-    //Metodos privados
+    //  ---  Metodos privados  --- //
+
+
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO) {
         return Hecho.builder()
                 .id(hechoDTO.getId())
