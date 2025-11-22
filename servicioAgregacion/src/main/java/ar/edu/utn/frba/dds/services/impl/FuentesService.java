@@ -58,9 +58,15 @@ public class FuentesService implements IFuentesService {
         if (fuente == null) {
             return ResponseEntity.notFound().build();
         }
+        // Eliminamos los hechos de las colecciones
+        coleccionesService.notificarFuenteEliminada(fuente);
 
-        coleccionesService.notificarFuenteEliminada(this.buscarFuentePorId(id));
+        // Eliminamos los hechos en general
+
+
+        // Eliminamos la fuente
         fuentesRepository.deleteById(id);
+
         return ResponseEntity.ok().build();
     }
 
