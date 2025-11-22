@@ -14,6 +14,7 @@ import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
+import ar.edu.utn.frba.dds.services.IGeorefService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
@@ -39,10 +39,9 @@ import java.util.Optional;
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriaService categoriaService;
-    private final CriterioFactory criterioFactory;
     private final IEtiquetasService etiquetaService;
 
-    private IGeoLocalizador geolocalizador = new Georef();
+    private IGeoLocalizador geolocalizador;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
@@ -51,12 +50,13 @@ public class HechosService implements IHechosService {
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaService categoriaService,
-                         CriterioFactory criterioFactory,
-                         IEtiquetasService etiquetaService) {
+                         IEtiquetasService etiquetaService,
+                         IGeorefService georefService) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
-        this.criterioFactory = criterioFactory;
         this.etiquetaService = etiquetaService;
+
+        this.geolocalizador = new Georef(georefService);
     }
 
     @Override

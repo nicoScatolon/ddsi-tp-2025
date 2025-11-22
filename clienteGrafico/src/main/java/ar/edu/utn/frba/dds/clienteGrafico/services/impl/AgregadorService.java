@@ -21,7 +21,10 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -64,6 +67,7 @@ public class AgregadorService implements IAgregadorService {
         return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
 
+    @Cacheable("hechos-mapa")
     public List<HechoMapaInputDTO> getHechosMapa() {
         try {
             return webApiCallerService.getPublicList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
@@ -73,6 +77,7 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    @Cacheable(value = "hechosPorProvincia", key = "#provincia")
     public List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia) {
         try {
             String url = agregadorUrl + "/api/hechos/publica/mapa?provincia=" + provincia;
@@ -80,6 +85,12 @@ public class AgregadorService implements IAgregadorService {
         } catch (RuntimeException e) {
             throw new RuntimeException("Error al obtener los hechos del mapa por provincia: " + e.getMessage(), e);
         }
+    }
+
+    @Scheduled(fixedRate = 30 * 60 * 1000) // cada 30 minutos
+    @CacheEvict(value = {"hechos-mapa", "hechosPorProvincia"}, allEntries = true)
+    public void limpiarCacheHechos() {
+        System.out.println("Cache de hechos invalidado");
     }
 
 
