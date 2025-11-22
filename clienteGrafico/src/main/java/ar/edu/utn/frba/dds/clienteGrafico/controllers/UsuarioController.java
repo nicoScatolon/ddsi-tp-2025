@@ -44,11 +44,16 @@ public class UsuarioController {
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
+                        @RequestParam(value = "unauthorized", required = false) String unauthorized,
                         Model model) {
         model.addAttribute("titulo", "Iniciar Sesión");
 
         if (error != null) {
             model.addAttribute("error", "Usuario o contraseña incorrectos.");
+        }
+
+        if (unauthorized != null) {
+            model.addAttribute("info", "Debes iniciar sesión para acceder a esa página.");
         }
 
         return "usuario/login";

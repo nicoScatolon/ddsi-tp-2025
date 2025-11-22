@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.clienteGrafico.config;
 
 import ar.edu.utn.frba.dds.clienteGrafico.providers.CustomAuthProvider;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,18 +32,11 @@ public class SecurityConfig {
                         // Recursos estáticos y login público
                         .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/img/**").permitAll()
 
-                        // Rutas Publicas
-//                        .requestMatchers("/", "/index","/legales","/about").permitAll()
-//                        .requestMatchers("/hechos", "/hechos/create", "/hechos/{id}", "/hechos/map", "/hechos/fuenteDinamica/**") .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/colecciones", "/colecciones/{handle}").permitAll()
-//                        .requestMatchers("/solicitudesEliminacion").permitAll()
-
                         // Rutas Admin
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/adminsuperior/**").hasRole("ADMINSUPERIOR")
-                        // Lo demás requiere autenticación
 
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
 
@@ -51,7 +45,28 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/index", true)
+                        // Success handler inline (sin clase separada)
+                        .successHandler((request, response, authentication) -> {
+                            HttpSession session = request.getSession(false);
+                            String targetUrl = "/index"; // URL por defecto
+
+                            // Intentar obtener la URL guardada en la sesión
+                            if (session != null) {
+                                String redirectUrl = (String) session.getAttribute("REDIRECT_URL_AFTER_LOGIN");
+                                if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                                    targetUrl = redirectUrl;
+                                    // Limpiar después de usar
+                                    session.removeAttribute("REDIRECT_URL_AFTER_LOGIN");
+                                }
+                            }
+
+                            // Evitar redirecciones a páginas de login o error
+                            if (targetUrl.contains("/login") || targetUrl.contains("/error")) {
+                                targetUrl = "/index";
+                            }
+
+                            response.sendRedirect(targetUrl);
+                        })
                         .failureUrl("/login?error=true")
                 )
                 .logout(logout -> logout
@@ -60,10 +75,20 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        // Usuario no autenticado → redirigir a login
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login?unauthorized")
-                        )
+                        // Usuario no autenticado → redirigir a login guardando la URL
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // Guardar la URL original en la sesión
+                            String targetUrl = request.getRequestURI();
+
+                            // Si tiene query params, incluirlos también
+                            String queryString = request.getQueryString();
+                            if (queryString != null && !queryString.isEmpty()) {
+                                targetUrl += "?" + queryString;
+                            }
+
+                            request.getSession().setAttribute("REDIRECT_URL_AFTER_LOGIN", targetUrl);
+                            response.sendRedirect("/login?unauthorized");
+                        })
                         // Usuario autenticado pero sin permisos → redirigir a página de error
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/error/403")
