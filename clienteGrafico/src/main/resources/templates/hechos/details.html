@@ -59,16 +59,12 @@
                         <div class="info-item">
                             <div class="tags-header">Ubicación:</div>
                             <p id="hecho-ubicacion" class="ubicacion">
-                                <span th:if="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">
-                                    <span th:if="${hecho.ubicacion.provincia != null}"
-                                          th:text="${hecho.ubicacion.provincia}"></span>
-                                    <span th:if="${hecho.ubicacion.departamento != null}"
-                                          th:text="${hecho.ubicacion.departamento}"></span>
-                                    <span th:if="${hecho.ubicacion.calle != null}"
-                                          th:text="${' - ' + hecho.ubicacion.calle}"></span>
-                                    <span th:if="${hecho.ubicacion.numero != null}"
-                                          th:text="${' ' + hecho.ubicacion.numero}"></span>
-                                </span>
+                                    <span th:if="${hecho.ubicacion != null}"
+                                          th:utext="${(hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : '') +
+                                                     (hecho.ubicacion.departamento != null ? ', ' + hecho.ubicacion.departamento : '') +
+                                                     (hecho.ubicacion.calle != null ? ' - ' + hecho.ubicacion.calle : '') +
+                                                     (hecho.ubicacion.numero != null ? ' ' + hecho.ubicacion.numero : '')}">
+                                    </span>
                                 <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
                             </p>
                         </div>

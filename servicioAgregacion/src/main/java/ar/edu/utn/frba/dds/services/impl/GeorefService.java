@@ -250,10 +250,6 @@ public class GeorefService implements IGeorefService {
                 .trim();
     }
 
-    public boolean isCacheInicializado() {
-        return cacheInicializado;
-    }
-
     // ===== CLASES INTERNAS DE CACHE =====
 
     static class ProvinciaCache {

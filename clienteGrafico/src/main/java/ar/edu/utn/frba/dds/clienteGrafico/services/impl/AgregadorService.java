@@ -4,7 +4,6 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
@@ -596,6 +595,15 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> eliminarFuente(Long id) {
+        try {
+            webApiCallerService.delete(agregadorUrl + "/api/fuente/privada/" + id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar la fuente con id " + id + ": " + e.getMessage(), e);
+        }
+    }
 
     // --- METODOS PRIVADOS --- //
 

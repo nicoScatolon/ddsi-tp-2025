@@ -2,11 +2,11 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
@@ -202,7 +202,10 @@ public class AdminPanelController {
 
     @GetMapping("/adminsuperior")
     public String accionesAdminSuperior(Model model) {
+        List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+
         model.addAttribute("titulo", "Acciones Avanzadas");
+        model.addAttribute("fuentes", fuentes);
         model.addAttribute("contentTemplate", "acciones-avanzadas");
 
         return "admin/panel-base";
@@ -218,6 +221,17 @@ public class AdminPanelController {
     public String crearFuente(@ModelAttribute FuenteOutputDTO fuenteDTO, RedirectAttributes redirectAttributes) {
         try {
             agregadorService.crearFuente(fuenteDTO);
+            return "redirect:/admin/adminsuperior";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/adminsuperior";
+        }
+    }
+
+    @DeleteMapping("/adminsuperior/fuentes/{id}")
+    public String eliminarFuente(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            agregadorService.eliminarFuente(id);
             return "redirect:/admin/adminsuperior";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

@@ -41,7 +41,7 @@ public class HechosService implements IHechosService {
     private final ICategoriaService categoriaService;
     private final IEtiquetasService etiquetaService;
 
-    private IGeoLocalizador geolocalizador;
+    private final IGeoLocalizador geolocalizador;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 

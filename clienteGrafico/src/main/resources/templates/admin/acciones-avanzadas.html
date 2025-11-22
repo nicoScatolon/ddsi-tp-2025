@@ -17,29 +17,6 @@
             </button>
         </div>
 
-        <!-- Card: Fuentes -->
-        <div class="avanzadas-card">
-            <div class="card-icon fuentes-icon">
-                <i class="fas fa-database"></i>
-            </div>
-            <h2 class="card-title">Fuentes</h2>
-            <p class="card-description">Administra y sincroniza las fuentes de datos del sistema</p>
-
-            <div class="card-actions">
-                <button type="button" class="btn-card btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearFuente">
-                    <i class="fas fa-plus me-2"></i>
-                    Crear Fuente
-                </button>
-
-                <form class="form-accion" th:action="@{/admin/adminsuperior/fuentes/actualizar}" method="post" onsubmit="return confirmarAccion('actualizar las fuentes')">
-                    <button type="submit" class="btn-card btn-primary">
-                        <i class="fas fa-sync-alt me-2"></i>
-                        Actualizar Fuentes
-                    </button>
-                </form>
-            </div>
-        </div>
-
         <!-- Card: Colecciones -->
         <div class="avanzadas-card">
             <div class="card-icon colecciones-icon">
@@ -66,6 +43,103 @@
         </div>
 
     </div>
+
+    <!-- ============================================ -->
+    <!-- SECCIÓN COMPLETA DE GESTIÓN DE FUENTES -->
+    <!-- ============================================ -->
+    <div class="fuentes-section">
+        <div class="section-header-fuentes">
+            <div class="header-left">
+                <div class="header-icon-fuentes">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <h2 class="section-title-fuentes">Gestión de Fuentes</h2>
+                    <p class="section-subtitle-fuentes">Administra las fuentes de datos del sistema</p>
+                </div>
+            </div>
+            <div class="header-actions-fuentes">
+                <button type="button" class="btn btn-success btn-fuente" data-bs-toggle="modal" data-bs-target="#modalCrearFuente">
+                    <i class="fas fa-plus me-2"></i>
+                    Nueva Fuente
+                </button>
+                <form th:action="@{/admin/adminsuperior/fuentes/actualizar}" method="post"
+                      onsubmit="return confirmarAccion('actualizar todas las fuentes')" style="display: inline;">
+                    <button type="submit" class="btn btn-primary btn-fuente">
+                        <i class="fas fa-sync-alt me-2"></i>
+                        Actualizar Todas
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Grid de Fuentes -->
+        <div class="fuentes-grid-list">
+            <div th:each="fuente : ${fuentes}" class="fuente-item" th:classappend="${fuente.tipoFuente.name() == 'PROXY'} ? 'fuente-proxy-item' : ''">
+                <!-- Badge de tipo -->
+                <div class="fuente-type-badge"
+                     th:classappend="'badge-type-' + ${#strings.toLowerCase(fuente.tipoFuente.name())}">
+
+                    <i class="fas" th:switch="${fuente.tipoFuente.name()}">
+                        <span th:case="'ESTATICA'" class="fa-file-alt"></span>
+                        <span th:case="'DINAMICA'" class="fa-sync"></span>
+                        <span th:case="*"
+                              class="fa-network-wired"></span>
+                    </i>
+
+                    <!-- Texto del tipo al lado -->
+                    <span th:text="${fuente.tipoFuente}"></span>
+                </div>
+
+                <!-- Información de la fuente -->
+                <div class="fuente-info">
+                    <h3 class="fuente-nombre" th:text="${fuente.nombre}">Nombre Fuente</h3>
+                    <p class="fuente-id">ID: <span th:text="${fuente.fuenteId}"></span></p>
+                </div>
+
+                <!-- Acciones -->
+                <div class="fuente-actions">
+                    <!-- Botón especial para Proxy -->
+                    <button th:if="${fuente.tipoFuente.name() == 'PROXY'}"
+                            type="button"
+                            class="btn-icon btn-config"
+                            th:data-fuente-id="${fuente.fuenteId}"
+                            th:data-fuente-nombre="${fuente.nombre}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalGestionarProxy"
+                            onclick="cargarDatosProxy(this)"
+                            title="Configurar Proxy">
+                        <i class="fas fa-cog"></i>
+                    </button>
+
+                    <!-- Eliminar fuente -->
+                    <form th:action="@{/admin/adminsuperior/fuentes/{id}(id=${fuente.fuenteId})}"
+                          method="post"
+                          onsubmit="return confirmarEliminarFuente(event, this)"
+                          style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mensaje si no hay fuentes -->
+            <div th:if="${#lists.isEmpty(fuentes)}" class="no-fuentes">
+                <i class="fas fa-database fa-3x mb-3 text-muted"></i>
+                <p>No hay fuentes registradas en el sistema</p>
+                <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalCrearFuente">
+                    <i class="fas fa-plus me-2"></i>
+                    Crear Primera Fuente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODALES -->
+    <!-- ============================================ -->
 
     <!-- Modal de Confirmación -->
     <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
@@ -94,7 +168,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Modal Crear Administrador -->
     <div class="modal fade" id="modalCrearAdmin" tabindex="-1" aria-labelledby="modalCrearAdminLabel" aria-hidden="true">
@@ -191,7 +264,6 @@
         </div>
     </div>
 
-
     <!-- Modal Crear Fuente -->
     <div class="modal fade" id="modalCrearFuente" tabindex="-1" aria-labelledby="modalCrearFuenteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -255,6 +327,78 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestionar Proxy -->
+    <div class="modal fade" id="modalGestionarProxy" tabindex="-1" aria-labelledby="modalGestionarProxyLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header modal-header-proxy">
+                    <h5 class="modal-title" id="modalGestionarProxyLabel">
+                        <i class="fas fa-network-wired me-2"></i>
+                        Configurar Fuente Proxy: <span id="proxyNombre"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="text-muted mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Las fuentes Proxy actúan como intermediarios entre el sistema y otras fuentes externas.
+                    </p>
+
+                    <!-- Aquí puedes agregar configuraciones específicas de proxy -->
+                    <div class="proxy-config">
+                        <div class="alert alert-info">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>ID de Fuente:</strong> <span id="proxyId"></span>
+                        </div>
+
+                        <!-- Formulario de configuración de proxy -->
+                        <form id="formConfigProxy">
+                            <input type="hidden" id="proxyFuenteId" name="fuenteId">
+
+                            <div class="mb-3">
+                                <label for="proxyTimeout" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Timeout (ms)
+                                </label>
+                                <input type="number" class="form-control" id="proxyTimeout" name="timeout" value="5000" min="1000" step="1000">
+                                <small class="text-muted">Tiempo máximo de espera para las solicitudes</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="proxyRetries" class="form-label">
+                                    <i class="fas fa-redo me-1"></i>
+                                    Reintentos
+                                </label>
+                                <input type="number" class="form-control" id="proxyRetries" name="retries" value="3" min="0" max="10">
+                                <small class="text-muted">Número de reintentos ante fallos</small>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="proxyCache" name="cache" checked>
+                                <label class="form-check-label" for="proxyCache">
+                                    <i class="fas fa-memory me-1"></i>
+                                    Habilitar caché de respuestas
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="guardarConfigProxy()">
+                        <i class="fas fa-save me-2"></i>
+                        Guardar Configuración
+                    </button>
+                </div>
             </div>
         </div>
     </div>

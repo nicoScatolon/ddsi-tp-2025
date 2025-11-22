@@ -75,4 +75,6 @@ public interface IAgregadorService {
     ResponseEntity<Void> curarColeccionesForzosamente();
 
     ResponseEntity<Void>  crearFuente(FuenteOutputDTO fuenteDTO);
+
+    ResponseEntity<Void> eliminarFuente(Long id);
 }

@@ -123,6 +123,7 @@ public class DTOConverter {
         return FuentePreviewOutputDTO.builder()
                 .fuenteId(fuente.getId())
                 .nombre(fuente.getNombre())
+                .tipoFuente(fuente.getTipo())
                 .build();
     }
 

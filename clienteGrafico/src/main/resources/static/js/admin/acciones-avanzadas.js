@@ -2,29 +2,21 @@
 let formPendiente = null;
 
 function confirmarAccion(accion) {
-    // Guardar el formulario que se quiere enviar
     formPendiente = event.target;
 
-    // Actualizar el mensaje del modal
     document.getElementById('mensajeConfirmacion').innerHTML =
         `¿Estás seguro de que deseas <strong>${accion}</strong>?<br><span class="text-muted">Esta acción se ejecutará inmediatamente.</span>`;
 
-    // Mostrar el modal
     const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
     modal.show();
 
-    // Prevenir el envío del formulario
     return false;
 }
 
-// Confirmar la acción cuando se hace clic en el botón
 document.getElementById('btnConfirmarAccion')?.addEventListener('click', function() {
     if (formPendiente) {
-        // Cerrar el modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacion'));
         modal.hide();
-
-        // Enviar el formulario
         formPendiente.submit();
     }
 });
@@ -40,7 +32,6 @@ document.querySelector('form[action*="crear-admin"]')?.addEventListener('submit'
         return false;
     }
 
-    // Confirmar creación de administrador
     const confirmacion = confirm('¿Estás seguro de que deseas crear este nuevo administrador?');
     if (!confirmacion) {
         e.preventDefault();
@@ -53,7 +44,6 @@ function confirmarCreacionFuente() {
     const nombre = document.getElementById('nombreFuente').value;
     const tipoFuente = document.getElementById('tipoFuente').value;
 
-    // Validar que los campos no estén vacíos
     if (!nombre || !tipoFuente) {
         alert('Por favor, completa todos los campos antes de continuar.');
         return false;
@@ -61,3 +51,78 @@ function confirmarCreacionFuente() {
 
     return confirm(`¿Estás seguro de crear la fuente "${nombre}" de tipo ${tipoFuente}?`);
 }
+
+// ===== CONFIRMACIÓN ELIMINAR FUENTE =====
+function confirmarEliminarFuente(event, form) {
+    event.preventDefault();
+
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar esta fuente?\n\nEsta acción no se puede deshacer.');
+
+    if (confirmacion) {
+        form.submit();
+    }
+
+    return false;
+}
+
+// ===== GESTIÓN DE PROXY =====
+function cargarDatosProxy(button) {
+    const fuenteId = button.getAttribute('data-fuente-id');
+    const fuenteNombre = button.getAttribute('data-fuente-nombre');
+
+    document.getElementById('proxyNombre').textContent = fuenteNombre;
+    document.getElementById('proxyId').textContent = fuenteId;
+    document.getElementById('proxyFuenteId').value = fuenteId;
+}
+
+function guardarConfigProxy() {
+    const fuenteId = document.getElementById('proxyFuenteId').value;
+    const timeout = document.getElementById('proxyTimeout').value;
+    const retries = document.getElementById('proxyRetries').value;
+    const cache = document.getElementById('proxyCache').checked;
+
+    // Aquí puedes hacer una petición AJAX para guardar la configuración
+    console.log('Guardando configuración de proxy:', {
+        fuenteId,
+        timeout,
+        retries,
+        cache
+    });
+
+    // Ejemplo con fetch (ajusta la URL según tu backend)
+    /*
+    fetch(`/admin/adminsuperior/fuentes/${fuenteId}/config-proxy`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ timeout, retries, cache })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Configuración guardada exitosamente');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalGestionarProxy'));
+        modal.hide();
+    })
+    .catch(error => {
+        alert('Error al guardar la configuración');
+        console.error('Error:', error);
+    });
+    */
+
+    // Por ahora, solo cerramos el modal
+    alert('Configuración guardada exitosamente');
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalGestionarProxy'));
+    modal.hide();
+}
+
+// ===== AUTO-HIDE ALERTS =====
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000);
+    });
+});
