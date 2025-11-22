@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
@@ -10,6 +11,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.repositories.IFuentesRepositoryJPA
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IHechosService;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -34,6 +36,12 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
+    public List<FuenteOutputDTO> getFuentes(){
+        return fuentesRepository.findAll()
+                .stream().map(f -> DTOConverter.mapToFuenteOutputDTO(f)).toList();
+    }
+
+    @Override
     public Fuente buscarPorId(Long id) {
         return fuentesRepository.findById(id).orElse(null);
     }
@@ -55,7 +63,7 @@ public class FuentesService implements IFuentesService {
 
     @Override
     public void agregarFuenteDDS(FuenteInputDTO dto) {
-        boolean existsFuenteByBaseUrl = fuentesRepository.existsFuenteByBaseUrl(dto.getBaseUrl());
+        boolean existsFuenteByBaseUrl = fuentesRepository.existsFuenteByBaseUrl(fuenteFactory.getDdsBaseUrl());
         FuenteDDS nuevaFuente = fuenteFactory.nuevaFuenteDDS(dto.getNombre());
         if(!existsFuenteByBaseUrl) {
             hechosService.cargarHechosFuente(nuevaFuente).subscribe();

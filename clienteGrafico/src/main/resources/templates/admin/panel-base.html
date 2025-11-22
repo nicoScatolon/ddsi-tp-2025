@@ -33,6 +33,18 @@
                 </span>
             </li>
 
+            <!-- Fuentes Proxy -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'fuente-externa'} ? 'active'">
+                <a th:if="${contentTemplate != 'fuente-externa'}" href="/admin/fuente-externa">
+                    <i class="fas fa-globe"></i>
+                    <span>Gestión fuentes externas</span>
+                </a>
+                <span th:if="${contentTemplate == 'fuente-externa'}" class="menu-link-disabled">
+                    <i class="fas fa-globe"></i>
+                    <span>Gestión Fuentes Externas</span>
+                </span>
+            </li>
+
             <!-- Gestión de Hechos -->
             <li class="menu-item" th:classappend="${contentTemplate == 'gestion-hechos'} ? 'active'">
                 <a th:if="${contentTemplate != 'gestion-hechos'}" href="/admin/hechos">
@@ -109,6 +121,7 @@
     <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/gestion-hechos.js}"></script>
     <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/importar-hechos.js}"></script>
     <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/gestion-categorias.js}"></script>
+    <script th:if="${contentTemplate == 'fuente-externa'}" th:src="@{/js/fuente-externa.js}"></script>
 </th:block>
 
 </html>

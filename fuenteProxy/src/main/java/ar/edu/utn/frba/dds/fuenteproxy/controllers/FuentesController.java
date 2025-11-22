@@ -23,6 +23,13 @@ public class FuentesController {
         this.fuenteService = fuenteService;
     }
 
+    @GetMapping("/fuentes")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<FuenteOutputDTO> getFuentes(){
+        return fuenteService.getFuentes();
+    }
+
+
     @PostMapping("/metamapa")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> agregarFuenteMetamapa(@RequestBody FuenteInputDTO dto) {
@@ -30,7 +37,7 @@ public class FuentesController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/fuentes/dds")
+    @PostMapping("/externa/dds")
     @PreAuthorize("hasRole('ADMIN') ")
     public ResponseEntity<Void> agregarFuenteDDS(@RequestBody FuenteInputDTO dto) {
         fuenteService.agregarFuenteDDS(dto);
@@ -40,8 +47,8 @@ public class FuentesController {
 
     @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public void eliminarFuente(@RequestBody FuenteInputDTO dto) {
-        fuenteService.eliminarFuente(dto.getNombre());
+    public void eliminarFuente(@PathVariable String nombre) {
+        fuenteService.eliminarFuente(nombre);
     }
 
 }

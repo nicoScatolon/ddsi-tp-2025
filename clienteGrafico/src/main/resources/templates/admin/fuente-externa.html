@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<th:block th:fragment="fuente-externa">
+
+    <section class="fuentes-externas">
+        <!-- Caja de información -->
+        <div class="info-box">
+            <div class="info-box__icon">i</div>
+            <div class="info-box__content">
+                <h2 class="info-box__title">Configuración de fuentes externas</h2>
+                <p class="info-box__text">
+                    Desde este panel podés
+                    <strong>registrar y administrar URLs</strong>
+                    para fuentes proxy compatibles con MetaMapa.
+                </p>
+            </div>
+        </div>
+
+        <!-- Layout principal: un solo contenedor -->
+        <div class="proxy-grid">
+            <section class="card card--proxy card--urls">
+                <header class="card__header">
+                    <h2 class="card__title">Fuentes externas </h2>
+                </header>
+
+                <p class="card__text">
+                    Registrá APIs externas compatibles (por ejemplo, otras instancias
+                    de MetaMapa) para agregarlas como fuentes proxy.
+                </p>
+
+                <!-- Formulario de alta rápida -->
+                <form class="proxy-form" id="form-nueva-fuente">
+                    <!-- Fila 1: nombre + tipo -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="nombre-fuente">Nombre de la fuente</label>
+                            <input id="nombre-fuente"
+                                   name="nombre"
+                                   type="text"
+                                   class="input"
+                                   placeholder="Ej: MetaMapa Derechos Humanos" />
+                        </div>
+
+                        <div class="form-field">
+                            <label for="tipo-fuente">Tipo de fuente</label>
+                            <select id="tipo-fuente"
+                                    name="tipo"
+                                    class="select"
+                                    required>
+                                <option value="" disabled selected hidden>
+                                    Seleccione el tipo de fuente
+                                </option>
+                                <option value="METAMAPA">MetaMapa</option>
+                                <option value="EXTERNA">Externa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: campo dinámico a lo ancho -->
+                    <div class="form-row">
+                        <!-- Grupo URL (solo para tipo = METAMAPA) -->
+                        <div class="form-field is-hidden" id="grupo-url">
+                            <label for="url-fuente">URL base de la API</label>
+                            <input id="url-fuente"
+                                   name="urlBase"
+                                   type="url"
+                                   class="input"
+                                   placeholder="https://ejemplo.org/api" />
+                        </div>
+
+                        <!-- Grupo fuente externa (solo para tipo = EXTERNA) -->
+                        <div class="form-field is-hidden" id="grupo-fuente-externa">
+                            <label for="fuente-externa-select">Fuente externa</label>
+                            <select id="fuente-externa-select"
+                                    name="fuenteExternaId"
+                                    class="select">
+                                <option value="" disabled selected hidden>
+                                    Seleccione la fuente externa
+                                </option>
+                                <!-- Por ahora solo una opción fija -->
+                                <option value="DISENO_DS">
+                                    Diseño de Sistemas
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: botón a lo ancho -->
+                    <div class="form-row form-row--actions">
+                        <div class="form-field form-field--actions">
+                            <button type="submit" class="btn btn-primary btn-full">
+                                + Agregar fuente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Tabla de fuentes ya configuradas -->
+                <div class="table-wrapper">
+                    <table class="table table--compact">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>URL</th>
+                            <th>Tipo</th>
+                            <th>Última actualización</th>
+                            <th class="table__col-actions">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="fuente : ${fuentesProxy}">
+                            <td th:text="${fuente.nombre}">MetaMapa Ejemplo</td>
+                            <td class="table__cell-url"
+                                th:text="${fuente.urlBase}">
+                                https://ejemplo.org/api
+                            </td>
+                            <td th:text="${fuente.tipo}">METAMAPA</td>
+                            <td th:text="${fuente.ultimaActualizacion}">
+                                2025-10-21 10:32
+                            </td>
+                            <td class="table__col-actions">
+                                <button type="button"
+                                        class="link-button">
+                                    Probar
+                                </button>
+                                <button type="button"
+                                        class="link-button link-button--danger">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(fuentesProxy)}">
+                            <td colspan="5" class="table__empty">
+                                Todavía no hay fuentes externas configuradas.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <!-- Lógica mínima para mostrar/ocultar campos según el tipo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tipoSelect = document.getElementById('tipo-fuente');
+            const grupoUrl = document.getElementById('grupo-url');
+            const grupoFuenteExt = document.getElementById('grupo-fuente-externa');
+
+            if (!tipoSelect || !grupoUrl || !grupoFuenteExt) return;
+
+            function actualizarCampos() {
+                const tipo = tipoSelect.value;
+
+                if (!tipo) {
+                    grupoUrl.classList.add('is-hidden');
+                    grupoFuenteExt.classList.add('is-hidden');
+                    return;
+                }
+
+                if (tipo === 'METAMAPA') {
+                    grupoUrl.classList.remove('is-hidden');
+                    grupoFuenteExt.classList.add('is-hidden');
+                } else if (tipo === 'EXTERNA') {
+                    grupoFuenteExt.classList.remove('is-hidden');
+                    grupoUrl.classList.add('is-hidden');
+                } else {
+                    grupoUrl.classList.add('is-hidden');
+                    grupoFuenteExt.classList.add('is-hidden');
+                }
+            }
+
+            actualizarCampos();
+            tipoSelect.addEventListener('change', actualizarCampos);
+        });
+    </script>
+
+</th:block>
+</html>

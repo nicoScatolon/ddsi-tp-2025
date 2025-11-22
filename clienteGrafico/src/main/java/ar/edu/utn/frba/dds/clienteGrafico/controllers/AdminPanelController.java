@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
@@ -13,13 +14,11 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Est
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RegisterUsuarioRequestDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +36,7 @@ public class AdminPanelController {
     private final IFuenteDinamicaService fuenteDinamicaService;
     private final IFileSystemService fileSystemService;
     private final IGestionUsuariosService gestionUsuariosService;
+    private final IFuenteProxyService fuenteProxyService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -85,6 +85,23 @@ public class AdminPanelController {
         return "redirect:/admin/importar";
     }
 
+    @GetMapping("/fuente-externa")
+    public String mostrarFuentesProxy(Model model) {
+        model.addAttribute("titulo", "Gestión Fuentes Externas");
+        model.addAttribute("contentTemplate", "fuente-externa");
+
+        // cuando conectes el back:
+        // model.addAttribute("colecciones", coleccionService.listarTodo());
+        // model.addAttribute("fuentesProxy", fuenteProxyService.listarTodo());
+        // model.addAttribute("catedraActiva", ...);
+        // model.addAttribute("ultimaActualizacionCatedra", ...);
+
+        return "admin/panel-base"; // el MISMO template que usan las otras vistas del panel
+    }
+
+
+
+
     //Gestión de hechos
     @GetMapping("/hechos")
     public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model) {
@@ -104,6 +121,24 @@ public class AdminPanelController {
         this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
         return "redirect:/admin/hechos";
     }
+
+    @PostMapping("/externa")
+    public ResponseEntity<Void> agregarFuente(@RequestParam String nombre, @RequestParam String tipoFuente) {
+        FuenteProxyInputDTO dto = new FuenteProxyInputDTO();
+        dto.setNombre(nombre);
+
+        if ("dds".equalsIgnoreCase(tipoFuente)) {
+            fuenteProxyService.agregarFuenteDDS(dto);
+        } else if ("metamapa".equalsIgnoreCase(tipoFuente)) {
+            fuenteProxyService.agregarFuenteMetamapa(dto);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+
 
     // Gestión de colecciones
     @GetMapping("/colecciones")
