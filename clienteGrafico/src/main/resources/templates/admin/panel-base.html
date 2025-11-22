@@ -120,10 +120,6 @@
 
 <th:block th:fragment="jsExtra">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/gestion-hechos.js}"></script>
-    <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/importar-hechos.js}"></script>
-    <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/gestion-categorias.js}"></script>
-    <script th:if="${contentTemplate == 'fuente-externa'}" th:src="@{/js/fuente-externa.js}"></script>
     <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/admin/gestion-hechos.js}"></script>
     <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/admin/importar-hechos.js}"></script>
     <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/admin/gestion-categorias.js}"></script>
