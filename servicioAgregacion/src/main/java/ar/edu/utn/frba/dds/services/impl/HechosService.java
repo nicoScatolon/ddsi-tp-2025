@@ -63,14 +63,6 @@ public class HechosService implements IHechosService {
     public List<Hecho> findAll(){ return this.hechosRepository.findAll(); }
 
     @Override
-    public List<HechoOutputDTO> findAllOutput(){
-        return this.findAll()
-                .stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .toList();
-    }
-
-    @Override
     public HechoOutputDTO findByID(Long id) {
         Hecho hecho = this.hechosRepository.getHechoById(id);
         return DTOConverter.convertirHechoOutputDTO(hecho);
@@ -130,7 +122,6 @@ public class HechosService implements IHechosService {
         hecho.setDestacado(estaDestacado); // Hibernate hará el update al hecho al ser transaccional
         return ResponseEntity.ok().build();
     }
-
 
     @Transactional
     @Override
@@ -226,41 +217,6 @@ public class HechosService implements IHechosService {
     }
 
 
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
-        if (etiqueta == null || etiqueta.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
-        if (hechoModificado == null){
-            return ResponseEntity.notFound().build();
-        }
-        Etiqueta nuevaEtiqueta = etiquetaService.verificarEtiqueta(etiqueta);
-        hechoModificado.agregarEtiqueta(nuevaEtiqueta);
-        return ResponseEntity.ok().build();
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta){
-        if (etiqueta == null || etiqueta.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
-        if (hechoModificado == null){
-            return ResponseEntity.notFound().build();
-        }
-        List<Etiqueta> etiquetasHecho = hechoModificado.getEtiquetas();
-        Optional<Etiqueta> etiquetaEliminada = etiquetasHecho.stream().filter(e -> e.getNombre().equals(etiqueta)).findFirst();
-        if (etiquetaEliminada.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        etiquetaEliminada.ifPresent(hechoModificado::eliminarEtiqueta);
-        return ResponseEntity.noContent().build();
-    }
-
     // LOGGER
     private void logearHechosCargados(List<Hecho> hechos, String urlFuente){
         logger.info("Hechos cargados - Cantidad: {} - Fuente: {}", hechos.size(), urlFuente);
@@ -270,6 +226,47 @@ public class HechosService implements IHechosService {
                                 , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
     }
 
+
+    @Override
+    public List<Hecho> findByFuente(Fuente fuente){
+        return this.hechosRepository.findAllByFuente(fuente);
+    }
+
+    @Override
+    public ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas) {
+        if (etiquetas == null || etiquetas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Hecho hecho = hechosRepository.getHechoById(id);
+        if (hecho == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Etiqueta> etiquetasVerificadas = new ArrayList<>();
+        for (String nombreEtiqueta : etiquetas) {
+            if (nombreEtiqueta != null && !nombreEtiqueta.isBlank()) {
+                Etiqueta etiqueta = etiquetaService.verificarEtiqueta(nombreEtiqueta);
+                etiquetasVerificadas.add(etiqueta);
+            }
+        }
+
+        if (etiquetasVerificadas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        hecho.modificarEtiquetas(etiquetasVerificadas);
+
+        hechosRepository.save(hecho);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @Transactional
+    public void eliminarHechos (List<Hecho> hechosAEliminar){
+        this.hechosRepository.deleteAll(hechosAEliminar);
+    }
 
     /*
     Root es la tabla principal a la que accedemos
@@ -316,46 +313,4 @@ public class HechosService implements IHechosService {
         };
     }
 
-    @Override
-    public List<Hecho> findByFuente(Fuente fuente){
-        return this.hechosRepository.findAllByFuente(fuente);
-    }
-
-    public List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable){
-        if (pageable == null){
-            return this.hechosRepository.findAll(spec);
-        } else {
-            return this.hechosRepository.findAll(spec, pageable).getContent();
-        }
-    }
-
-    @Override
-    public ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas) {
-        if (etiquetas == null || etiquetas.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Hecho hecho = hechosRepository.getHechoById(id);
-        if (hecho == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<Etiqueta> etiquetasVerificadas = new ArrayList<>();
-        for (String nombreEtiqueta : etiquetas) {
-            if (nombreEtiqueta != null && !nombreEtiqueta.isBlank()) {
-                Etiqueta etiqueta = etiquetaService.verificarEtiqueta(nombreEtiqueta);
-                etiquetasVerificadas.add(etiqueta);
-            }
-        }
-
-        if (etiquetasVerificadas.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        hecho.modificarEtiquetas(etiquetasVerificadas);
-
-        hechosRepository.save(hecho);
-
-        return ResponseEntity.ok().build();
-    }
 }

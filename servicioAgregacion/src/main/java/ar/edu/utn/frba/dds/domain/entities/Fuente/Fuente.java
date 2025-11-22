@@ -28,23 +28,15 @@ public abstract class Fuente implements IFuente {
     @Column(nullable = false)
     protected String url;
 
-
     @Transient
     @JsonIgnore
     protected WebClient webClient;
-
-    @Transient
-    @JsonIgnore
-    protected Map<Long, Hecho> mapHechos = new HashMap<>();
 
     @PostLoad
     @PostPersist
     private void initWebClient() {
         if (this.url != null && this.webClient == null) {
             this.webClient = WebClient.builder().baseUrl(this.url).build();
-        }
-        if (this.mapHechos == null) {
-            this.mapHechos = new HashMap<>();
         }
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public interface IFuentesService {
     List<Fuente> buscarFuentes();
     ResponseEntity<Void> agregarFuente(FuenteInputDTO fuenteDTO);
-    ResponseEntity<Void> eliminarFuente(Long id);
+    ResponseEntity<String> eliminarFuente(Long id);
     IFuente buscarFuentePorId(Long id);
     void notificarEliminaciones (List<Hecho> hechosAEliminar);
     void actualizarHechosFuentesScheduler();

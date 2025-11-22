@@ -23,8 +23,4 @@ public class FuenteEstaticaAdapter implements FuenteAdapter {
         return fuenteEstatica.updateHechos(hechosFuente);
     }
 
-    @Override
-    public List<Hecho> obtenerHechos() {
-        return fuenteEstatica.getMapHechos().values().stream().toList();
-    }
 }

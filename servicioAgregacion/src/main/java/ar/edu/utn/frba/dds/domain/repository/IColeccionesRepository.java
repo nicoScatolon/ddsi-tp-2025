@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,5 +14,5 @@ public interface IColeccionesRepository extends JpaRepository<Coleccion, Long> {
     boolean existsColeccionByHandle(String handle);
 
     List<Coleccion> findAllByDestacada(boolean esDestacada);
-
+    List<Coleccion> findAllByListaFuentesContaining(List<Fuente> listaFuentes);
 }
