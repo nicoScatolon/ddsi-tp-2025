@@ -9,17 +9,17 @@ ENV LC_ALL=C.UTF-8
 
 WORKDIR /build
 
-# Copiar el POM padre desde el directorio superior
-COPY ../pom.xml ./pom.xml
+# PASO 1: Copiar y compilar el POM PADRE primero
+COPY pom.xml ./pom.xml
 
-# Copiar el módulo actual
-COPY pom.xml ./fuenteDinamica/pom.xml
-COPY src ./fuenteDinamica/src
-
-# Instalar el POM padre en el repositorio local de Maven
+# Instalar el POM padre (sin módulos)
 RUN mvn install -N -DskipTests
 
-# Compilar solo este módulo
+# PASO 2: Ahora copiar el módulo hijo
+COPY fuenteDinamica/pom.xml ./fuenteDinamica/pom.xml
+COPY fuenteDinamica/src ./fuenteDinamica/src
+
+# PASO 3: Compilar solo este módulo
 WORKDIR /build/fuenteDinamica
 RUN mvn clean package -DskipTests \
     -Dproject.build.sourceEncoding=UTF-8 \
