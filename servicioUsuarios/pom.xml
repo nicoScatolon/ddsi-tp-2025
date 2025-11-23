@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>ar.edu.utn.frrba.dds</groupId>
-    <artifactId>servicioUsuarios</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>servicioUsuarios</name>
+    <artifactId>servicioUsuarios</artifactId>
+    <version>0.0.1</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

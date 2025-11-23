@@ -14,8 +14,8 @@
 
     <groupId>ar.edu.utn.frba.ddsi.fuenteProxy</groupId>
     <artifactId>fuenteProxy</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>fuenteProxy</name>
+    <version>0.0.1</version>
     <description>Fuente Proxy</description>
     <url/>
     <licenses>
@@ -84,12 +84,6 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.8.1</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ar.utn.ba.ddsi</groupId>
-            <artifactId>servicioAgregacion</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 
 

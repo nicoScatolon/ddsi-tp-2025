@@ -7,7 +7,8 @@
 
     <groupId>ar.utn.ba.ddsi</groupId>
     <artifactId>clienteGrafico</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <name>clienteGrafico</name>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <parent>

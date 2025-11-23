@@ -6,7 +6,8 @@
 
     <groupId>ar.utn.ba.ddsi</groupId>
     <artifactId>servicioEstadisticas</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <name>servicioEstadisticas</name>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <parent>

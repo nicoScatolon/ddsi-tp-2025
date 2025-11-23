@@ -12,8 +12,10 @@
     </parent>
 
     <groupId>ar.utn.ba.ddsi</groupId>
+    <name>servicioAgregacion</name>
     <artifactId>servicioAgregacion</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <description>Servicio encargado de recopilar datos de distintas fuentes, normalizarlos para mostrarlos por igual</description>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
