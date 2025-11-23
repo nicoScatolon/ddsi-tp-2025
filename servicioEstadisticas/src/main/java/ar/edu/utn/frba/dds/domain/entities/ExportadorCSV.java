@@ -14,7 +14,8 @@ public class ExportadorCSV {
 
         for (E_HoraOcuPorCategoriaOutputDTO e : lista) {
             writer.append(e.getId().toString()).append(",");
-            writer.append(e.getCategoriaDTO().getNombre()).append(",");
+            writer.append(e.getCategoria()).append(",");
+            writer.append(e.getCodigoCategoria()).append(",");
             writer.append(e.getHoraDia().toString()).append(",");
             writer.append(e.getCantHechosHora().toString()).append(",");
             writer.append(e.getCantHechosTotales().toString()).append(",");
@@ -32,7 +33,8 @@ public class ExportadorCSV {
 
         for (E_MayorCategoriaOutputDTO e : lista) {
             writer.append(e.getId().toString()).append(",");
-            writer.append(e.getCategoriaDTO().getNombre()).append(",");
+            writer.append(e.getCategoria()).append(",");
+            writer.append(e.getCodigoCategoria()).append(",");
             writer.append(e.getCantHechosCategoria().toString()).append(",");
             writer.append(e.getCantHechosTotales().toString()).append(",");
             writer.append(e.getFechaDeCalculo().toString()).append("\n");
@@ -49,7 +51,8 @@ public class ExportadorCSV {
 
         for (E_MayorProvPorCategoriaOutputDTO e : lista) {
             writer.append(e.getId().toString()).append(",");
-            writer.append(e.getCategoriaDTO().getNombre()).append(",");
+            writer.append(e.getCategoria()).append(",");
+            writer.append(e.getCodigoCategoria()).append(",");
             writer.append(e.getProvincia()).append(",");
             writer.append(e.getCantHechosProvincia().toString()).append(",");
             writer.append(e.getCantHechosTotales().toString()).append(",");

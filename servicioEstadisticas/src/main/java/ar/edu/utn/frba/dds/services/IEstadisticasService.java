@@ -19,6 +19,4 @@ public interface IEstadisticasService {
     List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String idCategoria);
     List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion);
 
-    //test
-    void generarEstadisticasTest(List<HechoInputDTO> hechos);
 }

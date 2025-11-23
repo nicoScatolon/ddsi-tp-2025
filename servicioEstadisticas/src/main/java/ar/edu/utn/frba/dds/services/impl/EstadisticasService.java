@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOconverter;
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminacionInputDTO;
@@ -12,7 +11,6 @@ import ar.edu.utn.frba.dds.domain.entities.Estadisticas.*;
 import ar.edu.utn.frba.dds.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudEliminacion;
 import ar.edu.utn.frba.dds.domain.repository.*;
-import ar.edu.utn.frba.dds.services.ICategoriasService;
 import ar.edu.utn.frba.dds.services.IEstadisticasService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class EstadisticasService implements IEstadisticasService {
-    private final ICategoriasService categoriasService;
 
     private final IE_MayorCategoriaRepository mayorCategoriaRepository;
     private final IE_SolicitudesSpamRepository solicitudesSpamRepository;
@@ -39,8 +36,7 @@ public class EstadisticasService implements IEstadisticasService {
     private final WebClient webClient;
     @Value("${estadisticas.cantDiasPersistencia}") Integer cantDiasPersistenciaEstaditicas;
 
-    public EstadisticasService(ICategoriasService categoriasService,
-                               IE_MayorCategoriaRepository mayorCategoriaRepository,
+    public EstadisticasService(IE_MayorCategoriaRepository mayorCategoriaRepository,
                                IE_SolicitudesSpamRepository solicitudesSpamRepository,
                                IE_HoraOcuPorCategoriaRepository horaOcuPorCategoriaRepository,
                                IE_MayorProvinciaPorCategoriaRepository mayorProvinciaPorCategoriaRepository,
@@ -48,7 +44,6 @@ public class EstadisticasService implements IEstadisticasService {
                                @Value("${agregador.base-url}") String urlAgregador)
 
         {
-        this.categoriasService = categoriasService;
         this.mayorCategoriaRepository = mayorCategoriaRepository;
         this.solicitudesSpamRepository = solicitudesSpamRepository;
         this.horaOcuPorCategoriaRepository = horaOcuPorCategoriaRepository;
@@ -61,17 +56,10 @@ public class EstadisticasService implements IEstadisticasService {
     public void generarEstadisticas() {
         log.info("[ESTADISTICAS] Inicio de generación");
         try {
-            categoriasService.actualizarCategorias(); //primero me actualizo la base de datos de mis categorias
-        } catch (Exception e) {
-            log.error("Error al actualizar las categorias" + e.getMessage());
-            return;
-        }
-        try {
             this.generarEstadisticasColeccion();
         } catch (Exception e) {
             log.error("Error al generar las Estadisticas de las Colecciones" + e.getMessage());
         }
-
         try {
             this.generarEstadisticasHecho();
         } catch (Exception e) {
@@ -108,30 +96,26 @@ public class EstadisticasService implements IEstadisticasService {
         return this.solicitudesSpamRepository.findAll().stream().map(DTOconverter::eSolicitudesSpamOutputDTO).toList();
     }
 
-    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String idCategoria) {
-        if ( idCategoria == null) {
+    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String cod_categoria) {
+        if ( cod_categoria == null) {
             return this.mayorProvinciaPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eMayorProvinciaPorCategoriaOutputDTO)
                     .toList();
         }
-        Categoria categoria = this.categoriasService.findById(idCategoria);
-        if (categoria == null) {return null;} // TODO deberia ser un response entity
 
-        return this.mayorProvinciaPorCategoriaRepository.findByCategoria(categoria).stream()
+        return this.mayorProvinciaPorCategoriaRepository.findByCodigoCategoria(cod_categoria).stream()
                 .map(DTOconverter::eMayorProvinciaPorCategoriaOutputDTO)
                 .toList();
     }
 
-    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String idCategoria) {
-        if ( idCategoria == null ) {
+    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String cod_categoria) {
+        if ( cod_categoria == null ) {
             return this.horaOcuPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eHoraOcuPorCategoriaOutputDTO)
                     .toList();
         }
-        Categoria categoria = this.categoriasService.findById(idCategoria);
-        if (categoria == null) {return null;} // TODO deberia ser un response entity
 
-        return this.horaOcuPorCategoriaRepository.findByCategoria(categoria).stream()
+        return this.horaOcuPorCategoriaRepository.findByCodigoCategoria(cod_categoria).stream()
                 .map(DTOconverter::eHoraOcuPorCategoriaOutputDTO)
                 .toList();
     }
@@ -173,7 +157,7 @@ public class EstadisticasService implements IEstadisticasService {
             throw new RuntimeException("No se recibieron correctamente las solicitudes");
         }
 
-        Map< Categoria, List<Hecho> > hechosPorCategoria = hechos.stream().collect(Collectors.groupingBy(Hecho::getCategoria));
+        Map< String, List<Hecho> > hechosPorCategoria = hechos.stream().collect(Collectors.groupingBy(h -> h.getCategoria().getCodigoCategoria()));
         GeneradorEstadisticas generador  = GeneradorEstadisticas.getInstance();
 
         // -- Estadistica provincia con mas hechos por categoria -- //
@@ -191,7 +175,7 @@ public class EstadisticasService implements IEstadisticasService {
         this.horaOcuPorCategoriaRepository.saveAll(e_horaPorCategorias);
 
         // -- Estadistica categoria con mas hechos -- //
-        E_MayorCategoria e_mayorCategoria = generador.mayorCategoria(hechosPorCategoria);
+        E_MayorCategoria e_mayorCategoria = generador.mayorCategoria(hechos);
         this.mayorCategoriaRepository.save(e_mayorCategoria);
     }
 
@@ -238,34 +222,4 @@ public class EstadisticasService implements IEstadisticasService {
         return solicitudesInputDTO.stream().map(DTOconverter::solicitudEliminacionInputDTO).toList();
     }
 
-    // TEST
-
-
-    @Override
-    public void generarEstadisticasTest(List<HechoInputDTO> hechosDTO){
-        List<Hecho> hechos = hechosDTO.stream().map(DTOconverter::hechoInputDTO).toList();
-        if (hechos == null || hechos.isEmpty()) {
-            throw new RuntimeException("No se recibieron correctamente las solicitudes");
-        }
-
-        Map< Categoria, List<Hecho> > hechosPorCategoria = hechos.stream().collect(Collectors.groupingBy(Hecho::getCategoria));
-        GeneradorEstadisticas generador  = GeneradorEstadisticas.getInstance();
-
-        categoriasService.actualizarCategoriasTest( hechosPorCategoria.keySet().stream().toList() );
-
-        List<E_MayorProvinciaPorCategoria> e_provinciaPorCategoria = hechosPorCategoria.entrySet().stream()
-                .map(e -> generador.mayorProvinciaPorCategoria(e.getKey(), e.getValue()))
-                .toList();
-        this.mayorProvinciaPorCategoriaRepository.saveAll(e_provinciaPorCategoria);
-
-        // -- Estadistica hora de ocurrencia del dia con mas hechos por categoria -- //
-        List<E_HoraOcurrenciaPorCategoria> e_horaPorCategorias = hechosPorCategoria.entrySet().stream()
-                .map(e -> generador.horaDiaPorCategoria(e.getKey(), e.getValue()))
-                .toList();
-        this.horaOcuPorCategoriaRepository.saveAll(e_horaPorCategorias);
-
-        // -- Estadistica categoria con mas hechos -- //
-        E_MayorCategoria e_mayorCategoria = generador.mayorCategoria(hechosPorCategoria);
-        this.mayorCategoriaRepository.save(e_mayorCategoria);
-    }
 }
