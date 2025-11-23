@@ -1,25 +1,21 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas;
 
-import lombok.*;
-import java.util.Collections;
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.MayorProvPorColeccionInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.MayorProvPorCatInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.SolicitudesSpamInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.ParClaveValorDTO;
-
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@Builder
 public class PanelActividadViewDTO {
-    private List<ParClaveValorDTO> porProvincia;    // bar
-    private List<ParClaveValorDTO> porCategoria;    // pie
-    private SpamEliminacionDTO     spamEliminacion; // kpi
 
-    public static PanelActividadViewDTO empty() {
-        return PanelActividadViewDTO.builder()
-                .porProvincia(Collections.emptyList())
-                .porCategoria(Collections.emptyList())
-                .spamEliminacion(new SpamEliminacionDTO(0, 0))
-                .build();
-    }
+    // Provincia con más hechos en esa colección
+    private String provinciaTop;
+    private Integer hechosProvinciaTop;
+
+    // Categoría con más hechos (global)
+    private String categoriaTop;
+    private Integer hechosCategoriaTop;
+
+    // Solicitudes de eliminación (spam / total)
+    private Integer solicitudesSpam;
+    private Integer solicitudesTotales;
 }

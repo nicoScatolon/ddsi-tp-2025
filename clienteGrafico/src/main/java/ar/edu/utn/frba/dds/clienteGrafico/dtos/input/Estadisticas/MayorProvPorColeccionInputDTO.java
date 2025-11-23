@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 @Setter
 public class MayorProvPorColeccionInputDTO {
     private Long id;
-    private ColeccionInputDTO coleccionDTO; //la condicion del calculo
-    private String provincia; //el resultado
     private Integer cantHechosProvincia;
     private Integer cantHechosTotales;
-    private LocalDateTime fechaDeCalculo;
+    private String provincia;
+    private String coleccion;       // o "coleccionHandle" / "handleColeccion", según tu DTO real
+    private String handleColeccion; // opcional
+    private LocalDateTime fechaCalculo;
 }

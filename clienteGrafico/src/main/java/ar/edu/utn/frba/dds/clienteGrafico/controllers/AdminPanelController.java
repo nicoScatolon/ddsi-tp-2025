@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.PanelActividadViewDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
@@ -38,6 +39,7 @@ public class AdminPanelController {
     private final IFileSystemService fileSystemService;
     private final IGestionUsuariosService gestionUsuariosService;
     private final IFuenteProxyService fuenteProxyService;
+    private final IEstadisticasFacade estadisticasFacade;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -47,11 +49,18 @@ public class AdminPanelController {
         return "redirect:/admin/actividad";
     }
 
-    // Resumen actividad
     @GetMapping("/actividad")
-    public String resumenActividad(Model model) {
+    public String resumenActividad(
+            @RequestParam(name = "coleccion", required = false) String coleccion,
+            Model model
+    ) {
+        PanelActividadViewDTO resumen = estadisticasFacade.getPanelActividad(coleccion);
+
         model.addAttribute("titulo", "Resumen Actividad");
         model.addAttribute("contentTemplate", "actividad");
+        model.addAttribute("coleccion", coleccion);
+        model.addAttribute("resumen", resumen);
+
         return "admin/panel-base";
     }
 

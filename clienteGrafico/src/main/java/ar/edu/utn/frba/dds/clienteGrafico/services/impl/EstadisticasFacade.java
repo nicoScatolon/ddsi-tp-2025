@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.*;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.MayorProvPorCatInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.MayorCategoriaInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.MayorProvPorColeccionInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.PanelActividadViewDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.SolicitudesSpamInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IEstadisticasFacade;
-import ar.edu.utn.frba.dds.clienteGrafico.services.impl.WebApiCallerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -30,62 +25,79 @@ public class EstadisticasFacade implements IEstadisticasFacade {
     private String baseUrl;
 
     private String api(String path) {
-        // siempre cuelgo de /api/estadisticas
+        // baseUrl = http://servicio-estadisticas:8088   (sin /api/estadisticas)
         return baseUrl + "/api/estadisticas" + path;
     }
 
     @Override
     public PanelActividadViewDTO getPanelActividad(String coleccion) {
         try {
-            String urlMayorProvCat       = baseUrl + "/mayor_provincia_por_categoria?coleccion=" + coleccion;
-            String urlMayorProvColeccion = baseUrl + "/mayor_provincia_por_coleccion?coleccion=" + coleccion;
-            String urlSolicitudesSpam    = baseUrl + "/solicitudes_eliminacion?coleccion=" + coleccion;
+            // 1) URLs del micro de estadísticas
+            String urlMayorProvColeccion = api("/mayor_provincia_por_coleccion");
+            if (coleccion != null && !coleccion.isBlank()) {
+                urlMayorProvColeccion += "?handleColeccion=" +
+                        URLEncoder.encode(coleccion, StandardCharsets.UTF_8);
+            }
 
-            // Llamadas HTTP
-            List<MayorProvPorCatInputDTO> mayorPorCat =
-                    webApi.getList(urlMayorProvCat, MayorProvPorCatInputDTO.class);
+            String urlMayorCategoria = api("/mayor_categoria");
+            String urlSolicitudesSpam = api("/solicitudes_de_spam");
 
-            MayorProvPorColeccionInputDTO mayorPorColeccion =
-                    webApi.get(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
+            // 2) Llamadas HTTP (devuelven listas)
+            List<MayorProvPorColeccionInputDTO> listaProv =
+                    webApi.getList(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
 
-            SolicitudesSpamInputDTO spamRaw =
-                    webApi.get(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
+            List<MayorCategoriaInputDTO> listaCat =
+                    webApi.getList(urlMayorCategoria, MayorCategoriaInputDTO.class);
 
-            // Derivados para la vista
-            List<ParClaveValorDTO> porCategoria = (mayorPorCat == null ? Collections.<MayorProvPorCatInputDTO>emptyList() : mayorPorCat)
-                    .stream()
-                    .map(x -> new ParClaveValorDTO(
-                            (x != null && x.getCategoriaDTO() != null && x.getCategoriaDTO().getNombre() != null)
-                                    ? x.getCategoriaDTO().getNombre()
-                                    : "(sin categoría)",
-                            (x != null && x.getCantHechosProvincia() != null)
-                                    ? x.getCantHechosProvincia()
-                                    : 0
-                    ))
-                    .collect(Collectors.toList());
+            List<SolicitudesSpamInputDTO> listaSpam =
+                    webApi.getList(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
 
-            List<ParClaveValorDTO> porProvincia = (mayorPorColeccion == null)
-                    ? Collections.emptyList()
-                    : List.of(new ParClaveValorDTO(
-                    (mayorPorColeccion.getProvincia() != null) ? mayorPorColeccion.getProvincia() : "",
-                    (mayorPorColeccion.getCantHechosProvincia() != null) ? mayorPorColeccion.getCantHechosProvincia() : 0
-            ));
+            // 3) Agarramos "alguna" fila. Si querés ser fino, elegí la más nueva por fechaCalculo.
+            MayorProvPorColeccionInputDTO provDto =
+                    (listaProv != null && !listaProv.isEmpty()) ? listaProv.get(0) : null;
 
-            int spam   = (spamRaw != null && spamRaw.getSolicitudesSpam() != null)     ? spamRaw.getSolicitudesSpam()     : 0;
-            int noSpam = (spamRaw != null && spamRaw.getSolicitudesNoSpam() != null)   ? spamRaw.getSolicitudesNoSpam()   : 0;
+            MayorCategoriaInputDTO catDto =
+                    (listaCat != null && !listaCat.isEmpty()) ? listaCat.get(0) : null;
+
+            SolicitudesSpamInputDTO spamDto =
+                    (listaSpam != null && !listaSpam.isEmpty()) ? listaSpam.get(0) : null;
+
+            String provinciaTop = (provDto != null) ? provDto.getProvincia() : null;
+            Integer hechosProvTop = (provDto != null && provDto.getCantHechosProvincia() != null)
+                    ? provDto.getCantHechosProvincia()
+                    : 0;
+
+            String categoriaTop = (catDto != null) ? catDto.getCategoria() : null;
+            Integer hechosCatTop = (catDto != null && catDto.getCantHechosCategoria() != null)
+                    ? catDto.getCantHechosCategoria()
+                    : 0;
+
+            Integer spam = (spamDto != null && spamDto.getSolicitudesSpam() != null)
+                    ? spamDto.getSolicitudesSpam()
+                    : 0;
+            Integer noSpam = (spamDto != null && spamDto.getSolicitudesNoSpam() != null)
+                    ? spamDto.getSolicitudesNoSpam()
+                    : 0;
 
             return PanelActividadViewDTO.builder()
-                    .porProvincia(porProvincia)
-                    .porCategoria(porCategoria)
-                    .spamEliminacion(new SpamEliminacionDTO(spam, spam + noSpam))
+                    .provinciaTop(provinciaTop)
+                    .hechosProvinciaTop(hechosProvTop)
+                    .categoriaTop(categoriaTop)
+                    .hechosCategoriaTop(hechosCatTop)
+                    .solicitudesSpam(spam)
+                    .solicitudesTotales(spam + noSpam)
                     .build();
 
         } catch (Exception e) {
             log.warn("Fallo armando panel actividad (coleccion={}): {}", coleccion, e.toString());
+
             return PanelActividadViewDTO.builder()
-                    .porProvincia(Collections.emptyList())
-                    .porCategoria(Collections.emptyList())
-                    .spamEliminacion(new SpamEliminacionDTO(0, 0))
+                    .provinciaTop(null)
+                    .hechosProvinciaTop(0)
+                    .categoriaTop(null)
+                    .hechosCategoriaTop(0)
+                    .solicitudesSpam(0)
+                    .solicitudesTotales(0)
                     .build();
         }
     }
