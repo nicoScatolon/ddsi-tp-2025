@@ -9,17 +9,18 @@ ENV LC_ALL=C.UTF-8
 
 WORKDIR /build
 
-# PASO 1: Copiar y compilar el POM PADRE primero
-COPY pom.xml ./pom.xml
+# PASO 1: Copiar el POM padre desde el directorio superior
+# Nota: esto requiere que el contexto Docker incluya el directorio padre
+COPY ../pom.xml ./pom.xml
 
-# Instalar el POM padre (sin módulos)
+# Instalar el POM padre
 RUN mvn install -N -DskipTests
 
-# PASO 2: Ahora copiar el módulo hijo
-COPY fuenteDinamica/pom.xml ./fuenteDinamica/pom.xml
-COPY fuenteDinamica/src ./fuenteDinamica/src
+# PASO 2: Copiar el módulo actual (estamos EN fuenteDinamica)
+COPY pom.xml ./fuenteDinamica/pom.xml
+COPY src ./fuenteDinamica/src
 
-# PASO 3: Compilar solo este módulo
+# PASO 3: Compilar este módulo
 WORKDIR /build/fuenteDinamica
 RUN mvn clean package -DskipTests \
     -Dproject.build.sourceEncoding=UTF-8 \
