@@ -17,13 +17,11 @@ import org.springframework.stereotype.Component;
 public class ImportadorHechosCSV implements ImportadorHechos {
 
     @Override
-
     public FormatoFuente getFormato() { return FormatoFuente.CSV; }
 
     @Override
     public List<Hecho> importarHechosArchivo(String path) {
         List<Hecho> listaHechos = new ArrayList<>();
-        LocalDateTime fechaDeCarga = LocalDateTime.now();
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         try (CSVReader reader = new CSVReader(new FileReader(path))) {
@@ -31,7 +29,7 @@ public class ImportadorHechosCSV implements ImportadorHechos {
             reader.readNext(); // Salteo el encabezado
 
             while ((fila = reader.readNext()) != null) {
-                Hecho hecho = crearHechoFila(fila, fechaDeCarga, formatoFecha);
+                Hecho hecho = crearHechoFila(fila, formatoFecha);
                 verificarRepetido(hecho, listaHechos);
                 listaHechos.add(hecho);
             }
@@ -42,7 +40,7 @@ public class ImportadorHechosCSV implements ImportadorHechos {
         return listaHechos;
     }
 
-    private Hecho crearHechoFila(String[] fila, LocalDateTime fechaDeCarga, DateTimeFormatter formatoFecha) {
+    private Hecho crearHechoFila(String[] fila, DateTimeFormatter formatoFecha) {
         Hecho hecho = new Hecho();
 
         hecho.setTitulo(fila[0]);
@@ -54,9 +52,11 @@ public class ImportadorHechosCSV implements ImportadorHechos {
         ubicacionHecho.setLongitud(Double.parseDouble(fila[4]));
         hecho.setUbicacion(ubicacionHecho);
 
-        hecho.setFechaDeOcurrencia( LocalDate.parse(fila[5], formatoFecha).atStartOfDay() ); // La seteo a las 00:00 por no tener hora asociada
-        hecho.setFechaDeCarga(fechaDeCarga);
+        hecho.setFechaDeOcurrencia(
+                LocalDate.parse(fila[5], formatoFecha).atStartOfDay()
+        );
 
+        // NO seteamos fechaDeCarga acá
         return hecho;
     }
 
