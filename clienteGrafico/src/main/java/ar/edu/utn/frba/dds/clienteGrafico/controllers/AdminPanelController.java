@@ -21,7 +21,9 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admin")
@@ -100,22 +104,6 @@ public class AdminPanelController {
         return "redirect:/admin/importar";
     }
 
-    @GetMapping("/fuente-externa")
-    public String mostrarFuentesProxy(Model model) {
-        model.addAttribute("titulo", "Gestión Fuentes Externas");
-        model.addAttribute("contentTemplate", "fuente-externa");
-
-        // cuando conectes el back:
-        // model.addAttribute("colecciones", coleccionService.listarTodo());
-        // model.addAttribute("fuentesProxy", fuenteProxyService.listarTodo());
-        // model.addAttribute("catedraActiva", ...);
-        // model.addAttribute("ultimaActualizacionCatedra", ...);
-
-        return "admin/panel-base"; // el MISMO template que usan las otras vistas del panel
-    }
-
-
-
 
     //Gestión de hechos
     @GetMapping("/hechos")
@@ -137,20 +125,54 @@ public class AdminPanelController {
         return "redirect:/admin/hechos";
     }
 
+    @GetMapping("/fuente-externa")
+    public String mostrarFuentesProxy(Model model) {
+        model.addAttribute("titulo", "Gestión Fuentes Externas");
+        model.addAttribute("contentTemplate", "fuente-externa");
+
+        // Cargar lista de fuentes externas
+        try {
+            List<FuenteOutputDTO> fuentes = fuenteProxyService.getFuentesProxy();
+            model.addAttribute("fuentesProxy", fuentes);
+        } catch (Exception e) {
+            model.addAttribute("fuentesProxy", Collections.emptyList());
+            model.addAttribute("errorFuentesProxy", "No se pudieron obtener las fuentes externas.");
+        }
+
+        return "admin/panel-base";
+    }
+
+
     @PostMapping("/externa")
-    public ResponseEntity<Void> agregarFuente(@RequestParam String nombre, @RequestParam String tipoFuente) {
+    public ResponseEntity<Void> agregarFuente(@RequestParam String nombre, @RequestParam String tipoFuente, @RequestParam(required = false) String urlBase, @RequestParam(required = false) String fuenteExterna) {
         FuenteProxyInputDTO dto = new FuenteProxyInputDTO();
         dto.setNombre(nombre);
 
-        if ("dds".equalsIgnoreCase(tipoFuente)) {
-            fuenteProxyService.agregarFuenteDDS(dto);
-        } else if ("metamapa".equalsIgnoreCase(tipoFuente)) {
+        if(urlBase != null) {
+            dto.setBaseUrl(urlBase);
+        }
+
+        if ("EXTERNA".equalsIgnoreCase(tipoFuente)) {
+            if(Objects.equals(fuenteExterna, "dds"))
+                fuenteProxyService.agregarFuenteDDS(dto);
+        } else if ("METAMAPA".equalsIgnoreCase(tipoFuente)) {
             fuenteProxyService.agregarFuenteMetamapa(dto);
         } else {
             return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok().build();
+    }
+
+
+    @DeleteMapping("/externa/{nombreFuente}")
+    public ResponseEntity<Void> eliminarFuente(@PathVariable String nombreFuente) {
+        try {
+            fuenteProxyService.eliminarFuente(nombreFuente);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 

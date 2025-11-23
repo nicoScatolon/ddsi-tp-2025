@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechosFilterDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoProxyOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteProxyService;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,16 @@ public class FuenteProxyService implements IFuenteProxyService {
                                  @Value("http://localhost:8083") String fuenteProxyUrl) {
         this.webApiCallerService = webApiCallerService;
         this.fuenteProxyUrl = fuenteProxyUrl;
+    }
+
+    @Override
+    public List<FuenteOutputDTO> getFuentesProxy(){
+        String url = fuenteProxyUrl + "/api/fuenteProxy/fuentes";
+        try {
+            return webApiCallerService.getList(url, FuenteOutputDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener fuentes", e);
+        }
     }
 
 
@@ -117,6 +128,9 @@ public class FuenteProxyService implements IFuenteProxyService {
             throw new RuntimeException("Error al crear solicitud de eliminación", e);
         }
     }
+
+
+
 
 
 

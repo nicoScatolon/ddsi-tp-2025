@@ -16,20 +16,23 @@
             </div>
         </div>
 
-        <!-- Layout principal: un solo contenedor -->
         <div class="proxy-grid">
             <section class="card card--proxy card--urls">
                 <header class="card__header">
-                    <h2 class="card__title">Fuentes externas </h2>
+                    <h2 class="card__title">Fuentes externas</h2>
                 </header>
 
                 <p class="card__text">
-                    Registrá APIs externas compatibles (por ejemplo, otras instancias
-                    de MetaMapa) para agregarlas como fuentes proxy.
+                    Registrá instancias MetaMapa o fuentes externas compatibles.
                 </p>
 
-                <!-- Formulario de alta rápida -->
+                <!-- 🟢 FORMULARIO -->
                 <form class="proxy-form" id="form-nueva-fuente">
+
+                    <!-- 🔐 CSRF Token -->
+                    <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}">
+                    <input type="hidden" id="_csrf_header" name="_csrf_header" th:value="${_csrf.headerName}">
+
                     <!-- Fila 1: nombre + tipo -->
                     <div class="form-row">
                         <div class="form-field">
@@ -47,18 +50,16 @@
                                     name="tipo"
                                     class="select"
                                     required>
-                                <option value="" disabled selected hidden>
-                                    Seleccione el tipo de fuente
-                                </option>
+                                <option value="" disabled selected hidden>Seleccione el tipo de fuente</option>
                                 <option value="METAMAPA">MetaMapa</option>
                                 <option value="EXTERNA">Externa</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Fila 2: campo dinámico a lo ancho -->
+                    <!-- Fila 2: campo dinámico -->
                     <div class="form-row">
-                        <!-- Grupo URL (solo para tipo = METAMAPA) -->
+                        <!-- URL si es MetaMapa -->
                         <div class="form-field is-hidden" id="grupo-url">
                             <label for="url-fuente">URL base de la API</label>
                             <input id="url-fuente"
@@ -68,24 +69,17 @@
                                    placeholder="https://ejemplo.org/api" />
                         </div>
 
-                        <!-- Grupo fuente externa (solo para tipo = EXTERNA) -->
+                        <!-- Selección si es externa -->
                         <div class="form-field is-hidden" id="grupo-fuente-externa">
                             <label for="fuente-externa-select">Fuente externa</label>
-                            <select id="fuente-externa-select"
-                                    name="fuenteExternaId"
-                                    class="select">
-                                <option value="" disabled selected hidden>
-                                    Seleccione la fuente externa
-                                </option>
-                                <!-- Por ahora solo una opción fija -->
-                                <option value="DISENO_DS">
-                                    Diseño de Sistemas
-                                </option>
+                            <select id="fuente-externa-select" class="select">
+                                <option value="" disabled selected hidden>Seleccione la fuente externa</option>
+                                <option value="dds">Diseño de Sistemas (DDS)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Fila 3: botón a lo ancho -->
+                    <!-- Botón -->
                     <div class="form-row form-row--actions">
                         <div class="form-field form-field--actions">
                             <button type="submit" class="btn btn-primary btn-full">
@@ -95,7 +89,7 @@
                     </div>
                 </form>
 
-                <!-- Tabla de fuentes ya configuradas -->
+                <!-- 🟣 TABLA -->
                 <div class="table-wrapper">
                     <table class="table table--compact">
                         <thead>
@@ -109,24 +103,13 @@
                         </thead>
                         <tbody>
                         <tr th:each="fuente : ${fuentesProxy}">
-                            <td th:text="${fuente.nombre}">MetaMapa Ejemplo</td>
-                            <td class="table__cell-url"
-                                th:text="${fuente.urlBase}">
-                                https://ejemplo.org/api
-                            </td>
-                            <td th:text="${fuente.tipo}">METAMAPA</td>
-                            <td th:text="${fuente.ultimaActualizacion}">
-                                2025-10-21 10:32
-                            </td>
+                            <td th:text="${fuente.nombre}"></td>
+                            <td class="table__cell-url" th:text="${fuente.urlBase}"></td>
+                            <td th:text="${fuente.tipo}"></td>
+                            <td th:text="${fuente.ultimaActualizacion}"></td>
                             <td class="table__col-actions">
-                                <button type="button"
-                                        class="link-button">
-                                    Probar
-                                </button>
-                                <button type="button"
-                                        class="link-button link-button--danger">
-                                    Eliminar
-                                </button>
+                                <button type="button" class="link-button">Probar</button>
+                                <button type="button" class="link-button link-button--danger">Eliminar</button>
                             </td>
                         </tr>
 
@@ -142,38 +125,75 @@
         </div>
     </section>
 
-    <!-- Lógica mínima para mostrar/ocultar campos según el tipo -->
+    <!-- 🧠 Lógica JS embebida -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const tipoSelect = document.getElementById('tipo-fuente');
             const grupoUrl = document.getElementById('grupo-url');
             const grupoFuenteExt = document.getElementById('grupo-fuente-externa');
 
-            if (!tipoSelect || !grupoUrl || !grupoFuenteExt) return;
-
             function actualizarCampos() {
                 const tipo = tipoSelect.value;
-
-                if (!tipo) {
-                    grupoUrl.classList.add('is-hidden');
-                    grupoFuenteExt.classList.add('is-hidden');
-                    return;
-                }
-
-                if (tipo === 'METAMAPA') {
-                    grupoUrl.classList.remove('is-hidden');
-                    grupoFuenteExt.classList.add('is-hidden');
-                } else if (tipo === 'EXTERNA') {
-                    grupoFuenteExt.classList.remove('is-hidden');
-                    grupoUrl.classList.add('is-hidden');
-                } else {
-                    grupoUrl.classList.add('is-hidden');
-                    grupoFuenteExt.classList.add('is-hidden');
-                }
+                grupoUrl.classList.toggle('is-hidden', tipo !== 'METAMAPA');
+                grupoFuenteExt.classList.toggle('is-hidden', tipo !== 'EXTERNA');
             }
 
             actualizarCampos();
             tipoSelect.addEventListener('change', actualizarCampos);
+
+            // --- POST CON CSRF ---
+            const form = document.getElementById('form-nueva-fuente');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const nombre = document.getElementById('nombre-fuente').value;
+                const tipo = document.getElementById('tipo-fuente').value;
+
+                if (!nombre || !tipo) {
+                    alert("Complete el nombre y el tipo de la fuente.");
+                    return;
+                }
+
+                let params = `nombre=${encodeURIComponent(nombre)}&tipoFuente=${encodeURIComponent(tipo)}`;
+
+                if (tipo === 'METAMAPA') {
+                    const url = document.getElementById('url-fuente').value;
+                    if (!url) {
+                        alert("Debe ingresar la URL base.");
+                        return;
+                    }
+                    params += `&urlBase=${encodeURIComponent(url)}`;
+                }
+
+                if (tipo === 'EXTERNA') {
+                    const fe = document.getElementById('fuente-externa-select').value;
+                    if (!fe) {
+                        alert("Debe seleccionar el tipo de fuente externa.");
+                        return;
+                    }
+                    params += `&fuenteExterna=${encodeURIComponent(fe)}`;
+                }
+
+                // CSRF
+                const token = document.getElementById('_csrf').value;
+                const headerName = document.getElementById('_csrf_header').value;
+
+                fetch("/admin/externa?" + params, {
+                    method: "POST",
+                    headers: {
+                        [headerName]: token
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Fuente agregada correctamente ✔️");
+                            location.reload();
+                        } else {
+                            alert("Error al agregar la fuente ❌");
+                        }
+                    })
+                    .catch(() => alert("Error de conexión con el servidor ❌"));
+            });
         });
     </script>
 

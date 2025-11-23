@@ -25,7 +25,7 @@ public class FuentesController {
 
     @GetMapping("/fuentes")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<FuenteOutputDTO> getFuentes(){
+    public List<FuenteOutputDTO> getFuentes() {
         return fuenteService.getFuentes();
     }
 

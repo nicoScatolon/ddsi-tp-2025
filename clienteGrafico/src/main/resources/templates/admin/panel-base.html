@@ -113,7 +113,7 @@
     <div class="panel-wrapper">
         <div class="panel-card">
             <h1 th:text="${titulo}"></h1>
-            <div th:replace="~{${'admin/' + contentTemplate} :: ${contentTemplate}}"></div>
+            <div th:replace="~{'admin/' + ${contentTemplate} :: ${contentTemplate}}"></div>
         </div>
     </div>
 </div>
@@ -124,6 +124,7 @@
     <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/admin/importar-hechos.js}"></script>
     <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/admin/gestion-categorias.js}"></script>
     <script th:if="${contentTemplate == 'acciones-avanzadas'}" th:src="@{/js/admin/acciones-avanzadas.js}"></script>
+    <script th:if="${contentTemplate == 'fuente-externa'}" th:src="@{/js/admin/fuente-externa.js}"></script>
 </th:block>
 
 </html>
