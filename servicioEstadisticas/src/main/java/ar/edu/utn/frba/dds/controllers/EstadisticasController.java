@@ -1,21 +1,11 @@
 package ar.edu.utn.frba.dds.controllers;
 
-import ar.edu.utn.frba.dds.domain.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputDTO;
-import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.estadisticas.*;
 import ar.edu.utn.frba.dds.domain.entities.ExportadorCSV;
 import ar.edu.utn.frba.dds.services.IEstadisticasService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -94,6 +84,12 @@ public class EstadisticasController {
     }
 
     // test //
+
+    @PostMapping("/test")
+    @PreAuthorize("permitAll()")
+    public void generarEstadisticasTest(){
+        serviceEstadisticas.generarEstadisticas();
+    }
 
     /*
     @PostMapping("/test")

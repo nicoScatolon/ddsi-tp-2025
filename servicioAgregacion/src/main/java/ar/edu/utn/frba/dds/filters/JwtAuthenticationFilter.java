@@ -50,9 +50,8 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
                 || p.startsWith("/api/hechos/publica/")
                 || p.equals("/api/fuente/publica")
                 || p.startsWith("/api/fuente/publica/")
-                || (method.equals("GET") && (
-                p.equals("/api/privada/categorias") ||
-                        p.equals("/api/privada/categorias/short")))
+                || (method.equals("GET") && ( p.equals("/api/privada/categorias") || p.equals("/api/privada/categorias/short")))
+                || ( method.equals("GET") && p.equals("/api/colecciones/privada") )
                 || p.equals("/api/solicitudes-eliminacion/publica")
                 || p.startsWith("/api/fuente/test")
                 || p.startsWith("/api/colecciones/test");

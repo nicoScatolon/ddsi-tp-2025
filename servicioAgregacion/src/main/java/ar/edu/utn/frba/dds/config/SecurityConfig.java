@@ -44,6 +44,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/privada/categorias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/colecciones/privada").permitAll()
 
                         .anyRequest().authenticated()
                 )
