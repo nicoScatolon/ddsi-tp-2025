@@ -67,6 +67,15 @@ public class GeneradorEstadisticas {
     }
 
     public E_SolicitudesSpam solicitudesSpam (List<SolicitudEliminacion> solicitudes) {
+        if (solicitudes == null || solicitudes.isEmpty()) {
+            var estadisticaCasoNULL = E_SolicitudesSpam.builder()
+                    .solicitudesSpam(0)
+                    .solicitudesNoSpam(0)
+                    .build();
+            estadisticaCasoNULL.setFechaDeCalculo(LocalDateTime.now());
+            return estadisticaCasoNULL;
+        };
+
         Integer cantSolicitudesSpam = solicitudes.stream()
                 .filter(s -> s.getEstado() == EstadoDeSolicitud.SPAM)
                 .toList().size();
@@ -120,7 +129,12 @@ public class GeneradorEstadisticas {
     //Metodos privados
 
     private Map.Entry<String, Long> conteoMaxProvincia (List<Hecho> hechos) {
-        Map<String, Long> conteoProvincias = hechos.stream()
+        List<Hecho> hechosUtilizables = hechos.stream()
+                .filter(h -> h.getUbicacion() != null)
+                .filter(h -> h.getUbicacion().getProvincia() != null && !h.getUbicacion().getProvincia().isBlank() && !h.getUbicacion().getProvincia().equals("DESCONOCIDA"))
+                .toList();
+
+        Map<String, Long> conteoProvincias = hechosUtilizables.stream()
                 .collect(Collectors.groupingBy(h -> h.getUbicacion().getProvincia(), Collectors.counting()));
         //esto me da un map asociando cada provincia a la cantidad de hechos que la tienen
 

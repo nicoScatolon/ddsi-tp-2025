@@ -47,7 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest req) {
         String p = req.getRequestURI();
         String m = req.getMethod();
-        if (p.startsWith("/v3/api-docs") || p.equals("/swagger-ui.html") || p.startsWith("/swagger-ui/")) return true;
-        return false;
+        return p.startsWith("/v3/api-docs")
+                || p.equals("/swagger-ui.html")
+                || p.equals("/api/estadisticas/test")
+                || p.startsWith("/swagger-ui/");
     }
 }

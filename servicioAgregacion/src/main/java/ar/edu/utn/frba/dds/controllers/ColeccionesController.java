@@ -45,6 +45,7 @@ public class ColeccionesController {
     }
 
     @GetMapping("/privada")
+    @PreAuthorize("permitAll()")
     public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
         return coleccionesService.findAll();
     }

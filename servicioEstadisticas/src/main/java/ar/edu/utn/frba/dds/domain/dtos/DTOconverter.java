@@ -37,7 +37,7 @@ public class DTOconverter {
     public static Ubicacion ubicacionInputDTO(UbicacionInputDTO ubicacionInputDTO) {
         return Ubicacion.builder()
                 .provincia(ubicacionInputDTO.getProvincia())
-                .localidad(ubicacionInputDTO.getLocalidad())
+                .departamento(ubicacionInputDTO.getLocalidad())
                 .calle(ubicacionInputDTO.getCalle())
                 .numero(ubicacionInputDTO.getNumero())
                 .latitud(ubicacionInputDTO.getLatitud())

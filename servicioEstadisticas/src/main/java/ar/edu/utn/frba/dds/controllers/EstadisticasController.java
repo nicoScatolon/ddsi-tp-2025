@@ -95,6 +95,12 @@ public class EstadisticasController {
 
     // test //
 
+    @PostMapping("/test")
+    @PreAuthorize("permitAll()")
+    public void generarEstadisticasTest(){
+        serviceEstadisticas.generarEstadisticas();
+    }
+
     /*
     @PostMapping("/test")
     @PreAuthorize("hasRole('ADMIN')")

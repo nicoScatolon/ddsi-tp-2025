@@ -22,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,10 +60,30 @@ public class EstadisticasService implements IEstadisticasService {
 
     public void generarEstadisticas() {
         log.info("[ESTADISTICAS] Inicio de generación");
-        categoriasService.actualizarCategorias(); //primero me actualizo la base de datos de mis categorias
-        this.generarEstadisticasColeccion();
-        this.generarEstadisticasHecho();
-        this.generarEstadisticasSolicitud();
+        try {
+            categoriasService.actualizarCategorias(); //primero me actualizo la base de datos de mis categorias
+        } catch (Exception e) {
+            log.error("Error al actualizar las categorias" + e.getMessage());
+            return;
+        }
+        try {
+            this.generarEstadisticasColeccion();
+        } catch (Exception e) {
+            log.error("Error al generar las Estadisticas de las Colecciones" + e.getMessage());
+        }
+
+        try {
+            this.generarEstadisticasHecho();
+        } catch (Exception e) {
+            log.error("Error al generar las Estadisticas de los Hechos" + e.getMessage());
+        }
+
+        try {
+            this.generarEstadisticasSolicitud();
+        } catch (Exception e) {
+            log.error("Error al generar las Estadisticas de las Solicitudes de Eliminacion" + e.getMessage());
+        }
+        
         log.info("[ESTADISTICAS] Completadas");
     }
 
@@ -140,6 +161,7 @@ public class EstadisticasService implements IEstadisticasService {
         // -- Estadistica provincia con mas hechos por coleccion -- //
         List<E_MayorProvinciaPorColeccion> e_provinciaPorColeccion = colecciones.stream()
                 .map(c -> generador.mayorProvinciaPorColeccion(c, c.getHechos()))
+                .filter(Objects::nonNull)
                 .toList();
         this.mayorProvinciaPorColeccionRepository.saveAll(e_provinciaPorColeccion);
     }
@@ -157,12 +179,14 @@ public class EstadisticasService implements IEstadisticasService {
         // -- Estadistica provincia con mas hechos por categoria -- //
         List<E_MayorProvinciaPorCategoria> e_provinciaPorCategoria = hechosPorCategoria.entrySet().stream()
                 .map(e -> generador.mayorProvinciaPorCategoria(e.getKey(), e.getValue()))
+                .filter(Objects::nonNull)
                 .toList();
         this.mayorProvinciaPorCategoriaRepository.saveAll(e_provinciaPorCategoria);
 
         // -- Estadistica hora de ocurrencia del dia con mas hechos por categoria -- //
         List<E_HoraOcurrenciaPorCategoria> e_horaPorCategorias = hechosPorCategoria.entrySet().stream()
                 .map(e -> generador.horaDiaPorCategoria(e.getKey(), e.getValue()))
+                .filter(Objects::nonNull)
                 .toList();
         this.horaOcuPorCategoriaRepository.saveAll(e_horaPorCategorias);
 
@@ -173,9 +197,7 @@ public class EstadisticasService implements IEstadisticasService {
 
     private void generarEstadisticasSolicitud() {
         List<SolicitudEliminacion> solicitudes = this.obtenerSolicitudesEliminacionAgregador();
-        if (solicitudes == null || solicitudes.isEmpty()) {
-            throw new RuntimeException("No se recibieron correctamente las solicitudes");
-        }
+
         GeneradorEstadisticas generador  = GeneradorEstadisticas.getInstance();
 
         // -- Estadistica cantidad de solicitudes spam -- //
