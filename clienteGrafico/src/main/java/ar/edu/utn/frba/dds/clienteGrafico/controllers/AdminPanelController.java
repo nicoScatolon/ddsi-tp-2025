@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
@@ -54,11 +55,15 @@ public class AdminPanelController {
             @RequestParam(name = "coleccion", required = false) String coleccion,
             Model model
     ) {
+        //traemos las colecciones para llenar el datalist
+        List<ColeccionOutputDTO> colecciones = agregadorService.obtenerColeccionesAdmin();
+
         PanelActividadViewDTO resumen = estadisticasFacade.getPanelActividad(coleccion);
 
         model.addAttribute("titulo", "Resumen Actividad");
         model.addAttribute("contentTemplate", "actividad");
-        model.addAttribute("coleccion", coleccion);
+        model.addAttribute("coleccion", coleccion);      // valor seleccionado en el input
+        model.addAttribute("colecciones", colecciones);  // lista para el datalist
         model.addAttribute("resumen", resumen);
 
         return "admin/panel-base";

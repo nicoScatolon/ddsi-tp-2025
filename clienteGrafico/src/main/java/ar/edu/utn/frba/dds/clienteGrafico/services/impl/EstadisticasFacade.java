@@ -25,14 +25,13 @@ public class EstadisticasFacade implements IEstadisticasFacade {
     private String baseUrl;
 
     private String api(String path) {
-        // baseUrl = http://servicio-estadisticas:8088   (sin /api/estadisticas)
+        // baseUrl = http://servicio-estadisticas:8088
         return baseUrl + "/api/estadisticas" + path;
     }
 
     @Override
     public PanelActividadViewDTO getPanelActividad(String coleccion) {
         try {
-            // 1) URLs del micro de estadísticas
             String urlMayorProvColeccion = api("/mayor_provincia_por_coleccion");
             if (coleccion != null && !coleccion.isBlank()) {
                 urlMayorProvColeccion += "?handleColeccion=" +
@@ -42,7 +41,6 @@ public class EstadisticasFacade implements IEstadisticasFacade {
             String urlMayorCategoria = api("/mayor_categoria");
             String urlSolicitudesSpam = api("/solicitudes_de_spam");
 
-            // 2) Llamadas HTTP (devuelven listas)
             List<MayorProvPorColeccionInputDTO> listaProv =
                     webApi.getList(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
 
@@ -52,7 +50,7 @@ public class EstadisticasFacade implements IEstadisticasFacade {
             List<SolicitudesSpamInputDTO> listaSpam =
                     webApi.getList(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
 
-            // 3) Agarramos "alguna" fila. Si querés ser fino, elegí la más nueva por fechaCalculo.
+
             MayorProvPorColeccionInputDTO provDto =
                     (listaProv != null && !listaProv.isEmpty()) ? listaProv.get(0) : null;
 

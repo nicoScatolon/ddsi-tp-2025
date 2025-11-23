@@ -8,6 +8,78 @@
     display: block;
 }
 
+/* Barra de filtros arriba del título "Estadísticas" */
+.estadisticas-actividad .actividad-filtros {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+/* Form contenedor: label + input + botón en línea */
+.estadisticas-actividad .filtro-colecciones {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+    max-width: 600px; /* opcional, para limitar ancho */
+}
+
+/* Label con icono alineado verticalmente */
+.estadisticas-actividad .filtro-colecciones .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.estadisticas-actividad .filtro-colecciones .filter-group label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* El contenedor del input ocupa todo lo que pueda */
+.estadisticas-actividad .filtro-colecciones .filter-content {
+    flex: 1;
+}
+
+/* Input de colecciones (datalist) estirado */
+.estadisticas-actividad .filtro-select {
+    width: 100%;
+    min-width: 260px;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: var(--white);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+/* Botón "Ver estadísticas" */
+.estadisticas-actividad .btn-ver-estadisticas {
+    padding: 0 0.9rem;
+    height: 40px; /* para matchear altura con el input */
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: var(--color-primary);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+    transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.estadisticas-actividad .btn-ver-estadisticas:hover {
+    background: color-mix(in srgb, var(--color-primary) 85%, black 15%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
 /* Título */
 .estadisticas-actividad .titulo {
     margin: 0 0 1rem 0;
@@ -41,6 +113,7 @@
 .estadisticas-actividad .card:nth-child(2) {
     grid-column: span 6;
 }
+
 .estadisticas-actividad .card:nth-child(3) {
     grid-column: span 12;
     min-height: 140px;
@@ -56,7 +129,6 @@
 
 /* Canvases de Chart.js */
 .estadisticas-actividad canvas {
-    /* Chart.js respeta el height del canvas con maintainAspectRatio=false */
     width: 100% !important;
     height: 320px !important;
     display: block;
@@ -89,6 +161,7 @@
 .estadisticas-actividad .card {
     transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
+
 .estadisticas-actividad .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);

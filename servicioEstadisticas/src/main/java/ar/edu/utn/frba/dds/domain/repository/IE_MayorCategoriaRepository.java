@@ -9,4 +9,5 @@ import java.time.LocalDateTime;
 @Repository
 public interface IE_MayorCategoriaRepository extends JpaRepository<E_MayorCategoria, Long> {
     void deleteByFechaDeCalculoBefore(LocalDateTime fechaLimite);
+    E_MayorCategoria findTopByOrderByFechaDeCalculoDesc();
 }

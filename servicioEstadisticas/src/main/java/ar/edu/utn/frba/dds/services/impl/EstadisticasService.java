@@ -87,46 +87,85 @@ public class EstadisticasService implements IEstadisticasService {
 
     // --- Metodos Obtencion Controller --- //
 
-
-    public List<E_MayorCategoriaOutputDTO> obtenerEstadisticasMayorCategoria() {
+    @Override
+    public List<E_MayorCategoriaOutputDTO> obtenerEstadisticasMayorCategoria(Boolean mostrarTodas) {
+        //si mostrarTodas es false
+        if (!mostrarTodas) {
+            E_MayorCategoria estadistica = mayorCategoriaRepository.findTopByOrderByFechaDeCalculoDesc();
+            if (estadistica == null) return null;
+            return List.of(DTOconverter.eMayorCategoriaOutputDTO(estadistica));
+        }
+        // Si mostrarTodas es true
         return this.mayorCategoriaRepository.findAll().stream().map(DTOconverter::eMayorCategoriaOutputDTO).toList();
     }
 
-    public List<E_SolicitudesSpamOutputDTO> obtenerEstadisticasSolicitudesSpam() {
+    @Override
+    public List<E_SolicitudesSpamOutputDTO> obtenerEstadisticasSolicitudesSpam(Boolean mostrarTodas) {
+        //si mostrarTodas es false
+        if (!mostrarTodas) {
+            E_SolicitudesSpam estadistica = solicitudesSpamRepository.findTopByOrderByFechaDeCalculoDesc();
+            if (estadistica == null) return null;
+            return List.of(DTOconverter.eSolicitudesSpamOutputDTO(estadistica));
+        }
+        // Si mostrarTodas es true
         return this.solicitudesSpamRepository.findAll().stream().map(DTOconverter::eSolicitudesSpamOutputDTO).toList();
     }
 
-    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String cod_categoria) {
+    @Override
+    public List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String cod_categoria, Boolean mostrarTodas) {
         if ( cod_categoria == null) {
             return this.mayorProvinciaPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eMayorProvinciaPorCategoriaOutputDTO)
                     .toList();
         }
 
+        //si mostrarTodas es false
+        if (!mostrarTodas) {
+            E_MayorProvinciaPorCategoria estadistica = mayorProvinciaPorCategoriaRepository.findTopByCodigoCategoriaOrderByFechaDeCalculoDesc(cod_categoria);
+            if (estadistica == null) return null;
+            return List.of(DTOconverter.eMayorProvinciaPorCategoriaOutputDTO(estadistica));
+        }
+        // Si mostrarTodas es true
         return this.mayorProvinciaPorCategoriaRepository.findByCodigoCategoria(cod_categoria).stream()
                 .map(DTOconverter::eMayorProvinciaPorCategoriaOutputDTO)
                 .toList();
     }
 
-    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String cod_categoria) {
+    @Override
+    public List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String cod_categoria, Boolean mostrarTodas) {
         if ( cod_categoria == null ) {
             return this.horaOcuPorCategoriaRepository.findAll().stream()
                     .map(DTOconverter::eHoraOcuPorCategoriaOutputDTO)
                     .toList();
         }
 
+        //si mostrarTodas es false
+        if (!mostrarTodas) {
+            E_HoraOcurrenciaPorCategoria estadistica = horaOcuPorCategoriaRepository.findTopByCodigoCategoriaOrderByFechaDeCalculoDesc(cod_categoria);
+            if (estadistica == null) return null;
+            return List.of(DTOconverter.eHoraOcuPorCategoriaOutputDTO(estadistica));
+        }
+        // Si mostrarTodas es true
         return this.horaOcuPorCategoriaRepository.findByCodigoCategoria(cod_categoria).stream()
                 .map(DTOconverter::eHoraOcuPorCategoriaOutputDTO)
                 .toList();
     }
 
-    public List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion) {
+    @Override
+    public List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion, Boolean mostrarTodas) {
         if ( handleColeccion == null) {
             return this.mayorProvinciaPorColeccionRepository.findAll().stream()
                     .map(DTOconverter::eMayorProvinciaPorColeccionOutputDTO)
                     .toList();
         }
 
+        //si mostrarTodas es false
+        if (!mostrarTodas) {
+            E_MayorProvinciaPorColeccion estadistica = mayorProvinciaPorColeccionRepository.findTopByColeccion_HandleOrderByFechaDeCalculoDesc(handleColeccion);
+            if (estadistica == null) return null;
+            return List.of(DTOconverter.eMayorProvinciaPorColeccionOutputDTO(estadistica));
+        }
+        // Si mostrarTodas es true
         return this.mayorProvinciaPorColeccionRepository.findByColeccion_Handle(handleColeccion).stream()
                 .map(DTOconverter::eMayorProvinciaPorColeccionOutputDTO)
                 .toList();

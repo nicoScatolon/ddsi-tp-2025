@@ -12,4 +12,5 @@ import java.util.List;
 public interface IE_MayorProvinciaPorColeccionRepository extends JpaRepository<E_MayorProvinciaPorColeccion, Long> {
     List<E_MayorProvinciaPorColeccion> findByColeccion_Handle(String handle);
     void deleteByFechaDeCalculoBefore(LocalDateTime fechaLimite);
+    E_MayorProvinciaPorColeccion findTopByColeccion_HandleOrderByFechaDeCalculoDesc(String handle);
 }

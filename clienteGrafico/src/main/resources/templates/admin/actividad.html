@@ -2,6 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <th:block th:fragment="actividad">
     <section class="estadisticas-actividad">
+
+        <!-- FILTRO DE COLECCIONES (clonado estilo filtros hechos) -->
+        <div class="actividad-filtros">
+            <form th:action="@{/admin/actividad}" method="get" class="filtro-colecciones">
+
+                <!-- Grupo de filtro con el mismo patrón que Provincia/Categoría -->
+                <div class="filter-group">
+                    <label>
+                        <i class="fas fa-layer-group" style="color: black; margin-right: 8px;"></i>
+                        Colección
+                    </label>
+
+                    <div class="filter-content">
+                        <!-- Input con datalist-->
+                        <input type="text"
+                               id="coleccion"
+                               name="coleccion"
+                               placeholder="Ej: Inundaciones, Accidentes..."
+                               th:value="${coleccion}"
+                               list="colecciones-list"
+                               autocomplete="off"
+                               class="filtro-select">
+
+                        <datalist id="colecciones-list">
+                            <option th:each="col : ${colecciones}"
+                                    th:value="${col.handle}"
+                                    th:text="${col.titulo}">
+                            </option>
+                        </datalist>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-filter btn-ver-estadisticas">
+                    Ver estadísticas
+                </button>
+            </form>
+        </div>
+
         <h1 class="titulo">Estadísticas</h1>
 
         <div class="cards">
@@ -41,7 +79,8 @@
             <div class="card">
                 <h2>Solicitudes de eliminación (spam)</h2>
                 <div id="act-spam" class="kpi"
-                     th:with="spam=${resumen.solicitudesSpam}, total=${resumen.solicitudesTotales},
+                     th:with="spam=${resumen.solicitudesSpam},
+                              total=${resumen.solicitudesTotales},
                               pct=${total != null && total > 0 ? (spam * 100 / total) : 0}">
                     <span th:text="${#numbers.formatInteger(spam, 0)}">0</span>
                     /
@@ -52,6 +91,7 @@
                 </div>
             </div>
         </div>
+
     </section>
 </th:block>
 </html>
