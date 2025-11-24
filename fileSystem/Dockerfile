@@ -22,11 +22,21 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Crear directorio para archivos
 RUN mkdir -p /app/fileSystem && chmod -R 777 /app/fileSystem
 
 COPY --from=builder /app/target/*.jar app.jar
 
+# Verificar que el JAR existe
+RUN ls -lh app.jar
+
 EXPOSE 8091
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Agregar script de inicio con logs
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "=== Starting fileSystem service ===" ' >> /app/start.sh && \
+    echo 'echo "SERVER_PORT: $SERVER_PORT"' >> /app/start.sh && \
+    echo 'echo "APP_DIRECTORIO_DESTINO: $APP_DIRECTORIO_DESTINO"' >> /app/start.sh && \
+    echo 'java -jar app.jar' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]
