@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/mis-hechos").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
                         .requestMatchers("/mis-solicitudes").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
                         .requestMatchers("/profile").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
+                        .requestMatchers("/hechos/create").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
 
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .anyRequest().authenticated()
