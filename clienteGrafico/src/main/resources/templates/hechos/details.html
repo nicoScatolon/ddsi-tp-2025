@@ -96,9 +96,12 @@
                             <div class="tags-header">Contribuyente:</div>
                             <p id="hecho-contribuyente" class="contribuyente">
                                 <span th:if="${hecho.getCargadoAnonimamente() == true}">Anónimo</span>
-                                <span th:unless="${hecho.getCargadoAnonimamente() == true}" th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}">
+                                <a th:unless="${hecho.getCargadoAnonimamente() == true}"
+                                   th:href="@{/profile/{id}(id=${hecho.contribuyenteId})}"
+                                   th:text="${contribuyente.nombre + ' ' + contribuyente.apellido}"
+                                   class="contribuyente-link">
                                     Nombre Apellido
-                                </span>
+                                </a>
                             </p>
                         </div>
                     </div>

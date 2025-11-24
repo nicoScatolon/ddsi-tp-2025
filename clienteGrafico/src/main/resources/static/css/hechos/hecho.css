@@ -157,6 +157,7 @@
     display: block;
 }
 
+
 #hecho-detail .info-item p {
     margin: 0;
     color: var(--text-color);
@@ -170,6 +171,23 @@
 #hecho-detail .contribuyente {
     color: var(--muted);
     font-weight: 500;
+}
+
+#hecho-detail .contribuyente-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    font-weight: 600;
+}
+
+#hecho-detail .contribuyente-link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+#hecho-detail .contribuyente-link:active {
+    color: var(--color-primary);
+    opacity: 0.8;
 }
 
 /* ===== CARRUSEL MULTIMEDIA ===== */
