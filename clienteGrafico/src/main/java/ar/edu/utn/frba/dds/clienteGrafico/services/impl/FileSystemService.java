@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -21,8 +23,8 @@ public class FileSystemService implements IFileSystemService {
     private final String fileSystemUrl;
 
     public FileSystemService(WebApiCallerService webApiCallerService,
-                                 @Value("${fuente.estatica.url}") String fuenteEstaticaUrl,
-                                 @Value("${file.system.url}") String fileSystemUrl) {
+                             @Value("${fuente.estatica.url}") String fuenteEstaticaUrl,
+                             @Value("${file.system.url}") String fileSystemUrl) {
         this.webApiCallerService = webApiCallerService;
         this.fuenteEstaticaUrl = fuenteEstaticaUrl;
         this.fileSystemUrl = fileSystemUrl;
@@ -40,7 +42,6 @@ public class FileSystemService implements IFileSystemService {
             MultipartFile file = multimediaFiles.get(i);
             if (!file.isEmpty()) {
                 try {
-                    // Pasar el tipo de contenido al método de subida
                     String tipoContenidoStr = tiposContenido.get(i);
                     String url = subirArchivoAlFileSystem(file, tipoContenidoStr);
 
@@ -73,13 +74,11 @@ public class FileSystemService implements IFileSystemService {
     public void importarArchivoCSV(MultipartFile archivo) throws IOException {
         String urlGuardarArchivo = fileSystemUrl + "/api/file-system/csv";
 
-        // Convertir bytes a Base64
         String base64Content = Base64.getEncoder().encodeToString(archivo.getBytes());
 
-        // Convertir el MultipartFile a un DTO con Base64
         FileUploadOutputDTO fileDTO = FileUploadOutputDTO.builder()
                 .contentType(archivo.getContentType())
-                .content(base64Content)  // Ahora es String en Base64
+                .content(base64Content)
                 .filename(archivo.getOriginalFilename())
                 .build();
 
@@ -96,7 +95,6 @@ public class FileSystemService implements IFileSystemService {
     public void procesarImagenPrincipalListaHechos(List<HechoInputDTO> listaHechosDTO) {
         listaHechosDTO.forEach(hecho -> {
             if (hecho.getContenidoMultimedia() != null && !hecho.getContenidoMultimedia().isEmpty()) {
-                // Buscar la primera imagen
                 Optional<ContenidoMultimediaInputDTO> primeraImagen = hecho.getContenidoMultimedia().stream()
                         .filter(c -> c.getTipoContenido() == TipoContenido.IMAGEN)
                         .findFirst();
@@ -138,7 +136,7 @@ public class FileSystemService implements IFileSystemService {
                 .contentType(file.getContentType())
                 .content(base64Content)
                 .filename(file.getOriginalFilename())
-                .tipoContenido(tipoContenido) // NUEVO
+                .tipoContenido(tipoContenido)
                 .build();
 
         try {
@@ -158,7 +156,30 @@ public class FileSystemService implements IFileSystemService {
     }
 
     public String construirUrlMultimedia(String rutaRelativa) {
-        return fileSystemUrl + "/api/file-system/multimedia/" + rutaRelativa;
+        if (rutaRelativa == null || rutaRelativa.isEmpty()) {
+            return fileSystemUrl + "/api/file-system/multimedia/";
+        }
+
+        try {
+            // Dividir la ruta en partes (carpeta/archivo)
+            String[] partes = rutaRelativa.split("/");
+
+            // Encodear cada parte por separado
+            StringBuilder rutaEncoded = new StringBuilder();
+            for (int i = 0; i < partes.length; i++) {
+                rutaEncoded.append(URLEncoder.encode(partes[i], StandardCharsets.UTF_8));
+                if (i < partes.length - 1) {
+                    rutaEncoded.append("/");
+                }
+            }
+
+            return fileSystemUrl + "/api/file-system/multimedia/" + rutaEncoded.toString();
+
+        } catch (Exception e) {
+            System.err.println("Error al encodear URL: " + rutaRelativa);
+            // Fallback: retornar sin encoding
+            return fileSystemUrl + "/api/file-system/multimedia/" + rutaRelativa;
+        }
     }
 
     private void enviarRutaAFuenteEstatica(String rutaArchivo) {

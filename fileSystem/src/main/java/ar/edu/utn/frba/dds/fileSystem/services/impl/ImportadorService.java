@@ -73,10 +73,20 @@ public class ImportadorService implements IImportadorService {
     }
 
     private String generarNombreUnico(String nombreOriginal) {
+        // Sanitizar nombre: eliminar espacios y caracteres especiales
+        nombreOriginal = nombreOriginal
+                .replace(" ", "_")
+                .replace("%", "")
+                .replace("#", "")
+                .replace("&", "")
+                .replace("?", "")
+                .replace("+", "");
+
         int lastDot = nombreOriginal.lastIndexOf('.');
         String nombreSinExtension = lastDot > 0 ? nombreOriginal.substring(0, lastDot) : nombreOriginal;
         String extension = lastDot > 0 ? nombreOriginal.substring(lastDot) : "";
         long timestamp = System.currentTimeMillis();
+
         return nombreSinExtension + "_" + timestamp + extension;
     }
 }
