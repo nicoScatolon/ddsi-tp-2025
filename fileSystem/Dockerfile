@@ -22,7 +22,10 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-RUN mkdir -p /app/fileSystem && chmod -R 777 /app/fileSystem
+# CRÍTICO: Crear directorio con permisos de escritura
+RUN mkdir -p /app/fileSystem && \
+    chmod -R 777 /app/fileSystem && \
+    ls -la /app
 
 COPY --from=builder /app/target/*.jar app.jar
 
@@ -31,12 +34,8 @@ RUN ls -lh app.jar
 
 EXPOSE 8091
 
-# Agregar script de inicio con logs
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'echo "=== Starting fileSystem service ===" ' >> /app/start.sh && \
-    echo 'echo "SERVER_PORT: $SERVER_PORT"' >> /app/start.sh && \
-    echo 'echo "APP_DIRECTORIO_DESTINO: $APP_DIRECTORIO_DESTINO"' >> /app/start.sh && \
-    echo 'java -jar app.jar' >> /app/start.sh && \
-    chmod +x /app/start.sh
+# Usuario no-root (opcional pero recomendado)
+# RUN addgroup -S spring && adduser -S spring -G spring
+# USER spring
 
-ENTRYPOINT ["/app/start.sh"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
