@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== DROPDOWN PARA USUARIO AUTENTICADO =====
     const userBtn = document.getElementById('desktopUserBtn');
     const userDropdown = document.getElementById('desktopUserDropdown');
+    const body = document.body;
 
     if(userDropdown) userDropdown.style.display = 'none';
 
@@ -68,6 +69,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if(loginDropdown) {
         loginDropdown.addEventListener('click', (e) => {
             e.stopPropagation();
+        });
+    }
+
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('primaryNav');
+
+    function closeMobileMenu() {
+        if (!navLinks || !navToggle) return;
+        navLinks.classList.remove('is-open');
+        navToggle.classList.remove('is-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        body.classList.remove('mobile-menu-open');
+    }
+
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = navLinks.classList.toggle('is-open');
+            navToggle.classList.toggle('is-open', isOpen);
+            navToggle.setAttribute('aria-expanded', String(isOpen));
+            body.classList.toggle('mobile-menu-open', isOpen);
+        });
+
+        // cerrar al hacer click en un link
+        navLinks.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', function () {
+                closeMobileMenu();
+            });
         });
     }
 });
