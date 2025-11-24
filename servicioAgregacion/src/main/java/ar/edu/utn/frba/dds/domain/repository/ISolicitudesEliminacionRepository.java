@@ -1,6 +1,9 @@
 package ar.edu.utn.frba.dds.domain.repository;
 
 
+import ar.edu.utn.frba.dds.domain.entities.Coleccion;
+import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
+import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.SolicitudEliminarHecho;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +27,5 @@ public interface ISolicitudesEliminacionRepository extends JpaRepository<Solicit
     List<SolicitudEliminarHecho> findByEstado(EstadoDeSolicitud estado);
     
     List<SolicitudEliminarHecho> findAllByIdCreador(Long idCreador);
+    void deleteByHechoIn(List<Hecho> hechos);
 }

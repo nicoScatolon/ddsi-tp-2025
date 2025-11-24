@@ -22,88 +22,91 @@
                 </form>
             </header>
 
-            <!-- Lista de hechos -->
-            <div id="mh-list" class="mh-list" aria-live="polite">
-                <!-- Iteramos sobre cada hecho -->
-                <div th:each="hecho : ${hechos}" class="mh-card-wrapper">
-                    <div class="mh-card">
-                        <div class="mh-info">
-                            <!-- Título con badge de estado -->
-                            <div class="mh-title-row">
-                                <span class="estado-badge"
-                                      th:classappend="${hecho.estado.name()}"
-                                      th:text="${hecho.estado.name()}">PENDIENTE</span>
-                                <h3 class="mh-title" th:text="${hecho.titulo}">Título del Hecho</h3>
+            <!-- SECCIÓN CONTENEDORA DE HECHOS -->
+            <section class="mh-hechos-section">
+                <!-- Lista de hechos -->
+                <div id="mh-list" class="mh-list" aria-live="polite">
+                    <!-- Iteramos sobre cada hecho -->
+                    <div th:each="hecho : ${hechos}" class="mh-card-wrapper">
+                        <div class="mh-card">
+                            <div class="mh-info">
+                                <!-- Título con badge de estado -->
+                                <div class="mh-title-row">
+                                    <span class="estado-badge"
+                                          th:classappend="${hecho.estado.name()}"
+                                          th:text="${hecho.estado.name()}">PENDIENTE</span>
+                                    <h3 class="mh-title" th:text="${hecho.titulo}">Título del Hecho</h3>
+                                </div>
+
+                                <!-- Metadata -->
+                                <div class="mh-meta">
+                                    <span class="mh-meta-item">
+                                        <i class="fas fa-tag"></i>
+                                        <strong>Categoría:</strong>
+                                        <span th:text="${hecho.categoria.nombre}">Categoría</span>
+                                    </span>
+                                    <span class="mh-meta-item">
+                                        <i class="fas fa-calendar-plus"></i>
+                                        <strong>Carga:</strong>
+                                        <span th:text="${#temporals.format(hecho.fechaDeCarga, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(hecho.fechaDeCarga, 'HH:mm')}">Fecha</span>
+                                    </span>
+                                    <span class="mh-meta-item" th:if="${hecho.fechaDeModificacion != null}">
+                                        <i class="fas fa-calendar-check"></i>
+                                        <strong>Modificación:</strong>
+                                        <span th:text="${#temporals.format(hecho.fechaDeModificacion, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(hecho.fechaDeModificacion, 'HH:mm')}">Fecha</span>
+                                    </span>
+                                </div>
                             </div>
 
-                            <!-- Metadata -->
-                            <div class="mh-meta">
-                                <span class="mh-meta-item">
-                                    <i class="fas fa-tag"></i>
-                                    <strong>Categoría:</strong>
-                                    <span th:text="${hecho.categoria.nombre}">Categoría</span>
-                                </span>
-                                <span class="mh-meta-item">
-                                    <i class="fas fa-calendar-plus"></i>
-                                    <strong>Carga:</strong>
-                                    <span th:text="${#temporals.format(hecho.fechaDeCarga, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(hecho.fechaDeCarga, 'HH:mm')}">Fecha</span>
-                                </span>
-                                <span class="mh-meta-item" th:if="${hecho.fechaDeModificacion != null}">
-                                    <i class="fas fa-calendar-check"></i>
-                                    <strong>Modificación:</strong>
-                                    <span th:text="${#temporals.format(hecho.fechaDeModificacion, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(hecho.fechaDeModificacion, 'HH:mm')}">Fecha</span>
-                                </span>
+                            <!-- Botones de acción -->
+                            <div class="mh-actions">
+                                <a th:href="@{/hechos/fuenteDinamica/{id}(id=${hecho.id})}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <!-- Botón Editar: solo visible si NO es RECHAZADO -->
+                                <a th:if="${hecho.estado.name() != 'RECHAZADO'}"
+                                   th:href="@{/hechos/editar/{id}(id=${hecho.id})}"
+                                   class="btn btn-edit">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Botones de acción -->
-                        <div class="mh-actions">
-                            <a th:href="@{/hechos/fuenteDinamica/{id}(id=${hecho.id})}" class="btn btn-view">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
-                            <!-- Botón Editar: solo visible si NO es ACEPTADO ni RECHAZADO -->
-                            <a th:if="${hecho.estado.name() != 'RECHAZADO'}"
-                               th:href="@{/hechos/editar/{id}(id=${hecho.id})}"
-                               class="btn btn-edit">
-                                <i class="fas fa-edit"></i> Editar
-                            </a>
+                        <!-- Sugerencia del administrador (solo si es SUGERENCIA) -->
+                        <div class="mh-sugerencia" th:if="${hecho.estado.name() == 'SUGERENCIA' and hecho.sugerencia != null and !#strings.isEmpty(hecho.sugerencia)}">
+                            <strong>
+                                <i class="fas fa-lightbulb"></i>
+                                Sugerencia del Administrador
+                            </strong>
+                            <p th:text="${hecho.sugerencia}">Texto de la sugerencia</p>
                         </div>
-                    </div>
-
-                    <!-- Sugerencia del administrador (solo si es SUGERENCIA) -->
-                    <div class="mh-sugerencia" th:if="${hecho.estado.name() == 'SUGERENCIA' and hecho.sugerencia != null and !#strings.isEmpty(hecho.sugerencia)}">
-                        <strong>
-                            <i class="fas fa-lightbulb"></i>
-                            Sugerencia del Administrador
-                        </strong>
-                        <p th:text="${hecho.sugerencia}">Texto de la sugerencia</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Mensaje cuando no hay hechos -->
-            <div id="mh-empty" class="mh-empty" th:if="${hechos == null or #lists.isEmpty(hechos)}">
-                <p>No tenes hechos aún. <a th:href="@{/hechos/create}">Creá el primero</a>.</p>
-            </div>
+                <!-- Mensaje cuando no hay hechos -->
+                <div id="mh-empty" class="mh-empty" th:if="${hechos == null or #lists.isEmpty(hechos)}">
+                    <p>No tenes hechos aún. <a th:href="@{/hechos/create}">Creá el primero</a>.</p>
+                </div>
 
-            <!-- Paginación -->
-            <div class="mh-pagination">
-                <a class="pagination-arrow"
-                   th:classappend="${paginaActual == 0} ? ' disabled' : ''"
-                   th:onclick="${paginaActual == 0} ? 'return false;' : ''"
-                   th:href="@{/mis-hechos(page=${paginaActual - 1}, estadoHecho=${estadoHecho})}">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
+                <!-- Paginación -->
+                <div class="mh-pagination" th:if="${hechos != null and !#lists.isEmpty(hechos)}">
+                    <a class="pagination-arrow"
+                       th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+                       th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+                       th:href="@{/mis-hechos(page=${paginaActual - 1}, estadoHecho=${estadoHecho})}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
 
-                <div class="pagination-page-number" th:text="${paginaActual + 1}">1</div>
+                    <div class="pagination-page-number" th:text="${paginaActual + 1}">1</div>
 
-                <a class="pagination-arrow"
-                   th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
-                   th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
-                   th:href="@{/mis-hechos(page=${paginaActual + 1}, estadoHecho=${estadoHecho})}">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </div>
+                    <a class="pagination-arrow"
+                       th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
+                       th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
+                       th:href="@{/mis-hechos(page=${paginaActual + 1}, estadoHecho=${estadoHecho})}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </section>
         </section>
     </div>
 </div>

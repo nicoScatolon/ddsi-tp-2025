@@ -1,11 +1,12 @@
 // =========================
 // MAPA DE HECHOS - JavaScript
+// Sin restricciones de movimiento
 // =========================
 
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar mapa centrado en Argentina
     const map = L.map('map', {
-        minZoom: 4,
+        minZoom: 3,
         maxZoom: 18
     }).setView([-38.0, -63.5], 5);
 
@@ -137,33 +138,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Centrar y limitar mapa a provincia
+     * Centrar mapa en provincia (sin restricciones de movimiento)
      */
     function centrarEnProvincia(provincia) {
         const coords = PROVINCIAS[provincia];
         if (!coords) return;
 
-        // Centrar en la provincia
-        map.setView([coords.lat, coords.lng], 8);
-
-        // Establecer límites amplios para incluir provincias limítrofes
-        const radio = 6; // grados - permite ver provincias vecinas completas
-        const limites = L.latLngBounds(
-            L.latLng(coords.lat - radio, coords.lng - radio),
-            L.latLng(coords.lat + radio, coords.lng + radio)
-        );
-
-        // Configurar límites con bounce back muy suave
-        map.setMaxBounds(limites);
-        map.options.maxBoundsViscosity = 0.3; // Resistencia muy suave
+        // Solo centrar la vista, sin restricciones
+        map.setView([coords.lat, coords.lng], 8, {
+            animate: true,
+            duration: 0.8
+        });
     }
 
     /**
      * Restablecer vista general de Argentina
      */
     function restablecerVista() {
-        map.setMaxBounds(null);
-        map.setView([-38.0, -63.5], 5);
+        map.setView([-38.0, -63.5], 5, {
+            animate: true,
+            duration: 0.8
+        });
     }
 
     // =========================

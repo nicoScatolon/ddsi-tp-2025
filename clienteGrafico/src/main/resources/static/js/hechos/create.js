@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== INICIALIZACIÓN PARA MODO EDICIÓN =====
     if (!esNuevo) {
         initEditMode();
+    } else {
+        // En modo creación, verificar si hay multimedia existente al cargar
+        updateMultimediaContainerVisibility();
     }
 
     function initEditMode() {
@@ -87,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Inicializar drag & drop para multimedia existente
         initDragAndDrop();
+        updateMultimediaContainerVisibility();
         updatePortadaBadge();
     }
 
@@ -198,6 +202,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Función para mostrar/ocultar el contenedor según tenga contenido
+    function updateMultimediaContainerVisibility() {
+        const visibleItems = Array.from(document.querySelectorAll('#multimediaContainer .multimedia-item'))
+            .filter(item => item.style.display !== 'none');
+
+        if (visibleItems.length > 0) {
+            multimediaContainer.classList.add('has-content');
+        } else {
+            multimediaContainer.classList.remove('has-content');
+        }
+    }
+
     function showDireccionFields() {
         provinciaInput.required = true;
         localidadInput.required = true;
@@ -289,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
             itemDiv.style.display = 'none';
             multimediaToDelete.push(mediaId);
             console.log('Marcado para eliminar:', mediaId);
+            updateMultimediaContainerVisibility();
             updatePortadaBadge();
         }
     }
@@ -383,6 +400,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         multimediaInput.value = '';
+
+        // Mostrar el contenedor si hay archivos
+        updateMultimediaContainerVisibility();
         updatePortadaBadge();
     });
 
@@ -470,6 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (video) URL.revokeObjectURL(video.src);
 
             itemDiv.remove();
+            updateMultimediaContainerVisibility();
             updatePortadaBadge();
         }
     }
@@ -661,6 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 multimediaFiles = [];
                 multimediaContainer.querySelectorAll('.multimedia-item[data-file-id]').forEach(item => item.remove());
                 multimediaInput.value = '';
+                updateMultimediaContainerVisibility();
             } else {
                 // En modo edición, volver a los valores originales
                 window.location.reload();

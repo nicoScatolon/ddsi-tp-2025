@@ -156,7 +156,6 @@
 
                 <!-- Todos los archivos multimedia juntos en UN SOLO contenedor -->
                 <div class="multimedia-preview-container" id="multimediaContainer">
-                    <!-- Multimedia existente (para edición) -->
                     <div th:each="media : ${multimediaExistente}"
                          class="multimedia-item existing-item"
                          draggable="true"
@@ -207,7 +206,6 @@
                         </div>
                     </div>
 
-                    <!-- Aquí se agregarán los nuevos archivos multimedia con JS -->
                 </div>
 
                 <!-- Campos ocultos para multimedia existente (se llenan con JS) -->

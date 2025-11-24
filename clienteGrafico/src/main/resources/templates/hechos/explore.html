@@ -107,8 +107,18 @@
     <div class="content-wrapper">
         <section id="explore">
 
+            <!-- MENSAJE CUANDO NO HAY HECHOS -->
+            <div th:if="${#lists.isEmpty(hechos)}" class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <h3>No hay hechos todavía</h3>
+                <p>Sé el primero en crear un hecho y compartir información importante.</p>
+                <a th:href="@{/hechos/create}" class="btn-create-first">
+                    <i class="fas fa-plus"></i> Crear el primer hecho
+                </a>
+            </div>
+
             <!-- CARDS -->
-            <div id="hechos-container" class="cards-container">
+            <div id="hechos-container" class="cards-container" th:unless="${#lists.isEmpty(hechos)}">
                 <a class="card" th:each="hecho : ${hechos}"
                    th:href="@{/hechos/{id}(id=${hecho.id})}"
                    th:aria-label="${hecho.titulo}">
@@ -166,7 +176,8 @@
                     </div>
                 </a>
 
-                <div id="pagination-controls">
+                <!-- PAGINACIÓN: Solo mostrar si NO es la primera página O si hay más páginas -->
+                <div id="pagination-controls" th:if="${paginaActual > 0 || hechos.size() >= 20}">
                     <!-- Botón Anterior -->
                     <a class="pagination-arrow"
                        th:classappend="${paginaActual == 0} ? ' disabled' : ''"

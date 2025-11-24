@@ -6,61 +6,64 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </th:block>
+<div th:fragment="contenido" class="map-view-wrapper">
+    <div class="map-container">
+        <!-- Panel Lateral -->
+        <div class="map-controls">
+            <div class="map-controls-content">
+                <div class="control-header">
+                    <h2>🗺️ Explorar por Provincia</h2>
+                    <p class="control-subtitle">Selecciona una provincia para visualizar sus hechos históricos</p>
+                </div>
 
-<div th:fragment="contenido">
-    <!-- Panel de Control -->
-    <div class="map-controls">
-        <div class="control-header">
-            <h2>🗺️ Explorar por Provincia</h2>
-            <p class="control-subtitle">Selecciona una provincia para visualizar sus hechos históricos</p>
-        </div>
+                <div class="province-selector">
+                    <label for="provinciaSelect">Provincia:</label>
+                    <select id="provinciaSelect" class="province-select">
+                        <option value="">-- Seleccionar --</option>
+                        <option th:each="provincia : ${listaProvincias}"
+                                th:value="${provincia}"
+                                th:text="${provincia}">
+                        </option>
+                    </select>
+                </div>
 
-        <div class="province-selector">
-            <label for="provinciaSelect">Provincia:</label>
-            <select id="provinciaSelect" class="province-select">
-                <option value="">-- Seleccionar --</option>
-                <option th:each="provincia : ${listaProvincias}"
-                        th:value="${provincia}"
-                        th:text="${provincia}">
-                </option>
-            </select>
-        </div>
+                <div class="control-actions">
+                    <button id="cargarProvinciaBtn" class="btn-load" disabled>
+                        <span class="btn-icon">📍</span>
+                        Cargar Provincia
+                    </button>
+                    <button id="cargarTodosBtn" class="btn-load-all">
+                        <span class="btn-icon">🌎</span>
+                        Cargar Todos
+                    </button>
+                </div>
 
-        <div class="control-actions">
-            <button id="cargarProvinciaBtn" class="btn-load" disabled>
-                <span class="btn-icon">📍</span>
-                Cargar Provincia
-            </button>
-            <button id="cargarTodosBtn" class="btn-load-all">
-                <span class="btn-icon">🌎</span>
-                Cargar Todos
-            </button>
-        </div>
+                <div id="loadingIndicator" class="loading-indicator hidden">
+                    <div class="spinner"></div>
+                    <span id="loadingText">Cargando...</span>
+                </div>
 
-        <div id="loadingIndicator" class="loading-indicator hidden">
-            <div class="spinner"></div>
-            <span id="loadingText">Cargando...</span>
-        </div>
+                <div id="statsInfo" class="stats-info hidden">
+                    <div class="stat-item">
+                        <span class="stat-label">Provincia:</span>
+                        <span id="statProvincia" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hechos cargados:</span>
+                        <span id="statHechos" class="stat-value">0</span>
+                    </div>
+                </div>
 
-        <div id="statsInfo" class="stats-info hidden">
-            <div class="stat-item">
-                <span class="stat-label">Provincia:</span>
-                <span id="statProvincia" class="stat-value">-</span>
+                <div class="warning-box hidden" id="warningBox">
+                    <span class="warning-icon">⚠️</span>
+                    <p><strong>Advertencia:</strong> Cargar todos los hechos puede tardar varios segundos dependiendo de la cantidad de datos.</p>
+                </div>
             </div>
-            <div class="stat-item">
-                <span class="stat-label">Hechos cargados:</span>
-                <span id="statHechos" class="stat-value">0</span>
-            </div>
         </div>
 
-        <div class="warning-box hidden" id="warningBox">
-            <span class="warning-icon">⚠️</span>
-            <p><strong>Advertencia:</strong> Cargar todos los hechos puede tardar varios segundos dependiendo de la cantidad de datos.</p>
-        </div>
+        <!-- Mapa -->
+        <div id="map"></div>
     </div>
-
-    <!-- Mapa -->
-    <div id="map"></div>
 </div>
 
 <th:block th:fragment="jsExtra">

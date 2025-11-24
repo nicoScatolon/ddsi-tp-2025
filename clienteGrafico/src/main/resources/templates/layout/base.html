@@ -73,7 +73,7 @@
                         class="btn btn-user-visualizador" type="button"
                         aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-eye"></i>
-                    <span>Visualizador</span>
+                    <span th:text="${userName != null ? userName : 'Visualizador'}">Visualizador</span>
                 </button>
 
                 <!-- Contribuyente -->
@@ -81,7 +81,7 @@
                         class="btn btn-user-contribuyente" type="button"
                         aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user"></i>
-                    <span>Contribuyente</span>
+                    <span th:text="${userName != null ? userName : 'Contribuyente'}">Contribuyente</span>
                 </button>
 
                 <!-- Admin -->
@@ -89,7 +89,7 @@
                         class="btn btn-user-admin" type="button"
                         aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user-cog"></i>
-                    <span>Admin</span>
+                    <span th:text="${userName != null ? userName : 'Admin'}">Admin</span>
                 </button>
 
                 <!-- Admin Superior -->
@@ -97,7 +97,7 @@
                         class="btn btn-user-adminsuperior" type="button"
                         aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-crown"></i>
-                    <span>Admin Superior</span>
+                    <span th:text="${userName != null ? userName : 'Admin Superior'}">Admin Superior</span>
                 </button>
 
                 <div id="desktopUserDropdown">

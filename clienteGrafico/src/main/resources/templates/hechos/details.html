@@ -62,10 +62,10 @@
                                     <span th:if="${hecho.ubicacion != null}"
                                           th:utext="${(hecho.ubicacion.provincia != null ? hecho.ubicacion.provincia : '') +
                                                      (hecho.ubicacion.departamento != null ? ', ' + hecho.ubicacion.departamento : '') +
-                                                     (hecho.ubicacion.calle != null ? ' - ' + hecho.ubicacion.calle : '') +
+                                                     (hecho.ubicacion.calle != null ? ' ' + hecho.ubicacion.calle : '') +
                                                      (hecho.ubicacion.numero != null ? ' ' + hecho.ubicacion.numero : '')}">
                                     </span>
-                                <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null && hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
+                                <span th:unless="${hecho.ubicacion != null && (hecho.ubicacion.provincia!= null || hecho.ubicacion.departamento!= null)}">Sin ubicación especificada</span>
                             </p>
                         </div>
 

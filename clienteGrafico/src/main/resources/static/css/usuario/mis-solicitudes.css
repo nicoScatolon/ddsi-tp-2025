@@ -1,175 +1,318 @@
-/* styles/mis-solicitudes.css
-   CSS completo para "Mis Solicitudes"
-   - Primera línea: Hecho + Fecha en el mismo renglón
-   - Segunda línea: Razón
-   - Tercera línea: botón "Ver contenido" a la derecha
-*/
-
-/* Variables */
-:root {
-    --color-primary: #2F60F4;
-    --color-primary-dark: #1746D2;
-    --card-bg: #ffffff;
-    --card-shadow: rgba(0,0,0,0.08);
-    --muted: #6b6b6b;
+/* ===== VARIABLES LOCALES (sin sobrescribir las globales) ===== */
+.mh-main {
+    --mh-primary: #2F60F4;
+    --mh-accent: #1e40af;
+    --mh-white: #ffffff;
+    --mh-bg: #f9fafb;
+    --mh-text: #1f2937;
+    --mh-muted: #6b7280;
+    --mh-radius-sm: 6px;
+    --mh-radius-lg: 12px;
 }
 
-/* Card principal */
-.card {
-    background: var(--card-bg);
-    max-width: 900px;
-    width: min(900px, 100%);
-    margin: 2rem auto;
-    padding: 1.5rem;
-    border-radius: 20px;
-    box-shadow: 0 6px 20px var(--card-shadow);
-    box-sizing: border-box;
-}
-
-/* Título centrado */
-.card h1 {
-    text-align: center;
-    font-size: 1.6rem;
-    margin-bottom: 1.2rem;
-    color: #333;
-}
-
-/* Contenedor de tarjetas */
-.solicitudes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-/* Tarjeta de solicitud */
-.solicitud-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.mh-main {
     width: 100%;
-    box-sizing: border-box;
+    padding: 1rem 2rem 2rem 2rem;
+    min-height: calc(100vh - 80px);
 }
 
-/* Primera fila: Hecho + Fecha en la misma línea */
-.solicitud-card .row {
+.mh-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.mh-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
-    font-size: 0.95rem;
-    color: #222;
+    gap: 1.5rem;
 }
 
-.solicitud-card .row > div {
+.mh-header h1 {
+    color: var(--mh-accent);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ===== SECCIÓN DE HECHOS/SOLICITUDES ===== */
+.mh-hechos-section {
+    background: var(--mh-white);
+    border-radius: var(--mh-radius-lg);
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== LISTA ===== */
+.mh-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* ===== WRAPPER DE CARDS ===== */
+.mh-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ===== CARDS ===== */
+.mh-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: var(--mh-bg);
+    border: 1px solid #e5e7eb;
+    border-radius: var(--mh-radius-lg);
+    transition: none;
+}
+
+.mh-card-wrapper:has(.mh-sugerencia) .mh-card {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Información */
+.mh-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mh-title-row {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
 }
 
-/* Etiquetas en negrita */
-.solicitud-card .label {
-    font-weight: 600;
-    color: #333;
+.mh-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mh-text);
+    margin: 0;
 }
 
-/* Fecha con color apagado */
-.solicitud-card .row > div:last-child {
-    color: var(--muted);
-    font-size: 0.9rem;
-    white-space: nowrap;
+/* Sugerencia/Razón */
+.mh-sugerencia {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 var(--mh-radius-lg) var(--mh-radius-lg);
+    box-sizing: border-box;
 }
 
-/* Segunda línea - Razón */
-.solicitud-card > div:nth-child(2) {
-    font-size: 0.95rem;
-    color: #333;
-    line-height: 1.4;
-    word-break: break-word;
+.mh-sugerencia strong {
     display: flex;
-    gap: 0.4rem;
-}
-
-/* Tercera línea - acciones (botón) */
-.solicitud-card .actions {
-    display: flex;
-    justify-content: flex-end;
     align-items: center;
-    margin-top: 0.3rem;
+    gap: 0.5rem;
+    color: #ef4444;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.75rem;
 }
 
-/* Botón "Ver Hecho" */
-.solicitud-card a.btn {
-    display: inline-block;
-    padding: 7px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    background: var(--color-primary);
-    color: #fff;
-    font-weight: 500;
-    text-align: center;
-    width: auto;
-    line-height: 1.2;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: background 0.2s ease;
-}
-
-.solicitud-card a.btn:hover {
-    background: var(--color-primary-dark);
-}
-
-/* Botón Cancelar (si lo necesitas en el futuro) */
-.solicitud-card a.btn.cancel {
-    background: #f8d7da;
-    color: #842029;
-    border: 1px solid #f5c2c7;
-}
-
-.solicitud-card a.btn.cancel:hover {
-    background: #f1b0b7;
-}
-
-/* Mensaje cuando no hay solicitudes */
-.solicitudes-container > div > p {
-    text-align: center;
-    color: var(--muted);
-    padding: 1rem 0;
+.mh-sugerencia strong i {
     font-size: 1rem;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .card {
-        padding: 1rem;
-        margin: 1rem;
+.mh-sugerencia p {
+    margin: 0;
+    color: var(--mh-text);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding-left: 1.5rem;
+    border-left: 3px solid #ef4444;
+}
+
+/* Metadata */
+.mh-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+}
+
+.mh-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mh-muted);
+}
+
+.mh-meta-item i {
+    color: var(--mh-primary);
+    font-size: 0.9rem;
+}
+
+.mh-meta-item strong {
+    font-weight: 600;
+    color: var(--mh-muted);
+}
+
+.mh-meta-item span {
+    color: var(--mh-text);
+    font-weight: 500;
+}
+
+/* Acciones */
+.mh-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.mh-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--mh-radius-sm);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mh-actions .btn-view {
+    background: var(--mh-primary);
+    color: white;
+    border-color: var(--mh-primary);
+}
+
+.mh-actions .btn-view:hover {
+    background: var(--mh-accent);
+    color: white;
+    border-color: var(--mh-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.3);
+}
+
+/* ===== MENSAJE VACÍO ===== */
+.mh-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--mh-bg);
+    border-radius: var(--mh-radius-lg);
+    color: var(--mh-muted);
+    font-size: 1.1rem;
+}
+
+.mh-empty a {
+    color: var(--mh-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mh-empty a:hover {
+    text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .mh-main {
+        padding: 1.5rem;
     }
 
-    .solicitud-card .row {
+    .mh-hechos-section {
+        padding: 1.5rem;
+    }
+
+    .mh-card {
+        gap: 1.5rem;
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .mh-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mh-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .mh-hechos-section {
+        padding: 1.25rem;
+    }
+
+    .mh-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+    }
+
+    .mh-title-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
 
-    .solicitud-card .row > div:last-child {
-        white-space: normal;
+    .mh-meta {
+        flex-direction: column;
+        gap: 0.75rem;
     }
 
-    .solicitud-card a.btn {
-        padding: 8px 16px;
-        font-size: 0.95rem;
+    .mh-actions {
+        width: 100%;
+    }
+
+    .mh-actions .btn {
+        flex: 1;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
-    .card h1 {
-        font-size: 1.4rem;
+    .mh-main {
+        padding: 1rem;
     }
 
-    .solicitud-card {
-        padding: 0.8rem;
+    .mh-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .mh-hechos-section {
+        padding: 1rem;
+    }
+
+    .mh-card {
+        padding: 1rem;
+    }
+
+    .mh-title {
+        font-size: 1rem;
+    }
+
+    .mh-actions {
+        flex-direction: column;
+    }
+
+    .mh-actions .btn {
+        width: 100%;
+    }
+
+    .mh-sugerencia strong {
+        font-size: 0.75rem;
+    }
+
+    .mh-sugerencia p {
+        font-size: 0.85rem;
     }
 }

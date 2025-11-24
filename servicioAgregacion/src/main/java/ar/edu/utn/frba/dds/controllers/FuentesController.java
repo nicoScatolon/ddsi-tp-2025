@@ -46,13 +46,12 @@ public class FuentesController {
 
     @DeleteMapping("/privada/{fuenteId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
-    public ResponseEntity<String> eliminarUnaFuente (@PathVariable long fuenteId) {
-        return fuenteService.eliminarFuente(fuenteId);
+    public ResponseEntity<Void> eliminarUnaFuente(@PathVariable long fuenteId) {
+        fuenteService.eliminarFuenteAsync(fuenteId);
+        return ResponseEntity.accepted().build();  // 202 Accepted
     }
 
     // --- TEST --- //
-
-
     @GetMapping("/test/{fuenteId}")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {

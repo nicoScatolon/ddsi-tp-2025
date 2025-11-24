@@ -26,7 +26,7 @@ public class LoginService {
         Optional<Usuario> usuarioOpcional = usuariosRepository.findByEmail(username);
 
         if (usuarioOpcional.isEmpty()) {
-            usuarioOpcional = usuariosRepository.findByNombre(username);
+            usuarioOpcional = usuariosRepository.findByUsername(username);
         }
 
         if (usuarioOpcional.isEmpty()) {

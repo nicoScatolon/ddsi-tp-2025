@@ -45,6 +45,9 @@ public class HechosController {
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
         }
+        if (paginaActual < 0) {
+            return "redirect:/error/400";
+        }
 
         List<HechoInputDTO> hechos = agregadorService.getAllHechos(paginaActual, filtros);
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
@@ -253,6 +256,10 @@ public class HechosController {
             userId = (Long) session.getAttribute("userId");
         }
 
+        if (!Objects.equals(userId, hecho.getId())) {
+            return "redirect:/error/403";
+        }
+
         if (hecho.getContenidoMultimedia() != null) {
             System.out.println("=== PROCESANDO MULTIMEDIA ===");
             System.out.println("Total items: " + hecho.getContenidoMultimedia().size());
@@ -265,11 +272,11 @@ public class HechosController {
             });
         }
 
-        ContribuyenteInputDTO creadorHecho = new ContribuyenteInputDTO();
-        creadorHecho.setId(hecho.getContribuyenteId());
-        creadorHecho.setNombre("AAAA");
-        creadorHecho.setApellido("BBBB");
-        //TODO obtener datos del usuario con el id desde el hecho
+        UsuarioInputDTO creadorHecho = new UsuarioInputDTO();
+        if (hecho.getContribuyenteId() != null) {
+            creadorHecho = gestionUsuariosService.obtenerUsuarioPorId(hecho.getContribuyenteId());
+        }
+
 
         model.addAttribute("titulo", "Dinamica: "+ hecho.getTitulo());
         model.addAttribute("hecho", hecho);

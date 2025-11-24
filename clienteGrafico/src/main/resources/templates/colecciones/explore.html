@@ -39,8 +39,25 @@
             </div>
         </div>
 
+        <!-- MENSAJE CUANDO NO HAY COLECCIONES - PARA ADMINS -->
+        <div th:if="${#lists.isEmpty(colecciones)}" sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')" class="empty-state">
+            <i class="fas fa-layer-group"></i>
+            <h3>No hay colecciones todavía</h3>
+            <p>Sé el primero en crear una colección y organizar información importante.</p>
+            <a href="/colecciones/create" class="btn-create-first">
+                <i class="fas fa-plus"></i> Crear la primera colección
+            </a>
+        </div>
+
+        <!-- MENSAJE CUANDO NO HAY COLECCIONES - PARA USUARIOS REGULARES -->
+        <div th:if="${#lists.isEmpty(colecciones)}" sec:authorize="!hasAnyRole('ADMIN','ADMINSUPERIOR')" class="empty-state">
+            <i class="fas fa-layer-group"></i>
+            <h3>No hay colecciones disponibles</h3>
+            <p>Pronto se cargarán colecciones con información relevante. Vuelve más tarde para explorarlas.</p>
+        </div>
+
         <!-- Grid de colecciones -->
-        <div id="collections-container" class="cards-container">
+        <div id="collections-container" class="cards-container" th:unless="${#lists.isEmpty(colecciones)}">
             <div th:each="coleccion : ${colecciones}" class="card collection-card">
 
                 <!-- Área clickeable que lleva al detalle -->
@@ -67,8 +84,8 @@
             </div>
         </div>
 
-        <!-- Paginación -->
-        <div id="pagination-controls">
+        <!-- PAGINACIÓN: Solo mostrar si NO es la primera página O si hay más páginas -->
+        <div id="pagination-controls" th:if="${!#lists.isEmpty(colecciones) && (paginaActual > 0 || colecciones.size() >= 20)}">
             <!-- Botón Anterior -->
             <a class="pagination-arrow"
                th:classappend="${paginaActual == 0} ? ' disabled' : ''"

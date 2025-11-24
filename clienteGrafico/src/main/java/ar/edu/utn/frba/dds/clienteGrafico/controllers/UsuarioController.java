@@ -92,11 +92,16 @@ public class UsuarioController {
     @GetMapping("/profile/{id}")
     public String perfil(@PathVariable("id") Long id, Model model, HttpSession session) {
         UsuarioInputDTO usuario = gestionUsuariosService.obtenerUsuarioPorId(id);
+        boolean editar = false;
+        if (session != null) {
+            Object sessionUserId = session.getAttribute("userId");
+            editar = (sessionUserId != null) && sessionUserId.equals(id);
+        }
 
         model.addAttribute("usuario", usuario);
         model.addAttribute("edad", calcularEdad(usuario.getFecha_nacimiento()));
         model.addAttribute("titulo", "Perfil - " +  usuario.getNombre() +" "+ usuario.getApellido());
-        model.addAttribute("editor", session.getAttribute("userId").equals(id)); //Si el usuario es el mismo que el perfil, lo puede editar
+        model.addAttribute("editor", editar); //Si el usuario es el mismo que el perfil, lo puede editar
         return "usuario/profile";
     }
 
@@ -155,6 +160,10 @@ public class UsuarioController {
             Model model,
             HttpSession session) {
 
+        if (paginaActual < 0) {
+            return "redirect:/error/400";
+        }
+
         Long usuarioId = (Long) session.getAttribute("userId");
 
         List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamicaUsuario(usuarioId, estadoHecho, paginaActual);
@@ -178,7 +187,7 @@ public class UsuarioController {
 
         model.addAttribute("usuarioId", usuarioId);
         model.addAttribute("solicitudes", solicitudes);
-        model.addAttribute("titulo", "Mis Hechos");
+        model.addAttribute("titulo", "Mis Solicitudes");
         return "usuario/mis-solicitudes";
     }
 

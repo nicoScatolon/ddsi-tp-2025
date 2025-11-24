@@ -10,29 +10,34 @@ import ar.edu.utn.frba.dds.domain.repository.IFuentesRepository;
 import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
+import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FuentesService implements IFuentesService {
     private final IFuentesRepository fuentesRepository;
     private final IHechosService hechosService;
     private final IColeccionesService coleccionesService;
+    private final ISolicitudesEliminacionService  solicitudesEliminacionService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FuentesService.class);
 
-    public FuentesService(IFuentesRepository fuentesRepository, IHechosService hechosService, IColeccionesService coleccionesService) {
+    public FuentesService(IFuentesRepository fuentesRepository, IHechosService hechosService, ISolicitudesEliminacionService solicitudesEliminacionService,  IColeccionesService coleccionesService) {
         this.fuentesRepository = fuentesRepository;
         this.hechosService = hechosService;
         this.coleccionesService = coleccionesService;
+        this.solicitudesEliminacionService = solicitudesEliminacionService;
     }
 
     @Override
@@ -53,6 +58,14 @@ public class FuentesService implements IFuentesService {
         return ResponseEntity.ok().build();
     }
 
+    @Async
+    @Override
+    public void eliminarFuenteAsync(long fuenteId) {
+        eliminarFuente(fuenteId);
+    }
+
+
+    @Transactional
     @Override
     public ResponseEntity<String> eliminarFuente(Long id) {
         Fuente fuente = this.buscarFuentePorId(id);
@@ -67,6 +80,13 @@ public class FuentesService implements IFuentesService {
         } catch (Exception e) {
             logger.error("Error al eliminar la fuente de las colecciones" + e.getMessage());
             return ResponseEntity.internalServerError().body("Error al eliminar la fuente de las colecciones");
+        }
+
+        try {
+            solicitudesEliminacionService.notificarHechoEliminado(hechosFuente);
+        } catch (Exception e) {
+            logger.error("Error al eliminar las solicitudes de eliminacion" + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error al eliminar las solicitudes de eliminacion");
         }
 
         // Eliminamos los hechos en general

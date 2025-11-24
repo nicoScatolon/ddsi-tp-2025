@@ -263,6 +263,12 @@ public class HechosService implements IHechosService {
     }
 
     @Override
+    public ResponseEntity<Void> guardarHecho(Hecho hecho) {
+        hechosRepository.save(hecho);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
     @Transactional
     public void eliminarHechos (List<Hecho> hechosAEliminar){
         this.hechosRepository.deleteAll(hechosAEliminar);

@@ -40,6 +40,10 @@ public class ColeccionesController {
 
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(page, consenso);
 
+        if (page < 0) {
+            return "redirect:/error/400";
+        }
+
         model.addAttribute("titulo", "Colecciones");
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", page);
@@ -54,8 +58,13 @@ public class ColeccionesController {
                                     @RequestParam(value = "curado", defaultValue = "false") Boolean curado,
                                     @PathVariable String handle,
                                     Model model) {
+        if (paginaActual < 0) {
+            return "redirect:/error/400";
+        }
+
         ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreviewIndividual(handle);
         List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(handle, paginaActual, filtros, curado);
+
 
         fileSystemService.procesarImagenPrincipalListaHechos(hechosColeccion);
 

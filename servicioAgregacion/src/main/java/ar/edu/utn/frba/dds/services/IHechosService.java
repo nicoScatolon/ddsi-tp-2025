@@ -29,6 +29,6 @@ public interface IHechosService {
     ResponseEntity<Void> setDestacadoHecho(Long idHecho, Boolean estaDestacado);
 
     ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas);
-
+    ResponseEntity<Void> guardarHecho(Hecho hecho);
     void eliminarHechos (List<Hecho> hechosAEliminar);
 }

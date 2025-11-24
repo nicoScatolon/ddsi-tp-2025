@@ -13,6 +13,7 @@ import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.utils.DetectorSpam.IDetectorDeSpam;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,13 +29,11 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesEliminacionService.class);
     private final ISolicitudesEliminacionRepository repository;
     private final IHechosService hechosService;
-    private final IFuentesService fuentesService;
     private final IDetectorDeSpam detectorDeSpam;
 
-    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IFuentesService fuentesService, IHechosService hechosService) {
+    public SolicitudesEliminacionService(ISolicitudesEliminacionRepository repository, IDetectorDeSpam detectorDeSpam, IHechosService hechosService) {
         this.repository = repository;
         this.detectorDeSpam = detectorDeSpam;
-        this.fuentesService = fuentesService;
         this.hechosService = hechosService;
     }
 
@@ -92,6 +91,7 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         );
     }
 
+
     @Override
     public ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO procesarSolicitudDTO, Boolean aceptar) {
         Hecho hecho = hechosService.findEntidadPorId(procesarSolicitudDTO.getSolicitud().getHechoId());
@@ -113,12 +113,20 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         if (aceptar) {
             solicitud.serAceptada(procesarSolicitudDTO.getAdministradorId());
             repository.save(solicitud);
+            hechosService.guardarHecho(solicitud.getHecho());
             this.rechazarRestoSolicitudes(procesarSolicitudDTO.getSolicitud().getIdSolicitud(), hecho.getId(), procesarSolicitudDTO.getAdministradorId());
         } else {
             solicitud.serRechazada(procesarSolicitudDTO.getAdministradorId());
             repository.save(solicitud);
         }
 
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> notificarHechoEliminado(List<Hecho> hechosFuente) {
+        repository.deleteByHechoIn(hechosFuente);
         return ResponseEntity.ok().build();
     }
 
@@ -152,15 +160,6 @@ public class SolicitudesEliminacionService implements ISolicitudesEliminacionSer
         );
     }
 
-
-
-    public void notificarEliminacionHechos(){
-        List<SolicitudEliminarHecho> solicitudesAceptadas = repository.findAll().stream()
-                .filter(SolicitudEliminarHecho::getActualizarFuenteOrigen)
-                .toList();
-        solicitudesAceptadas.forEach(s -> s.setActualizarFuenteOrigen(false));
-        fuentesService.notificarEliminaciones(solicitudesAceptadas.stream().map(SolicitudEliminarHecho::getHecho).collect(Collectors.toList()));
-    }
 
     //Metodo para acortar strings y entren en consola.
     private String acortarTexto(String texto) {

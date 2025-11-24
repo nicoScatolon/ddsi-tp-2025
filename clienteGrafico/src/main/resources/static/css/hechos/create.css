@@ -329,7 +329,7 @@
 
 /* ===== MULTIMEDIA PREVIEW (TODOS JUNTOS) ===== */
 .multimedia-preview-container {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
     padding: 2rem;
@@ -339,9 +339,9 @@
     min-height: 100px;
 }
 
-/* Ocultar solo el contenedor de preview cuando está vacío */
-.multimedia-preview-container:empty {
-    display: none;
+/* Mostrar solo cuando se agrega la clase .has-content */
+.multimedia-preview-container.has-content {
+    display: grid;
 }
 
 .multimedia-item {

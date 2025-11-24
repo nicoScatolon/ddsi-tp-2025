@@ -76,7 +76,7 @@ public class GestionUsuariosService implements IGestionUsuariosService {
 
     @Override
     public UsuarioInputDTO obtenerUsuarioPorId(Long id) {
-        UsuarioInputDTO response = webApiCallerService.get(
+        UsuarioInputDTO response = webApiCallerService.getPublic(
                 authServiceUrl + "/usuarios/publica/" + id,
                 UsuarioInputDTO.class
         );

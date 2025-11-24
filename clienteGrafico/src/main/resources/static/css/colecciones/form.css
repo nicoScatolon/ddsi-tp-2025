@@ -527,10 +527,14 @@ input[type="datetime-local"]:focus {
 .multimedia-btn[data-value="true"].active i {
     color: #059669;
 }
+
 /* ========================================
-   BOTONES
+   BOTONES DEL FORMULARIO
    ======================================== */
-.btn {
+/* IMPORTANTE: Usar selectores específicos para evitar
+   conflictos con los botones del navbar */
+
+.form-actions .btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -543,24 +547,26 @@ input[type="datetime-local"]:focus {
     border: none;
 }
 
-.btn-primary {
+.form-actions .btn-primary {
     background: var(--color-primary);
     color: white;
+    border: 2px solid var(--color-primary);
 }
 
-.btn-primary:hover {
+.form-actions .btn-primary:hover {
     background: var(--color-accent);
+    border-color: var(--color-accent);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(47, 96, 244, 0.3);
 }
 
-.btn-secondary {
+.form-actions .btn-secondary {
     background: white;
     color: var(--color-accent);
     border: 2px solid #e5e7eb;
 }
 
-.btn-secondary:hover {
+.form-actions .btn-secondary:hover {
     border-color: var(--color-accent);
     background: #f9fafb;
 }

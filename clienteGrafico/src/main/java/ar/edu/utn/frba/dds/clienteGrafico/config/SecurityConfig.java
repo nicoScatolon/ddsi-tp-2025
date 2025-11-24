@@ -41,9 +41,12 @@ public class SecurityConfig {
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/adminsuperior/**").hasRole("ADMINSUPERIOR")
+                        .requestMatchers("/hechos/fuenteDinamica/**").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
+                        .requestMatchers("/mis-hechos").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
+                        .requestMatchers("/mis-solicitudes").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
+                        .requestMatchers("/profile").hasAnyRole("ADMIN", "ADMINSUPERIOR", "CONTRIBUYENTE")
 
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

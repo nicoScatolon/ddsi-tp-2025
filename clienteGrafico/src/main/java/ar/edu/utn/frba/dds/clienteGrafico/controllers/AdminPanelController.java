@@ -139,7 +139,6 @@ public class AdminPanelController {
             model.addAttribute("fuentesProxy", Collections.emptyList());
             model.addAttribute("errorFuentesProxy", "No se pudieron obtener las fuentes externas.");
         }
-
         return "admin/panel-base";
     }
 
@@ -181,6 +180,10 @@ public class AdminPanelController {
     // Gestión de colecciones
     @GetMapping("/colecciones")
     public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
+        if (paginaActual < 0) {
+            return "redirect:/error/400";
+        }
+
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual, null);
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);

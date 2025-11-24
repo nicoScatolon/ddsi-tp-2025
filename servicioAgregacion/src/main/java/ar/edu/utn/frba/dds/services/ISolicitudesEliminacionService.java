@@ -17,4 +17,6 @@ public interface ISolicitudesEliminacionService {
     SolicitudEliminarHecho findByID(Long id);
     void logearSolicitudesEliminacionCargadas(List<SolicitudEliminarHecho> solicitudEliminarHechos);
     ResponseEntity<Void> procesarSolicitud(ProcesarSolicitudInputDTO solicitud, Boolean aceptar);
+
+    ResponseEntity<Void> notificarHechoEliminado(List<Hecho> hechosFuente);
 }
