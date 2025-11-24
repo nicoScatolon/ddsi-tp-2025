@@ -28,9 +28,21 @@ public class FuenteFactory {
     }
 
     public FuenteDDS nuevaFuenteDDS(String nombre) {
-        return fuenteRepository.findByTipoAndBaseUrl(TipoFuenteProxy.EXTERNA,ddsBaseUrl)
-                .map(FuenteDDS.class::cast)
-                .orElseGet(() -> fuenteRepository.save(new FuenteDDS(nombre, ddsBaseUrl)));
+        return fuenteRepository.findByTipoAndBaseUrl(TipoFuenteProxy.EXTERNA, ddsBaseUrl)
+                .map(f -> {
+                    FuenteDDS existente = (FuenteDDS) f;
+
+                    if (!existente.getNombre().equals(nombre)) {
+                        existente.setNombre(nombre);
+                        fuenteRepository.save(existente);
+                    }
+
+                    return existente;
+                })
+                .orElseGet(() -> {
+                    FuenteDDS nueva = new FuenteDDS(nombre, ddsBaseUrl);
+                    return fuenteRepository.save(nueva);
+                });
     }
 
 }
