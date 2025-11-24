@@ -1,67 +1,108 @@
 :root {
-    --cards-gap: 1rem;
-    --card-min-height: 340px;
+    --cards-gap: 1.25rem;
+    --card-min-height: 240px;
 }
 
-/* Contenedor principal del fragmento */
+/* Contenedor principal */
 .estadisticas-actividad {
     display: block;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Barra de filtros arriba del título "Estadísticas" */
-.estadisticas-actividad .actividad-filtros {
+/* HEADER */
+.estadisticas-actividad .estadisticas-header {
     display: flex;
-    justify-content: flex-start;
-    margin-bottom: 0.75rem;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
 }
 
-/* Form contenedor: label + input + botón en línea */
+.estadisticas-actividad .titulo {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.estadisticas-actividad .meta-fecha {
+    margin-left: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* GRID SUPERIOR: 2 cards que ocupan más espacio */
+.estadisticas-actividad .cards-superiores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: var(--cards-gap);
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+}
+
+/* FILTRO DE COLECCIONES - Más compacto */
+.estadisticas-actividad .actividad-filtros {
+    background: linear-gradient(to right, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin: 0 0 1rem 0;
+}
+
 .estadisticas-actividad .filtro-colecciones {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    flex-wrap: nowrap;
-    max-width: 600px; /* opcional, para limitar ancho */
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-/* Label con icono alineado verticalmente */
 .estadisticas-actividad .filtro-colecciones .filter-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin: 0;
+    flex: 1;
+    min-width: 300px;
 }
 
 .estadisticas-actividad .filtro-colecciones .filter-group label {
     margin: 0;
     font-weight: 600;
+    font-size: 0.9rem;
     color: var(--color-accent);
     display: flex;
     align-items: center;
     gap: 0.35rem;
+    white-space: nowrap;
 }
 
-/* El contenedor del input ocupa todo lo que pueda */
 .estadisticas-actividad .filtro-colecciones .filter-content {
     flex: 1;
 }
 
-/* Input de colecciones (datalist) estirado */
 .estadisticas-actividad .filtro-select {
     width: 100%;
-    min-width: 260px;
-    padding: 0.45rem 0.6rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
     background: var(--white);
     font-size: 0.95rem;
     box-sizing: border-box;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-/* Botón "Ver estadísticas" */
+.estadisticas-actividad .filtro-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 .estadisticas-actividad .btn-ver-estadisticas {
-    padding: 0 0.9rem;
-    height: 40px; /* para matchear altura con el input */
+    padding: 0 1.25rem;
+    height: 42px;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
@@ -72,6 +113,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .estadisticas-actividad .btn-ver-estadisticas:hover {
@@ -80,145 +122,239 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
-/* Título */
-.estadisticas-actividad .titulo {
+/* Texto bajo filtro - más compacto */
+.estadisticas-actividad .texto-colection {
+    font-size: 0.85rem;
+    color: #6b7280;
     margin: 0 0 1rem 0;
-    color: var(--color-accent);
-    font-size: 1.4rem;
-    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    background: #fef3c7;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
 }
 
-/* Grid de cards */
-.estadisticas-actividad .cards {
+/* GRID INFERIOR: aprovecha mejor el espacio con 3 columnas */
+.estadisticas-actividad .cards-inferiores {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--cards-gap);
+    margin-top: 0;
 }
 
-/* Card genérica para cada bloque de métrica/gráfico */
+/* Card genérica - más compacta */
 .estadisticas-actividad .card {
     background: var(--white);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: 1rem 1rem 1.25rem 1rem;
+    padding: 1.25rem 1.5rem;
     min-height: var(--card-min-height);
+    border: 1px solid rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    border: 1px solid rgba(0,0,0,0.04);
-}
-
-/* Distribución por defecto: 2 gráficos grandes y 1 card ancha abajo */
-.estadisticas-actividad .card:nth-child(1),
-.estadisticas-actividad .card:nth-child(2) {
-    grid-column: span 6;
-}
-
-.estadisticas-actividad .card:nth-child(3) {
-    grid-column: span 12;
-    min-height: 140px;
-}
-
-/* Títulos dentro de cards */
-.estadisticas-actividad .card h2 {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--color-accent);
-}
-
-/* Canvases de Chart.js */
-.estadisticas-actividad canvas {
-    width: 100% !important;
-    height: 320px !important;
-    display: block;
-    border-radius: var(--radius-sm);
-}
-
-/* KPI simple (solicitudes de eliminación) */
-.estadisticas-actividad .kpi {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: var(--bg);
-    border: 1px dashed rgba(0,0,0,0.08);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    min-height: 90px;
-    color: var(--color-accent);
-    font-weight: 600;
-}
-
-.estadisticas-actividad .kpi::before {
-    content: "Estado";
-    opacity: 0.6;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-/* Microinteracciones */
-.estadisticas-actividad .card {
     transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 
 .estadisticas-actividad .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border-color: rgba(0,0,0,0.08);
 }
 
-/* Ajustes para cuando el fragmento vive dentro de .panel-card */
-.panel-card .estadisticas-actividad .card {
-    background: var(--white);
+/* Títulos de card */
+.estadisticas-actividad .card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+/* KPI categoría */
+.kpi-categoria {
+    margin-top: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-categoria .kpi-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-categoria .kpi-principal {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.kpi-categoria .kpi-detalle {
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.kpi-categoria .kpi-numero {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-right: 0.25rem;
+}
+
+.kpi-placeholder {
+    font-size: 0.95rem;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* KPI spam + gráfico - mejor distribuido */
+.kpi-spam {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.25rem;
+    flex: 1;
+}
+
+/* contenedor para que el donut se vea grande */
+.kpi-chart-wrapper {
+    flex: 0 0 140px;
+    height: 140px;
+    position: relative;
+}
+
+.kpi-chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* texto al lado del gráfico */
+.kpi-spam-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.kpi-spam-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+/* número principal (spam) */
+.kpi-spam-text .kpi-numero {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-right: 0.25rem;
+}
+
+/* Card inferior (colección) */
+.card-coleccion .subtitulo-coleccion {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-left: 0.35rem;
+}
+
+.kpi-provincia {
+    margin-top: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-provincia .kpi-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-provincia > div {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.kpi-provincia .kpi-principal {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.kpi-provincia .kpi-numero {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 /* Responsive */
-@media (max-width: 1280px) {
-    :root { --card-min-height: 300px; }
-    .estadisticas-actividad canvas { height: 300px !important; }
-}
+@media (max-width: 1200px) {
+    .estadisticas-actividad .cards-superiores {
+        grid-template-columns: 1fr;
+    }
 
-@media (max-width: 1024px) {
-    .estadisticas-actividad .cards {
-        grid-template-columns: repeat(6, 1fr);
-    }
-    .estadisticas-actividad .card:nth-child(1),
-    .estadisticas-actividad .card:nth-child(2) {
-        grid-column: span 6;
-    }
-    .estadisticas-actividad .card:nth-child(3) {
-        grid-column: span 6;
+    .estadisticas-actividad .cards-inferiores {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
-    :root { --card-min-height: 260px; }
-    .estadisticas-actividad .cards {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.75rem;
+    .estadisticas-actividad {
+        padding: 0 0.5rem;
     }
-    .estadisticas-actividad .card {
-        grid-column: span 4 !important;
-    }
-    .estadisticas-actividad canvas { height: 260px !important; }
-    .estadisticas-actividad .titulo { font-size: 1.25rem; }
-}
 
-@media (max-width: 480px) {
-    .estadisticas-actividad .cards {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+    .estadisticas-actividad .titulo {
+        font-size: 1.3rem;
     }
-    .estadisticas-actividad .card {
-        grid-column: span 2 !important;
-        padding: 0.85rem;
-    }
-    .estadisticas-actividad canvas { height: 240px !important; }
-}
 
-/* Accesibilidad mínima: foco visible si hay elementos interactivos adentro */
-.estadisticas-actividad .card:focus-within {
-    outline: 2px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
-    outline-offset: 2px;
+    .estadisticas-actividad .meta-fecha {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.25rem;
+    }
+
+    .kpi-categoria .kpi-principal {
+        font-size: 1.6rem;
+    }
+
+    .kpi-spam {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .kpi-chart-wrapper {
+        flex: 0 0 120px;
+        height: 120px;
+        align-self: center;
+    }
+
+    .estadisticas-actividad .filtro-colecciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .estadisticas-actividad .filtro-colecciones .filter-group {
+        min-width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .estadisticas-actividad .btn-ver-estadisticas {
+        width: 100%;
+    }
 }

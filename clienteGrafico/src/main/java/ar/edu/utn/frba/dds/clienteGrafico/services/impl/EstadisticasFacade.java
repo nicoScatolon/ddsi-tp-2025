@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,8 +39,8 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                         URLEncoder.encode(coleccion, StandardCharsets.UTF_8);
             }
 
-            String urlMayorCategoria = api("/mayor_categoria");
-            String urlSolicitudesSpam = api("/solicitudes_de_spam");
+            String urlMayorCategoria   = api("/mayor_categoria");
+            String urlSolicitudesSpam  = api("/solicitudes_de_spam");
 
             List<MayorProvPorColeccionInputDTO> listaProv =
                     webApi.getList(urlMayorProvColeccion, MayorProvPorColeccionInputDTO.class);
@@ -49,7 +50,6 @@ public class EstadisticasFacade implements IEstadisticasFacade {
 
             List<SolicitudesSpamInputDTO> listaSpam =
                     webApi.getList(urlSolicitudesSpam, SolicitudesSpamInputDTO.class);
-
 
             MayorProvPorColeccionInputDTO provDto =
                     (listaProv != null && !listaProv.isEmpty()) ? listaProv.get(0) : null;
@@ -61,21 +61,37 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                     (listaSpam != null && !listaSpam.isEmpty()) ? listaSpam.get(0) : null;
 
             String provinciaTop = (provDto != null) ? provDto.getProvincia() : null;
-            Integer hechosProvTop = (provDto != null && provDto.getCantHechosProvincia() != null)
-                    ? provDto.getCantHechosProvincia()
-                    : 0;
+            Integer hechosProvTop =
+                    (provDto != null && provDto.getCantHechosProvincia() != null)
+                            ? provDto.getCantHechosProvincia()
+                            : 0;
 
             String categoriaTop = (catDto != null) ? catDto.getCategoria() : null;
-            Integer hechosCatTop = (catDto != null && catDto.getCantHechosCategoria() != null)
-                    ? catDto.getCantHechosCategoria()
-                    : 0;
+            Integer hechosCatTop =
+                    (catDto != null && catDto.getCantHechosCategoria() != null)
+                            ? catDto.getCantHechosCategoria()
+                            : 0;
 
-            Integer spam = (spamDto != null && spamDto.getSolicitudesSpam() != null)
-                    ? spamDto.getSolicitudesSpam()
-                    : 0;
-            Integer noSpam = (spamDto != null && spamDto.getSolicitudesNoSpam() != null)
-                    ? spamDto.getSolicitudesNoSpam()
-                    : 0;
+            Integer spam =
+                    (spamDto != null && spamDto.getSolicitudesSpam() != null)
+                            ? spamDto.getSolicitudesSpam()
+                            : 0;
+
+            Integer noSpam =
+                    (spamDto != null && spamDto.getSolicitudesNoSpam() != null)
+                            ? spamDto.getSolicitudesNoSpam()
+                            : 0;
+
+
+            LocalDateTime fechaCalculo = null;
+
+            if (provDto != null && provDto.getFechaCalculo() != null) {
+                fechaCalculo = provDto.getFechaCalculo();
+            } else if (catDto != null && catDto.getFechaCalculo() != null) {
+                fechaCalculo = catDto.getFechaCalculo();
+            } else if (spamDto != null && spamDto.getFechaCalculo() != null) {
+                fechaCalculo = spamDto.getFechaCalculo();
+            }
 
             return PanelActividadViewDTO.builder()
                     .provinciaTop(provinciaTop)
@@ -84,6 +100,7 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                     .hechosCategoriaTop(hechosCatTop)
                     .solicitudesSpam(spam)
                     .solicitudesTotales(spam + noSpam)
+                    .fechaCalculo(fechaCalculo)
                     .build();
 
         } catch (Exception e) {
@@ -96,6 +113,7 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                     .hechosCategoriaTop(0)
                     .solicitudesSpam(0)
                     .solicitudesTotales(0)
+                    .fechaCalculo(null)
                     .build();
         }
     }

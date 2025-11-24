@@ -3,6 +3,8 @@ package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class PanelActividadViewDTO {
@@ -18,4 +20,6 @@ public class PanelActividadViewDTO {
     // Solicitudes de eliminación (spam / total)
     private Integer solicitudesSpam;
     private Integer solicitudesTotales;
+
+    private LocalDateTime fechaCalculo;
 }

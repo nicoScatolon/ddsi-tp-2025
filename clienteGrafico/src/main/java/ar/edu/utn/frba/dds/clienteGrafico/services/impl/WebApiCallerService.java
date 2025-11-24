@@ -107,6 +107,7 @@ public class WebApiCallerService {
                         .bodyToFlux(responseType)
                         .collectList()
                         .block()
+
         );
     }
 
