@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.dds.fuenteproxy.filters;
 
-import ar.edu.utn.frba.dds.utils.JwtUtil;
+import ar.edu.utn.frba.dds.fuenteproxy.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
