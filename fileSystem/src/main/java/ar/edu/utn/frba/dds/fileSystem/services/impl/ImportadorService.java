@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fileSystem.services.impl;
 
 import ar.edu.utn.frba.dds.fileSystem.dtos.Input.FileUploadInputDTO;
 import ar.edu.utn.frba.dds.fileSystem.services.IImportadorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,14 +10,17 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Base64;
 
+@Slf4j
 @Service
 public class ImportadorService implements IImportadorService {
+
     @Value("${app.directorio.destino}")
     private String directorioBase;
 
     @Override
     public String guardarArchivoCSV(FileUploadInputDTO fileDTO) throws IOException {
-        // Validar que el contenido Base64 no esté vacío
+        log.info("Guardando archivo CSV: {}", fileDTO.getFilename());
+
         if (fileDTO.getContent() == null || fileDTO.getContent().isEmpty()) {
             throw new IllegalArgumentException("Por favor selecciona un archivo CSV.");
         }
@@ -26,7 +30,6 @@ public class ImportadorService implements IImportadorService {
             throw new IllegalArgumentException("El archivo debe ser de tipo CSV.");
         }
 
-        // Decodificar Base64 a bytes
         byte[] bytes;
         try {
             bytes = Base64.getDecoder().decode(fileDTO.getContent());
@@ -40,18 +43,28 @@ public class ImportadorService implements IImportadorService {
 
         // Crear directorio si no existe
         Path directorioDestino = Paths.get(directorioBase, "archivosCSV");
-        if (!Files.exists(directorioDestino)) {
-            Files.createDirectories(directorioDestino);
+
+        try {
+            if (!Files.exists(directorioDestino)) {
+                Files.createDirectories(directorioDestino);
+                log.info("Directorio creado: {}", directorioDestino.toAbsolutePath());
+            }
+        } catch (IOException e) {
+            log.error("Error creando directorio CSV: {}", directorioDestino, e);
+            throw new IOException("No se pudo crear el directorio: " + e.getMessage());
         }
 
-        // Generar nombre único y ruta
         String nombreUnico = generarNombreUnico(nombreArchivo);
         Path rutaArchivo = directorioDestino.resolve(nombreUnico);
 
-        // Escribir el archivo desde los bytes decodificados
-        Files.write(rutaArchivo, bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        try {
+            Files.write(rutaArchivo, bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            log.info("Archivo CSV guardado: {}", rutaArchivo.toAbsolutePath());
+        } catch (IOException e) {
+            log.error("Error escribiendo archivo CSV: {}", rutaArchivo, e);
+            throw new IOException("No se pudo escribir el archivo: " + e.getMessage());
+        }
 
-        // Verificar que se guardó
         if (!Files.exists(rutaArchivo)) {
             throw new IOException("El archivo no se guardó correctamente.");
         }
@@ -60,8 +73,9 @@ public class ImportadorService implements IImportadorService {
     }
 
     private String generarNombreUnico(String nombreOriginal) {
-        String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
-        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+        int lastDot = nombreOriginal.lastIndexOf('.');
+        String nombreSinExtension = lastDot > 0 ? nombreOriginal.substring(0, lastDot) : nombreOriginal;
+        String extension = lastDot > 0 ? nombreOriginal.substring(lastDot) : "";
         long timestamp = System.currentTimeMillis();
         return nombreSinExtension + "_" + timestamp + extension;
     }
