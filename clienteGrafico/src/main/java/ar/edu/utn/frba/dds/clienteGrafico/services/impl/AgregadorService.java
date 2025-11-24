@@ -145,6 +145,19 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/colecciones/privada",
+                    ColeccionOutputDTO.class
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(
+                    "Error al obtener las colecciones para admin: " + e.getMessage(), e
+            );
+        }
+    }
+
     // --- DESTACAR HECHOS --- //
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {

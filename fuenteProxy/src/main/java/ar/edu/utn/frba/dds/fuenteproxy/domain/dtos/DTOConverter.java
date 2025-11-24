@@ -91,7 +91,7 @@ public final class DTOConverter {
                 .build();
     }
 
-    public static FuenteOutputDTO mapToFuenteOutputDTO(FuenteDDS fuente) {
+    public static FuenteOutputDTO mapToFuenteOutputDTO(Fuente fuente) {
         return FuenteOutputDTO.builder()
                 .id(fuente.getId())
                 .nombre(fuente.getNombre())

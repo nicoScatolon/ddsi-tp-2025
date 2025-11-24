@@ -1,0 +1,421 @@
+.fuentes-externas {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.fuentes-externas .titulo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2563ff;
+    margin: 0 0 0.5rem 0;
+}
+
+/* ===========================
+   Info box
+   =========================== */
+
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem;
+    background: #f5-f7ff;
+    background: #f5f7ff;
+    border-radius: 18px;
+    border: 1px solid #e0e7ff;
+}
+
+.info-box__icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #e0ebff;
+    color: #2563ff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.info-box__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.info-box__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2a3c;
+    margin: 0;
+}
+
+.info-box__text {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+/* ===========================
+   Card principal
+   =========================== */
+
+.proxy-grid {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.card--proxy {
+    width: 100%;
+    max-width: 1120px;
+}
+
+.card--urls {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 1.6rem 1.8rem;
+    box-shadow: 0 18px 45px rgba(37, 99, 255, 0.06);
+    border: 1px solid #edf2ff;
+}
+
+/* Header del card */
+
+.card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.card__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: none;
+    background: #2563ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(37, 99, 255, 0.35);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+}
+
+.btn-icon__symbol {
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.btn-icon:hover {
+    background: #1d4fd8;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(37, 99, 255, 0.4);
+}
+
+.btn-icon:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(37, 99, 255, 0.3);
+}
+
+/* Texto intro del card */
+
+.card__text {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin: 0 0 1.1rem 0;
+}
+
+/* ===========================
+   Formulario de alta
+   =========================== */
+
+.proxy-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 1.2rem;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* fila del botón (ocupa todo el ancho) */
+.form-row--actions {
+    margin-top: 0.2rem;
+}
+
+.form-field {
+    flex: 1;
+    min-width: 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Inputs & selects */
+
+.input,
+.select {
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    padding: 0.55rem 2.4rem 0.55rem 1rem; /* espacio para la flechita */
+    font-size: 0.9rem;
+    background-color: #f9fafb;
+    color: #111827;
+    outline: none;
+    cursor: pointer;
+    transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background-color 0.15s ease,
+            color 0.15s ease;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* flechita custom */
+    background-image:
+            linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+            linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+    background-position:
+            calc(100% - 14px) calc(50% - 3px),
+            calc(100% - 10px) calc(50% + 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.input::placeholder {
+    color: #9ca3af;
+}
+
+/* placeholder gris cuando no eligieron nada */
+.select:required:invalid {
+    color: #9ca3af;
+}
+
+/* opciones con color normal */
+.select option {
+    color: #111827;
+}
+
+.input:focus,
+.select:focus {
+    border-color: #2563ff;
+    background: #ffffff;
+    box-shadow:
+            0 0 0 1px rgba(37, 99, 255, 0.08),
+            0 8px 20px rgba(37, 99, 255, 0.08);
+}
+
+/* campos condicionales (URL / fuente externa) */
+.form-field.is-hidden {
+    display: none;
+}
+
+/* Campo de acciones (botón) */
+
+.form-field--actions {
+    align-items: flex-end;
+}
+
+.form-field--actions .btn {
+    justify-content: center;
+}
+
+/* botón a lo largo de la fila */
+.btn-full {
+    width: 100%;
+}
+
+/* ===========================
+   Botones (por si base.css no los define)
+   =========================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.55rem 1.3rem;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+    background: #2563ff;
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(37, 99, 255, 0.4);
+}
+
+.btn-primary:hover {
+    background: #1d4fd8;
+    box-shadow: 0 16px 32px rgba(37, 99, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 20px rgba(37, 99, 255, 0.35);
+}
+
+/* ===========================
+   Tabla de fuentes
+   =========================== */
+
+.table-wrapper {
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table thead {
+    background: #f3f4ff;
+}
+
+.table th,
+.table td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.table th {
+    font-weight: 700;
+    color: #4b5563;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table td {
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+/* Columna URL: truncado elegante */
+
+.table__cell-url {
+    max-width: 320px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.78rem;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Columna de acciones */
+
+.table__col-actions {
+    text-align: right;
+    width: 170px;
+}
+
+.table__col-actions .link-button + .link-button {
+    margin-left: 0.35rem;
+}
+
+/* Filas vacías */
+
+.table__empty {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    padding: 0.85rem 0.9rem;
+}
+
+/* ===========================
+   Botones tipo link
+   =========================== */
+
+.link-button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #2563ff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.link-button:hover {
+    color: #1d4fd8;
+    text-decoration: underline;
+}
+
+.link-button--danger {
+    color: #ef4444;
+}
+
+.link-button--danger:hover {
+    color: #dc2626;
+}
+
+/* ===========================
+   Responsive
+   =========================== */
+
+@media (max-width: 900px) {
+    .card--urls {
+        padding: 1.3rem 1.2rem;
+    }
+
+    .table__cell-url {
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 640px) {
+    .card__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .proxy-form .form-row {
+        flex-direction: column;
+    }
+
+    .form-field--actions .btn,
+    .btn-full {
+        width: 100%;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem 0.6rem;
+    }
+}

@@ -12,4 +12,5 @@ import java.util.List;
 public interface IE_MayorProvinciaPorCategoriaRepository extends JpaRepository<E_MayorProvinciaPorCategoria, Long> {
     List<E_MayorProvinciaPorCategoria> findByCodigoCategoria(String codigoCategoria);
     void deleteByFechaDeCalculoBefore(LocalDateTime fechaLimite);
+    E_MayorProvinciaPorCategoria findTopByCodigoCategoriaOrderByFechaDeCalculoDesc(String codigoCategoria);
 }

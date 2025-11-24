@@ -2,11 +2,14 @@ package ar.edu.utn.frba.dds.clienteGrafico.controllers;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Estadisticas.PanelActividadViewDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.EstadoHecho;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoDinamicaInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
@@ -14,13 +17,13 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.Est
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RegisterUsuarioRequestDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IFuenteDinamicaService;
-import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admin")
@@ -38,6 +43,8 @@ public class AdminPanelController {
     private final IFuenteDinamicaService fuenteDinamicaService;
     private final IFileSystemService fileSystemService;
     private final IGestionUsuariosService gestionUsuariosService;
+    private final IFuenteProxyService fuenteProxyService;
+    private final IEstadisticasFacade estadisticasFacade;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
@@ -47,11 +54,22 @@ public class AdminPanelController {
         return "redirect:/admin/actividad";
     }
 
-    // Resumen actividad
     @GetMapping("/actividad")
-    public String resumenActividad(Model model) {
+    public String resumenActividad(
+            @RequestParam(name = "coleccion", required = false) String coleccion,
+            Model model
+    ) {
+        //traemos las colecciones para llenar el datalist
+        List<ColeccionOutputDTO> colecciones = agregadorService.obtenerColeccionesAdmin();
+
+        PanelActividadViewDTO resumen = estadisticasFacade.getPanelActividad(coleccion);
+
         model.addAttribute("titulo", "Resumen Actividad");
         model.addAttribute("contentTemplate", "actividad");
+        model.addAttribute("coleccion", coleccion);      // valor seleccionado en el input
+        model.addAttribute("colecciones", colecciones);  // lista para el datalist
+        model.addAttribute("resumen", resumen);
+
         return "admin/panel-base";
     }
 
@@ -86,6 +104,7 @@ public class AdminPanelController {
         return "redirect:/admin/importar";
     }
 
+
     //Gestión de hechos
     @GetMapping("/hechos")
     public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model) {
@@ -105,6 +124,58 @@ public class AdminPanelController {
         this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
         return "redirect:/admin/hechos";
     }
+
+    @GetMapping("/fuente-externa")
+    public String mostrarFuentesProxy(Model model) {
+        model.addAttribute("titulo", "Gestión Fuentes Externas");
+        model.addAttribute("contentTemplate", "fuente-externa");
+
+        // Cargar lista de fuentes externas
+        try {
+            List<FuenteOutputDTO> fuentes = fuenteProxyService.getFuentesProxy();
+            model.addAttribute("fuentesProxy", fuentes);
+        } catch (Exception e) {
+            model.addAttribute("fuentesProxy", Collections.emptyList());
+            model.addAttribute("errorFuentesProxy", "No se pudieron obtener las fuentes externas.");
+        }
+
+        return "admin/panel-base";
+    }
+
+
+    @PostMapping("/externa")
+    public ResponseEntity<Void> agregarFuente(@RequestParam String nombre, @RequestParam String tipoFuente, @RequestParam(required = false) String urlBase, @RequestParam(required = false) String fuenteExterna) {
+        FuenteProxyInputDTO dto = new FuenteProxyInputDTO();
+        dto.setNombre(nombre);
+
+        if(urlBase != null) {
+            dto.setBaseUrl(urlBase);
+        }
+
+        if ("EXTERNA".equalsIgnoreCase(tipoFuente)) {
+            if(Objects.equals(fuenteExterna, "dds"))
+                fuenteProxyService.agregarFuenteDDS(dto);
+        } else if ("METAMAPA".equalsIgnoreCase(tipoFuente)) {
+            fuenteProxyService.agregarFuenteMetamapa(dto);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @DeleteMapping("/externa/{nombreFuente}")
+    public ResponseEntity<Void> eliminarFuente(@PathVariable String nombreFuente) {
+        try {
+            fuenteProxyService.eliminarFuente(nombreFuente);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 
     // Gestión de colecciones
     @GetMapping("/colecciones")

@@ -2,93 +2,212 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <th:block th:fragment="actividad">
     <section class="estadisticas-actividad">
-        <h1 class="titulo">Estadísticas</h1>
 
-        <div class="cards">
-            <div class="card">
-                <h2>Hechos por provincia</h2>
-                <canvas id="act-prov"></canvas>
-            </div>
+        <!-- TÍTULO + FECHA -->
+        <header class="estadisticas-header">
+            <h1 class="titulo">
+                Estadísticas
+                <span class="meta-fecha"
+                      th:if="${resumen.fechaCalculo != null}">
+                    · Actualizado el
+                    <span th:text="${#temporals.format(resumen.fechaCalculo, 'dd/MM/yyyy HH:mm')}">
+                        01/01/2025 12:34
+                    </span>
+                </span>
+            </h1>
+        </header>
 
-            <div class="card">
-                <h2>Hechos por categoría</h2>
-                <canvas id="act-cat"></canvas>
-            </div>
+        <!-- CARDS FIJAS (NO DEPENDEN DE COLECCIÓN) -->
+        <div class="cards cards-superiores">
+            <!-- Card 1: Categoría con más hechos -->
+            <article class="card card-kpi">
+                <h2>Categoría con más hechos</h2>
 
-            <div class="card">
-                <h2>Solicitudes de eliminación</h2>
-                <div id="act-spam" class="kpi"></div>
-            </div>
+                <div class="kpi-categoria">
+                    <div class="kpi-label">CATEGORÍA</div>
+
+                    <div th:if="${resumen.categoriaTop != null}">
+                        <div class="kpi-principal" th:text="${resumen.categoriaTop}">
+                            Vendaval
+                        </div>
+                        <div class="kpi-detalle">
+                            <span class="kpi-numero"
+                                  th:text="${#numbers.formatInteger(resumen.hechosCategoriaTop, 0)}">614</span>
+                            <span>hechos registrados</span>
+                        </div>
+                    </div>
+
+                    <div th:if="${resumen.categoriaTop == null}">
+                        <div class="kpi-placeholder">
+                            No hay datos calculados todavía.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Card 2: Solicitudes de eliminación (spam) -->
+            <article class="card card-kpi">
+                <h2>Solicitudes de eliminación (spam)</h2>
+
+                <div class="kpi-spam"
+                     th:with="spam=${resumen.solicitudesSpam},
+                              total=${resumen.solicitudesTotales},
+                              pct=${total != null && total > 0 ? (spam * 100.0 / total) : 0}">
+
+                    <div class="kpi-chart-wrapper">
+                        <canvas id="spamChart"></canvas>
+                    </div>
+
+                    <div class="kpi-spam-text">
+                        <p>
+                            <span class="kpi-numero" th:text="${#numbers.formatInteger(spam, 0)}">0</span>
+                            <span>marcadas como spam</span>
+                        </p>
+                        <p>
+                            de
+                            <span th:text="${#numbers.formatInteger(total, 0)}">0</span>
+                            solicitudes totales
+                        </p>
+                        <p th:text="${#numbers.formatDecimal(pct, 1, 1)} + '% del total'">
+                            0.0% del total
+                        </p>
+                    </div>
+                </div>
+            </article>
         </div>
 
-        <!-- Datos del modelo -->
-        <script th:inline="javascript">
-            const ACT_COLECCION = /*[[${coleccion}]]*/ null;
-            const ACT_RESUMEN_INICIAL = /*[[${resumen}]]*/ {};
-        </script>
+        <!-- FILTRO DE COLECCIONES -->
+        <div class="actividad-filtros">
+            <form th:action="@{/admin/actividad}" method="get" class="filtro-colecciones">
+
+                <div class="filter-group">
+                    <label>
+                        <i class="fas fa-layer-group" style="color: black; margin-right: 8px;"></i>
+                        Colección
+                    </label>
+
+                    <div class="filter-content">
+                        <input type="text"
+                               id="coleccion"
+                               name="coleccion"
+                               placeholder="Ej: Inundaciones, Accidentes..."
+                               th:value="${coleccion}"
+                               list="colecciones-list"
+                               autocomplete="off"
+                               class="filtro-select">
+
+                        <datalist id="colecciones-list">
+                            <option th:each="col : ${colecciones}"
+                                    th:value="${col.handle}"
+                                    th:text="${col.titulo}">
+                            </option>
+                        </datalist>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-filter btn-ver-estadisticas">
+                    Ver estadísticas
+                </button>
+            </form>
+        </div>
+
+        <!-- TEXTO DE CONTEXTO COLECCIÓN -->
+        <p class="texto-colection"
+           th:if="${coleccion != null and coleccion != ''}">
+            Mostrando estadísticas para la colección:
+            <strong th:text="${coleccion}">incendios-</strong>
+        </p>
+
+        <!-- CARD INFERIOR: provincia por colección (solo si hay coleccion) -->
+        <div class="cards cards-inferiores"
+             th:if="${coleccion != null and coleccion != ''}">
+            <article class="card card-coleccion">
+                <h2>
+                    Provincia con más hechos
+                    <span class="subtitulo-coleccion">
+                        · Colección:
+                        <span th:text="${coleccion}">incendios-</span>
+                    </span>
+                </h2>
+
+                <div class="kpi-provincia">
+                    <div class="kpi-label">Provincia</div>
+
+                    <div th:if="${resumen.provinciaTop != null}">
+                        <span class="kpi-principal" th:text="${resumen.provinciaTop}">Buenos Aires</span>
+                        <span class="kpi-numero"
+                              th:text="${#numbers.formatInteger(resumen.hechosProvinciaTop, 0)}">32</span>
+                        <span>hechos</span>
+                    </div>
+
+                    <div th:if="${resumen.provinciaTop == null}">
+                        <div class="kpi-placeholder">
+                            No hay datos calculados todavía para esta colección.
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
 
         <!-- Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        <!-- Lógica -->
-        <script>
-            function toLabelsValues(pares) {
-              const arr = Array.isArray(pares) ? pares : [];
-              return { labels: arr.map(p => p.clave), values: arr.map(p => p.valor) };
-            }
+        <!-- Script del gráfico de spam -->
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function () {
+                const canvas = document.getElementById('spamChart');
+                if (!canvas) return;
 
-            const provCtx = document.getElementById('act-prov');
-            const catCtx  = document.getElementById('act-cat');
-            let provChart = null, catChart = null;
+                const spam  = /*[[${resumen.solicitudesSpam}]]*/ 0;
+                const total = /*[[${resumen.solicitudesTotales}]]*/ 0;
+                const noSpam = Math.max(total - spam, 0);
 
-            function renderResumen(resumen) {
-              const { labels: pL, values: pV } = toLabelsValues(resumen.porProvincia);
-              const { labels: cL, values: cV } = toLabelsValues(resumen.porCategoria);
+                if (total <= 0) {
+                    // nada para graficar, evitamos donut vacío
+                    return;
+                }
 
-              if (!provChart) {
-                provChart = new Chart(provCtx, {
-                  type: 'bar',
-                  data: { labels: pL, datasets: [{ label: 'Hechos', data: pV }] },
-                  options: { responsive: true, maintainAspectRatio: false }
+                new Chart(canvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['No spam', 'Spam'],
+                        datasets: [{
+                            data: [noSpam, spam],
+                            backgroundColor: ['#dbe4ff', '#2563ff'],
+                            hoverBackgroundColor: ['#c7d2ff', '#1d4ed8'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 14,
+                                    font: { size: 11 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const value = context.raw || 0;
+                                        const pct = total > 0 ? (value * 100 / total) : 0;
+                                        return `${context.label}: ${value} (${pct.toFixed(1)}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 });
-              } else {
-                provChart.data.labels = pL;
-                provChart.data.datasets[0].data = pV;
-                provChart.update();
-              }
-
-              if (!catChart) {
-                catChart = new Chart(catCtx, {
-                  type: 'pie',
-                  data: { labels: cL, datasets: [{ label: 'Hechos', data: cV }] },
-                  options: { responsive: true, maintainAspectRatio: false }
-                });
-              } else {
-                catChart.data.labels = cL;
-                catChart.data.datasets[0].data = cV;
-                catChart.update();
-              }
-
-              const spam = resumen.spamEliminacion || { spam: 0, total: 0 };
-              const pct  = spam.total ? Math.round(100 * spam.spam / spam.total) : 0;
-              const spamBox = document.getElementById('act-spam');
-              if (spamBox) spamBox.textContent = `${spam.spam}/${spam.total} (${pct}%) marcadas como spam`;
-            }
-
-            renderResumen(ACT_RESUMEN_INICIAL || {});
-
-            async function refreshResumen() {
-              if (!ACT_COLECCION) return;
-              try {
-                const url = `/ui/api/estadisticas/resumen?coleccion=${encodeURIComponent(ACT_COLECCION)}`;
-                const r = await fetch(url, { cache: 'no-store' });
-                if (!r.ok) return;
-                renderResumen(await r.json());
-              } catch (_) {}
-            }
-            setInterval(refreshResumen, 60000);
+            });
+            /*]]>*/
         </script>
+
     </section>
 </th:block>
 </html>
-

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<th:block th:fragment="fuente-externa">
+
+    <section class="fuentes-externas">
+        <!-- Caja de información -->
+        <div class="info-box">
+            <div class="info-box__icon">i</div>
+            <div class="info-box__content">
+                <h2 class="info-box__title">Configuración de fuentes externas</h2>
+                <p class="info-box__text">
+                    Desde este panel podés
+                    <strong>registrar y administrar URLs</strong>
+                    para fuentes proxy compatibles con MetaMapa.
+                </p>
+            </div>
+        </div>
+
+        <div class="proxy-grid">
+            <section class="card card--proxy card--urls">
+                <header class="card__header">
+                    <h2 class="card__title">Fuentes externas</h2>
+                </header>
+
+                <p class="card__text">
+                    Registrá instancias MetaMapa o fuentes externas compatibles.
+                </p>
+
+                <!-- 🟢 FORMULARIO -->
+                <form class="proxy-form" id="form-nueva-fuente">
+
+                    <!-- 🔐 CSRF Token -->
+                    <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}">
+                    <input type="hidden" id="_csrf_header" name="_csrf_header" th:value="${_csrf.headerName}">
+
+                    <!-- Fila 1: nombre + tipo -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="nombre-fuente">Nombre de la fuente</label>
+                            <input id="nombre-fuente"
+                                   name="nombre"
+                                   type="text"
+                                   class="input"
+                                   placeholder="Ej: MetaMapa Derechos Humanos" />
+                        </div>
+
+                        <div class="form-field">
+                            <label for="tipo-fuente">Tipo de fuente</label>
+                            <select id="tipo-fuente"
+                                    name="tipo"
+                                    class="select"
+                                    required>
+                                <option value="" disabled selected hidden>Seleccione el tipo de fuente</option>
+                                <option value="METAMAPA">MetaMapa</option>
+                                <option value="EXTERNA">Externa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: campo dinámico -->
+                    <div class="form-row">
+                        <!-- URL si es MetaMapa -->
+                        <div class="form-field is-hidden" id="grupo-url">
+                            <label for="url-fuente">URL base de la API</label>
+                            <input id="url-fuente"
+                                   name="urlBase"
+                                   type="url"
+                                   class="input"
+                                   placeholder="https://ejemplo.org/api" />
+                        </div>
+
+                        <!-- Selección si es externa -->
+                        <div class="form-field is-hidden" id="grupo-fuente-externa">
+                            <label for="fuente-externa-select">Fuente externa</label>
+                            <select id="fuente-externa-select" class="select">
+                                <option value="" disabled selected hidden>Seleccione la fuente externa</option>
+                                <option value="dds">Diseño de Sistemas (DDS)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Botón -->
+                    <div class="form-row form-row--actions">
+                        <div class="form-field form-field--actions">
+                            <button type="submit" class="btn btn-primary btn-full">
+                                + Agregar fuente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- 🟣 TABLA -->
+                <div class="table-wrapper">
+                    <table class="table table--compact">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>URL</th>
+                            <th>Tipo</th>
+                            <th>Última actualización</th>
+                            <th class="table__col-actions">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="fuente : ${fuentesProxy}">
+                            <td th:text="${fuente.nombre}"></td>
+                            <td class="table__cell-url" th:text="${fuente.urlBase}"></td>
+                            <td th:text="${fuente.tipo}"></td>
+                            <td th:text="${fuente.ultimaActualizacion}"></td>
+                            <td class="table__col-actions">
+                                <button type="button" class="link-button">Probar</button>
+                                <button type="button" class="link-button link-button--danger">Eliminar</button>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(fuentesProxy)}">
+                            <td colspan="5" class="table__empty">
+                                Todavía no hay fuentes externas configuradas.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <!-- 🧠 Lógica JS embebida -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tipoSelect = document.getElementById('tipo-fuente');
+            const grupoUrl = document.getElementById('grupo-url');
+            const grupoFuenteExt = document.getElementById('grupo-fuente-externa');
+
+            function actualizarCampos() {
+                const tipo = tipoSelect.value;
+                grupoUrl.classList.toggle('is-hidden', tipo !== 'METAMAPA');
+                grupoFuenteExt.classList.toggle('is-hidden', tipo !== 'EXTERNA');
+            }
+
+            actualizarCampos();
+            tipoSelect.addEventListener('change', actualizarCampos);
+
+            // --- POST CON CSRF ---
+            const form = document.getElementById('form-nueva-fuente');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const nombre = document.getElementById('nombre-fuente').value;
+                const tipo = document.getElementById('tipo-fuente').value;
+
+                if (!nombre || !tipo) {
+                    alert("Complete el nombre y el tipo de la fuente.");
+                    return;
+                }
+
+                let params = `nombre=${encodeURIComponent(nombre)}&tipoFuente=${encodeURIComponent(tipo)}`;
+
+                if (tipo === 'METAMAPA') {
+                    const url = document.getElementById('url-fuente').value;
+                    if (!url) {
+                        alert("Debe ingresar la URL base.");
+                        return;
+                    }
+                    params += `&urlBase=${encodeURIComponent(url)}`;
+                }
+
+                if (tipo === 'EXTERNA') {
+                    const fe = document.getElementById('fuente-externa-select').value;
+                    if (!fe) {
+                        alert("Debe seleccionar el tipo de fuente externa.");
+                        return;
+                    }
+                    params += `&fuenteExterna=${encodeURIComponent(fe)}`;
+                }
+
+                // CSRF
+                const token = document.getElementById('_csrf').value;
+                const headerName = document.getElementById('_csrf_header').value;
+
+                fetch("/admin/externa?" + params, {
+                    method: "POST",
+                    headers: {
+                        [headerName]: token
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Fuente agregada correctamente ✔️");
+                            location.reload();
+                        } else {
+                            alert("Error al agregar la fuente ❌");
+                        }
+                    })
+                    .catch(() => alert("Error de conexión con el servidor ❌"));
+            });
+        });
+    </script>
+
+</th:block>
+</html>

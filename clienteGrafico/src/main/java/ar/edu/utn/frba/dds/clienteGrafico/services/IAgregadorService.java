@@ -26,6 +26,7 @@ public interface IAgregadorService {
     List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso consenso);
     ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle);
     List<HechoInputDTO> obtenerHechosColeccion(String handle, Integer paginaActual,  HechosFilterInputDTO filtros, Boolean curado);
+    List<ColeccionOutputDTO> obtenerColeccionesAdmin();
 
     List<String> obtenerCategoriasShort();
     List<String> obtenerProvinciasShort();
