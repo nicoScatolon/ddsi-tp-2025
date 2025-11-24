@@ -32,6 +32,10 @@ public class SecurityConfig {
                         // Recursos estáticos y login público
                         .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/img/**").permitAll()
 
+                        // Rutas de COLECCIONES que deben ser públicas (solo GET)
+                        .requestMatchers(HttpMethod.GET,"/colecciones/create").hasAnyRole("ADMIN", "ADMINSUPERIOR")
+                        .requestMatchers(HttpMethod.GET, "/colecciones/**").permitAll()
+
                         // Rutas Admin
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers("/colecciones/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")

@@ -65,7 +65,7 @@ public class HechosController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
-        return "/hechos/explore";
+        return "hechos/explore";
     }
 
     @GetMapping("/create")
@@ -80,7 +80,7 @@ public class HechosController {
         model.addAttribute("hechoDTO", hechoInputDTO);
         model.addAttribute("provincias", provincias);
         model.addAttribute("categorias", categorias);
-        return "/hechos/create";
+        return "hechos/create";
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -193,7 +193,7 @@ public class HechosController {
         } catch (NotFoundException e) {
             model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
             model.addAttribute("urlRedirect", "/hechos");
-            return "errores/404";
+            return "redirect:/error/404";
         }
         return "hechos/details";
     }
@@ -245,7 +245,7 @@ public class HechosController {
         if (hecho == null) {
             model.addAttribute("mensaje", "No se ha encontrado el hecho buscado");
             model.addAttribute("urlRedirect", "/user/misHechos");
-            return "404";
+            return "redirect:/error/404";
         }
 
         Long userId = null;

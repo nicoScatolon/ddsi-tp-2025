@@ -80,7 +80,7 @@ public class ColeccionesController {
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("curado", curado);
         model.addAttribute("filtros", filtros);
-        return "/colecciones/details";
+        return "colecciones/details";
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','ADMINSUPERIOR')")
@@ -103,7 +103,7 @@ public class ColeccionesController {
         model.addAttribute("nueva", true);
         model.addAttribute("actionUrl", actionUrl);
 
-        return "/colecciones/create";
+        return "colecciones/create";
     }
 
     @PostMapping("/create")
@@ -161,7 +161,7 @@ public class ColeccionesController {
         model.addAttribute("coleccionDTO", formDTO);
         model.addAttribute("actionUrl", actionUrl);
         model.addAttribute("nueva", false);
-        return "/colecciones/create";
+        return "colecciones/create";
     }
 
     @PutMapping("/destacar/{handle}")
