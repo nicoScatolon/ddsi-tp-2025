@@ -754,3 +754,120 @@ footer a {
 footer a:hover {
     color: #E5ECFF;
 }
+
+/* Menu hamburguesa */
+
+.hamburger-btn {
+    display: none; /* solo se ve en mobile */
+    width: 38px;
+    height: 32px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--white);
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+/* animación cuando está abierto */
+.hamburger-btn.is-open span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+.hamburger-btn.is-open span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-btn.is-open span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* navbar mobile */
+
+@media (max-width: 768px) {
+
+    .desktop-nav,
+    header.desktop-nav {
+        height: 56px;
+    }
+
+    .desktop-nav nav {
+        padding: 0 0.75rem;
+    }
+
+    .site-name {
+        font-size: 1.05rem;
+    }
+
+    /* nav-links se vuelve menú desplegable */
+    .nav-links {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 0.5rem 1rem 1rem;
+        max-width: none;
+        display: none; /* cerrado por defecto */
+        z-index: 2500;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+    }
+
+    .nav-links.is-open {
+        display: flex;
+    }
+
+    /* derecha: ícono de sesión + hamburguesa */
+    .right-controls {
+        gap: 8px;
+    }
+
+    .hamburger-btn {
+        display: flex;
+    }
+
+    /* botón de sesión: solo ícono en mobile */
+    #desktopLoginBtn span,
+    #desktopUserBtn span {
+        display: none;
+    }
+
+    #desktopLoginBtn,
+    #desktopUserBtn {
+        padding: 0.3rem 0.45rem;
+        border-radius: 999px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.16);
+    }
+
+    #desktopLoginBtn i,
+    #desktopUserBtn i {
+        font-size: 1.1rem;
+    }
+}
+
+/* evitar scroll del body con el menú abierto */
+body.mobile-menu-open {
+    overflow: hidden;
+}
+
