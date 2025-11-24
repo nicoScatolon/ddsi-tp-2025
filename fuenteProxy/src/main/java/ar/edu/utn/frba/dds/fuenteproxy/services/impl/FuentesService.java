@@ -3,6 +3,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.services.impl;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteAMostrarOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.Fuente;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.FuenteDDS;
@@ -36,9 +37,9 @@ public class FuentesService implements IFuentesService {
     }
 
     @Override
-    public List<FuenteOutputDTO> getFuentes(){
+    public List<FuenteAMostrarOutputDTO> getFuentes(){
         return fuentesRepository.findAll()
-                .stream().map(f -> DTOConverter.mapToFuenteOutputDTO(f)).toList();
+                .stream().map(DTOConverter::mapToFuenteAMostrarOutputDTO).toList();
     }
 
     @Override
@@ -72,13 +73,16 @@ public class FuentesService implements IFuentesService {
 
 
 
-
     @Override
     @Transactional
     public void eliminarFuente(String nombre) {
         Fuente fuente = fuentesRepository.findByNombre(nombre);
 
-        if(fuente.getTipo() == TipoFuenteProxy.EXTERNA){
+        if (fuente == null) {
+            throw new RuntimeException("Fuente no encontrada: " + nombre);
+        }
+
+        if (fuente.getTipo() == TipoFuenteProxy.EXTERNA) {
             hechosService.eliminarHechosDeFuente(fuente.getId());
         }
 

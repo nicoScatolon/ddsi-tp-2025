@@ -97,24 +97,25 @@
                             <th>Nombre</th>
                             <th>URL</th>
                             <th>Tipo</th>
-                            <th>Última actualización</th>
                             <th class="table__col-actions">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="fuente : ${fuentesProxy}">
                             <td th:text="${fuente.nombre}"></td>
-                            <td class="table__cell-url" th:text="${fuente.urlBase}"></td>
+                            <td class="table__cell-url" th:text="${fuente.url}"></td>
                             <td th:text="${fuente.tipo}"></td>
-                            <td th:text="${fuente.ultimaActualizacion}"></td>
                             <td class="table__col-actions">
-                                <button type="button" class="link-button">Probar</button>
-                                <button type="button" class="link-button link-button--danger">Eliminar</button>
+                                <button type="button"
+                                        class="link-button link-button--danger btn-eliminar"
+                                        th:data-nombre="${fuente.nombre}">
+                                    Eliminar
+                                </button>
                             </td>
                         </tr>
 
                         <tr th:if="${#lists.isEmpty(fuentesProxy)}">
-                            <td colspan="5" class="table__empty">
+                            <td colspan="4" class="table__empty">
                                 Todavía no hay fuentes externas configuradas.
                             </td>
                         </tr>
@@ -136,6 +137,10 @@
                 const tipo = tipoSelect.value;
                 grupoUrl.classList.toggle('is-hidden', tipo !== 'METAMAPA');
                 grupoFuenteExt.classList.toggle('is-hidden', tipo !== 'EXTERNA');
+
+                if (tipo === 'EXTERNA') {
+                    document.getElementById('fuente-externa-select').value = "";
+                }
             }
 
             actualizarCampos();
@@ -174,7 +179,6 @@
                     params += `&fuenteExterna=${encodeURIComponent(fe)}`;
                 }
 
-                // CSRF
                 const token = document.getElementById('_csrf').value;
                 const headerName = document.getElementById('_csrf_header').value;
 
@@ -193,6 +197,36 @@
                         }
                     })
                     .catch(() => alert("Error de conexión con el servidor ❌"));
+            });
+
+            // --- DELETE Fuente ---
+            document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const nombreFuente = btn.getAttribute('data-nombre');
+
+                    if (!confirm(`¿Seguro que desea eliminar la fuente "${nombreFuente}"?`)) {
+                        return;
+                    }
+
+                    const token = document.getElementById('_csrf').value;
+                    const headerName = document.getElementById('_csrf_header').value;
+
+                    fetch(`/admin/externa/${encodeURIComponent(nombreFuente)}`, {
+                        method: "DELETE",
+                        headers: {
+                            [headerName]: token
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Fuente eliminada ✔️");
+                                location.reload();
+                            } else {
+                                alert("Error al eliminar la fuente ❌");
+                            }
+                        })
+                        .catch(() => alert("Error de conexión con el servidor ❌"));
+                });
             });
         });
     </script>

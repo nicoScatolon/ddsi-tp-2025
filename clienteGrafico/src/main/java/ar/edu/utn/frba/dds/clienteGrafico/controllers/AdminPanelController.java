@@ -11,6 +11,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.RevisionHechoInputDT
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteProxyOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
@@ -132,7 +133,7 @@ public class AdminPanelController {
 
         // Cargar lista de fuentes externas
         try {
-            List<FuenteOutputDTO> fuentes = fuenteProxyService.getFuentesProxy();
+            List<FuenteProxyOutputDTO> fuentes = fuenteProxyService.getFuentesProxy();
             model.addAttribute("fuentesProxy", fuentes);
         } catch (Exception e) {
             model.addAttribute("fuentesProxy", Collections.emptyList());

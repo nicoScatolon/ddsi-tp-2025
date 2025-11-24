@@ -6,12 +6,13 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteProxyInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechosFilterDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.SolicitudEliminarHechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteProxyOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoProxyOutputDTO;
 
 import java.util.List;
 
 public interface IFuenteProxyService {
-    List<FuenteOutputDTO> getFuentesProxy();
+    List<FuenteProxyOutputDTO> getFuentesProxy();
     void agregarFuenteMetamapa(FuenteProxyInputDTO dto);
     void agregarFuenteDDS(FuenteProxyInputDTO dto);
     void eliminarFuente(String nombreFuente);

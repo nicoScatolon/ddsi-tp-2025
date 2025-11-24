@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.fuenteproxy.controllers;
 
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteAMostrarOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.services.IFuentesService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class FuentesController {
 
     @GetMapping("/fuentes")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<FuenteOutputDTO> getFuentes() {
+    public List<FuenteAMostrarOutputDTO> getFuentes() {
         return fuenteService.getFuentes();
     }
 
@@ -45,7 +46,7 @@ public class FuentesController {
     }
 
 
-    @DeleteMapping
+    @DeleteMapping("/{nombre}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public void eliminarFuente(@PathVariable String nombre) {
         fuenteService.eliminarFuente(nombre);
