@@ -86,7 +86,6 @@
                         <span th:case="*"
                               class="fa-network-wired"></span>
                     </i>
-
                     <!-- Texto del tipo al lado -->
                     <span th:text="${fuente.tipoFuente}"></span>
                 </div>
@@ -99,19 +98,6 @@
 
                 <!-- Acciones -->
                 <div class="fuente-actions">
-                    <!-- Botón especial para Proxy -->
-                    <button th:if="${fuente.tipoFuente.name() == 'PROXY'}"
-                            type="button"
-                            class="btn-icon btn-config"
-                            th:data-fuente-id="${fuente.fuenteId}"
-                            th:data-fuente-nombre="${fuente.nombre}"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalGestionarProxy"
-                            onclick="cargarDatosProxy(this)"
-                            title="Configurar Proxy">
-                        <i class="fas fa-cog"></i>
-                    </button>
-
                     <!-- Eliminar fuente -->
                     <form th:action="@{/admin/adminsuperior/fuentes/{id}(id=${fuente.fuenteId})}"
                           method="post"
@@ -327,78 +313,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Gestionar Proxy -->
-    <div class="modal fade" id="modalGestionarProxy" tabindex="-1" aria-labelledby="modalGestionarProxyLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header modal-header-proxy">
-                    <h5 class="modal-title" id="modalGestionarProxyLabel">
-                        <i class="fas fa-network-wired me-2"></i>
-                        Configurar Fuente Proxy: <span id="proxyNombre"></span>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p class="text-muted mb-4">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Las fuentes Proxy actúan como intermediarios entre el sistema y otras fuentes externas.
-                    </p>
-
-                    <!-- Aquí puedes agregar configuraciones específicas de proxy -->
-                    <div class="proxy-config">
-                        <div class="alert alert-info">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <strong>ID de Fuente:</strong> <span id="proxyId"></span>
-                        </div>
-
-                        <!-- Formulario de configuración de proxy -->
-                        <form id="formConfigProxy">
-                            <input type="hidden" id="proxyFuenteId" name="fuenteId">
-
-                            <div class="mb-3">
-                                <label for="proxyTimeout" class="form-label">
-                                    <i class="fas fa-clock me-1"></i>
-                                    Timeout (ms)
-                                </label>
-                                <input type="number" class="form-control" id="proxyTimeout" name="timeout" value="5000" min="1000" step="1000">
-                                <small class="text-muted">Tiempo máximo de espera para las solicitudes</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="proxyRetries" class="form-label">
-                                    <i class="fas fa-redo me-1"></i>
-                                    Reintentos
-                                </label>
-                                <input type="number" class="form-control" id="proxyRetries" name="retries" value="3" min="0" max="10">
-                                <small class="text-muted">Número de reintentos ante fallos</small>
-                            </div>
-
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="proxyCache" name="cache" checked>
-                                <label class="form-check-label" for="proxyCache">
-                                    <i class="fas fa-memory me-1"></i>
-                                    Habilitar caché de respuestas
-                                </label>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>
-                        Cerrar
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="guardarConfigProxy()">
-                        <i class="fas fa-save me-2"></i>
-                        Guardar Configuración
-                    </button>
-                </div>
             </div>
         </div>
     </div>

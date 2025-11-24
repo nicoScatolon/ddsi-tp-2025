@@ -126,7 +126,7 @@
             </div>
 
             <!-- Acciones de administrador -->
-            <div sec:authorize="hasRole('ADMIN')" class="card-actions">
+            <div sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')" class="card-actions">
 
                 <!-- DESTACAR  -->
                 <form th:if="${!coleccion.destacada}"

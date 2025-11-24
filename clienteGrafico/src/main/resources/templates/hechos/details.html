@@ -112,7 +112,7 @@
                         </button>
 
                         <!-- Botón para DESTACAR (si NO está destacado) -->
-                        <form sec:authorize="hasRole('ADMIN')"
+                        <form sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')"
                               th:if="${!hecho.destacado}"
                               th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
                               method="post"
@@ -125,7 +125,7 @@
                         </form>
 
                         <!-- Botón para QUITAR DESTACADO (si SÍ está destacado) -->
-                        <form sec:authorize="hasRole('ADMIN')"
+                        <form sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')"
                               th:if="${hecho.destacado}"
                               th:action="@{/hechos/destacar/{id}(id=${hecho.id})}"
                               method="post"

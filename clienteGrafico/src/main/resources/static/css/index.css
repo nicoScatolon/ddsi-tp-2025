@@ -21,7 +21,7 @@ body {
     height: 100%;
     font-family: 'Poppins', Arial, Helvetica, sans-serif;
     color: #fff;
-    background: url("../img/background-home.jpg") center/cover no-repeat fixed;
+    background: url("../img/background-home.webp") center/cover no-repeat fixed;
 }
 
 /* Asegurar que todos los contenedores sean transparentes */

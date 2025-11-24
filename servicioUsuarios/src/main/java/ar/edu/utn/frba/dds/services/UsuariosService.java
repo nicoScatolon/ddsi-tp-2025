@@ -27,7 +27,7 @@ public class UsuariosService {
 
     @Transactional
     public Usuario registrarUsuario(RegistroUsuarioDTO dto, Rol rol) {
-        if (usuarios.existsByNombre(dto.getUsername())) {
+        if (usuarios.existsByNombre(dto.getNombre())) {
             throw new IllegalArgumentException("El nombre de usuario ya existe");
         }
 
@@ -125,7 +125,7 @@ public class UsuariosService {
 
     private Usuario registroUsuarioDTO(RegistroUsuarioDTO dto){
         return Usuario.builder()
-                .nombre(dto.getUsername())
+                .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .email(dto.getEmail())
                 .username(dto.getUsername())
