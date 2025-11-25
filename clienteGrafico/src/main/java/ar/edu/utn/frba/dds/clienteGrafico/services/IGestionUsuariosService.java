@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.clienteGrafico.services;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UsuarioInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.*;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface IGestionUsuariosService {
     void eliminarUsuario(Long id);
     Boolean existeUsuario(Long id);
     UsuarioResponseDTO crearAdmin(RegisterUsuarioRequestDTO usuario);
+    String obtenerUsername(HttpSession session);
 }

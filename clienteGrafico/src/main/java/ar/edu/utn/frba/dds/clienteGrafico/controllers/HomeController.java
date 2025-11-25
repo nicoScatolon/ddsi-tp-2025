@@ -37,15 +37,7 @@ public class HomeController {
         fileSystemService.procesarImagenPrincipalListaHechos(listaHechosDestacadosDTO);
         fileSystemService.procesarImagenPrincipalListaColecciones(listaColeccionesDestacadasDTO);
 
-        Long userId = null;
-        if (session != null) {
-            userId = (Long) session.getAttribute("userId");
-        }
-        String userName = null;
-        if (userId != null) {
-            UsuarioInputDTO usuarioInputDTO = gestionUsuariosService.obtenerUsuarioPorId(userId);
-            userName = usuarioInputDTO.getUsername();
-        }
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
         model.addAttribute("userName", userName);
         model.addAttribute("colecciones", listaColeccionesDestacadasDTO);
@@ -55,13 +47,18 @@ public class HomeController {
     }
 
     @GetMapping("/legales")
-    public String legales(Model model) {
+    public String legales(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Información legal y Privacidad");
         return "legales";
     }
 
     @GetMapping("/about")
-    public String aboutUs(Model model) {
+    public String aboutUs(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Sobre Nosotros");
         return "about";
     }

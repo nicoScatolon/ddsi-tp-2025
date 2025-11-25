@@ -27,7 +27,7 @@ public class UsuariosService {
 
     @Transactional
     public Usuario registrarUsuario(RegistroUsuarioDTO dto, Rol rol) {
-        if (usuarios.existsByNombre(dto.getNombre())) {
+        if (usuarios.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("El nombre de usuario ya existe");
         }
 

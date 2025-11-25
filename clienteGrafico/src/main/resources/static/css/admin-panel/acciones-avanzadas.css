@@ -396,6 +396,313 @@
     border-radius: var(--radius-sm);
 }
 
+/* ============================================ */
+/* SECCIÓN DE GESTIÓN DE ESTADÍSTICAS */
+/* ============================================ */
+
+.estadisticas-section {
+    border: 2px solid #8b5cf6;
+    border-radius: var(--radius-lg);
+    margin-top: 2rem;
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
+}
+
+/* Header de la sección */
+.section-header-estadisticas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid var(--bg);
+}
+
+.header-icon-estadisticas {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.header-icon-estadisticas i {
+    font-size: 1.75rem;
+    color: white;
+}
+
+.section-title-estadisticas {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin: 0;
+}
+
+.section-subtitle-estadisticas {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin: 0.25rem 0 0 0;
+}
+
+/* Grid de acciones */
+.estadisticas-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-form {
+    margin: 0;
+}
+
+/* Cards de acción (botones) */
+.action-card {
+    width: 100%;
+    background: var(--white);
+    border: 2px solid var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.action-card:hover::before {
+    width: 100%;
+    opacity: 0.05;
+}
+
+.action-card:active {
+    transform: translateY(-2px);
+}
+
+/* Card de actualizar */
+.actualizar-card {
+    border-color: rgba(47, 96, 244, 0.2);
+}
+
+.actualizar-card::before {
+    background: var(--color-primary);
+}
+
+.actualizar-card:hover {
+    border-color: var(--color-primary);
+}
+
+/* Card de eliminar */
+.eliminar-card {
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.eliminar-card::before {
+    background: #ef4444;
+}
+
+.eliminar-card:hover {
+    border-color: #ef4444;
+}
+
+/* Icono de la acción */
+.action-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.action-icon i {
+    font-size: 1.75rem;
+    color: white;
+}
+
+.action-icon.actualizar {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #3d7eeb 100%);
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.3);
+}
+
+.actualizar-card:hover .action-icon.actualizar {
+    transform: rotate(180deg);
+    box-shadow: 0 6px 16px rgba(47, 96, 244, 0.4);
+}
+
+.action-icon.eliminar {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.eliminar-card:hover .action-icon.eliminar {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* Contenido de la acción */
+.action-content {
+    flex-grow: 1;
+}
+
+.action-content h4 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin: 0 0 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.actualizar-card:hover .action-content h4 {
+    color: var(--color-primary);
+}
+
+.eliminar-card:hover .action-content h4 {
+    color: #ef4444;
+}
+
+.action-content p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Flecha indicadora */
+.action-arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.action-arrow i {
+    font-size: 1rem;
+    color: var(--muted);
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .action-arrow {
+    background: var(--color-primary);
+    transform: translateX(4px);
+}
+
+.eliminar-card:hover .action-arrow {
+    background: #ef4444;
+}
+
+.action-card:hover .action-arrow i {
+    color: white;
+}
+
+/* ===== RESPONSIVE ESTADÍSTICAS ===== */
+@media (max-width: 1024px) {
+    .estadisticas-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .estadisticas-section {
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .section-header-estadisticas {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-icon-estadisticas {
+        width: 50px;
+        height: 50px;
+    }
+
+    .header-icon-estadisticas i {
+        font-size: 1.5rem;
+    }
+
+    .section-title-estadisticas {
+        font-size: 1.4rem;
+    }
+
+    .action-card {
+        padding: 1.25rem;
+    }
+
+    .action-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .action-icon i {
+        font-size: 1.5rem;
+    }
+
+    .action-content h4 {
+        font-size: 1rem;
+    }
+
+    .action-content p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .action-arrow {
+        display: none;
+    }
+
+    .action-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .action-icon i {
+        font-size: 1.25rem;
+    }
+
+    .action-content h4 {
+        font-size: 0.95rem;
+    }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .avanzadas-grid {

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos.output;
 
+import ar.edu.utn.frba.dds.domain.entities.SolicitudesEliminacion.EstadoDeSolicitud;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +18,5 @@ public class SolicitudEliminarHechoOutputDTO {
     private HechoOutputDTO hecho;
     private LocalDateTime fechaCreacion;
     private Long idCreador;
+    private EstadoDeSolicitud estado;
 }

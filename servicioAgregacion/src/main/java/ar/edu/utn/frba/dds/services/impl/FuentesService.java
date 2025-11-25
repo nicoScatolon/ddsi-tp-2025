@@ -121,7 +121,7 @@ public class FuentesService implements IFuentesService {
         */
     }
 
-    @Transactional
+    //todo con @Transactional rompe
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");

@@ -8,6 +8,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.services.IEstadisticasFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -65,6 +66,10 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                     (provDto != null && provDto.getCantHechosProvincia() != null)
                             ? provDto.getCantHechosProvincia()
                             : 0;
+            Integer hechosTotalesColeccion =
+                    (provDto != null && provDto.getCantHechosTotales() != null)
+                            ? provDto.getCantHechosTotales()
+                            : 0;
 
             String categoriaTop = (catDto != null) ? catDto.getCategoria() : null;
             Integer hechosCatTop =
@@ -94,6 +99,7 @@ public class EstadisticasFacade implements IEstadisticasFacade {
             }
 
             return PanelActividadViewDTO.builder()
+                    .hechosTotalesColeccion(hechosTotalesColeccion)
                     .provinciaTop(provinciaTop)
                     .hechosProvinciaTop(hechosProvTop)
                     .categoriaTop(categoriaTop)
@@ -108,6 +114,7 @@ public class EstadisticasFacade implements IEstadisticasFacade {
 
             return PanelActividadViewDTO.builder()
                     .provinciaTop(null)
+                    .hechosTotalesColeccion(0)
                     .hechosProvinciaTop(0)
                     .categoriaTop(null)
                     .hechosCategoriaTop(0)
@@ -115,6 +122,30 @@ public class EstadisticasFacade implements IEstadisticasFacade {
                     .solicitudesTotales(0)
                     .fechaCalculo(null)
                     .build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> actualizarEstadisticasForzosamente() {
+        try {
+            webApi.post(
+                    baseUrl + "/api/estadisticas/generar",
+                    0,// el 0 es para que no tire error el WebApiCallerService, no es lo mejor pero es una solucion sin tocar el WebApiCallerServive
+                    Void.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las estadisticas: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarEstadisticasViejas() {
+        try {
+            webApi.delete(baseUrl + "/api/estadisticas/generar" );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar las solicitudes de eliminacion viejas: " + e.getMessage(), e);
         }
     }
 }

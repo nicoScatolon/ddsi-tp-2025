@@ -12,6 +12,7 @@ public class PanelActividadViewDTO {
     // Provincia con más hechos en esa colección
     private String provinciaTop;
     private Integer hechosProvinciaTop;
+    private Integer hechosTotalesColeccion;
 
     // Categoría con más hechos (global)
     private String categoriaTop;

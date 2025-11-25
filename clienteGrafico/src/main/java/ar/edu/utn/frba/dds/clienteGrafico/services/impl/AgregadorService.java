@@ -323,7 +323,11 @@ public class AgregadorService implements IAgregadorService {
     }
 
     private String getString(Integer paginaActual, FiltroConsenso filtroConsenso) {
-        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+        String url = agregadorUrl + "/api/colecciones/publica/preview";
+
+        if (paginaActual != null) {
+            url = url + "?page=" + paginaActual;
+        }
 
         if (filtroConsenso == null || filtroConsenso == FiltroConsenso.TODOS) {
             return url;
@@ -441,7 +445,6 @@ public class AgregadorService implements IAgregadorService {
 
 
     // --- SOLICITUDES ELIMINACION --- //
-
     @Override
     public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion) {
         SolicitudEliminarHechoOutputDTO request =

@@ -124,6 +124,61 @@
     </div>
 
     <!-- ============================================ -->
+    <!-- SECCIÓN DE GESTIÓN DE ESTADÍSTICAS -->
+    <!-- ============================================ -->
+    <div class="estadisticas-section">
+        <div class="section-header-estadisticas">
+            <div class="header-left">
+                <div class="header-icon-estadisticas">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <h2 class="section-title-estadisticas">Gestión de Estadísticas</h2>
+                    <p class="section-subtitle-estadisticas">Administra y mantén actualizadas las estadísticas del sistema</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de acciones -->
+        <div class="estadisticas-actions-grid">
+            <!-- Actualizar Estadísticas -->
+            <form th:action="@{/admin/adminsuperior/estadisticas}" method="post"
+                  onsubmit="return confirmarAccion('actualizar las estadísticas')" class="action-form">
+                <button type="submit" class="action-card actualizar-card">
+                    <div class="action-icon actualizar">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Actualizar Estadísticas</h4>
+                        <p>Recalcula y actualiza todas las estadísticas del sistema de forma inmediata</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Eliminar Estadísticas Viejas -->
+            <form th:action="@{/admin/adminsuperior/estadisticas}" method="post"
+                  onsubmit="return confirmarAccion('eliminar estadísticas viejas')" class="action-form">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="action-card eliminar-card">
+                    <div class="action-icon eliminar">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Eliminar Estadísticas Viejas</h4>
+                        <p>Limpia automáticamente los datos estadísticos obsoletos o desactualizados</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
     <!-- MODALES -->
     <!-- ============================================ -->
 

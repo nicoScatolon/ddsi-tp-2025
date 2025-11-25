@@ -2,21 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <th:block th:fragment="actividad">
     <section class="estadisticas-actividad">
-
-        <!-- TÍTULO + FECHA -->
-        <header class="estadisticas-header">
-            <h1 class="titulo">
-                Estadísticas
-                <span class="meta-fecha"
-                      th:if="${resumen.fechaCalculo != null}">
-                    · Actualizado el
-                    <span th:text="${#temporals.format(resumen.fechaCalculo, 'dd/MM/yyyy HH:mm')}">
-                        01/01/2025 12:34
-                    </span>
-                </span>
-            </h1>
-        </header>
-
         <!-- CARDS FIJAS (NO DEPENDEN DE COLECCIÓN) -->
         <div class="cards cards-superiores">
             <!-- Card 1: Categoría con más hechos -->
@@ -82,7 +67,7 @@
 
                 <div class="filter-group">
                     <label>
-                        <i class="fas fa-layer-group" style="color: black; margin-right: 8px;"></i>
+                        <i class="fas fa-layer-group"></i>
                         Colección
                     </label>
 
@@ -106,44 +91,59 @@
                 </div>
 
                 <button type="submit" class="btn-filter btn-ver-estadisticas">
+                    <i class="fas fa-chart-bar"></i>
                     Ver estadísticas
                 </button>
             </form>
         </div>
 
-        <!-- TEXTO DE CONTEXTO COLECCIÓN -->
-        <p class="texto-colection"
-           th:if="${coleccion != null and coleccion != ''}">
-            Mostrando estadísticas para la colección:
-            <strong th:text="${coleccion}">incendios-</strong>
-        </p>
-
         <!-- CARD INFERIOR: provincia por colección (solo si hay coleccion) -->
-        <div class="cards cards-inferiores"
+        <div class="cards cards-coleccion"
              th:if="${coleccion != null and coleccion != ''}">
-            <article class="card card-coleccion">
-                <h2>
-                    Provincia con más hechos
-                    <span class="subtitulo-coleccion">
-                        · Colección:
-                        <span th:text="${coleccion}">incendios-</span>
-                    </span>
-                </h2>
 
-                <div class="kpi-provincia">
-                    <div class="kpi-label">Provincia</div>
+            <!-- Banner informativo -->
+            <div class="coleccion-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="banner-content">
+                    <span class="banner-label">Estadísticas de colección</span>
+                    <span class="banner-nombre" th:text="${coleccion}">incendios-forestales</span>
+                </div>
+            </div>
 
-                    <div th:if="${resumen.provinciaTop != null}">
-                        <span class="kpi-principal" th:text="${resumen.provinciaTop}">Buenos Aires</span>
-                        <span class="kpi-numero"
-                              th:text="${#numbers.formatInteger(resumen.hechosProvinciaTop, 0)}">32</span>
-                        <span>hechos</span>
+            <!-- Card de provincia -->
+            <article class="card card-coleccion-provincia">
+                <div class="card-header-coleccion">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h2>Provincia con más hechos</h2>
+                </div>
+
+                <div class="kpi-provincia-coleccion">
+                    <div th:if="${resumen.provinciaTop != null}" class="provincia-content-inline">
+                        <div class="provincia-info">
+                            <span class="kpi-label">PROVINCIA</span>
+                            <span class="kpi-principal" th:text="${resumen.provinciaTop}">Buenos Aires</span>
+                        </div>
+
+                        <div class="stats-inline">
+                            <div class="stat-inline">
+                    <span class="stat-numero"
+                          th:text="${#numbers.formatInteger(resumen.hechosProvinciaTop, 0)}">32</span>
+                                <span class="stat-label">hechos en provincia</span>
+                            </div>
+                            <span class="stat-separator">·</span>
+                            <div class="stat-inline">
+                    <span class="stat-numero"
+                          th:text="${#numbers.formatInteger(resumen.hechosTotalesColeccion, 0)}">150</span>
+                                <span class="stat-label">total en colección</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div th:if="${resumen.provinciaTop == null}">
-                        <div class="kpi-placeholder">
-                            No hay datos calculados todavía para esta colección.
-                        </div>
+                    <div th:if="${resumen.provinciaTop == null}" class="kpi-placeholder">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                        <p>No hay datos calculados todavía para esta colección.</p>
                     </div>
                 </div>
             </article>
@@ -164,7 +164,6 @@
                 const noSpam = Math.max(total - spam, 0);
 
                 if (total <= 0) {
-                    // nada para graficar, evitamos donut vacío
                     return;
                 }
 

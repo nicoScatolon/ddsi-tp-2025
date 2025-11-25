@@ -2,6 +2,7 @@ package ar.edu.utn.frba.dds.services.impl;
 
 import ar.edu.utn.frba.dds.domain.dtos.DTOconverter;
 import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionInputDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.input.SolicitudEliminacionInputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.estadisticas.*;
@@ -15,9 +16,11 @@ import ar.edu.utn.frba.dds.services.IEstadisticasService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +53,14 @@ public class EstadisticasService implements IEstadisticasService {
         this.mayorProvinciaPorCategoriaRepository  = mayorProvinciaPorCategoriaRepository;
         this.mayorProvinciaPorColeccionRepository = mayorProvinciaPorColeccionRepository;
 
-        this.webClient = WebClient.builder().baseUrl(urlAgregador).build();
+            this.webClient = WebClient.builder()
+                    .baseUrl(urlAgregador)
+                    .exchangeStrategies(ExchangeStrategies.builder()
+                            .codecs(configurer -> configurer
+                                    .defaultCodecs()
+                                    .maxInMemorySize(10 * 1024 * 1024)) // 10 MB
+                            .build())
+                    .build();
     }
 
     public void generarEstadisticas() {
@@ -229,14 +239,26 @@ public class EstadisticasService implements IEstadisticasService {
     }
 
     private List<Coleccion> obtenerColeccionesAgregador (){
-        List<ColeccionInputDTO> coleccionesInputDTO =  webClient.get()
-                .uri("/api/colecciones/privada")
+        List<ColeccionPreviewInputDTO> coleccionesPreviewDTO = webClient.get()
+                .uri("/api/colecciones/publica/preview")
                 .retrieve()
-                .bodyToFlux(ColeccionInputDTO.class)
+                .bodyToFlux(ColeccionPreviewInputDTO.class)
                 .collectList()
                 .block();
-        if (coleccionesInputDTO == null) {return null;}
-        return coleccionesInputDTO.stream().map(DTOconverter::coleccionInputDTO).toList();
+
+        if (coleccionesPreviewDTO == null) {return null;}
+        List<ColeccionInputDTO> coleccionesCargadas = new ArrayList<>();
+
+        for (ColeccionPreviewInputDTO coleccion : coleccionesPreviewDTO) {
+            ColeccionInputDTO coleccionCargada = webClient.get()
+                    .uri("/api/colecciones/publica/" + coleccion.getHandle())
+                    .retrieve()
+                    .bodyToMono(ColeccionInputDTO.class)
+                    .block();
+            coleccionesCargadas.add(coleccionCargada);
+        }
+
+        return coleccionesCargadas.stream().map(DTOconverter::coleccionInputDTO).toList();
     }
 
     private List<Hecho> obtenerHechosAgregador (){

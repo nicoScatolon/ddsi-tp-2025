@@ -96,10 +96,16 @@ public class EstadisticasController {
 
     // test //
 
-    @PostMapping("/test")
-    @PreAuthorize("permitAll()")
-    public void generarEstadisticasTest(){
+    @PostMapping("/generar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void generarEstadisticasForzado(){
         serviceEstadisticas.generarEstadisticas();
+    }
+
+    @DeleteMapping("/generar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void eliminarEstadisticasForzado(){
+        serviceEstadisticas.eliminarEstadisticasAntiguas();
     }
 
     /*

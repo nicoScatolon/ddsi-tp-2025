@@ -45,7 +45,7 @@ public class UsuarioController {
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "unauthorized", required = false) String unauthorized,
-                        Model model) {
+                        Model model, HttpSession session) {
         model.addAttribute("titulo", "Iniciar Sesión");
 
         if (error != null) {
@@ -55,14 +55,20 @@ public class UsuarioController {
         if (unauthorized != null) {
             model.addAttribute("info", "Debes iniciar sesión para acceder a esa página.");
         }
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
 
         return "usuario/login";
     }
 
 
     @GetMapping("/signup")
-    public String signup(Model model) {
+    public String signup(Model model, HttpSession session) {
         RegisterUsuarioRequestDTO request = new RegisterUsuarioRequestDTO();
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("request", request);
         model.addAttribute("titulo", "Registrarse");
         return "usuario/signup";
@@ -97,7 +103,9 @@ public class UsuarioController {
             Object sessionUserId = session.getAttribute("userId");
             editar = (sessionUserId != null) && sessionUserId.equals(id);
         }
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("usuario", usuario);
         model.addAttribute("edad", calcularEdad(usuario.getFecha_nacimiento()));
         model.addAttribute("titulo", "Perfil - " +  usuario.getNombre() +" "+ usuario.getApellido());
@@ -168,7 +176,9 @@ public class UsuarioController {
 
         List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamicaUsuario(usuarioId, estadoHecho, paginaActual);
         //if (hechos == null) {hechos = new ArrayList<>();}
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("usuarioId", usuarioId);
         model.addAttribute("hechos", hechos);
         model.addAttribute("paginaActual", paginaActual);
@@ -184,7 +194,9 @@ public class UsuarioController {
 
         List<SolicitudEliminarHechoInputDTO> solicitudes = this.agregadorService.obtenerSolicitudesEliminacionUsuario(usuarioId);
         //if (solicitudes == null) {solicitudes = new ArrayList<>();}
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("usuarioId", usuarioId);
         model.addAttribute("solicitudes", solicitudes);
         model.addAttribute("titulo", "Mis Solicitudes");

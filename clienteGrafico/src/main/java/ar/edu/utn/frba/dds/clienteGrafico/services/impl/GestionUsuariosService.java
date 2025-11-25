@@ -6,6 +6,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.RegisterUsuarioRe
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.LoggerFactory;
@@ -176,5 +177,12 @@ public class GestionUsuariosService implements IGestionUsuariosService {
         }
     }
 
-
+    @Override
+    public String obtenerUsername(HttpSession session) {
+        String username = null;
+        if (session != null) {
+            username = (String) session.getAttribute("username");
+        }
+        return username;
+    }
 }

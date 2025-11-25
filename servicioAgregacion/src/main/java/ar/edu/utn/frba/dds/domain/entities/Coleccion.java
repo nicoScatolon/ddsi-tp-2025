@@ -131,7 +131,7 @@ public class Coleccion {
 
     public List<Hecho> filtrarHechos(List<Hecho> hechosDisponibles) {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
-            return new ArrayList<>();
+            return hechosDisponibles;
         }
         return hechosDisponibles.stream()
                 .filter(h -> this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
@@ -145,12 +145,13 @@ public class Coleccion {
         this.setCurarHechos(true);
     }
 
-    public void curarHechos( List< List<Hecho> > listaHechosFuentes) {
+    public void curarHechos(List<List<Hecho>> listaHechosFuentes) {
         if (algoritmoConsenso == null) {
-            this.listaHechosCurados = this.listaHechos;
+            this.listaHechosCurados = new ArrayList<>(this.listaHechos);
+        } else {
+            List<Hecho> resultado = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
+            this.listaHechosCurados = new ArrayList<>(resultado);
         }
-        else
-            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
         setCurarHechos(false);
     }
 

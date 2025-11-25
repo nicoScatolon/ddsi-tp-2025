@@ -59,16 +59,6 @@ public class HechosController {
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
         log.info("Me llego la peticion de crear un hecho");
-        /*
-
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.isAuthenticated()) {
-            Long id = (Long) auth.getDetails();
-            dto.setContribuyenteId(id);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); //401
-        } */
 
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
                     if (ex != null) {
@@ -117,16 +107,6 @@ public class HechosController {
     public ResponseEntity<HechoOutputDTO> revisarHechoAdmin(@PathVariable Long adminId, @RequestBody RevisionHechoInputDTO revisionHechoInputDTO) {
         return this.hechosService.revisarHecho(adminId, revisionHechoInputDTO);
     }
-
-    // --- Test --- //
-
-    /*
-    @PostMapping("/pruebas")
-    public ResponseEntity<Void> crearHechoPrueba(@RequestBody HechoInputDTO dto) {
-        hechosService.crearHechoTest(dto);
-        return ResponseEntity.ok().build();
-    }
-    */
 
 }
 

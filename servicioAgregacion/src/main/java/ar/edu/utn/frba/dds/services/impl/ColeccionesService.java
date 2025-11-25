@@ -432,7 +432,7 @@ public class ColeccionesService implements IColeccionesService {
 
             List< List<Hecho> > hechosFuentesColeccion = listaHechosXFuente.entrySet().stream()
                     .filter(entry -> coleccion.getListaFuentes().contains(entry.getKey()))
-                    .map(Map.Entry::getValue)
+                    .map(entry -> (List<Hecho>) new ArrayList<>(entry.getValue()))
                     .toList();
 
             coleccion.curarHechos( hechosFuentesColeccion );

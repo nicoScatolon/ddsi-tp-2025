@@ -51,21 +51,25 @@ public class AdminPanelController {
     private Integer pageSize;
 
     @GetMapping
-    public String adminPanel(){
+    public String adminPanel() {
         return "redirect:/admin/actividad";
     }
 
+    // ======================== ACTIVIDAD DE LA WEB ========================
     @GetMapping("/actividad")
     public String resumenActividad(
             @RequestParam(name = "coleccion", required = false) String coleccion,
-            Model model
+            Model model, HttpSession session
     ) {
         //traemos las colecciones para llenar el datalist
-        List<ColeccionOutputDTO> colecciones = agregadorService.obtenerColeccionesAdmin();
+        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(null, null);
 
         PanelActividadViewDTO resumen = estadisticasFacade.getPanelActividad(coleccion);
 
-        model.addAttribute("titulo", "Resumen Actividad");
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
+        model.addAttribute("titulo", "Estadisticas");
         model.addAttribute("contentTemplate", "actividad");
         model.addAttribute("coleccion", coleccion);      // valor seleccionado en el input
         model.addAttribute("colecciones", colecciones);  // lista para el datalist
@@ -74,9 +78,12 @@ public class AdminPanelController {
         return "admin/panel-base";
     }
 
-    // Importar archivos
+    // ======================== IMPORTAR ARCHIVOS ========================
     @GetMapping("/importar")
-    public String importarHechos(Model model) {
+    public String importarHechos(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Importar Hechos");
         model.addAttribute("contentTemplate", "importar-hechos");
         return "admin/panel-base";
@@ -106,28 +113,12 @@ public class AdminPanelController {
     }
 
 
-    //Gestión de hechos
-    @GetMapping("/hechos")
-    public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model) {
-        if (estado == null) {estado = EstadoHecho.PENDIENTE;}
-        List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamica(estado);
-
-        model.addAttribute("estado", estado);
-        model.addAttribute("titulo", "Gestión de Hechos");
-        model.addAttribute("hechos", hechos);
-        model.addAttribute("contentTemplate", "gestion-hechos");
-        return "admin/panel-base";
-    }
-
-    @PostMapping("/hechos") //Todo la sugerencia la hacemos aca porq agregar el botón dentro del hecho-detail hay q modificar muchos controllers
-    public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho, HttpSession session){
-        Long adminId = (Long) session.getAttribute("userId");
-        this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
-        return "redirect:/admin/hechos";
-    }
-
+    // ======================== GESTIÓN DE PROXY ========================
     @GetMapping("/fuente-externa")
-    public String mostrarFuentesProxy(Model model) {
+    public String mostrarFuentesProxy(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Gestión Fuentes Externas");
         model.addAttribute("contentTemplate", "fuente-externa");
 
@@ -176,15 +167,40 @@ public class AdminPanelController {
     }
 
 
+    // ======================== GESTIÓN DE HECHOS ========================
+    @GetMapping("/hechos")
+    public String gestionHechos(@RequestParam(required = false) EstadoHecho estado, Model model,  HttpSession session) {
+        if (estado == null) {estado = EstadoHecho.PENDIENTE;}
+        List<HechoDinamicaInputDTO> hechos = this.fuenteDinamicaService.obtenerHechosDinamica(estado);
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
-    // Gestión de colecciones
+        model.addAttribute("userName", userName);
+        model.addAttribute("estado", estado);
+        model.addAttribute("titulo", "Gestión de Hechos");
+        model.addAttribute("hechos", hechos);
+        model.addAttribute("contentTemplate", "gestion-hechos");
+        return "admin/panel-base";
+    }
+
+    @PostMapping("/hechos") //Todo la sugerencia la hacemos aca porq agregar el botón dentro del hecho-detail hay q modificar muchos controllers
+    public String gestionarHechosDinamica(@ModelAttribute RevisionHechoInputDTO revisionHecho, HttpSession session){
+        Long adminId = (Long) session.getAttribute("userId");
+        this.fuenteDinamicaService.enviarRevisionHechoDinamica(revisionHecho, adminId);
+        return "redirect:/admin/hechos";
+    }
+
+    // ======================== GESTIÓN DE COLECCIONES ========================
     @GetMapping("/colecciones")
-    public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
+    public String gestionColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model, HttpSession session) {
         if (paginaActual < 0) {
             return "redirect:/error/400";
         }
 
         List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual, null);
+
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("colecciones", colecciones);
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
@@ -194,9 +210,47 @@ public class AdminPanelController {
         return "admin/panel-base";
     }
 
-    //Gestión de categorias
-     @GetMapping("/categorias")
-     public String gestionCategorias(Model model) {
+
+
+    // ======================== GESTIÓN DE SOLICITUDES DE ELIMINACION  ========================
+    @GetMapping("/solicitudes")
+    public String solicitudesEliminacion(Model model, HttpSession session) {
+        List<SolicitudEliminarHechoInputDTO> solicitudes = agregadorService.obtenerSolicitudesEliminacionPendientes();
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
+        model.addAttribute("titulo", "Gestión de Solicitudes Eliminación");
+        model.addAttribute("contentTemplate", "solicitudes-eliminacion");
+        model.addAttribute("solicitudes", solicitudes);
+        return "admin/panel-base";
+    }
+
+    @PostMapping("/solicitudes/aceptar")
+    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("userId");
+
+        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
+        agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.ACEPTADA);
+
+        return "redirect:/admin/solicitudes";
+    }
+
+    @PostMapping("/solicitudes/rechazar")
+    public String rechazarSolicitud(@ModelAttribute SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("userId");
+
+        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
+        agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.RECHAZADA);
+
+        return "redirect:/admin/solicitudes";
+    }
+
+
+    // ======================== GESTIÓN DE CATEGORÍAS ========================
+    @GetMapping("/categorias")
+    public String gestionCategorias(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+        model.addAttribute("userName", userName);
         model.addAttribute("categorias", agregadorService.obtenerCategorias());
         model.addAttribute("equivalentes", agregadorService.obtenerCatEquivalentes());
 
@@ -204,7 +258,7 @@ public class AdminPanelController {
         model.addAttribute("contentTemplate", "gestion-categorias");
         //Todo estaría bueno q este paginado
         return "admin/panel-base";
-     }
+    }
 
     @PostMapping("/categorias")
     public String crearCategoria(@ModelAttribute CategoriaOutputDTO categoria) {
@@ -241,49 +295,30 @@ public class AdminPanelController {
     }
 
 
-
-    //Gestión solicitudes de eliminación
-    @GetMapping("/solicitudes")
-    public String solicitudesEliminacion(Model model) {
-        List<SolicitudEliminarHechoInputDTO> solicitudes = agregadorService.obtenerSolicitudesEliminacionPendientes();
-        //Todo deberiamos obtener los usuarios asociados a cada solicitud por el servicio de usuarios
-        model.addAttribute("titulo", "Gestión de Solicitudes Eliminación");
-        model.addAttribute("contentTemplate", "solicitudes-eliminacion");
-        model.addAttribute("solicitudes", solicitudes);
-        return "admin/panel-base";
-    }
-
-    @PostMapping("/solicitudes/aceptar")
-    public String aceptarSolicitud(@ModelAttribute  SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
-        Long adminId = (Long) session.getAttribute("userId");
-
-        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
-        agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.ACEPTADA);
-
-        return "redirect:/admin/solicitudes";
-    }
-
-    @PostMapping("/solicitudes/rechazar")
-    public String rechazarSolicitud(@ModelAttribute SolicitudEliminarHechoOutputDTO solicitud, HttpSession session) {
-        Long adminId = (Long) session.getAttribute("userId");
-
-        ProcesarSolicitudOutputDTO procesarSolicitudOutputDTO = DTOConverter.convertirProcesarSolicitudOutputDTO(solicitud, adminId);
-        agregadorService.gestionarSolicitud(procesarSolicitudOutputDTO, EstadoDeSolicitud.RECHAZADA);
-
-        return "redirect:/admin/solicitudes";
-    }
-
-    // Acciones para Admin Superior
-
+    // ======================== ACCIONES PARA ADMIN SUPERIOR ========================
     @GetMapping("/adminsuperior")
-    public String accionesAdminSuperior(Model model) {
+    public String accionesAdminSuperior(Model model, HttpSession session) {
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Acciones Avanzadas");
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("contentTemplate", "acciones-avanzadas");
 
         return "admin/panel-base";
+    }
+
+    @PostMapping("/adminsuperior/estadisticas")
+    public String actualizarEstadisticasForzosamente(){
+        estadisticasFacade.actualizarEstadisticasForzosamente();
+        return "redirect:/admin/adminsuperior";
+    }
+
+    @DeleteMapping("/adminsuperior/estadisticas")
+    public String eliminarEstadisticasViejas(){
+        estadisticasFacade.eliminarEstadisticasViejas();
+        return "redirect:/admin/adminsuperior";
     }
 
     @PostMapping("/adminsuperior/fuentes/actualizar")

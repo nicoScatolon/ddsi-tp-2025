@@ -235,6 +235,7 @@ public class DTOConverter {
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
                 .idCreador(solicitud.getIdCreador())
                 .fechaCreacion(solicitud.getFechaCreacion())
+                .estado(solicitud.getEstado())
                 .build();
     }
 
@@ -280,47 +281,9 @@ public class DTOConverter {
                 .algoritmoCurado(DTOConverter.algoritmoConsensoFromDTO(coleccion.getAlgoritmoConsenso()))
                 .fuentes(DTOConverter.convertirListaFuentePreviewOutputDTO(coleccion.getListaFuentes()))
                 .destacada(coleccion.getDestacada())
-                .contenidoMultimedia(DTOConverter.convertirContenidoMultimediaOutputDTO(coleccion))
                 .build();
     }
 
-
-    //Todo Esta funcion me parece mal q este aca, no se donde ponerla
-    private static ContenidoMultimediaOutputDTO convertirContenidoMultimediaOutputDTO(Coleccion coleccion) {
-        if (coleccion.getHechos().isEmpty()) {
-            return null; // No hay hechos
-        }
-
-        List<Hecho> hechosConFoto = coleccion.getHechos().stream()
-                .filter(h -> !h.getContenidoMultimedia().isEmpty())
-                .filter(h -> h.getContenidoMultimedia().get(0).getTipoContenido() == TipoContenido.IMAGEN)
-                .toList();
-
-        if (hechosConFoto.isEmpty()) {
-            return null; // No hay hechos con imagen
-        }
-
-        // Filtramos los que no son destacados (preferidos)
-        List<Hecho> hechosNoDestacados = hechosConFoto.stream()
-                .filter(h -> !Boolean.TRUE.equals(h.getDestacado()))
-                .toList();
-
-        // Si hay hechos no destacados, usamos esos; sino usamos los destacados
-        List<Hecho> candidatos = hechosNoDestacados.isEmpty() ? hechosConFoto : hechosNoDestacados;
-
-        // Elegimos uno al azar
-        Hecho hechoElegido = candidatos.get((int) (Math.random() * candidatos.size()));
-
-        // Tomamos la primera imagen del hecho
-        ContenidoMultimedia contenido = hechoElegido.getContenidoMultimedia().get(0);
-
-        // Retornamos el DTO
-        return ContenidoMultimediaOutputDTO.builder()
-                .url(contenido.getUrl())
-                .descripcion(contenido.getDescripcion())
-                .tipoContenido(contenido.getTipoContenido())
-                .build();
-    }
 
 
     // COLECCION INPUT

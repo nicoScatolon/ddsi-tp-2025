@@ -61,6 +61,7 @@ public class FuentesController {
     @GetMapping("/privada/actualizar")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
     public void actualizarFuentesScheduler () {
+
         fuenteService.actualizarHechosFuentesScheduler();
     }
 

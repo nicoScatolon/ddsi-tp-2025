@@ -9,6 +9,7 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.ContribuyenteOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechoDinamicaOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.TipoContenido;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Usuarios.Rol;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
@@ -41,7 +42,7 @@ public class HechosController {
     private Integer pageSize;
 
     @GetMapping
-    public String listarHechos(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
+    public String listarHechos(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model, HttpSession session) {
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
         }
@@ -58,7 +59,9 @@ public class HechosController {
         List<String> provincias = agregadorService.obtenerProvinciasShort();
         List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas
 
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", String.format("Explorar - Pagina %d", paginaActual+1));
         model.addAttribute("etiquetas", etiquetas);
         model.addAttribute("hechos", hechos);
@@ -72,11 +75,13 @@ public class HechosController {
     }
 
     @GetMapping("/create")
-    public String crearHecho(Model model) {
+    public String crearHecho(Model model, HttpSession session) {
         HechoInputDTO hechoInputDTO = this.instanciarHecho();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
         List<String> provincias = agregadorService.obtenerProvinciasShort();
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("actionUrl", "/hechos/create");
         model.addAttribute("esNuevo", true);
         model.addAttribute("titulo", "Crear Hecho");
@@ -155,6 +160,9 @@ public class HechosController {
 
         } catch (Exception e) {
             e.printStackTrace();
+            String userName = gestionUsuariosService.obtenerUsername(session);
+
+            model.addAttribute("userName", userName);
             model.addAttribute("esNuevo", true);
             model.addAttribute("error", "No se pudo crear el hecho: " + e.getMessage());
             model.addAttribute("categorias", agregadorService.obtenerCategoriasShort());
@@ -186,7 +194,9 @@ public class HechosController {
             }
 
             List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
+            String userName = gestionUsuariosService.obtenerUsername(session);
 
+            model.addAttribute("userName", userName);
             model.addAttribute("titulo", hecho.getTitulo());
             model.addAttribute("hecho", hecho);
             model.addAttribute("etiquetas", etiquetas);
@@ -222,7 +232,10 @@ public class HechosController {
     }
 
     @GetMapping("/map")
-    public String mapaHechos(Model model) {
+    public String mapaHechos(Model model, HttpSession session) {
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
         model.addAttribute("provincias",this.ObtenerProvincias());
         model.addAttribute("listaProvincias",  agregadorService.obtenerProvinciasShort());
         model.addAttribute("titulo", "Mapa de Hechos");
@@ -252,11 +265,15 @@ public class HechosController {
         }
 
         Long userId = null;
+        Rol rolEnum = null;
         if (session != null) {
             userId = (Long) session.getAttribute("userId");
+            rolEnum = (Rol) session.getAttribute("rol");  // Cast al tipo correcto
         }
 
-        if (!Objects.equals(userId, hecho.getId())) {
+        boolean esAdmin = (rolEnum == Rol.ADMIN || rolEnum == Rol.ADMINSUPERIOR);
+
+        if (!Objects.equals(userId, hecho.getId()) && !esAdmin) {
             return "redirect:/error/403";
         }
 
@@ -277,7 +294,9 @@ public class HechosController {
             creadorHecho = gestionUsuariosService.obtenerUsuarioPorId(hecho.getContribuyenteId());
         }
 
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("titulo", "Dinamica: "+ hecho.getTitulo());
         model.addAttribute("hecho", hecho);
         model.addAttribute("contribuyente", creadorHecho);
@@ -287,7 +306,7 @@ public class HechosController {
     }
 
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable("id") Long id, Model model) {
+    public String editar(@PathVariable("id") Long id, Model model, HttpSession session) {
         HechoDinamicaInputDTO hecho = fuenteDinamicaService.obtenerHechoDinamicaId(id);
         List<String> categorias = agregadorService.obtenerCategoriasShort();
         List<String> provincias = agregadorService.obtenerProvinciasShort();
@@ -310,7 +329,9 @@ public class HechosController {
                 multimediaParaVista.add(mediaMap);
             }
         }
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
         model.addAttribute("actionUrl", "/hechos/editar");
         model.addAttribute("esNuevo", false);
         model.addAttribute("categorias", categorias);
