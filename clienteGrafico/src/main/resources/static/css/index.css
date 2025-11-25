@@ -21,12 +21,18 @@ body {
     height: 100%;
     font-family: 'Poppins', Arial, Helvetica, sans-serif;
     color: #fff;
-    background: url("../img/background-home.jpg") center/cover no-repeat fixed;
+    background: url("../img/background-home.webp") center/cover no-repeat fixed;
 }
 
 /* Asegurar que todos los contenedores sean transparentes */
 main, .container, .content-wrapper {
     background: transparent !important;
+}
+
+/* Resetear padding del main en homepage */
+body:has(#home) main {
+    padding-top: 0 !important;
+    margin: 0 !important;
 }
 
 /* --- HEADER --- */
@@ -45,6 +51,9 @@ header {
 
 nav {
     font-weight: 500;
+}
+footer {
+    display: none;
 }
 
 /* --- HERO / HOME --- */
@@ -131,7 +140,7 @@ nav {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 6rem 2rem;
+    padding: 2rem;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     background: transparent;

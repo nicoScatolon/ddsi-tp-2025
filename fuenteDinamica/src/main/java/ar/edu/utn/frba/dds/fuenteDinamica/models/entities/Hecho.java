@@ -47,8 +47,9 @@ public class Hecho {
     @Column(nullable = false, name = "fecha-carga")
     private LocalDateTime fechaDeCarga;
 
+    @Builder.Default
     @Column(nullable = false, name = "anonimo")
-    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true
+    private Boolean cargadoAnonimamente = Boolean.TRUE; // de base esta en true si no me llega nada
 
     //Metadata
     @Column(name = "fecha-modificacion")
@@ -65,6 +66,9 @@ public class Hecho {
 
     @Column(name = "idAdmin")
     private Long idAdmin; //el administrador que gestiono el hecho subido
+
+    @Column(name = "fecha-gestion")
+    private LocalDateTime fechaDeGestion = null; //fecha cuando el admin decidio gestionar el hecho
 
     @Column(name = "sugerencia")
     private String sugerencia = null;
@@ -101,52 +105,21 @@ public class Hecho {
         this.setIdAdmin(idAdmin);
         this.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoHecho.SUGERENCIA) {this.sugerencia = sugerencia;}
+        this.setFechaDeGestion(LocalDateTime.now());
     }
 
     private void sincronizarContenidoMultimedia(List<ContenidoMultimedia> nuevos) {
-        if (nuevos == null) {
-            nuevos = Collections.emptyList();
-        }
-
+        // Inicializar si es null
         if (this.contenidoMultimedia == null) {
             this.contenidoMultimedia = new ArrayList<>();
         }
 
-        // Map de existentes por id
-        Map<Long, ContenidoMultimedia> existentesPorId = this.contenidoMultimedia.stream()
-                .filter(cm -> cm.getId() != null)
-                .collect(Collectors.toMap(ContenidoMultimedia::getId, cm -> cm));
+        // Limpiar toda la lista existente (orphanRemoval se encargará de eliminar de BD)
+        this.contenidoMultimedia.clear();
 
-        // Set de ids nuevos
-        Set<Long> idsNuevos = nuevos.stream()
-                .map(ContenidoMultimedia::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        // Eliminar los que ya no están
-        Iterator<ContenidoMultimedia> it = this.contenidoMultimedia.iterator();
-        while (it.hasNext()) {
-            ContenidoMultimedia cmExistente = it.next();
-            Long idExistente = cmExistente.getId();
-            if (idExistente != null && !idsNuevos.contains(idExistente)) {
-                it.remove();
-            }
-        }
-
-        // Agregar o actualizar
-        for (ContenidoMultimedia cmNuevo : nuevos) {
-            if (cmNuevo.getId() == null) {
-                this.contenidoMultimedia.add(cmNuevo);
-            } else {
-                ContenidoMultimedia existente = existentesPorId.get(cmNuevo.getId());
-                if (existente != null) {
-                    existente.setUrl(cmNuevo.getUrl());
-                    existente.setDescripcion(cmNuevo.getDescripcion());
-                    existente.setTipoContenido(cmNuevo.getTipoContenido());
-                } else {
-                    this.contenidoMultimedia.add(cmNuevo);
-                }
-            }
+        // Agregar los nuevos elementos
+        if (nuevos != null && !nuevos.isEmpty()) {
+            this.contenidoMultimedia.addAll(nuevos);
         }
     }
 }

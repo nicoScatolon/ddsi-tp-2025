@@ -13,12 +13,10 @@ import java.util.List;
 public interface IEstadisticasService {
     void generarEstadisticas();
     void eliminarEstadisticasAntiguas();
-    List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String idCategoria);
-    List<E_MayorCategoriaOutputDTO> obtenerEstadisticasMayorCategoria();
-    List<E_SolicitudesSpamOutputDTO> obtenerEstadisticasSolicitudesSpam();
-    List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String idCategoria);
-    List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion);
+    List<E_HoraOcuPorCategoriaOutputDTO> obtenerEstadisticasHoraPorCategoria(String idCategoria, Boolean mostrarAntiguas);
+    List<E_MayorCategoriaOutputDTO> obtenerEstadisticasMayorCategoria(Boolean mostrarAntiguas);
+    List<E_SolicitudesSpamOutputDTO> obtenerEstadisticasSolicitudesSpam(Boolean mostrarAntiguas);
+    List<E_MayorProvPorCategoriaOutputDTO> obtenerEstadisticasMayorProvPorCategoria(String idCategoria, Boolean mostrarAntiguas);
+    List<E_MayorProvPorColeccionOutputDTO> obtenerEstadisticasMayorProvPorColeccion(String handleColeccion, Boolean mostrarAntiguas);
 
-    //test
-    void generarEstadisticasTest(List<HechoInputDTO> hechos);
 }

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoriaInputDTO {
     private String nombre;
-    private String id;
+    private String codigoCategoria;
 }

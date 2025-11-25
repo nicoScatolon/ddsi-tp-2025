@@ -13,6 +13,9 @@ public final class UsuarioMapper {
                 .apellido(u.getApellido())
                 .email(u.getEmail())
                 .rol(u.getRol())
+                .fecha_nacimiento(u.getFechaNacimiento())
+                .fecha_registro(u.getCreadoEn().toLocalDate())
+                .ultima_actividad(u.getUltimoAcceso())
                 .build();
     }
 }

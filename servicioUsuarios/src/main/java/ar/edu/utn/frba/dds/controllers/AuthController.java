@@ -26,12 +26,12 @@ public class AuthController {
     private final LoginService loginService;
 
     @PostMapping
-    public ResponseEntity<AuthResponseDTO> loginApi(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<?> loginApi(@RequestBody Map<String, String> credentials) {
         try {
             String username = credentials.get("username");
             String password = credentials.get("password");
 
-            log.info("Llegan este usuario y esta contrasenia" + username, password);
+            log.info("Llegan usuario: {} y contraseña: {}", username, password);
 
             // Validación básica de credenciales
             if (username == null || username.trim().isEmpty() ||

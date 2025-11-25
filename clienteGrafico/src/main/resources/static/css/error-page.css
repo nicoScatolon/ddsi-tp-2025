@@ -1,0 +1,301 @@
+/* ========================================
+   PÁGINA DE ERROR - ESTILOS
+   ======================================== */
+
+main.container-fluid {
+    padding: 0;
+    margin: 0;
+}
+.error-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+    margin: 0;
+    /* Compensar el padding-top que añade el base.css */
+    margin-top: calc(-1 * var(--desktop-nav-height) - 12px);
+    /* Compensar el margin-bottom del my-4 de Bootstrap */
+    margin-bottom: -1.5rem;
+    padding-top: calc(var(--desktop-nav-height) + 12px + 2rem);
+    padding-bottom: 2rem;
+}
+
+/* Card principal */
+.error-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    margin: 2.5rem;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Icono de error */
+.error-icon {
+    margin-bottom: 1.5rem;
+}
+
+.error-icon i {
+    font-size: 5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Colores específicos por tipo de error */
+.error-icon i.fa-exclamation-circle {
+    color: #f59e0b; /* Amarillo/naranja para 400 */
+}
+
+.error-icon i.fa-search {
+    color: var(--color-primary); /* Azul para 404 */
+}
+
+.error-icon i.fa-ban,
+.error-icon i.fa-lock {
+    color: #dc2626; /* Rojo para 403 */
+}
+
+.error-icon i.fa-server {
+    color: #7c3aed; /* Púrpura para 500 */
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+/* Código de error */
+.error-code {
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin: 0;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Título del error */
+.error-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 1rem 0 0.75rem 0;
+}
+
+/* Mensaje descriptivo */
+.error-message {
+    font-size: 1.1rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 2rem 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Botones de acción */
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.error-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.error-actions .btn i {
+    font-size: 1rem;
+}
+
+.error-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(47, 96, 244, 0.2);
+}
+
+/* Links útiles */
+.error-links {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.error-links a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.error-links a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+.error-links .separator {
+    color: var(--muted);
+    user-select: none;
+}
+
+/* Decoración de fondo */
+.error-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(47, 96, 244, 0.1), rgba(23, 70, 210, 0.05));
+    animation: float 20s ease-in-out infinite;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.circle-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;
+    left: -50px;
+    animation-delay: 5s;
+}
+
+.circle-3 {
+    width: 150px;
+    height: 150px;
+    top: 50%;
+    left: 10%;
+    animation-delay: 10s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px);
+    }
+    50% {
+        transform: translateY(-10px) translateX(-10px);
+    }
+    75% {
+        transform: translateY(-30px) translateX(5px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .error-code {
+        font-size: 4rem;
+    }
+
+    .error-title {
+        font-size: 1.5rem;
+    }
+
+    .error-message {
+        font-size: 1rem;
+    }
+
+    .error-icon i {
+        font-size: 4rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .circle-1 {
+        width: 200px;
+        height: 200px;
+    }
+
+    .circle-2 {
+        width: 150px;
+        height: 150px;
+    }
+
+    .circle-3 {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 3rem;
+    }
+
+    .error-title {
+        font-size: 1.25rem;
+    }
+
+    .error-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .error-links .separator {
+        display: none;
+    }
+}

@@ -9,4 +9,5 @@ import java.time.LocalDateTime;
 @Repository
 public interface IE_SolicitudesSpamRepository extends JpaRepository<E_SolicitudesSpam, Long> {
     void deleteByFechaDeCalculoBefore(LocalDateTime fechaLimite);
+    E_SolicitudesSpam findTopByOrderByFechaDeCalculoDesc();
 }

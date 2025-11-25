@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EquivalenteInputDTO {
-    String codCategoria;
-    String equivalente;
+    String nombre;
+    String codigoCategoria;
+    String nuevoNombre;
 }

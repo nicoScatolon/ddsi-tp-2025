@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/error-page.css}">
+</th:block>
+
+<div th:fragment="contenido">
+    <section class="error-container">
+        <div class="error-card">
+            <!-- Icono de error -->
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle" th:if="${errorCode == '400'}"></i>
+                <i class="fas fa-ban" th:if="${errorCode == '403'}"></i>
+                <i class="fas fa-search" th:if="${errorCode == '404'}"></i>
+                <i class="fas fa-server" th:if="${errorCode == '500'}"></i>
+            </div>
+
+            <!-- Código de error -->
+            <h1 class="error-code" th:text="${errorCode}">404</h1>
+
+            <!-- Título del error -->
+            <h2 class="error-title" th:text="${errorTitle}">Página No Encontrada</h2>
+
+            <!-- Mensaje descriptivo -->
+            <p class="error-message" th:text="${errorMessage}">
+                La página que buscas no existe o ha sido movida.
+            </p>
+
+            <!-- Botones de acción -->
+            <div class="error-actions">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver Atrás
+                </a>
+                <a th:href="@{/}" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Ir al Inicio
+                </a>
+            </div>
+
+            <!-- Links útiles -->
+            <div class="error-links">
+                <a th:href="@{/hechos}">Explorar Hechos</a>
+                <span class="separator">•</span>
+                <a th:href="@{/colecciones}">Ver Colecciones</a>
+                <span class="separator">•</span>
+                <a th:href="@{/about}">Nosotros</a>
+            </div>
+        </div>
+
+        <!-- Decoración de fondo -->
+        <div class="error-decoration">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+    </section>
+</div>
+
+<th:block th:fragment="jsExtra">
+    <!-- JavaScript adicional si es necesario -->
+</th:block>
+
+</html>

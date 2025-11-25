@@ -16,8 +16,5 @@ public class FuenteProxyAdapter implements FuenteAdapter {
     }
 
     @Override
-    public List<Hecho> actualizarHechos() { return fuenteProxy.updateHechos(); }
-
-    @Override
-    public List<Hecho> obtenerHechos() { return fuenteProxy.getListaHechos(); }
+    public List<Hecho> actualizarHechos(List<Hecho> hechosFuente) { return fuenteProxy.updateHechos(hechosFuente); }
 }

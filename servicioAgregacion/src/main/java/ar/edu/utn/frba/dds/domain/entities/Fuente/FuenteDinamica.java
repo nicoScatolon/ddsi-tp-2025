@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -32,23 +33,24 @@ public class FuenteDinamica extends Fuente {
     @JsonIgnore
     private WebClient webClient;
 
-    @Transient
-    @JsonIgnore
-    private Map<Long, Hecho> mapHechos = new HashMap<>();
     @Column(name = "ultimaActualizacion")
     private LocalDateTime ultimaActualizacion;
 
     public FuenteDinamica(String url) {
         this.url = url;
         this.webClient = WebClient.builder().baseUrl(url).build();
-        mapHechos = new HashMap<>();
     }
 
-    public List<Hecho> updateHechos(){
+    public List<Hecho> updateHechos(List<Hecho> hechosPersistidosFuente){
         List<HechoInputDinamicaDTO> nuevosHechosDTO;
         nuevosHechosDTO = this.getHechos();
-        List<Hecho> nuevosHechos = nuevosHechosDTO.stream().map(DTOConverter::convertirHechoInputDTO).peek(h -> h.setFuente(this)).toList();
-        this.actualizarHechos(nuevosHechos);
+        List<Hecho> nuevosHechos = nuevosHechosDTO.stream()
+                .map(DTOConverter::convertirHechoInputDTO)
+                .peek(h -> h.setFuente(this))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        this.actualizarHechos(nuevosHechos, hechosPersistidosFuente);
+
         this.ultimaActualizacion = LocalDateTime.now();
         return nuevosHechos;
     }
@@ -60,10 +62,9 @@ public class FuenteDinamica extends Fuente {
         }
         return this.webClient.get()
                 .uri(uriBuilder -> {
-                    uriBuilder = uriBuilder.path("/api/fuenteDinamica/hechos");
-                    uriBuilder.queryParam("estado", "ACEPTADO");
+                    uriBuilder = uriBuilder.path("/api/fuenteDinamica/hechos/privada");
                     if (ultimaActualizacion != null) {
-                        uriBuilder.queryParam("fechaDeCarga", ultimaActualizacion.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        uriBuilder.queryParam("fechaDeGestion", ultimaActualizacion.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     return uriBuilder.build();
                 })
@@ -74,18 +75,27 @@ public class FuenteDinamica extends Fuente {
                 .orElse(Collections.emptyList());
     }
 
-    public void actualizarHechos(List<Hecho> hechosNuevos){
-        for (Hecho hechoActual : hechosNuevos){
-            Hecho hechoExistente = mapHechos.get( hechoActual.getOrigenId() );
 
-            if (hechoExistente == null) {
-                // no existe, lo cargamos
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
-            } else {
-                //existe -> mismo origenId, lo actualizamos
-                hechoActual.setId(hechoExistente.getId());
-                mapHechos.put(hechoActual.getOrigenId(), hechoActual);
+    public void actualizarHechos(List<Hecho> hechosNuevos, List<Hecho> hechosPersistidosFuente){
+        List<Long> listaOrigenesId = hechosPersistidosFuente.stream().map(Hecho::getOrigenId).toList();
+
+        List<Hecho> hechosAEliminar = new ArrayList<>();
+        List<Hecho> hechosAActualizar = new ArrayList<>();
+
+        for (Hecho hechoActual : hechosNuevos){
+            if ( listaOrigenesId.contains( hechoActual.getOrigenId() ) ) { // si el origenId ya esta en la base de datos, es que estoy actualizando
+                Hecho hechoExistente = hechosPersistidosFuente.stream()
+                        .filter(h -> Objects.equals(h.getOrigenId(), hechoActual.getOrigenId()))
+                        .findFirst()
+                        .get(); // por la verificacion anterior, no puede ser nulo
+
+                hechoExistente.actualizarse(hechoActual);
+                hechosAActualizar.add(hechoExistente);
+                hechosAEliminar.add(hechoActual);
             }
         }
+
+        hechosNuevos.removeAll(hechosAEliminar);
+        hechosNuevos.addAll(hechosAActualizar);
     }
 }

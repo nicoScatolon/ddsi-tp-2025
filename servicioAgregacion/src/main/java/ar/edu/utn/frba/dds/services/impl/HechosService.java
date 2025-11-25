@@ -10,9 +10,11 @@ import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.Georef;
 import ar.edu.utn.frba.dds.domain.entities.Geolocalizadores.IGeoLocalizador;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import ar.edu.utn.frba.dds.domain.entities.HechoFilter;
+import ar.edu.utn.frba.dds.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.domain.repository.IHechosRepository;
 import ar.edu.utn.frba.dds.services.ICategoriaService;
 import ar.edu.utn.frba.dds.services.IEtiquetasService;
+import ar.edu.utn.frba.dds.services.IGeorefService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -24,22 +26,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepository;
     private final ICategoriaService categoriaService;
-    private final CriterioFactory criterioFactory;
     private final IEtiquetasService etiquetaService;
 
-    private IGeoLocalizador geolocalizador = new Georef();
+    private final IGeoLocalizador geolocalizador;
 
     private static final Logger logger = LoggerFactory.getLogger(HechosService.class);
 
@@ -48,24 +50,17 @@ public class HechosService implements IHechosService {
 
     public HechosService(IHechosRepository hechosRepository,
                          ICategoriaService categoriaService,
-                         CriterioFactory criterioFactory,
-                         IEtiquetasService etiquetaService) {
+                         IEtiquetasService etiquetaService,
+                         IGeorefService georefService) {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
-        this.criterioFactory = criterioFactory;
         this.etiquetaService = etiquetaService;
+
+        this.geolocalizador = new Georef(georefService);
     }
 
     @Override
     public List<Hecho> findAll(){ return this.hechosRepository.findAll(); }
-
-    @Override
-    public List<HechoOutputDTO> findAllOutput(){
-        return this.findAll()
-                .stream()
-                .map(DTOConverter::convertirHechoOutputDTO)
-                .toList();
-    }
 
     @Override
     public HechoOutputDTO findByID(Long id) {
@@ -102,20 +97,10 @@ public class HechosService implements IHechosService {
         return hechosRepository.findAllMapaDTO(); // ya filtra solo los que tienen lat/lng
     }
 
-//    @Override
-//    public List<HechoMapaOutputDTO> getHechosMapa () {
-//        Specification<Hecho> spec = (root, query, cb) -> {
-//            return cb.and(
-//                    cb.isNotNull(root.get("ubicacion")),
-//                    cb.isNotNull(root.get("ubicacion").get("latitud")),
-//                    cb.isNotNull(root.get("ubicacion").get("longitud"))
-//            );
-//        };
-//        return this.hechosRepository.findAllMapaDTO(spec)
-//                .stream()
-//                .map(DTOConverter::convertirHechoMapaOutputDTO)
-//                .toList();
-//    }
+    @Override
+    public List<HechoMapaOutputDTO> getHechosMapaPorProvincia(String provincia) {
+        return hechosRepository.findAllPorProvinciaDTO(provincia);
+    }
 
     @Override
     public List<HechoOutputDTO> getHechosDestacados() {
@@ -138,88 +123,99 @@ public class HechosService implements IHechosService {
         return ResponseEntity.ok().build();
     }
 
-
     @Transactional
     @Override
     public void actualizarHechosRepository(List<Hecho> hechosActualizados) {
         final long t0 = System.currentTimeMillis();
         logger.info("Se van a persistir {} hechos", hechosActualizados.size());
 
-        // 1) categorías
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        // 1) Asegurar fechaDeCarga y fechaDeOcurrencia no nulas
+        for (Hecho h : hechosActualizados) {
+            if (h.getFechaDeCarga() == null) {
+                h.setFechaDeCarga(now);
+            }
+            if (h.getFechaDeOcurrencia() == null) { // fallback si viene null
+                h.setFechaDeOcurrencia(h.getFechaDeCarga());
+            }
+        }
+
+        // 2) Log de trazabilidad
+        long nulos = hechosActualizados.stream()
+                .filter(h -> h.getFechaDeOcurrencia() == null)
+                .peek(h -> logger.warn("Hecho sin fechaDeOcurrencia. origenId={}, titulo={}",
+                        h.getOrigenId(), h.getTitulo()))
+                .count();
+        if (nulos > 0) logger.warn("Hechos sin fechaDeOcurrencia detectados: {}", nulos);
+
+        // 3) Cargar categorías
         this.categoriaService.cargarCategoriasHechos(hechosActualizados);
         logger.info("Categorías listas en {} ms", System.currentTimeMillis() - t0);
 
-        /* TODO GEOREFF CAMBIO, OTRA API, LO COMENTAMOS X AHORA
-        // 2) preparar ubicaciones y filtrar nulos
+        // 4) Preparar ubicaciones
         List<Ubicacion> ubicaciones = hechosActualizados.stream()
                 .map(Hecho::getUbicacion)
-                .filter(Objects::nonNull)        // evitá NPE
+                .filter(Objects::nonNull)
                 .toList();
 
-        // 3) geolocalización por lotes
-        logger.info("Geolocalizando {} ubicaciones en batch...", ubicaciones.size());
-        long tg0 = System.currentTimeMillis();
-        try {
-            // bloqueamos aquí para tener tod0 georreferenciado antes de persistir
-            geolocalizador.geolocalizarBatchAsync(ubicaciones).block();
-        } catch (Exception e) {
-            logger.error("Fallo geolocalizando en batch: {}", e.getMessage(), e);
-            // si esto falla, seguimos con lo que tengamos (las ubicaciones quedaron como estaban)
-        }
-        logger.info("Geolocalización finalizada en {} ms", System.currentTimeMillis() - tg0);
-        */
+        List<Ubicacion> ubicacionesSinProvincia = ubicaciones.stream()
+                .filter(u -> u.getProvincia() == null || u.getProvincia().isBlank())
+                .toList();
 
-        // 4) persistir en batches para no saturar la BD
+        logger.info("Total ubicaciones: {}, sin provincia: {}",
+                ubicaciones.size(), ubicacionesSinProvincia.size());
+
+        // 5) Geolocalización solo si hace falta
+        if (!ubicacionesSinProvincia.isEmpty()) {
+            logger.info("Geolocalizando {} ubicaciones...", ubicacionesSinProvincia.size());
+            try {
+                geolocalizador.geolocalizarBatchAsync(ubicacionesSinProvincia)
+                        .timeout(Duration.ofMinutes(10))
+                        .block();
+                logger.info("Geolocalización completada");
+            } catch (Exception e) {
+                logger.error("Error en geolocalización batch: {}", e.getMessage());
+            }
+        } else {
+            logger.info("Todas las ubicaciones ya tienen provincia, saltando geolocalización");
+        }
+
+        // 6) Persistir hechos por batches
         logger.info("Persistiendo {} hechos...", hechosActualizados.size());
         final int BATCH_DB = 1000;
         int from = 0;
         while (from < hechosActualizados.size()) {
             int to = Math.min(from + BATCH_DB, hechosActualizados.size());
             List<Hecho> slice = hechosActualizados.subList(from, to);
-            this.hechosRepository.saveAll(slice);
+
+            // redundante pero seguro
+            for (Hecho h : slice) {
+                if (h.getFechaDeCarga() == null) {
+                    h.setFechaDeCarga(now);
+                }
+                if (h.getFechaDeOcurrencia() == null) {
+                    h.setFechaDeOcurrencia(h.getFechaDeCarga());
+                }
+            }
+
+            try {
+                this.hechosRepository.saveAll(slice);
+                logger.info("Persistidos {}/{}", to, hechosActualizados.size());
+            } catch (Exception e) {
+                logger.error("Error persistiendo batch {}-{}: {}", from, to, e.getMessage());
+                // rollback defensivo
+                org.springframework.transaction.interceptor.TransactionAspectSupport
+                        .currentTransactionStatus().setRollbackOnly();
+                return; // corta para evitar flush sucio
+            }
+
             from = to;
-            logger.info("Persistidos {}/{}", to, hechosActualizados.size());
         }
 
-        logger.info("Persistencia terminada en {} ms (total {} ms)",
-                //(System.currentTimeMillis() - tg0),
-                (System.currentTimeMillis() - 0L),
-                (System.currentTimeMillis() - t0));
+        logger.info("Persistencia terminada en {} ms", System.currentTimeMillis() - t0);
     }
 
-    @Override
-    @Transactional
-    public ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta){
-        if (etiqueta == null || etiqueta.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
-        if (hechoModificado == null){
-            return ResponseEntity.notFound().build();
-        }
-        Etiqueta nuevaEtiqueta = etiquetaService.verificarEtiqueta(etiqueta);
-        hechoModificado.agregarEtiqueta(nuevaEtiqueta);
-        return ResponseEntity.ok().build(); //TODO si se quiere que sea created se debe pasar una URL
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta){
-        if (etiqueta == null || etiqueta.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-        Hecho hechoModificado = hechosRepository.getHechoById(hechoId);
-        if (hechoModificado == null){
-            return ResponseEntity.notFound().build();
-        }
-        List<Etiqueta> etiquetasHecho = hechoModificado.getEtiquetas();
-        Optional<Etiqueta> etiquetaEliminada = etiquetasHecho.stream().filter(e -> e.getNombre().equals(etiqueta)).findFirst();
-        if (etiquetaEliminada.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        etiquetaEliminada.ifPresent(hechoModificado::eliminarEtiqueta);
-        return ResponseEntity.noContent().build();
-    }
 
     // LOGGER
     private void logearHechosCargados(List<Hecho> hechos, String urlFuente){
@@ -230,6 +226,53 @@ public class HechosService implements IHechosService {
                                 , hecho.getId(), hecho.getTitulo(),hecho.getDescripcion(),hecho.getCategoria().getNombre(),hecho.getFechaDeOcurrencia()));
     }
 
+
+    @Override
+    public List<Hecho> findByFuente(Fuente fuente){
+        return this.hechosRepository.findAllByFuente(fuente);
+    }
+
+    @Override
+    public ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas) {
+        if (etiquetas == null || etiquetas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Hecho hecho = hechosRepository.getHechoById(id);
+        if (hecho == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Etiqueta> etiquetasVerificadas = new ArrayList<>();
+        for (String nombreEtiqueta : etiquetas) {
+            if (nombreEtiqueta != null && !nombreEtiqueta.isBlank()) {
+                Etiqueta etiqueta = etiquetaService.verificarEtiqueta(nombreEtiqueta);
+                etiquetasVerificadas.add(etiqueta);
+            }
+        }
+
+        if (etiquetasVerificadas.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        hecho.modificarEtiquetas(etiquetasVerificadas);
+
+        hechosRepository.save(hecho);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> guardarHecho(Hecho hecho) {
+        hechosRepository.save(hecho);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @Transactional
+    public void eliminarHechos (List<Hecho> hechosAEliminar){
+        this.hechosRepository.deleteAll(hechosAEliminar);
+    }
 
     /*
     Root es la tabla principal a la que accedemos
@@ -276,16 +319,4 @@ public class HechosService implements IHechosService {
         };
     }
 
-    @Override
-    public List<Hecho> findByFuente(Fuente fuente){
-        return this.hechosRepository.findAllByFuente(fuente);
-    }
-
-    public List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable){
-        if (pageable == null){
-            return this.hechosRepository.findAll(spec);
-        } else {
-            return this.hechosRepository.findAll(spec, pageable).getContent();
-        }
-    }
 }

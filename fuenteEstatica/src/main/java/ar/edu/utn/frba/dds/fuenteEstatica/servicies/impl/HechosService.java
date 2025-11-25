@@ -53,9 +53,12 @@ public class HechosService implements IHechosService {
                 });
         List<Hecho> hechos = imp.importarHechosArchivo(uriAbs);
 
+        LocalDateTime fechaDeCarga = LocalDateTime.now();
+
         for (Hecho h : hechos) {
             h.setArchivoOrigen(uriAbs);
             h.setFuente(fuente);
+            h.setFechaDeCarga(fechaDeCarga);
         }
 
         return hechosRepository.saveAll(hechos);

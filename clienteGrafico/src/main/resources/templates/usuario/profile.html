@@ -7,85 +7,260 @@
 <div th:fragment="contenido">
     <main class="profile-main">
         <section class="profile-container">
-            <!-- Columna izquierda: foto y botones -->
+            <!-- Columna izquierda: foto, info básica -->
             <div class="profile-left">
-                <div class="avatar-wrapper" title="Perfil de usuario">
+                <div class="avatar-wrapper" th:title="${editor ? 'Cambiar foto de perfil' : ''}">
                     <i class="fas fa-user"></i>
                 </div>
 
+                <!-- Información básica siempre visible -->
+                <div class="user-basic-info">
+                    <h2 class="user-fullname" th:text="${usuario.nombre + ' ' + usuario.apellido}">Usuario</h2>
+                    <p class="user-username" th:text="'@' + ${usuario.username}">@username</p>
 
-                <!-- Botones solo si es editor -->
-                <div th:if="${editor}" class="profile-buttons">
-                    <button id="changePasswordBtn" class="small-btn">Cambiar contraseña</button>
-                    <form th:action="@{/logout}" method="post" style="width: 100%;">
-                        <button type="submit" class="small-btn" style="width: 100%;">Cerrar Sesión</button>
-                    </form>
+                    <!-- Badge de rol -->
+                    <div class="role-badge" th:classappend="${usuario.rol.name()}">
+                        <i class="fas"
+                           th:classappend="
+                                ${usuario.rol.name() == 'CONTRIBUYENTE'} ? 'fa-user' :
+                                (${usuario.rol.name() == 'ADMIN'} ? 'fa-user-cog' : 'fa-crown')
+                           "></i>
+
+                        <span th:switch="${usuario.rol.name()}">
+                            <span th:case="'CONTRIBUYENTE'">Contribuyente</span>
+                            <span th:case="'ADMIN'">Admin</span>
+                            <span th:case="*">Admin Superior</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Stats card -->
+                <div class="stats-card">
+                    <div class="stat-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div class="stat-content">
+                            <span class="stat-label">Miembro desde</span>
+                            <span class="stat-value" th:text="${#temporals.format(usuario.fecha_registro, 'MMM yyyy')}">Ene 2024</span>
+                        </div>
+                    </div>
+                    <div class="stat-item" th:if="${usuario.ultima_actividad != null}">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-content">
+                            <span class="stat-label">Última actividad</span>
+                            <span class="stat-value" th:text="${#temporals.format(usuario.ultima_actividad, 'dd/MM/yyyy')}">01/01/2024</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Columna derecha: campos editables o solo visualización -->
+            <!-- Columna derecha: información detallada -->
             <div class="profile-right">
-                <h2 th:text="${editor ? 'Mi Perfil' : 'Perfil de Usuario'}"></h2>
+                <div class="profile-header">
+                    <h2 th:text="${editor ? 'Mi Perfil' : 'Información del Usuario'}">Mi Perfil</h2>
+                    <div class="header-actions">
+                        <button th:if="${editor}" type="button" id="editToggleBtn" class="btn-edit-toggle">
+                            <i class="fas fa-edit"></i>
+                            <span>Editar</span>
+                        </button>
 
-                <!-- Si es editor: formulario editable -->
-                <form th:if="${editor}" id="profileForm" th:action="@{/profile/update}" method="post" autocomplete="off">
-                    <div class="form-group">
-                        <label for="firstName">Nombre</label>
-                        <input type="text" id="firstName" name="firstName" th:value="${usuario.nombre}" placeholder="Nombre">
+                        <!-- Botones solo si es editor - MOVIDOS AQUÍ -->
+                        <div th:if="${editor}" class="profile-buttons">
+                            <button id="changePasswordBtn" class="profile-btn btn-secondary">
+                                <i class="fas fa-key"></i>
+                                <span>Cambiar contraseña</span>
+                            </button>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="profile-btn btn-logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Cerrar Sesión</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="lastName">Apellido</label>
-                        <input type="text" id="lastName" name="lastName" th:value="${usuario.apellido}" placeholder="Apellido">
-                    </div>
+                <!-- Modo edición -->
+                <form th:if="${editor}" id="profileForm" th:action="@{/profile}" method="post" autocomplete="off" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre">
+                                <i class="fas fa-user"></i>
+                                Nombre
+                            </label>
+                            <input type="text" id="nombre" name="nombre" th:value="${usuario.nombre}" placeholder="Nombre" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="birthDate">Fecha de Nacimiento</label>
-                        <input type="date" id="birthDate" name="birthDate" th:value="${usuario.fechaNacimiento}">
-                    </div>
+                        <div class="form-group">
+                            <label for="apellido">
+                                <i class="fas fa-user"></i>
+                                Apellido
+                            </label>
+                            <input type="text" id="apellido" name="apellido" th:value="${usuario.apellido}" placeholder="Apellido" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Mail</label>
-                        <input type="email" id="email" name="email" th:value="${usuario.email}" placeholder="email@ejemplo.com">
+                        <div class="form-group full-width">
+                            <label for="email">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" id="email" name="email" th:value="${usuario.email}" placeholder="email@ejemplo.com" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="fechaNacimiento">
+                                <i class="fas fa-birthday-cake"></i>
+                                Fecha de Nacimiento
+                            </label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" th:value="${usuario.fecha_nacimiento}" required>
+                        </div>
                     </div>
 
                     <div class="actions-row">
-                        <button type="submit" class="btn-save">Guardar cambios</button>
-                        <button type="button" id="resetBtn" class="btn-ghost">Restaurar</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-check"></i>
+                            Guardar cambios
+                        </button>
+                        <button type="button" id="cancelEditBtn" class="btn-cancel">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
                     </div>
                 </form>
 
-                <!-- Si NO es editor: solo visualización -->
-                <div th:if="${!editor}" class="profile-view">
-                    <div class="view-group">
-                        <label>Nombre</label>
-                        <p th:text="${usuario.nombre}">-</p>
-                    </div>
+                <!-- Modo visualización -->
+                <div class="profile-view" id="profileView">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Nombre completo</label>
+                                <p th:text="${usuario.nombre + ' ' + usuario.apellido}">-</p>
+                            </div>
+                        </div>
 
-                    <div class="view-group">
-                        <label>Apellido</label>
-                        <p th:text="${usuario.apellido}">-</p>
-                    </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-at"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Usuario</label>
+                                <p th:text="${usuario.username}">-</p>
+                            </div>
+                        </div>
 
-                    <div class="view-group">
-                        <label>Edad</label>
-                        <p th:text="${edad + ' años'}">-</p>
-                    </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Email</label>
+                                <p th:text="${usuario.email}">-</p>
+                            </div>
+                        </div>
 
-                    <div class="view-group">
-                        <label>Fecha de Nacimiento</label>
-                        <p th:text="${#temporals.format(usuario.fechaNacimiento, 'dd/MM/yyyy')}">-</p>
-                    </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-birthday-cake"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Fecha de Nacimiento</label>
+                                <p th:text="${#temporals.format(usuario.fecha_nacimiento, 'dd/MM/yyyy')}">-</p>
+                            </div>
+                        </div>
 
-                    <div class="view-group">
-                        <label>Mail</label>
-                        <p th:text="${usuario.email}">-</p>
-                    </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Edad</label>
+                                <p th:text="${edad + ' años'}">-</p>
+                            </div>
+                        </div>
 
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="info-content">
+                                <label>Rol</label>
+                                <p th:switch="${usuario.rol.name()}">
+                                    <span th:case="'CONTRIBUYENTE'">Contribuyente</span>
+                                    <span th:case="'ADMIN'">Administrador</span>
+                                    <span th:case="*">Administrador Superior</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Modal para cambiar contraseña -->
+    <div th:if="${editor}" id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cambiar Contraseña</h3>
+                <button type="button" class="modal-close" id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="changePasswordForm" th:action="@{/profile/change-password}" method="post">
+                <div class="form-group">
+                    <label for="currentPassword">
+                        <i class="fas fa-lock"></i>
+                        Contraseña Actual
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="currentPassword" name="currentPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" data-target="currentPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">
+                        <i class="fas fa-key"></i>
+                        Nueva Contraseña
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="newPassword" name="newPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" data-target="newPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmNewPassword">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmar Nueva Contraseña
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" data-target="confirmNewPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-check"></i>
+                        Cambiar Contraseña
+                    </button>
+                    <button type="button" class="btn-cancel" id="cancelPasswordBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <th:block th:fragment="jsExtra">

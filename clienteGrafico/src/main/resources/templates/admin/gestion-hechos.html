@@ -5,48 +5,190 @@
         <!-- Tabs para moderación -->
         <div class="moderation-panel">
             <div class="moderation-tabs" role="tablist">
-                <button class="mod-tab" th:classappend="${estado == 'PENDIENTE'} ? ' active'"
-                        th:href="@{/admin/hechos(estado='PENDIENTE')}">Peticiones — Pendientes</button>
-                <button class="mod-tab" th:classappend="${estado == 'MODIFICADO'} ? ' active'"
-                        th:href="@{/admin/hechos(estado='RECHAZADO')}">Peticiones — Rechazados</button>
+                <!-- PENDIENTES -->
+                <a th:if="${estado == null || estado.name() == 'PENDIENTE'}"
+                   class="mod-tab active"
+                   style="cursor: default;">
+                    Pendientes
+                </a>
+                <a th:unless="${estado == null || estado.name() == 'PENDIENTE'}"
+                   class="mod-tab"
+                   th:href="@{/admin/hechos(estado='PENDIENTE')}">
+                    Pendientes
+                </a>
+
+                <!-- ACEPTADOS -->
+                <a th:if="${estado != null && estado.name() == 'ACEPTADO'}"
+                   class="mod-tab active"
+                   style="cursor: default;">
+                    Aceptados
+                </a>
+                <a th:unless="${estado != null && estado.name() == 'ACEPTADO'}"
+                   class="mod-tab"
+                   th:href="@{/admin/hechos(estado='ACEPTADO')}">
+                    Aceptados
+                </a>
+
+                <!-- RECHAZADOS -->
+                <a th:if="${estado != null && estado.name() == 'RECHAZADO'}"
+                   class="mod-tab active"
+                   style="cursor: default;">
+                    Rechazados
+                </a>
+                <a th:unless="${estado != null && estado.name() == 'RECHAZADO'}"
+                   class="mod-tab"
+                   th:href="@{/admin/hechos(estado='RECHAZADO')}">
+                    Rechazados
+                </a>
+
+                <!-- SUGERENCIAS -->
+                <a th:if="${estado != null && estado.name() == 'SUGERENCIA'}"
+                   class="mod-tab active"
+                   style="cursor: default;">
+                    Sugerencias
+                </a>
+                <a th:unless="${estado != null && estado.name() == 'SUGERENCIA'}"
+                   class="mod-tab"
+                   th:href="@{/admin/hechos(estado='SUGERENCIA')}">
+                    Sugerencias
+                </a>
             </div>
 
             <div id="moderacion-hechos" class="moderacion-container">
-                <div th:if="${#lists.isEmpty(hechos)}">
-                    <p>No hay hechos pendientes.</p>
+                <div th:if="${#lists.isEmpty(hechos)}" class="empty-state">
+                    <p>No hay hechos en este estado.</p>
                 </div>
 
-                <div th:each="hecho : ${hechos}" class="solicitud-card">
-                    <div class="solicitud-info">
-                        <span><strong>ID:</strong> <span th:text="${hecho.id}">1</span></span>
-                        <span><strong>ID Usuario:</strong> <span th:text="${hecho.contribuyenteId}">999</span></span>
-                        <span><strong>Fecha:</strong> <span th:text="${#temporals.format(hecho.fechaDeCarga, 'dd-MM-yyyy')}">2025-09-01</span></span>
-                    </div>
-
-                    <div class="solicitud-razon">
-                        <strong>Título:</strong> <span th:text="${hecho.titulo}">Hecho ejemplo</span>
-                    </div>
-
-                    <div class="solicitud-actions-row">
-                        <a th:href="@{'/hechos/fuenteDinamica/' + ${hecho.id}}" class="btn">Ver Detalle</a>
-                        <div class="solicitud-actions">
-                            <form th:action="@{/admin/hechos}" method="post">
-                                <input type="hidden" name="idHecho" th:value="${hecho.id}" />
-                                <input type="hidden" name="nuevoEstado" value="ACEPTADO" />
-                                <input type="hidden" name="sugerencia" value="" />
-                                <button type="submit" class="accept">Aceptar</button>
-                            </form>
-                            <form th:action="@{/admin/hechos}" method="post">
-                                <input type="hidden" name="idHecho" th:value="${hecho.id}" />
-                                <input type="hidden" name="nuevoEstado" value="RECHAZADO" />
-                                <input type="hidden" name="sugerencia" value="" />
-                                <button type="submit" class="reject">Rechazar</button>
-                            </form>
+                <div th:each="hecho : ${hechos}" class="solicitud-card-wrapper">
+                    <div class="solicitud-card">
+                        <div class="solicitud-info">
+                            <span><strong>ID:</strong> <span th:text="${hecho.id}">1</span></span>
+                            <span><strong>ID Usuario:</strong> <span th:text="${hecho.contribuyenteId}">999</span></span>
+                            <span><strong>Fecha:</strong> <span th:text="${#temporals.format(hecho.fechaDeCarga, 'dd-MM-yyyy')}">2025-09-01</span></span>
+                            <span class="estado-badge"
+                                  th:classappend="${hecho.estado.name()}"
+                                  th:text="${hecho.estado.name()}">PENDIENTE</span>
                         </div>
+
+                        <div class="solicitud-razon">
+                            <strong>Título:</strong> <span th:text="${hecho.titulo}">Hecho ejemplo</span>
+                        </div>
+
+                        <div class="solicitud-actions-row">
+                            <a th:href="@{'/hechos/fuenteDinamica/' + ${hecho.id}}" class="btn btn-view">
+                                <i class="fas fa-eye"></i> Ver Detalle
+                            </a>
+
+                            <!-- Botones de acción: solo mostrar si está PENDIENTE -->
+                            <div class="solicitud-actions"
+                                 th:if="${hecho.estado.name() == 'PENDIENTE'}">
+
+                                <!-- Aceptar -->
+                                <form th:action="@{/admin/hechos}" method="post" style="display: inline;">
+                                    <input type="hidden" name="idHecho" th:value="${hecho.id}" />
+                                    <input type="hidden" name="nuevoEstado" value="ACEPTADO" />
+                                    <input type="hidden" name="sugerencia" value="" />
+                                    <button type="submit" class="btn-action-icon accept" title="Aceptar">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Rechazar -->
+                                <form th:action="@{/admin/hechos}" method="post" style="display: inline;">
+                                    <input type="hidden" name="idHecho" th:value="${hecho.id}" />
+                                    <input type="hidden" name="nuevoEstado" value="RECHAZADO" />
+                                    <input type="hidden" name="sugerencia" value="" />
+                                    <button type="submit" class="btn-action-icon reject" title="Rechazar">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Sugerencia -->
+                                <button type="button"
+                                        class="btn-action-icon suggest"
+                                        th:attr="data-hecho-id=${hecho.id}, data-hecho-titulo=${hecho.titulo}"
+                                        title="Enviar sugerencia">
+                                    <i class="fas fa-comment-dots"></i>
+                                </button>
+                            </div>
+
+                            <!-- Mensaje solo para SUGERENCIA -->
+                            <div class="solicitud-processed"
+                                 th:if="${hecho.estado.name() == 'SUGERENCIA'}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar sugerencia del admin DEBAJO de la card si el estado es SUGERENCIA -->
+                    <div class="admin-sugerencia" th:if="${hecho.estado.name() == 'SUGERENCIA' && hecho.sugerencia != null && !#strings.isEmpty(hecho.sugerencia)}">
+                        <strong><i class="fas fa-comment-dots"></i> Sugerencia del Administrador:</strong>
+                        <p th:text="${hecho.sugerencia}">Comentario del administrador</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- ============================================ -->
+    <!-- MODAL: ENVIAR SUGERENCIA -->
+    <!-- ============================================ -->
+    <div id="modalSugerencia" class="modal-overlay hidden">
+        <div class="modal-content">
+
+            <!-- HEADER DEL MODAL -->
+            <div class="modal-header">
+                <h2 id="modalSugerenciaTitulo">Enviar Sugerencia</h2>
+                <button type="button" id="btnCerrarModalSugerencia" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- FORMULARIO -->
+            <form id="formSugerencia" method="POST" th:action="@{/admin/hechos}" class="modal-form">
+                <!-- TOKEN CSRF -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <input type="hidden" id="sugerenciaIdHecho" name="idHecho" value="">
+                <input type="hidden" name="nuevoEstado" value="SUGERENCIA">
+
+                <div class="hecho-info-box">
+                    <strong>Hecho:</strong>
+                    <p id="sugerenciaHechoTitulo">Título del hecho</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="sugerenciaTexto">
+                        <i class="fas fa-comment-alt"></i>
+                        Escribe tu sugerencia
+                    </label>
+                    <textarea
+                            id="sugerenciaTexto"
+                            name="sugerencia"
+                            class="form-textarea"
+                            placeholder="Describe las modificaciones o mejoras que sugieres para este hecho..."
+                            required
+                            rows="6"
+                            maxlength="500"></textarea>
+                    <span class="form-hint">Máximo 500 caracteres</span>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="btnCancelarSugerencia" class="btn-cancelar">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-guardar">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Sugerencia
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Token CSRF para requests AJAX -->
+    <input type="hidden" id="csrfToken" th:value="${_csrf.token}"/>
+    <input type="hidden" id="csrfHeader" th:value="${_csrf.headerName}"/>
 </th:block>
 </html>

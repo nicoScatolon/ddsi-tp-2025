@@ -1,44 +1,69 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
-  <link rel="stylesheet" th:href="@{/css/usuario/mis-solicitudes.css}">
+    <link rel="stylesheet" th:href="@{/css/usuario/mis-hechos.css}">
 </th:block>
 
 <div th:fragment="contenido">
+    <div class="mh-main">
+        <section class="mh-container">
+            <header class="mh-header">
+                <h1>Mis Solicitudes de Eliminación</h1>
+            </header>
 
-  <main>
-    <section class="card">
-      <h1>Mis Solicitudes de Eliminación</h1>
-      <div id="solicitudes-list" class="solicitudes-container">
-        <div th:if="${#lists.isEmpty(solicitudes)}">
-          <p>No hay solicitudes realizadas.</p>
-        </div>
+            <!-- SECCIÓN CONTENEDORA DE SOLICITUDES -->
+            <section class="mh-hechos-section">
+                <!-- Lista de solicitudes -->
+                <div id="mh-list" class="mh-list" aria-live="polite">
+                    <!-- Iteramos sobre cada solicitud -->
+                    <div th:each="solicitud : ${solicitudes}" class="mh-card-wrapper">
+                        <div class="mh-card">
+                            <div class="mh-info">
+                                <!-- Título del hecho -->
+                                <div class="mh-title-row">
+                                    <h3 class="mh-title" th:text="${solicitud.hecho.titulo != null ? solicitud.hecho.titulo : 'Hecho Desconocido'}">
+                                        Título del hecho
+                                    </h3>
+                                </div>
 
-        <div th:each="solicitud : ${solicitudes}" class="solicitud-card">
-          <div class="row">
-            <div>
-              <span class="label">Hecho:</span>
-              <span th:text="${solicitud.hecho.titulo != null ? solicitud.hecho.titulo : 'Desconocido'}">Título del hecho</span>
-            </div>
-            <div>
-              <span class="label">Fecha de solicitud:</span>
-              <span th:text="${#dates.format(solicitud.fechaCreacion, 'yyyy-MM-dd')}">Fecha Creacion</span>
-            </div>
-          </div>
+                                <!-- Metadata -->
+                                <div class="mh-meta">
+                  <span class="mh-meta-item">
+                    <i class="fas fa-calendar-plus"></i>
+                    <strong>Fecha de solicitud:</strong>
+                    <span th:text="${#temporals.format(solicitud.fechaCreacion, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(solicitud.fechaCreacion, 'HH:mm')}">
+                      Fecha
+                    </span>
+                  </span>
+                                </div>
+                            </div>
 
-          <div>
-            <span class="label">Razón:</span>
-            <span th:text="${solicitud.razonDeEliminacion}">Razon de eliminacion</span>
-          </div>
+                            <!-- Botones de acción -->
+                            <div class="mh-actions">
+                                <a th:href="@{'/hechos/' + ${solicitud.hecho.id}}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> Ver Hecho
+                                </a>
+                            </div>
+                        </div>
 
-          <div class="actions">
-            <a th:href="@{'/hechos/' + ${solicitud.hecho.id}}" class="btn">Ver Hecho</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+                        <!-- Razón de eliminación -->
+                        <div class="mh-sugerencia solicitud-razon">
+                            <strong>
+                                <i class="fas fa-comment-dots"></i>
+                                Razón de la solicitud
+                            </strong>
+                            <p th:text="${solicitud.razonDeEliminacion}">Razón de eliminación</p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Mensaje cuando no hay solicitudes -->
+                <div id="mh-empty" class="mh-empty" th:if="${solicitudes == null or #lists.isEmpty(solicitudes)}">
+                    <p>No tenés solicitudes realizadas aún.</p>
+                </div>
+            </section>
+        </section>
+    </div>
 </div>
 
 <th:block th:fragment="jsExtra">

@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos;
 
 import ar.edu.utn.frba.dds.domain.dtos.input.*;
-import ar.edu.utn.frba.dds.domain.dtos.output.CategoriaOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.estadisticas.*;
 import ar.edu.utn.frba.dds.domain.entities.*;
@@ -28,16 +27,16 @@ public class DTOconverter {
     }
 
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
-        return Categoria.builder()
-                .id(categoriaInputDTO.getId())
-                .nombre(categoriaInputDTO.getNombre())
-                .build();
+                Categoria c = new Categoria();
+                c.setCodigoCategoria(categoriaInputDTO.getCodigoCategoria());
+                c.setNombre(categoriaInputDTO.getNombre());
+                return c;
     }
 
     public static Ubicacion ubicacionInputDTO(UbicacionInputDTO ubicacionInputDTO) {
         return Ubicacion.builder()
                 .provincia(ubicacionInputDTO.getProvincia())
-                .localidad(ubicacionInputDTO.getLocalidad())
+                .departamento(ubicacionInputDTO.getLocalidad())
                 .calle(ubicacionInputDTO.getCalle())
                 .numero(ubicacionInputDTO.getNumero())
                 .latitud(ubicacionInputDTO.getLatitud())
@@ -66,13 +65,6 @@ public class DTOconverter {
 
     // --- OUTPUTS --- //
 
-    public static CategoriaOutputDTO categoriaOutputDTO (Categoria categoria) {
-        return CategoriaOutputDTO.builder()
-                .id(categoria.getId())
-                .nombre(categoria.getNombre())
-                .build();
-    }
-
     public static ColeccionOutputDTO coleccionOutputDTO (Coleccion coleccion) {
         return ColeccionOutputDTO.builder()
                 .handle(coleccion.getHandle())
@@ -84,7 +76,8 @@ public class DTOconverter {
     public static E_HoraOcuPorCategoriaOutputDTO eHoraOcuPorCategoriaOutputDTO(E_HoraOcurrenciaPorCategoria estadistica) {
         return E_HoraOcuPorCategoriaOutputDTO.builder()
                 .id(estadistica.getId())
-                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
+                .categoria(estadistica.getCategoria())
+                .codigoCategoria(estadistica.getCodigoCategoria())
                 .horaDia(estadistica.getHoraDia())
                 .cantHechosHora(estadistica.getCantHechosHora())
                 .cantHechosTotales(estadistica.getCantHechosTotales())
@@ -95,7 +88,8 @@ public class DTOconverter {
     public static E_MayorCategoriaOutputDTO eMayorCategoriaOutputDTO(E_MayorCategoria estadistica) {
         return E_MayorCategoriaOutputDTO.builder()
                 .id(estadistica.getId())
-                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
+                .categoria(estadistica.getCategoria())
+                .codigoCategoria(estadistica.getCodigoCategoria())
                 .cantHechosCategoria(estadistica.getCantHechosCategoria())
                 .cantHechosTotales(estadistica.getCantHechosTotales())
                 .fechaDeCalculo(estadistica.getFechaDeCalculo())
@@ -104,7 +98,8 @@ public class DTOconverter {
     public static E_MayorProvPorCategoriaOutputDTO eMayorProvinciaPorCategoriaOutputDTO(E_MayorProvinciaPorCategoria estadistica) {
         return E_MayorProvPorCategoriaOutputDTO.builder()
                 .id(estadistica.getId())
-                .categoriaDTO(DTOconverter.categoriaOutputDTO(estadistica.getCategoria()))
+                .categoria(estadistica.getCategoria())
+                .codigoCategoria(estadistica.getCodigoCategoria())
                 .provincia(estadistica.getProvincia())
                 .cantHechosProvincia(estadistica.getCantHechosProvincia())
                 .cantHechosTotales(estadistica.getCantHechosTotales())

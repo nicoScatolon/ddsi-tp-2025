@@ -1,8 +1,3 @@
-/* =========================
-   MetaMapa - styles.css
-   Versión: limpia - solo desktop
-   ========================= */
-
 :root{
     --color-primary: #2F60F4;
     --color-accent:  #1746D2;
@@ -64,7 +59,271 @@ button {
 nav {
     font-weight: 500;
 }
+/* ========================================
+   ESTILOS DEL MODAL DE ERROR
+   ======================================== */
 
+/* Modal backdrop personalizado */
+.modal-backdrop.show {
+    opacity: 0.6;
+}
+
+.modal-backdrop {
+    background-color: #000;
+}
+
+.modal-backdrop.show {
+    opacity: 0.7;
+}
+
+/* Contenedor del modal */
+#errorModal .modal-dialog {
+    max-width: 500px;
+}
+
+#errorModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Header del modal */
+#errorModal .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#errorModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    color: #ffffff !important;
+}
+
+#errorModal .modal-title i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    animation: shake 0.5s ease-in-out;
+    color: #ffffff !important;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+#errorModal .btn-close {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
+}
+
+#errorModal .btn-close:hover {
+    transform: scale(1.1);
+}
+
+/* Body del modal */
+#errorModal .modal-body {
+    padding: 2rem 1.5rem;
+    background: #fff;
+}
+
+#errorModal .modal-body p {
+    margin: 0;
+    color: #495057 !important;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Footer del modal */
+#errorModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+}
+
+#errorModal .modal-footer .btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: #ffffff !important;
+}
+
+#errorModal .modal-footer .btn-secondary {
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+#errorModal .modal-footer .btn-secondary:hover {
+    background: #5a6268 !important;
+    border-color: #545b62 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Animación de entrada */
+#errorModal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: scale(0.8);
+}
+
+#errorModal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* Responsive del modal */
+@media (max-width: 576px) {
+    #errorModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    #errorModal .modal-header {
+        padding: 1rem;
+    }
+
+    #errorModal .modal-body {
+        padding: 1.5rem 1rem;
+    }
+
+    #errorModal .modal-title {
+        font-size: 1.1rem;
+    }
+
+    #errorModal .modal-title i {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+    }
+}
+
+/* ========================================
+   MODAL DE ÉXITO (OPCIONAL)
+   ======================================== */
+
+#successModal .modal-dialog {
+    max-width: 500px;
+}
+
+#successModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+#successModal .modal-header {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#successModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    color: #ffffff !important;
+}
+
+#successModal .modal-title i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    animation: bounce 0.5s ease-in-out;
+    color: #ffffff !important;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+#successModal .btn-close {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
+}
+
+#successModal .btn-close:hover {
+    transform: scale(1.1);
+}
+
+#successModal .modal-body {
+    padding: 2rem 1.5rem;
+    background: #fff;
+}
+
+#successModal .modal-body p {
+    margin: 0;
+    color: #495057 !important;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+#successModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+}
+
+#successModal .modal-footer .btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: #ffffff !important;
+}
+
+#successModal .modal-footer .btn-success {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+}
+
+#successModal .modal-footer .btn-success:hover {
+    background: #218838 !important;
+    border-color: #1e7e34 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#successModal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: scale(0.8);
+}
+
+#successModal.show .modal-dialog {
+    transform: scale(1);
+}
+
+@media (max-width: 576px) {
+    #successModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    #successModal .modal-header {
+        padding: 1rem;
+    }
+
+    #successModal .modal-body {
+        padding: 1.5rem 1rem;
+    }
+
+    #successModal .modal-title {
+        font-size: 1.1rem;
+    }
+
+    #successModal .modal-title i {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+    }
+}
 /* =========================
    NAVBAR - DESKTOP
    ========================= */
@@ -207,39 +466,149 @@ nav {
 }
 
 /* =========================
-   DESKTOP USER BUTTON & DROPDOWN
+   DESKTOP LOGIN BUTTON & DROPDOWN (VISUALIZADOR - NO AUTENTICADO)
+   ========================= */
+#desktopLoginContainer {
+    position: relative;
+}
+
+/* Botón de Visualizador - Verde azulado */
+.btn-visualizador {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    color: #059669;
+    border: 2px solid #059669;
+    border-radius: var(--radius-lg);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    transition: all .18s ease;
+}
+
+.btn-visualizador:hover {
+    background: #059669;
+    color: var(--white);
+    border-color: var(--white);
+    transform: translateY(-1px);
+}
+
+#desktopLoginDropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    display: none;
+    min-width: 200px;
+    background: linear-gradient(180deg, #10b981, #059669);
+    border-radius: 12px;
+    padding: 8px;
+    z-index: 4000;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.18);
+    overflow: hidden;
+}
+
+.dropdown-login-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    color: var(--white);
+    background: rgba(255,255,255,0.1);
+    margin: 4px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all .18s ease;
+    border: 2px solid transparent;
+}
+
+.dropdown-login-link:hover {
+    background: var(--white);
+    color: #059669;
+    border-color: #059669;
+    transform: translateX(4px);
+}
+
+.dropdown-login-link i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* =========================
+   DESKTOP USER BUTTON & DROPDOWN (AUTENTICADO)
    ========================= */
 #desktopUserContainer {
     position: relative;
 }
 
-/* Botón de usuario (igual estilo que +Create) */
+/* Botón base de usuario - estilo compartido */
 #desktopUserBtn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    border-radius: var(--radius-lg);
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    transition: all .18s ease;
+    font-weight: 500;
+}
+
+/* CONTRIBUYENTE - Azul (color principal del sitio) */
+.btn-user-contribuyente {
     background: var(--color-accent);
     color: var(--white);
     border: 2px solid var(--color-accent);
-    border-radius: var(--radius-lg);
-    padding: 0.4rem 0.8rem;
-    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
-    transition: all .18s ease;
 }
 
-#desktopUserBtn:hover {
+.btn-user-contribuyente:hover {
     background: var(--white);
     color: var(--color-accent);
     border-color: var(--color-accent);
     transform: translateY(-1px);
 }
 
-#desktopUserBtn img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--white);
-    object-fit: cover;
+/* ADMIN - Naranja */
+.btn-user-admin {
+    background: #f97316;
+    color: var(--white);
+    border: 2px solid #f97316;
+}
+
+.btn-user-admin:hover {
+    background: var(--white);
+    color: #f97316;
+    border-color: #f97316;
+    transform: translateY(-1px);
+}
+
+.btn-user-admin i {
+    color: var(--white);
+}
+
+.btn-user-admin:hover i {
+    color: #f97316;
+}
+
+/* ADMIN SUPERIOR - Dorado/Oro */
+.btn-user-adminsuperior {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #78350f;
+    border: 2px solid #f59e0b;
+}
+
+.btn-user-adminsuperior:hover {
+    background: var(--white);
+    color: #f59e0b;
+    border-color: #f59e0b;
+    transform: translateY(-1px);
+}
+
+.btn-user-adminsuperior i {
+    color: #78350f;
+}
+
+.btn-user-adminsuperior:hover i {
+    color: #f59e0b;
 }
 
 /* Dropdown */
@@ -385,3 +754,120 @@ footer a {
 footer a:hover {
     color: #E5ECFF;
 }
+
+/* Menu hamburguesa */
+
+.hamburger-btn {
+    display: none; /* solo se ve en mobile */
+    width: 38px;
+    height: 32px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--white);
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+/* animación cuando está abierto */
+.hamburger-btn.is-open span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+.hamburger-btn.is-open span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-btn.is-open span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* navbar mobile */
+
+@media (max-width: 768px) {
+
+    .desktop-nav,
+    header.desktop-nav {
+        height: 56px;
+    }
+
+    .desktop-nav nav {
+        padding: 0 0.75rem;
+    }
+
+    .site-name {
+        font-size: 1.05rem;
+    }
+
+    /* nav-links se vuelve menú desplegable */
+    .nav-links {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 0.5rem 1rem 1rem;
+        max-width: none;
+        display: none; /* cerrado por defecto */
+        z-index: 2500;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+    }
+
+    .nav-links.is-open {
+        display: flex;
+    }
+
+    /* derecha: ícono de sesión + hamburguesa */
+    .right-controls {
+        gap: 8px;
+    }
+
+    .hamburger-btn {
+        display: flex;
+    }
+
+    /* botón de sesión: solo ícono en mobile */
+    #desktopLoginBtn span,
+    #desktopUserBtn span {
+        display: none;
+    }
+
+    #desktopLoginBtn,
+    #desktopUserBtn {
+        padding: 0.3rem 0.45rem;
+        border-radius: 999px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.16);
+    }
+
+    #desktopLoginBtn i,
+    #desktopUserBtn i {
+        font-size: 1.1rem;
+    }
+}
+
+/* evitar scroll del body con el menú abierto */
+body.mobile-menu-open {
+    overflow: hidden;
+}
+

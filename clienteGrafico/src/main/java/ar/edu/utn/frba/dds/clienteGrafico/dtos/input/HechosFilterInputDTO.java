@@ -23,5 +23,5 @@ public class HechosFilterInputDTO {
 
     private Long fuenteId;
 
-    private String etiqueta;
+    private String etiqueta; //Todo Podriamos hacer q se puedan seleccioanr varias etiquetas, porq un hecho puede tener mas de una etiqueta
 }

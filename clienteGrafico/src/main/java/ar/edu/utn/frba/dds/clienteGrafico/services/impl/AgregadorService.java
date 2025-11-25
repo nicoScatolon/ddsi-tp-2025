@@ -1,33 +1,32 @@
 package ar.edu.utn.frba.dds.clienteGrafico.services.impl;
 
-import ar.edu.utn.frba.dds.clienteGrafico.controllers.SolicitudesEliminacionController;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoMapaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Fuentes.FuenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaEquivalenteOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos.HechosFilterOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.EstadoDeSolicitud;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.ProcesarSolicitudOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.SolicitudesEliminacion.SolicitudEliminarHechoOutputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.exceptions.NotFoundException;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,6 +66,7 @@ public class AgregadorService implements IAgregadorService {
         return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
 
+    @Cacheable("hechos-mapa")
     public List<HechoMapaInputDTO> getHechosMapa() {
         try {
             return webApiCallerService.getPublicList(agregadorUrl + "/api/hechos/publica/mapa", HechoMapaInputDTO.class);
@@ -75,7 +75,25 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
-        // --- COLECCIONES --- //
+    @Override
+    @Cacheable(value = "hechosPorProvincia", key = "#provincia")
+    public List<HechoMapaInputDTO> getHechosMapaPorProvincia(String provincia) {
+        try {
+            String url = agregadorUrl + "/api/hechos/publica/mapa?provincia=" + provincia;
+            return webApiCallerService.getPublicList(url, HechoMapaInputDTO.class);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener los hechos del mapa por provincia: " + e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(fixedRate = 30 * 60 * 1000) // cada 30 minutos
+    @CacheEvict(value = {"hechos-mapa", "hechosPorProvincia"}, allEntries = true)
+    public void limpiarCacheHechos() {
+        System.out.println("Cache de hechos invalidado");
+    }
+
+
+    // --- COLECCIONES --- //
 
     @Override
     public ResponseEntity<Void> crearColeccion(ColeccionOutputDTO coleccionDTO) {
@@ -103,7 +121,7 @@ public class AgregadorService implements IAgregadorService {
     public ColeccionInputDTO obtenerColeccion(String handle) {
         try {
             return webApiCallerService.get(
-                    agregadorUrl + "/api/colecciones/publica/editable/" + handle,
+                    agregadorUrl + "/api/colecciones/privada/editable/" + handle,
                     ColeccionInputDTO.class
             );
         } catch (NotFoundException e) {
@@ -127,6 +145,19 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    public List<ColeccionOutputDTO> obtenerColeccionesAdmin() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/colecciones/privada",
+                    ColeccionOutputDTO.class
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(
+                    "Error al obtener las colecciones para admin: " + e.getMessage(), e
+            );
+        }
+    }
+
     // --- DESTACAR HECHOS --- //
     @Override
     public List<HechoInputDTO> obtenerHechosDestacados() {
@@ -147,7 +178,7 @@ public class AgregadorService implements IAgregadorService {
         try {
             webApiCallerService.put(
                     agregadorUrl + "/api/hechos/privada/destacado/" + id,
-                    null,
+                    "",
                     Void.class
             );
             return ResponseEntity.ok().build();
@@ -155,6 +186,7 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al destacar el hecho con id " + id + ": " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public ResponseEntity<Void> eliminarDestacarHecho(Long id) {
@@ -183,20 +215,6 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
-//    @Override
-//    public List<ColeccionPreviewInputDTO> obtenerColeccionesDestacadas() {
-//        try {
-//            return webApiCallerService.getList(
-//                    agregadorUrl + "/api/colecciones/publica/destacadas",
-//                    ColeccionPreviewInputDTO.class
-//            );
-//        } catch (NotFoundException e) {
-//            throw new NotFoundException("colecciones destacadas", "");
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("Error al obtener las colecciones destacadas: " + e.getMessage(), e);
-//        }
-//    }
-
     @Override
     public ResponseEntity<Void> destacarColeccion(String handle) {
         try {
@@ -223,10 +241,77 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public List<CategoriaEquivalenteInputDTO> obtenerCatEquivalentes() {
+        try {
+            return webApiCallerService.getList(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    CategoriaEquivalenteInputDTO.class
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener las categorías equivalentes: " + e.getMessage(), e);
+        }
+    }
 
     @Override
-    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual) {
-        String url = agregadorUrl + "/api/colecciones/publica/preview?page=" + paginaActual;
+    public ResponseEntity<Void> crearEquivalencia(CategoriaEquivalenteOutputDTO categoria) {
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    categoria,
+                    CategoriaEquivalenteInputDTO.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarEquivalencia(String categoria) {
+        try {
+            webApiCallerService.delete(
+                    agregadorUrl + "/api/privada/categorias/equivalentes/" + categoria
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> editarEquivalencia(CategoriaEquivalenteOutputDTO categoria) {
+        try {
+            webApiCallerService.put(
+                    agregadorUrl + "/api/privada/categorias/equivalentes",
+                    categoria,
+                    CategoriaEquivalenteInputDTO.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear la categorías equivalente: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> modificarEtiquetas(Long id, List<String> etiquetas) {
+        try {
+            webApiCallerService.post(
+                    agregadorUrl + "/api/hechos/privada/"+id+"/etiquetas",
+                    etiquetas,
+                    String.class
+            );
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al modificar las etiquetas: " + e.getMessage(), e);
+        }
+    }
+
+
+
+    @Override
+    public List<ColeccionPreviewInputDTO> obtenerColeccionesPreview(Integer paginaActual, FiltroConsenso filtroConsenso) {
+        String url = getString(paginaActual, filtroConsenso);
 
         try {
             return webApiCallerService.getPublicList(url, ColeccionPreviewInputDTO.class);
@@ -236,6 +321,25 @@ public class AgregadorService implements IAgregadorService {
             throw new RuntimeException("Error al obtener las colecciones preview: " + e.getMessage(), e);
         }
     }
+
+    private String getString(Integer paginaActual, FiltroConsenso filtroConsenso) {
+        String url = agregadorUrl + "/api/colecciones/publica/preview";
+
+        if (paginaActual != null) {
+            url = url + "?page=" + paginaActual;
+        }
+
+        if (filtroConsenso == null || filtroConsenso == FiltroConsenso.TODOS) {
+            return url;
+        }
+
+        if (filtroConsenso == FiltroConsenso.SIN_CONSENSO) {
+            return url + "&consenso=NINGUNO";
+        }
+
+        return url + "&consenso=" + filtroConsenso.name();
+    }
+
 
     @Override
     public ColeccionPreviewInputDTO obtenerColeccionPreviewIndividual(String handle) {
@@ -256,26 +360,91 @@ public class AgregadorService implements IAgregadorService {
         HechosFilterOutputDTO filter = DTOConverter.convertirHechosFilterInputDTO(filtros);
         String url = construirUrlHechosColeccion(handle, paginaActual, filter, curado);
 
-        return webApiCallerService.getList(url, HechoInputDTO.class);
+        return webApiCallerService.getPublicList(url, HechoInputDTO.class);
     }
     // --- CATEGORIAS --- //
 
     @Override
     public List<String> obtenerCategoriasShort() {
         try {
-            return webApiCallerService.getStringList(
-                    agregadorUrl + "/api/privada/categorias/short"
+            String raw = webApiCallerService.getPublic(
+                    agregadorUrl + "/api/privada/categorias/short",
+                    String.class
             );
-        } catch (NotFoundException e) {
-            throw new NotFoundException("categorías", "short");
-        } catch (RuntimeException e) {
+            //Esto lo tuve q implementar porq devolvía todas las categorías en una sola posición
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(raw, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
             throw new RuntimeException("Error al obtener las categorías short: " + e.getMessage(), e);
         }
     }
 
 
-    // --- SOLICITUDES ELIMINACION --- //
+    @Override
+    public  List<String> obtenerEtiquetasShort() {
+        try {
+            String raw = webApiCallerService.getPublic(
+                    agregadorUrl + "/api/hechos/publica/etiquetas",
+                    String.class
+            );
+            //Esto lo tuve q implementar porq devolvía todas las categorías en una sola posición
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(raw, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener las etiquetas short: " + e.getMessage(), e);
+        }
+    }
 
+    @Override
+    public List<CategoriaInputDTO> obtenerCategorias() {
+        try {
+            return webApiCallerService.getPublicList(
+                    agregadorUrl + "/api/privada/categorias",
+                    CategoriaInputDTO.class
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al obtener las categorías: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<EtiquetaInputDTO> obtenerEtiquetas() {
+        return List.of(); //Todo
+    }
+
+    @Override
+    public List<String> obtenerProvinciasShort() { //Todo, Pienso q se le pida al agregador aunq no es necesario
+        return List.of(
+                "Buenos Aires",
+                "Catamarca",
+                "Chaco",
+                "Chubut",
+                "Ciudad Autónoma de Buenos Aires",
+                "Córdoba",
+                "Corrientes",
+                "Entre Ríos",
+                "Formosa",
+                "Jujuy",
+                "La Pampa",
+                "La Rioja",
+                "Mendoza",
+                "Misiones",
+                "Neuquén",
+                "Río Negro",
+                "Salta",
+                "San Juan",
+                "San Luis",
+                "Santa Cruz",
+                "Santa Fe",
+                "Santiago del Estero",
+                "Tierra del Fuego",
+                "Tucumán"
+        );
+    }
+
+
+
+    // --- SOLICITUDES ELIMINACION --- //
     @Override
     public ResponseEntity<Void> crearSolicitudEliminacion(Long hechoId, Long usuarioId, String razonEliminacion) {
         SolicitudEliminarHechoOutputDTO request =
@@ -356,7 +525,101 @@ public class AgregadorService implements IAgregadorService {
         }
     }
 
+    @Override
+    public ResponseEntity<Void> crearCategoria(CategoriaOutputDTO categoria) {
+        try {
+            String url = agregadorUrl + "/api/privada/categorias";
 
+            webApiCallerService.post(
+                    url,
+                    categoria,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al crear la categoria: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> editarCategoria(CategoriaOutputDTO categoria) {
+        try {
+            String url = agregadorUrl + "/api/privada/categorias";
+
+            webApiCallerService.put(
+                    url,
+                    categoria,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al editar la categoria: " + e.getMessage(), e);
+        }
+    }
+
+    // --- METODOS ADMIN SUPERIOR --- //
+
+    @Override
+    public ResponseEntity<Void> actualizarFuentesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las fuentes: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> actualizarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/actualizar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al actualizar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> curarColeccionesForzosamente() {
+        try {
+            String url = agregadorUrl + "/api/colecciones/privada/curar";
+            webApiCallerService.get( url, Void.class );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al curar las colecciones: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> crearFuente(FuenteOutputDTO fuenteDTO) {
+        try {
+            String url = agregadorUrl + "/api/fuente/privada";
+
+            webApiCallerService.put(
+                    url,
+                    fuenteDTO,
+                    Void.class
+            );
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminarFuente(Long id) {
+        try {
+            webApiCallerService.delete(agregadorUrl + "/api/fuente/privada/" + id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error al eliminar la fuente con id " + id + ": " + e.getMessage(), e);
+        }
+    }
 
     // --- METODOS PRIVADOS --- //
 

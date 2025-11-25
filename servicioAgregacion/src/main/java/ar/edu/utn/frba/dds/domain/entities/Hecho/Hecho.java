@@ -63,9 +63,8 @@ public class Hecho {
     @Column (name = "fueEliminado", nullable = false)
     private Boolean fueEliminado = false;
 
-    @Builder.Default
-    @Column (name = "contribuyenteId")
-    private Long contribuyenteId = null; //el id del contribuyente en la base de datos del servicio de usuarios
+    @Column(name = "contribuyente_id")
+    private Long contribuyenteId;
 
     @Builder.Default
     @Column (name= "cargado-anonimamente")
@@ -89,14 +88,37 @@ public class Hecho {
         etiquetas.remove(etiqueta);
     }
 
+    public void modificarEtiquetas(List<Etiqueta> nuevasEtiquetas){
+        etiquetas = nuevasEtiquetas;
+    }
+
     public void actualizarse(Hecho hechoNuevo) {
         if (!Objects.equals(hechoNuevo.getOrigenId(), this.origenId)) { throw new RuntimeException("no somos el mismo hecho"); }
         titulo = hechoNuevo.getTitulo();
         descripcion = hechoNuevo.getDescripcion();
         categoria = hechoNuevo.getCategoria();
+        ubicacion = hechoNuevo.getUbicacion();
         fechaDeOcurrencia = hechoNuevo.getFechaDeOcurrencia();
         fechaDeCarga = hechoNuevo.getFechaDeCarga();
-        contenidoMultimedia = hechoNuevo.getContenidoMultimedia();
+        contribuyenteId = hechoNuevo.getContribuyenteId();
+        if (hechoNuevo.cargadoAnonimamente != null) {
+            cargadoAnonimamente = hechoNuevo.getCargadoAnonimamente();
+        }
+        if (hechoNuevo.contenidoMultimedia != null) {
+            this.contenidoMultimedia.clear();
+            for (ContenidoMultimedia contenidoNuevo : hechoNuevo.getContenidoMultimedia()) {
+                contenidoNuevo.setHecho(this);
+                this.contenidoMultimedia.add(contenidoNuevo);
+            }
+        }
+    }
+
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaDeCarga == null) {
+            fechaDeCarga = LocalDateTime.now();
+        }
     }
 }
 

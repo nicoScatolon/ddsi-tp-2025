@@ -23,21 +23,22 @@
                 <!-- Handle solo para edición -->
                 <input th:if="${!nueva}" type="hidden" th:field="*{handle}">
 
-                <div>
+                <div class="form-section">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" th:field="*{titulo}" placeholder="Incidentes de tráfico" required>
                 </div>
 
-                <div>
+                <div class="form-section">
                     <label for="descripcion">Descripción</label>
                     <textarea id="descripcion" th:field="*{descripcion}" rows="3" required placeholder="Descripción breve de la colección"></textarea>
                 </div>
 
-                <div>
+                <div class="form-section">
                     <label>Fuentes</label>
                     <div class="fuentes-selector">
                         <div id="fuentesToggle" class="fuentes-toggle" role="button" aria-expanded="false">
-                            Seleccionar fuentes <span id="fuentesCount" class="small">(0)</span>
+                            <span>Seleccionar fuentes</span>
+                            <span id="fuentesCount" class="badge">0</span>
                         </div>
 
                         <div id="fuentesPanel" class="fuentes-panel" aria-hidden="true" style="display:none;">
@@ -61,50 +62,106 @@
                     </div>
                 </div>
 
-                <div>
-                    <label>Criterios</label>
-                    <div class="criterios-area">
-                        <div class="criterio-controls">
-                            <select id="criterioSelect" aria-label="Seleccionar criterio">
-                                <option value="">-- escoger criterio --</option>
-                                <option value="Titulo">Título</option>
-                                <option value="Categoria">Categoría</option>
-                                <option value="Etiqueta">Etiqueta</option>
-                                <option value="Provincia">Provincia</option>
-                                <option value="CargaEntreFechas">Carga entre fechas</option>
-                                <option value="OcurrenciaEntreFechas">Ocurrencia entre fechas</option>
-                                <option value="ContenidoMultimedia">Contenido multimedia</option>
-                            </select>
-                            <button type="button" id="addCriterioBtn" class="btn btn-secondary">Agregar criterio</button>
+                <div class="form-section criterios-section">
+                    <label>Criterios de Filtrado</label>
+
+                    <!-- Grid de criterios disponibles -->
+                    <div class="criterios-grid">
+                        <div class="criterio-card" data-tipo="Titulo">
+                            <i class="fas fa-heading"></i>
+                            <span>Título</span>
                         </div>
-
-                        <div id="categoriaTemplate" style="display:none;">
-                            <label>Buscar categoría</label>
-                            <input type="text" class="criterio-categoria-input" placeholder="Escriba para buscar..." list="listaCategorias">
-                            <datalist id="listaCategorias">
-                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
-                            </datalist>
+                        <div class="criterio-card" data-tipo="Categoria">
+                            <i class="fas fa-tag"></i>
+                            <span>Categoría</span>
                         </div>
-
-                        <select id="etiquetaTemplate" style="display:none;">
-                            <option value="">-- seleccionar etiqueta --</option>
-                            <option th:each="et : ${etiquetas}"
-                                    th:value="${et.id}"
-                                    th:text="${et.nombre}"></option>
-                        </select>
-
-                        <select id="provinciaTemplate" style="display:none;">
-                            <option value="">-- seleccionar provincia --</option>
-                            <option th:each="prov : ${provincias}"
-                                    th:value="${prov}"
-                                    th:text="${prov}"></option>
-                        </select>
-
-                        <div id="criteriosContainer"></div>
+                        <div class="criterio-card" data-tipo="Etiqueta">
+                            <i class="fas fa-tags"></i>
+                            <span>Etiquetas</span>
+                        </div>
+                        <div class="criterio-card" data-tipo="Provincia">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Provincia</span>
+                        </div>
+                        <div class="criterio-card" data-tipo="CargaEntreFechas">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Carga</span>
+                        </div>
+                        <div class="criterio-card" data-tipo="OcurrenciaEntreFechas">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Ocurrencia</span>
+                        </div>
+                        <div class="criterio-card" data-tipo="ContenidoMultimedia">
+                            <i class="fas fa-image"></i>
+                            <span>Multimedia</span>
+                        </div>
                     </div>
+
+                    <!-- Templates ocultos -->
+                    <div id="categoriaTemplate" style="display:none;">
+                        <input type="text"
+                               class="criterio-input"
+                               placeholder="Escriba para buscar..."
+                               list="listaCategorias"
+                               autocomplete="off">
+                        <datalist id="listaCategorias">
+                            <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                        </datalist>
+                    </div>
+
+                    <div id="etiquetaTemplate" style="display:none;">
+                        <div class="etiquetas-mini-panel">
+                            <div class="etiquetas-toggle-mini" role="button">
+                                <span>Seleccionar etiquetas</span>
+                                <span class="etiquetas-count-mini badge">0</span>
+                            </div>
+                            <div class="etiquetas-panel-mini" style="display:none;">
+                                <ul>
+                                    <li th:each="et : ${etiquetas}">
+                                        <label>
+                                            <input type="checkbox"
+                                                   class="etiqueta-checkbox"
+                                                   th:value="${et}"
+                                                   th:data-nombre="${et}">
+                                            <span th:text="${et}">Etiqueta</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="etiquetas-chips-mini"></div>
+                        </div>
+                    </div>
+
+                    <div id="provinciaTemplate" style="display:none;">
+                        <input type="text"
+                               class="criterio-input"
+                               placeholder="Escriba para buscar..."
+                               list="listaProvincias"
+                               autocomplete="off">
+                        <datalist id="listaProvincias">
+                            <option th:each="prov : ${provincias}" th:value="${prov}" th:text="${prov}"></option>
+                        </datalist>
+                    </div>
+
+                    <div id="multimediaTemplate" style="display:none;">
+                        <div class="multimedia-buttons">
+                            <button type="button" class="multimedia-btn" data-value="false">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Sin multimedia</span>
+                            </button>
+                            <button type="button" class="multimedia-btn" data-value="true">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Con multimedia</span>
+                            </button>
+                        </div>
+                        <input type="hidden" class="criterio-multimedia-hidden">
+                    </div>
+
+                    <!-- Contenedor de criterios seleccionados -->
+                    <div id="criteriosContainer" class="criterios-selected"></div>
                 </div>
 
-                <div>
+                <div class="form-section">
                     <label for="algoritmoConsensoTipo">Algoritmo de Consenso</label>
                     <select id="algoritmoConsensoTipo" th:field="*{algoritmoConsensoTipo}" class="form-select">
                         <option value="">Ninguno</option>

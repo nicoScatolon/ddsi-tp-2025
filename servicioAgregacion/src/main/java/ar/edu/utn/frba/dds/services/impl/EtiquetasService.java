@@ -33,4 +33,9 @@ public class EtiquetasService implements IEtiquetasService {
     public List<Etiqueta> findAll() {
         return etiquetasRepository.findAll();
     }
+
+    @Override
+    public List<String> findAllNombres() {
+        return etiquetasRepository.findAllNombres();
+    }
 }

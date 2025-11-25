@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Hechos;
 
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.UbicacionOutputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

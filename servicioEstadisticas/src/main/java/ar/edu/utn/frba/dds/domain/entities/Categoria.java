@@ -14,15 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 
-@Entity
-@Table(name = "categoria")
 public class Categoria {
-    @Id
-    private String id;
-
-    @Column(name = "nombre", nullable = false)
+    private String codigoCategoria;
     private String nombre;
-
-    @Column(name = "fechaActualizacion",nullable = false)
-    private LocalDateTime fechaActualizacion; //para la base de datos
 }

@@ -1,55 +1,105 @@
-html, body{
+html, body {
     height: 100%;
-    background: url("../../img/background-home.jpg")center/cover no-repeat fixed;
+    background: url("../../img/background-home.webp") center/cover no-repeat fixed;
 }
 
-/* Wrapper que centra el formulario */
+/* Resetear el padding del main para páginas de formulario */
+body:has(.form-wrapper) main {
+    padding-top: 0 !important;
+    margin: 0 !important;
+}
+
+/* Evitar scroll en páginas de formulario */
+body:has(.form-wrapper) {
+    overflow: hidden;
+}
+
+/* Wrapper que centra el formulario - CON SEPARACIÓN DE NAVBAR */
 .form-wrapper {
-    min-height: calc(100vh - var(--desktop-nav-height) - 100px);
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 1rem;
+    padding-top: calc(var(--desktop-nav-height, 60px) + 1rem);
 }
 
 /* Card del formulario */
 .form-card {
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
     border-radius: var(--radius-lg, 20px);
-    box-shadow: 0 10px 40px rgba(2, 6, 23, 0.08);
-    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    padding: 1.5rem;
     width: 100%;
-    max-width: 440px;
+    max-width: 480px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Icono del formulario */
+.form-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+    box-shadow: 0 8px 24px rgba(47, 96, 244, 0.3);
+}
+
+.form-icon i {
+    font-size: 1.25rem;
+    color: white;
 }
 
 /* Encabezado del formulario */
 .form-header {
     text-align: center;
-    margin-bottom: 2rem;
-}
-
-.form-header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    margin-bottom: 0.5rem;
-}
-
-.form-header p {
-    color: #ffffff;
-    font-size: 0.95rem;
-}
-
-/* Grupos de formulario */
-.form-group {
     margin-bottom: 1.25rem;
 }
 
+.form-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.3rem;
+}
+
+.form-header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}
+
+/* Form Row para dos columnas */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Grupos de formulario - ESPACIADO CORREGIDO */
+.form-group {
+    margin-bottom: 1rem;
+}
+
 .form-group label {
-    display: block;
-    font-weight: 500;
-    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
     margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.form-group label i {
+    color: var(--color-primary);
     font-size: 0.9rem;
 }
 
@@ -57,12 +107,17 @@ html, body{
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e5e7eb;
+    padding: 0.65rem 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-sm, 6px);
-    font-size: 0.95rem;
-    transition: all .2s ease;
-    background: #fafbfc;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group input:focus,
@@ -70,8 +125,8 @@ html, body{
 .form-group select:focus {
     outline: none;
     border-color: var(--color-primary);
-    background: var(--white);
-    box-shadow: 0 0 0 4px rgba(47, 96, 244, 0.1);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(47, 96, 244, 0.2);
 }
 
 .form-group textarea {
@@ -79,113 +134,157 @@ html, body{
     min-height: 100px;
 }
 
-/* Mensajes de error */
-.error-message {
-    color: #dc2626;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-    display: block;
-}
-
 /* Alert general */
 .alert {
-    padding: 0.875rem 1rem;
+    padding: 0.6rem 0.85rem;
     border-radius: var(--radius-sm, 6px);
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
 }
 
 .alert-danger {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
+    background: rgba(220, 38, 38, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .alert-success {
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #6ee7b7;
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* Botón submit principal */
 .btn-submit {
     width: 100%;
-    padding: 0.875rem;
-    background: var(--color-accent);
+    padding: 0.7rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: var(--white);
-    border: 2px solid var(--color-accent);
+    border: none;
     border-radius: var(--radius-lg, 20px);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all .2s ease;
-    margin-top: 0.5rem;
+    transition: all 0.2s ease;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 8px 24px rgba(47, 96, 244, 0.3);
 }
 
 .btn-submit:hover {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(47, 96, 244, 0.25);
+    box-shadow: 0 12px 32px rgba(47, 96, 244, 0.4);
 }
 
 .btn-submit:active {
     transform: translateY(0);
 }
 
-/* Link alternativo (ej: "¿Ya tienes cuenta?") */
+/* Link alternativo */
 .form-footer {
     text-align: center;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .form-footer p {
-    color: #ffffff;
-    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
 }
 
 .form-footer a {
-    color: var(--color-accent);
+    color: var(--color-primary);
     font-weight: 600;
     text-decoration: none;
-    transition: color .2s ease;
+    transition: all 0.2s ease;
 }
 
 .form-footer a:hover {
-    color: var(--color-primary);
+    color: var(--color-accent);
     text-decoration: underline;
 }
 
-/* Checkbox personalizado */
-.checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-}
-
-.checkbox-group input[type="checkbox"] {
-    width: auto;
-    margin-top: 0.25rem;
-    cursor: pointer;
-}
-
-.checkbox-group label {
-    font-size: 0.9rem;
-    color: #ffffff;
-    cursor: pointer;
-    margin-bottom: 0;
+/* Ocultar footer en páginas de formulario */
+body:has(.form-wrapper) footer {
+    display: none;
 }
 
 /* Responsive */
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+    .form-wrapper {
+        padding: 0.75rem;
+        padding-top: calc(var(--desktop-nav-height, 60px) + 0.75rem);
+    }
+
     .form-card {
-        padding: 1.75rem;
+        padding: 1.5rem;
+        max-width: 100%;
     }
 
     .form-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
+
+    .form-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .form-icon i {
+        font-size: 1.25rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .form-group input {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Para signup específicamente - más compacto pero con separación entre label e input */
+.compact-form .form-row {
+    margin-bottom: 0.75rem;
+}
+
+/* Los form-group dentro de form-row tienen espaciado normal entre label e input */
+.compact-form .form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* Asegurar que el label tenga separación del input */
+.compact-form .form-group label {
+    margin-bottom: 0.5rem;
+}
+
+/* Scrollbar personalizada para la card */
+.form-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-card::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.form-card::-webkit-scrollbar-thumb {
+    background: rgba(47, 96, 244, 0.5);
+    border-radius: 3px;
+}
+
+.form-card::-webkit-scrollbar-thumb:hover {
+    background: rgba(47, 96, 244, 0.7);
 }

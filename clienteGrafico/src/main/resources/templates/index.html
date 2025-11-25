@@ -11,8 +11,9 @@
             <h3>Sistema de gestión de mapeos colaborativos</h3>
             <h5>Sumáte a nuestra comunidad para mapear información, compartir conocimiento y generar inteligencia colectiva</h5>
             <div class="home-buttons">
-                <a href="/hechos/create" class="btn btn-primary">+ Create</a>
-                <a href="/hechos" class="btn btn-secondary">Explore</a>
+                <a href="/hechos/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Hecho</a>
+                <a href="/hechos" class="btn btn-secondary">Explorar</a>
             </div>
         </div>
     </section>
@@ -79,7 +80,12 @@
                    class="card">
                     <!-- Imagen o placeholder -->
                     <div class="card-thumbnail">
-                        <div class="card-placeholder">
+                        <img th:if="${coleccion.contenidoMultimedia != null}"
+                             th:src="${coleccion.contenidoMultimedia.url}"
+                             th:alt="${coleccion.titulo}"
+                             class="card-img">
+                        <div th:unless="${coleccion.contenidoMultimedia != null}"
+                             class="card-placeholder">
                             <i class="fas fa-layer-group"></i>
                         </div>
                     </div>

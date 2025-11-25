@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.ContenidoMultimediaInputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class ColeccionPreviewInputDTO {
     private AlgoritmoConsensoDTO algoritmoCurado;
     private List<FuenteInputDTO> fuentes;
     private Boolean destacada;
+    private ContenidoMultimediaInputDTO contenidoMultimedia;
 }

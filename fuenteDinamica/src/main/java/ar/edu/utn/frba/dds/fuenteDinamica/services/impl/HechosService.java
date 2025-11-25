@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.UbicacionInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.CategoriaOutputDTO;
+import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.ContenidoMultimediaOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.UbicacionOutputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.*;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,11 +40,37 @@ public class HechosService implements IHechosService {
         this.hechosRepository = hechosRepository;
         this.categoriaService = categoriaService;
     }
+
     @Value("${hecho.diasModificacion}")
-    private Long diasValidosModificacion;
+    private Long diasValidosModificacion; // la cantidad de dias luego de ser aceptado que un hecho puede permitir ser modificado
+
+    @Value("${hecho.diasSugerencia}")
+    private Long diasSugerenciaPermitida; // los dias que puede pasar un hecho en sugerencia hasta ser eliminado
 
     @Value("${app.pagination.hechos.size}")
     private Integer pageSize;
+
+
+    //  ---  Scheduler --- //
+
+
+    public void rechazarHechosSugerenciasScheduler(){
+        List<Hecho> hechosSugerencias = hechosRepository.findAllByEstado(EstadoHecho.SUGERENCIA);
+        if (hechosSugerencias.isEmpty()) return;
+        LocalDateTime limite = LocalDateTime.now().minusDays(diasSugerenciaPermitida); // la fecha limite, si fuiste gestionado antes de esto, te pasaste del tiempo maximo posible
+        for (Hecho hecho : hechosSugerencias) {
+            // si la fechaDeGestion es anterior al límite → vencido
+            if (hecho.getFechaDeGestion().isBefore(limite)) {
+                hecho.setEstado(EstadoHecho.RECHAZADO);
+                hecho.setFechaDeGestion(LocalDateTime.now());
+            }
+        }
+        hechosRepository.saveAll(hechosSugerencias);
+    }
+
+
+    //  ---  Metodos Controller  ---  //
+
 
     @Override
     public List<HechoOutputDTO> getHechos(LocalDateTime fechaDeCarga, EstadoHecho estado, Integer page) {
@@ -131,7 +159,28 @@ public class HechosService implements IHechosService {
     }
 
 
-    // API privada //
+    //  ---  API privada  ---  //
+
+    @Override
+    public List<HechoOutputDTO> getHechosForAgregador(LocalDateTime fechaDeGestion) {
+        // Devuelvo los hechos segun los necesita el agregador
+        // Solo devuelvo Aceptados que tengan aceptacion posterior a la fecha de carga pasada por parametro
+
+        Specification<Hecho> spec = Specification.where(null);
+        spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("estado"), EstadoHecho.ACEPTADO));
+
+        if (fechaDeGestion != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.greaterThan(root.get("fechaDeGestion"), fechaDeGestion));
+        }
+
+        List<HechoOutputDTO> hechoOutputDTOS = hechosRepository.findAll(spec)
+                .stream()
+                .map(this::hechoOutputDTO)
+                .toList();
+        return hechoOutputDTOS;
+    }
 
     @Override
     @Transactional
@@ -153,7 +202,9 @@ public class HechosService implements IHechosService {
     }
 
 
-    //Metodos privados
+    //  ---  Metodos privados  --- //
+
+
     private Hecho hechoInputDTO(HechoInputDTO hechoDTO) {
         return Hecho.builder()
                 .id(hechoDTO.getId())
@@ -164,7 +215,7 @@ public class HechosService implements IHechosService {
                 .fechaDeOcurrencia(hechoDTO.getFechaDeOcurrencia())
                 .contenidoMultimedia(hechoDTO.getContenidoMultimedia())
                 .contribuyenteId(hechoDTO.getContribuyenteId())
-                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : false )
+                .cargadoAnonimamente(hechoDTO.getCargadoAnonimamente() != null ? hechoDTO.getCargadoAnonimamente() : true )
                 .build();
     }
 
@@ -186,7 +237,7 @@ public class HechosService implements IHechosService {
                 .ubicacion(this.ubicacionOutputDTO(hecho.getUbicacion()))
                 .fechaDeOcurrencia(hecho.getFechaDeOcurrencia())
                 .fechaDeCarga(hecho.getFechaDeCarga())
-                .contenidoMultimedia(hecho.getContenidoMultimedia())
+                .contenidoMultimedia(this.contenidoMultimediaOutputDTO(hecho.getContenidoMultimedia()))
                 .cargadoAnonimamente(hecho.getCargadoAnonimamente())
                 .fechaDeModificacion(hecho.getFechaDeModificacion())
                 .contribuyenteId(hecho.getContribuyenteId())
@@ -224,6 +275,23 @@ public class HechosService implements IHechosService {
         categoriaOutputDTO.setId(categoria.getId());
         categoriaOutputDTO.setNombre(categoria.getNombre());
         return categoriaOutputDTO;
+    }
+
+    private List<ContenidoMultimediaOutputDTO> contenidoMultimediaOutputDTO(List<ContenidoMultimedia> contenidosMultimedia) {
+        List<ContenidoMultimediaOutputDTO> contenidoMultimediaOutputDTO = new ArrayList<>();
+
+        contenidosMultimedia.forEach(contenidoMultimedia -> {
+            ContenidoMultimediaOutputDTO contenidoMultimediaOutputDTO1 = ContenidoMultimediaOutputDTO.builder()
+                    .id(contenidoMultimedia.getId())
+                    .url(contenidoMultimedia.getUrl())
+                    .tipoContenido(contenidoMultimedia.getTipoContenido())
+                    .descripcion(contenidoMultimedia.getDescripcion())
+                    .build();
+
+            contenidoMultimediaOutputDTO.add(contenidoMultimediaOutputDTO1);
+        });
+
+        return contenidoMultimediaOutputDTO;
     }
 
     // Test

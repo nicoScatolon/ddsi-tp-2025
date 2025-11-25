@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoriaInputDTO {
-    private String CodigoCat;
+    private String codigoCategoria;
     private String nombre;
+    private String nuevoNombre;
 }

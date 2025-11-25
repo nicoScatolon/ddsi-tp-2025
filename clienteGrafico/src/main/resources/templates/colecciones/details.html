@@ -2,209 +2,241 @@
 
 <div th:fragment="contenido">
 
-  <th:block th:fragment="cssExtra">
-    <link rel="stylesheet" th:href="@{/css/colecciones/colecciones-details.css}">
-  </th:block>
+    <th:block th:fragment="cssExtra">
+        <link rel="stylesheet" th:href="@{/css/colecciones/colecciones-details.css}">
+    </th:block>
 
-  <section id="collection-detail">
-    <div class="explore-layout">
-
-      <!-- Info de la colección -->
-      <div class="collection-header">
-        <h1 id="collection-title" th:text="${coleccion.titulo}">Nombre de la Colección</h1>
-        <p id="collection-description" th:text="${coleccion.descripcion}" >Descripción de la colección...</p>
-      </div>
-
-        <!-- Acciones FUERA del link -->
-        <div sec:authorize="hasRole('ADMIN')" class="card-actions">
-
-            <!-- DESTACAR  -->
-            <form th:if="${!coleccion.destacada}"
-                  th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
-                  method="post"
-                  class="inline-form">
-                <input type="hidden" name="_method" value="put" />
-                <button type="submit" class="btn-action btn-destacar">
-                    <i class="fas fa-star"></i>
-                    Destacar
-                </button>
-            </form>
-
-            <!--  QUITAR DESTACADO  -->
-            <form th:if="${coleccion.destacada}"
-                  th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
-                  method="post"
-                  class="inline-form">
-                <input type="hidden" name="_method" value="delete" />
-                <button type="submit" class="btn-action btn-destacar quitar">
-                    <i class="fas fa-star-half-alt"></i>
-                    Quitar destacado
-                </button>
-            </form>
-
-            <!-- Editar -->
-            <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}"
-               class="btn-action btn-edit">
-                <i class="fas fa-edit"></i>
-                 Editar
-            </a>
-
-            <!--  Eliminar -->
-            <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}"
-                  method="post"
-                  class="inline-form"
-                  onsubmit="return confirm('¿Seguro que querés eliminar esta colección?');">
-                <input type="hidden" name="_method" value="delete" />
-                <button type="submit" class="btn-action btn-delete">
-                    <i class="fas fa-trash-alt"></i>
-                     Eliminar
-                </button>
-            </form>
-
-
-
-        </div>
-
-
-        <!-- BOX FILTROS -->
-      <aside class="filter-box">
-        <h2>Filtros</h2>
+    <aside class="sidebar">
+        <h2><strong>Filtros</strong></h2>
 
         <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get" >
 
-          <!-- Curacion -->
-          <div class="filter-group">
-            <label for="curado">Visualizacion:</label>
-            <select id="curado" name="curado">
-              <option value="false" th:selected="${curado == false}"> Irrestricta </option>
-              <option value="true" th:selected="${curado == true}"> Curada </option>
-            </select>
-          </div>
-
-          <!-- Provincia -->
-          <div class="filter-group">
-            <label for="provincia">Provincia:</label>
-            <input type="text" id="provincia" name="provincia" placeholder="Ej: Buenos Aires"
-                   th:value="${filtros?.provincia}">
-          </div>
-
-          <!-- Categoría -->
-          <div class="filter-group">
-            <label for="categoria">Categoría:</label>
-            <input type="text" id="categoria" name="categoria" placeholder="Ej: Robo, Violencia..."
-                   th:value="${filtros?.categoria}">
-          </div>
-
-          <!-- Fechas de reporte -->
-          <div class="filter-group">
-            <label>Fecha de reporte:</label>
-            <div class="date-range">
-              <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
-                     th:value="${#temporals.format(filtros?.fReporteDesde, 'dd-MM-yyyy')}">
-              <input type="date" id="fReporteHasta" name="fReporteHasta" placeholder="Hasta"
-                     th:value="${#temporals.format(filtros?.fReporteHasta, 'dd-MM-yyyy')}">
+            <!-- Visualización -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-eye" style="color: black; margin-right: 8px;"></i>Visualización</label>
+                <div class="filter-content">
+                    <select id="curado" name="curado">
+                        <option value="false" th:selected="${curado == false}"> Irrestricta </option>
+                        <option value="true" th:selected="${curado == true}"> Curada </option>
+                    </select>
+                </div>
             </div>
-          </div>
 
-          <!-- Fechas de acontecimiento -->
-          <div class="filter-group">
-            <label>Fecha del acontecimiento:</label>
-            <div class="date-range">
-              <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
-                     th:value="${#temporals.format(filtros?.fAconDesde, 'dd-MM-yyyy')}">
-              <input type="date" id="fAconHasta" name="fAconHasta" placeholder="Hasta"
-                     th:value="${#temporals.format(filtros?.fAconHasta, 'dd-MM-yyyy')}">
+            <!-- Provincia -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-map-marker-alt" style="color: black; margin-right: 8px;"></i>Provincia</label>
+                <div class="filter-content">
+                    <input type="text"
+                           id="provincia"
+                           name="provincia"
+                           placeholder="Ej: Buenos Aires"
+                           th:value="${filtros?.provincia}"
+                           list="provincias-list"
+                           autocomplete="off">
+                    <datalist id="provincias-list">
+                        <option th:each="prov : ${provincias}" th:value="${prov}"></option>
+                    </datalist>
+                </div>
             </div>
-          </div>
 
-          <!-- Fuente -->
-          <div class="filter-group">
-            <label for="fuenteId">Fuente:</label>
-            <select id="fuenteId" name="fuenteId">
-              <option value="">-- Seleccionar fuente --</option>
-              <option th:each="fuente : ${coleccion.fuentes}"
-                      th:value="${fuente.fuenteId}"
-                      th:text="${fuente.nombre}"
-                      th:selected="${fuente.fuenteId == filtros.fuenteId}">
-              </option>
-            </select>
-          </div>
+            <!-- Categoría -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-folder" style="color: black; margin-right: 8px;"></i>Categoría</label>
+                <div class="filter-content">
+                    <input type="text"
+                           id="categoria"
+                           name="categoria"
+                           placeholder="Ej: Robo, Violencia..."
+                           th:value="${filtros?.categoria}"
+                           list="categorias-list"
+                           autocomplete="off">
+                    <datalist id="categorias-list">
+                        <option th:each="cat : ${categorias}" th:value="${cat}"></option>
+                    </datalist>
+                </div>
+            </div>
 
-          <!-- Etiqueta -->
-          <div class="filter-group">
-            <label for="etiqueta">Etiqueta:</label>
-            <input type="text" id="etiqueta" name="etiqueta" placeholder="Ej: Inseguridad, Tránsito..."
-                   th:value="${filtros?.etiqueta}">
-          </div>
+            <!-- Fechas de reporte -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-calendar-check" style="color: black; margin-right: 8px;"></i>Fecha de reporte</label>
+                <div class="filter-content date-range">
+                    <input type="date" id="fReporteDesde" name="fReporteDesde" placeholder="Desde"
+                           th:value="${filtros?.fReporteDesde != null ? #temporals.format(filtros.fReporteDesde, 'yyyy-MM-dd') : ''}">
+                    <input type="date" id="fReporteHasta" name="fReporteHasta" placeholder="Hasta"
+                           th:value="${filtros?.fReporteHasta != null ? #temporals.format(filtros.fReporteHasta, 'yyyy-MM-dd') : ''}">
+                </div>
+            </div>
 
-          <input type="hidden" name="page" value="0"> <!-- Para que se vaya a la primera pagina -->
+            <!-- Fechas de acontecimiento -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-calendar-alt" style="color: black; margin-right: 8px;"></i>Fecha del acontecimiento</label>
+                <div class="filter-content date-range">
+                    <input type="date" id="fAconDesde" name="fAconDesde" placeholder="Desde"
+                           th:value="${filtros?.fAconDesde != null ? #temporals.format(filtros.fAconDesde, 'yyyy-MM-dd') : ''}">
+                    <input type="date" id="fAconHasta" name="fAconHasta" placeholder="Hasta"
+                           th:value="${filtros?.fAconHasta != null ? #temporals.format(filtros.fAconHasta, 'yyyy-MM-dd') : ''}">
+                </div>
+            </div>
 
-          <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
+            <!-- Fuente -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-newspaper" style="color: black; margin-right: 8px;"></i>Fuente</label>
+                <div class="filter-content">
+                    <select id="fuenteId" name="fuenteId">
+                        <option value="">-- Seleccionar fuente --</option>
+                        <option th:each="fuente : ${coleccion.fuentes}"
+                                th:value="${fuente.fuenteId}"
+                                th:text="${fuente.nombre}"
+                                th:selected="${fuente.fuenteId == filtros.fuenteId}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Etiqueta -->
+            <div class="filter-group collapsible collapsed">
+                <label><i class="fas fa-tags" style="color: black; margin-right: 8px;"></i>Etiqueta</label>
+                <div class="filter-content">
+                    <input type="text"
+                           id="etiqueta"
+                           name="etiqueta"
+                           placeholder="Ej: Inseguridad, Tránsito..."
+                           th:value="${filtros?.etiqueta}"
+                           list="etiquetas-list"
+                           autocomplete="off">
+                    <datalist id="etiquetas-list">
+                        <option th:each="tag : ${etiquetas}" th:value="${tag}"></option>
+                    </datalist>
+                </div>
+            </div>
+
+            <input type="hidden" name="page" value="0">
+
+            <button class="btn-filter" id="btn-apply-filters">Aplicar filtros</button>
         </form>
-      </aside>
+    </aside>
 
-      <div class="collection-content">
+    <div class="content-wrapper">
+        <section id="collection-detail">
 
-        <!-- CARDS -->
-        <div id="hechos-container" class="cards-container">
-          <a class="card" th:each="hecho : ${hechos}"
-             th:href="@{/hechos/{id}(id=${hecho.id})}"
-             th:aria-label="${hecho.titulo}">
-
-            <!-- 1️⃣ Título -->
-            <div class="card-title" th:text="${hecho.titulo}">
-              Título de ejemplo
+            <!-- Info de la colección -->
+            <div class="collection-header">
+                <h1 id="collection-title" th:text="${coleccion.titulo}">Nombre de la Colección</h1>
+                <p id="collection-description" th:text="${coleccion.descripcion}">Descripción de la colección...</p>
             </div>
 
-            <!-- 2️⃣ Descripción -->
-            <div class="card-description">
-              <p th:text="${#strings.abbreviate(hecho.descripcion, 150)}">
-                Descripción de ejemplo
-              </p>
+            <!-- Acciones de administrador -->
+            <div sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')" class="card-actions">
+
+                <!-- DESTACAR  -->
+                <form th:if="${!coleccion.destacada}"
+                      th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
+                      method="post"
+                      class="inline-form">
+                    <input type="hidden" name="_method" value="put" />
+                    <button type="submit" class="btn-action btn-destacar">
+                        <i class="fas fa-star"></i>
+                        Destacar
+                    </button>
+                </form>
+
+                <!--  QUITAR DESTACADO  -->
+                <form th:if="${coleccion.destacada}"
+                      th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
+                      method="post"
+                      class="inline-form">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-action btn-destacar quitar">
+                        <i class="fas fa-star-half-alt"></i>
+                        Quitar destacado
+                    </button>
+                </form>
+
+                <!-- Editar -->
+                <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}"
+                   class="btn-action btn-edit">
+                    <i class="fas fa-edit"></i>
+                    Editar
+                </a>
+
+                <!--  Eliminar -->
+                <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}"
+                      method="post"
+                      class="inline-form"
+                      onsubmit="return confirm('¿Seguro que querés eliminar esta colección?');">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-action btn-delete">
+                        <i class="fas fa-trash-alt"></i>
+                        Eliminar
+                    </button>
+                </form>
+
             </div>
 
-            <!-- 3️⃣ Datos extra -->
-            <div class="card-data">
-              <p>
-                <strong>📍</strong>
-                <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : '-'}">Ubicación</span>
-              </p>
-              <p>
-                <strong>🏷️</strong>
-                <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : '-'}">Categoría</span>
-              </p>
-              <p>
-                <strong>🔖</strong>
-                <span th:text="${#lists.isEmpty(hecho.etiquetas) ? '-' : hecho.etiquetas[0].nombre}">Etiqueta</span>
-              </p>
-              <p>
-                <strong>📅</strong>
-                <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd-MM-yyyy')}">Fecha</span>
-              </p>
-              <p>
-                <strong>🌐</strong>
-                <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : '-'}">Fuente</span>
-              </p>
+            <!-- CARDS -->
+            <div id="hechos-container" class="cards-container">
+                <a class="card" th:each="hecho : ${hechos}"
+                   th:href="@{/hechos/{id}(id=${hecho.id})}"
+                   th:aria-label="${hecho.titulo}">
 
-            </div>
+                    <!-- Columna 1: Título y Descripción -->
+                    <div class="card-content">
+                        <div class="card-title" th:text="${hecho.titulo}">
+                            Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones
+                        </div>
+                        <div class="card-description">
+                            <p th:text="${#strings.abbreviate(hecho.descripcion, 220)}">
+                                Descripción de ejemplo que puede ser bastante larga
+                            </p>
+                        </div>
+                    </div>
 
-            <!-- 4️⃣ Imagen -->
-            <div class="card-img"
-                 th:if="${hecho.contenidoMultimedia != null and hecho.contenidoMultimedia.size() > 0}"
-                 aria-hidden="true">
-              <img th:src="@{/uploads/{file}(file=${hecho.contenidoMultimedia.get(0).ruta})}"
-                   th:alt="${hecho.titulo}"/>
-            </div>
+                    <!-- Columna 2: Metadata -->
+                    <div class="card-metadata">
+                        <div class="card-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : 'Sin ubicación'}">Buenos Aires</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-folder-open"></i>
+                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : 'Sin categoría'}">Categoría</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? 'Sin etiqueta' : hecho.etiquetas[0].nombre}">Etiqueta</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-calendar-day"></i>
+                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd/MM/yyyy')}">23/10/2025</span>
+                        </div>
+                        <div class="card-meta-item">
+                            <i class="fas fa-globe"></i>
+                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : 'Sin fuente'}">Fuente</span>
+                        </div>
+                    </div>
 
-          </a>
+                    <!-- Columna 3: Imagen -->
+                    <div class="card-image">
+                        <div class="card-img"
+                             th:if="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
+                            <img th:src="${hecho.contenidoMultimedia[0].url}"
+                                 th:alt="${hecho.titulo}"/>
+                        </div>
+                        <div class="card-img-placeholder"
+                             th:unless="${hecho.contenidoMultimedia != null and !#lists.isEmpty(hecho.contenidoMultimedia)}">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
 
-          <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">
+                </a>
 
-            <!-- Botón Anterior -->
-            <a class="pagination-arrow"
-               th:classappend="${paginaActual == 0} ? ' disabled' : ''"
-               th:onclick="${paginaActual == 0} ? 'return false;' : ''"
-               th:href="@{/colecciones/{handle}(
+                <div id="pagination-controls">
+
+                    <!-- Botón Anterior -->
+                    <a class="pagination-arrow"
+                       th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+                       th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+                       th:href="@{/colecciones/{handle}(
                         handle=${coleccion.handle},
                         page=${paginaActual - 1},
                         provincia=${filtros.provincia},
@@ -217,17 +249,19 @@
                         etiqueta=${filtros.etiqueta},
                         curado=${curado}
                     )}">
-              ◀
-            </a>
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
 
-            <!-- Número de página actual -->
-            <div class="pagination-page-number" th:text="${paginaActual+1}"> Numero Pagina </div>
+                    <!-- Número de página actual -->
+                    <div class="pagination-page-number">
+                        <span>Página <strong th:text="${paginaActual+1}">1</strong></span>
+                    </div>
 
-            <!-- Botón Siguiente -->
-            <a class="pagination-arrow"
-               th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
-               th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
-               th:href="@{/colecciones/{handle}(
+                    <!-- Botón Siguiente -->
+                    <a class="pagination-arrow"
+                       th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
+                       th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
+                       th:href="@{/colecciones/{handle}(
                         handle=${coleccion.handle},
                         page=${paginaActual + 1},
                         provincia=${filtros.provincia},
@@ -240,23 +274,20 @@
                         etiqueta=${filtros.etiqueta},
                         curado=${curado}
                     )}">
-              ▶
-            </a>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
 
-          </div>
+                </div>
 
-        </div>
+            </div>
 
-
-      </div>
-
+        </section>
     </div>
-  </section>
-
 
 </div>
 
 <th:block th:fragment="jsExtra">
+    <script th:src="@{/js/hechos/explore.js}"></script>
 </th:block>
 
 </html>

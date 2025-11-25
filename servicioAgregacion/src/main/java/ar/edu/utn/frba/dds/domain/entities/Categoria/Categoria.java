@@ -12,7 +12,6 @@ import lombok.*;
 @Entity
 @Table(name = "categoria")
 public class Categoria {
-
     @Id
     private String codigoCategoria; //es el nombre pero normalizado
 

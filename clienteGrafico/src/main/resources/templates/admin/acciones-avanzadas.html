@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="acciones-avanzadas">
+    <!-- Grid de Secciones -->
+    <div class="avanzadas-grid">
+
+        <!-- Card: Gestión de Usuarios -->
+        <div class="avanzadas-card">
+            <div class="card-icon usuarios-icon">
+                <i class="fas fa-users-cog"></i>
+            </div>
+            <h2 class="card-title">Gestión de Usuarios</h2>
+            <p class="card-description">Administra los usuarios del sistema y crea nuevos administradores con permisos específicos</p>
+            <button type="button" class="btn-card btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearAdmin">
+                <i class="fas fa-user-plus me-2"></i>
+                Crear Administrador
+            </button>
+        </div>
+
+        <!-- Card: Colecciones -->
+        <div class="avanzadas-card">
+            <div class="card-icon colecciones-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <h2 class="card-title">Colecciones</h2>
+            <p class="card-description">Gestiona y mantiene las colecciones del sistema con actualizaciones y curaciones</p>
+
+            <div class="card-actions">
+                <form class="form-accion" th:action="@{/admin/adminsuperior/colecciones/actualizar}" method="post" onsubmit="return confirmarAccion('actualizar las colecciones')">
+                    <button type="submit" class="btn-card btn-primary">
+                        <i class="fas fa-sync me-2"></i>
+                        Actualizar
+                    </button>
+                </form>
+
+                <form class="form-accion" th:action="@{/admin/adminsuperior/colecciones/curar}" method="post" onsubmit="return confirmarAccion('curar las colecciones')">
+                    <button type="submit" class="btn-card btn-primary">
+                        <i class="fas fa-wrench me-2"></i>
+                        Curar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECCIÓN COMPLETA DE GESTIÓN DE FUENTES -->
+    <!-- ============================================ -->
+    <div class="fuentes-section">
+        <div class="section-header-fuentes">
+            <div class="header-left">
+                <div class="header-icon-fuentes">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <h2 class="section-title-fuentes">Gestión de Fuentes</h2>
+                    <p class="section-subtitle-fuentes">Administra las fuentes de datos del sistema</p>
+                </div>
+            </div>
+            <div class="header-actions-fuentes">
+                <button type="button" class="btn btn-success btn-fuente" data-bs-toggle="modal" data-bs-target="#modalCrearFuente">
+                    <i class="fas fa-plus me-2"></i>
+                    Nueva Fuente
+                </button>
+                <form th:action="@{/admin/adminsuperior/fuentes/actualizar}" method="post"
+                      onsubmit="return confirmarAccion('actualizar todas las fuentes')" style="display: inline;">
+                    <button type="submit" class="btn btn-primary btn-fuente">
+                        <i class="fas fa-sync-alt me-2"></i>
+                        Actualizar Todas
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Grid de Fuentes -->
+        <div class="fuentes-grid-list">
+            <div th:each="fuente : ${fuentes}" class="fuente-item" th:classappend="${fuente.tipoFuente.name() == 'PROXY'} ? 'fuente-proxy-item' : ''">
+                <!-- Badge de tipo -->
+                <div class="fuente-type-badge"
+                     th:classappend="'badge-type-' + ${#strings.toLowerCase(fuente.tipoFuente.name())}">
+
+                    <i class="fas" th:switch="${fuente.tipoFuente.name()}">
+                        <span th:case="'ESTATICA'" class="fa-file-alt"></span>
+                        <span th:case="'DINAMICA'" class="fa-sync"></span>
+                        <span th:case="*"
+                              class="fa-network-wired"></span>
+                    </i>
+                    <!-- Texto del tipo al lado -->
+                    <span th:text="${fuente.tipoFuente}"></span>
+                </div>
+
+                <!-- Información de la fuente -->
+                <div class="fuente-info">
+                    <h3 class="fuente-nombre" th:text="${fuente.nombre}">Nombre Fuente</h3>
+                    <p class="fuente-id">ID: <span th:text="${fuente.fuenteId}"></span></p>
+                </div>
+
+                <!-- Acciones -->
+                <div class="fuente-actions">
+                    <!-- Eliminar fuente -->
+                    <form th:action="@{/admin/adminsuperior/fuentes/{id}(id=${fuente.fuenteId})}"
+                          method="post"
+                          onsubmit="return confirmarEliminarFuente(event, this)"
+                          style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mensaje si no hay fuentes -->
+            <div th:if="${#lists.isEmpty(fuentes)}" class="no-fuentes">
+                <i class="fas fa-database fa-3x mb-3 text-muted"></i>
+                <p>No hay fuentes registradas en el sistema</p>
+                <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalCrearFuente">
+                    <i class="fas fa-plus me-2"></i>
+                    Crear Primera Fuente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECCIÓN DE GESTIÓN DE ESTADÍSTICAS -->
+    <!-- ============================================ -->
+    <div class="estadisticas-section">
+        <div class="section-header-estadisticas">
+            <div class="header-left">
+                <div class="header-icon-estadisticas">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <h2 class="section-title-estadisticas">Gestión de Estadísticas</h2>
+                    <p class="section-subtitle-estadisticas">Administra y mantén actualizadas las estadísticas del sistema</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de acciones -->
+        <div class="estadisticas-actions-grid">
+            <!-- Actualizar Estadísticas -->
+            <form th:action="@{/admin/adminsuperior/estadisticas}" method="post"
+                  onsubmit="return confirmarAccion('actualizar las estadísticas')" class="action-form">
+                <button type="submit" class="action-card actualizar-card">
+                    <div class="action-icon actualizar">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Actualizar Estadísticas</h4>
+                        <p>Recalcula y actualiza todas las estadísticas del sistema de forma inmediata</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Eliminar Estadísticas Viejas -->
+            <form th:action="@{/admin/adminsuperior/estadisticas}" method="post"
+                  onsubmit="return confirmarAccion('eliminar estadísticas viejas')" class="action-form">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="action-card eliminar-card">
+                    <div class="action-icon eliminar">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Eliminar Estadísticas Viejas</h4>
+                        <p>Limpia automáticamente los datos estadísticos obsoletos o desactualizados</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODALES -->
+    <!-- ============================================ -->
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-warning">
+                    <h5 class="modal-title" id="modalConfirmacionLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Acción
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeConfirmacion" class="mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarAccion">
+                        <i class="fas fa-check me-2"></i>
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Administrador -->
+    <div class="modal fade" id="modalCrearAdmin" tabindex="-1" aria-labelledby="modalCrearAdminLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearAdminLabel">
+                        <i class="fas fa-user-shield me-2"></i>
+                        Crear Nuevo Administrador
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/admin/crear-admin}" method="post">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label">
+                                    <i class="fas fa-user me-1"></i>
+                                    Nombre <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Juan" required>
+                            </div>
+
+                            <!-- Apellido -->
+                            <div class="col-md-6">
+                                <label for="apellido" class="form-label">
+                                    <i class="fas fa-user me-1"></i>
+                                    Apellido <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Ej: Pérez" required>
+                            </div>
+
+                            <!-- Fecha de Nacimiento -->
+                            <div class="col-md-12">
+                                <label for="fecha_nacimiento" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    Fecha de Nacimiento <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-at me-1"></i>
+                                    Nombre de Usuario <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Ej: jperez" required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Ej: jperez@ejemplo.com" required>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>
+                                    Contraseña <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="****">
+                            </div>
+
+                            <!-- Confirmar Password -->
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>
+                                    Confirmar Contraseña <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Repetir contraseña">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Crear Administrador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Fuente -->
+    <div class="modal fade" id="modalCrearFuente" tabindex="-1" aria-labelledby="modalCrearFuenteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearFuenteLabel">
+                        <i class="fas fa-database me-2"></i>
+                        Crear Nueva Fuente
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/admin/adminsuperior/fuentes}" method="post" onsubmit="return confirmarCreacionFuente()">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-12">
+                                <label for="nombreFuente" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Nombre de la Fuente <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="nombreFuente" name="nombre" placeholder="Ej: FuenteEstatica" required>
+                                <small class="text-muted">Nombre identificador único para la fuente</small>
+                            </div>
+
+                            <!-- URL -->
+                            <div class="col-12">
+                                <label for="urlFuente" class="form-label">
+                                    <i class="fas fa-link me-1"></i>
+                                    URL <span class="text-danger">*</span>
+                                </label>
+                                <input type="url" class="form-control" id="urlFuente" name="url" placeholder="http://localhost:8081" required>
+                                <small class="text-muted">URL completa del endpoint de la fuente</small>
+                            </div>
+
+                            <!-- Tipo de Fuente -->
+                            <div class="col-12">
+                                <label for="tipoFuente" class="form-label">
+                                    <i class="fas fa-list me-1"></i>
+                                    Tipo de Fuente <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-control" id="tipoFuente" name="tipoFuente" required>
+                                    <option value="" disabled selected>Selecciona un tipo</option>
+                                    <option value="ESTATICA">Estática</option>
+                                    <option value="DINAMICA">Dinámica</option>
+                                    <option value="PROXY">Proxy</option>
+                                </select>
+                                <small class="text-muted">Define el comportamiento de la fuente de datos</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Crear Fuente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

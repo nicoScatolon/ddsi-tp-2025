@@ -4,10 +4,7 @@ import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.DdsHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.input.UbicacionInputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.CategoriaOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.FuenteOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.UbicacionOutputDTO;
+import ar.edu.utn.frba.dds.fuenteproxy.domain.dtos.output.*;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.Ubicacion;
 import ar.edu.utn.frba.dds.fuenteproxy.domain.entities.fuentes.Fuente;
@@ -91,10 +88,18 @@ public final class DTOConverter {
                 .build();
     }
 
-    public static FuenteOutputDTO mapToFuenteOutputDTO(FuenteDDS fuente) {
+    public static FuenteOutputDTO mapToFuenteOutputDTO(Fuente fuente) {
         return FuenteOutputDTO.builder()
                 .id(fuente.getId())
                 .nombre(fuente.getNombre())
+                .tipo(fuente.getTipo().name())
+                .build();
+    }
+
+    public static FuenteAMostrarOutputDTO mapToFuenteAMostrarOutputDTO(Fuente fuente) {
+        return FuenteAMostrarOutputDTO.builder()
+                .nombre(fuente.getNombre())
+                .url(fuente.getBaseUrl())
                 .tipo(fuente.getTipo().name())
                 .build();
     }

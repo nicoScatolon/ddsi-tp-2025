@@ -1,4 +1,6 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: html}">
 
 <div th:fragment="contenido">
 
@@ -7,72 +9,116 @@
     </th:block>
 
     <section id="collections">
-        <h1>Colecciones</h1>
-        <div class="explore-layout">
+        <!-- Header con título y filtro -->
+        <div class="collections-header">
+            <h1>Colecciones</h1>
             <div class="filter-bar">
-                <label for="filtro-colecciones">Filtrar por Consenso: </label>
-                <select id="filtro-colecciones">
-                    <option value="all">Ninguno</option>
-                    <option value="Concenso Absoluto">Absoluto</option>
-                    <option value="Mayoria Simple">Mayoría Simple</option>
-                    <option value="Multiple Mencion">Múltiple Mención</option>
+                <label for="filtro-colecciones">
+                    <i class="fas fa-filter"></i>
+                    Consenso:
+                </label>
+                <select id="filtro-colecciones" name="consenso">
+                    <option value="" th:selected="${filtroActual == null}">Todos</option>
+
+                    <option value="SIN_CONSENSO" th:selected="${filtroActual == T(ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso).SIN_CONSENSO}">
+                        Sin consenso
+                    </option>
+
+                    <option value="ABSOLUTO" th:selected="${filtroActual == T(ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso).ABSOLUTO}">
+                        Absoluto
+                    </option>
+
+                    <option value="MAYORIASIMPLE" th:selected="${filtroActual == T(ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso).MAYORIASIMPLE}">
+                        Mayoría simple
+                    </option>
+
+                    <option value="MULTIPLEMENCION" th:selected="${filtroActual == T(ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso).MULTIPLEMENCION}">
+                        Múltiple mención
+                    </option>
                 </select>
             </div>
+        </div>
 
-            <div id="collections-container" class="cards-container">
-                <div th:each="coleccion : ${colecciones}" class="card collection-card">
+        <!-- MENSAJE CUANDO NO HAY COLECCIONES - PARA ADMINS -->
+        <div th:if="${#lists.isEmpty(colecciones)}" sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')" class="empty-state">
+            <i class="fas fa-layer-group"></i>
+            <h3>No hay colecciones todavía</h3>
+            <p>Sé el primero en crear una colección y organizar información importante.</p>
+            <a href="/colecciones/create" class="btn-create-first">
+                <i class="fas fa-plus"></i> Crear la primera colección
+            </a>
+        </div>
 
-                    <!-- Área clickeable que lleva al detalle -->
-                    <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="card-link">
-                        <div class="card-fallback"
-                             style="background:#2F60F4; display:flex; justify-content:center; align-items:center; height:120px;">
-                            <span style="color:#fff; font-weight:700; font-size:1.4rem;"
-                                  th:text="${#strings.substring(coleccion.titulo, 0, 1)}"> A
-                            </span>
+        <!-- MENSAJE CUANDO NO HAY COLECCIONES - PARA USUARIOS REGULARES -->
+        <div th:if="${#lists.isEmpty(colecciones)}" sec:authorize="!hasAnyRole('ADMIN','ADMINSUPERIOR')" class="empty-state">
+            <i class="fas fa-layer-group"></i>
+            <h3>No hay colecciones disponibles</h3>
+            <p>Pronto se cargarán colecciones con información relevante. Vuelve más tarde para explorarlas.</p>
+        </div>
+
+        <!-- Grid de colecciones -->
+        <div id="collections-container" class="cards-container" th:unless="${#lists.isEmpty(colecciones)}">
+            <div th:each="coleccion : ${colecciones}" class="card collection-card">
+
+                <!-- Área clickeable que lleva al detalle -->
+                <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="card-link">
+
+                    <!-- Imagen/Fallback con gradiente -->
+                    <div class="card-image-wrapper">
+                        <div class="card-fallback">
+                            <span class="card-initial" th:text="${#strings.substring(coleccion.titulo, 0, 1)}">A</span>
                         </div>
+                    </div>
 
+                    <!-- Contenido de la card -->
+                    <div class="card-content">
                         <!-- Título -->
-                        <div class="card-title" th:text="${coleccion.titulo}">Título de la colección</div>
+                        <h3 class="card-title" th:text="${coleccion.titulo}">Título de la colección</h3>
 
                         <!-- Descripción -->
-                        <div class="card-description">
-                            <p th:text="${#strings.abbreviate(coleccion.descripcion, 140)}">
-                                Breve descripción de la colección...
-                            </p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:12px;">
-
-                <!-- Botón Anterior -->
-                <a class="pagination-arrow"
-                   th:classappend="${paginaActual == 0} ? ' disabled' : ''"
-                   th:onclick="${paginaActual == 0} ? 'return false;' : ''"
-                   th:href="@{/colecciones(page=${paginaActual - 1})}">
-                    ◀
-                </a>
-
-                <!-- Número de página actual -->
-                <div class="pagination-page-number" th:text="${paginaActual+1}"> Numero Pagina </div>
-
-                <!-- Botón Siguiente -->
-                <a class="pagination-arrow"
-                   th:classappend="${colecciones.size() < 20} ? ' disabled' : ''"
-                   th:onclick="${colecciones.size() < 20} ? 'return false;' : ''"
-                   th:href="@{/colecciones(page=${paginaActual + 1})}">
-                    ▶
+                        <p class="card-description" th:text="${#strings.abbreviate(coleccion.descripcion, 160)}">
+                            Breve descripción de la colección que puede extenderse un poco más...
+                        </p>
+                    </div>
                 </a>
             </div>
+        </div>
 
+        <!-- PAGINACIÓN: Solo mostrar si NO es la primera página O si hay más páginas -->
+        <div id="pagination-controls" th:if="${!#lists.isEmpty(colecciones) && (paginaActual > 0 || colecciones.size() >= 20)}">
+            <!-- Botón Anterior -->
+            <a class="pagination-arrow"
+               th:classappend="${paginaActual == 0} ? ' disabled' : ''"
+               th:onclick="${paginaActual == 0} ? 'return false;' : ''"
+               th:href="@{/colecciones(page=${paginaActual - 1})}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+
+            <!-- Número de página actual -->
+            <div class="pagination-page-number">
+                <span>Página <strong th:text="${paginaActual+1}">1</strong></span>
+            </div>
+
+            <!-- Botón Siguiente -->
+            <a class="pagination-arrow"
+               th:classappend="${colecciones.size() < 20} ? ' disabled' : ''"
+               th:onclick="${colecciones.size() < 20} ? 'return false;' : ''"
+               th:href="@{/colecciones(page=${paginaActual + 1})}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
 
     </section>
-    <a href="/colecciones/create" class="fab-create" aria-label="Crear colección">
-        <i class="fas fa-plus"></i>
-    </a>
+
+    <!-- Botón flotante para crear colección -->
+    <div sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')">
+        <a href="/colecciones/create" class="fab-create" aria-label="Crear colección">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+
 </div>
+
 <th:block th:fragment="jsExtra">
     <script>
         (function addFavicon() {
@@ -85,8 +131,21 @@
                 document.head.appendChild(link);
             }
         })();
-
     </script>
+
+    <script>
+        document.getElementById("filtro-colecciones").addEventListener("change", function() {
+            const valor = this.value;
+            const page = new URLSearchParams(window.location.search).get("page") || 0;
+
+            if (valor === "") {
+                window.location.href = `/colecciones?page=${page}`;
+            } else {
+                window.location.href = `/colecciones?page=${page}&consenso=${valor}`;
+            }
+        });
+    </script>
+
 </th:block>
 
 </html>

@@ -7,7 +7,9 @@ import ar.edu.utn.frba.dds.domain.entities.*;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
+import ar.edu.utn.frba.dds.domain.entities.Categoria.EquivalenteCategoria;
 import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.ContenidoMultimedia;
+import ar.edu.utn.frba.dds.domain.entities.ContenidoMultimedia.TipoContenido;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.*;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
@@ -49,6 +51,7 @@ public class DTOConverter {
                 .cargadoAninimamente(hecho.getCargadoAnonimamente())
                 .fuente(convertirFuentePreviewOutputDTO(hecho.getFuente()))
                 .destacado(hecho.getDestacado())
+                .contribuyenteId(hecho.getContribuyenteId())
                 .build();
     }
 
@@ -105,6 +108,7 @@ public class DTOConverter {
                 .fechaDeOcurrencia(dto.getFechaDeOcurrencia())
                 .fechaDeCarga(dto.getFechaDeCarga())
                 .contribuyenteId(dto.getContribuyenteId())
+                .cargadoAnonimamente(dto.getCargadoAnonimamente())
                 .categoria(categoriaInputDTO(dto.getCategoria()))
                 .fueEliminado(false)
                 .build();
@@ -119,6 +123,7 @@ public class DTOConverter {
         return FuentePreviewOutputDTO.builder()
                 .fuenteId(fuente.getId())
                 .nombre(fuente.getNombre())
+                .tipoFuente(fuente.getTipo())
                 .build();
     }
 
@@ -152,7 +157,7 @@ public class DTOConverter {
                 .descripcion(contenidoMultimediaInputDTO.getDescripcion())
                 .url(contenidoMultimediaInputDTO.getUrl())
                 .hecho(hecho)
-                .tipoContenido(contenidoMultimediaInputDTO.getTipo())
+                .tipoContenido(contenidoMultimediaInputDTO.getTipoContenido())
                 .build();
     }
 
@@ -161,7 +166,7 @@ public class DTOConverter {
     public static ContenidoMultimediaOutputDTO convertirContenidoMultimediaOutputDTO(ContenidoMultimedia contenidoMultimedia) {
         return ContenidoMultimediaOutputDTO.builder()
                 .id(contenidoMultimedia.getId())
-                .tipo(contenidoMultimedia.getTipoContenido())
+                .tipoContenido(contenidoMultimedia.getTipoContenido())
                 .descripcion(contenidoMultimedia.getDescripcion())
                 .url(contenidoMultimedia.getUrl())
                 .build();
@@ -199,7 +204,7 @@ public class DTOConverter {
 
     public static CategoriaOutputDTO convertirCategoriaOutputDTO(Categoria categoria) {
         return CategoriaOutputDTO.builder()
-                .id(categoria.getCodigoCategoria())
+                .codigoCategoria(categoria.getCodigoCategoria())
                 .nombre(categoria.getNombre())
                 .build();
     }
@@ -209,7 +214,7 @@ public class DTOConverter {
     public static Categoria categoriaInputDTO(CategoriaInputDTO categoriaInputDTO) {
         return Categoria.builder()
                 .nombre(categoriaInputDTO.getNombre())
-                .codigoCategoria(categoriaInputDTO.getCodigoCat())
+                .codigoCategoria(categoriaInputDTO.getCodigoCategoria())
                 .build();
     }
 
@@ -230,6 +235,7 @@ public class DTOConverter {
                 .razonDeEliminacion(solicitud.getRazonDeEliminacion())
                 .idCreador(solicitud.getIdCreador())
                 .fechaCreacion(solicitud.getFechaCreacion())
+                .estado(solicitud.getEstado())
                 .build();
     }
 
@@ -277,6 +283,8 @@ public class DTOConverter {
                 .destacada(coleccion.getDestacada())
                 .build();
     }
+
+
 
     // COLECCION INPUT
     public static Coleccion coleccionFromInputDTO(ColeccionInputDTO input) {
@@ -348,13 +356,18 @@ public class DTOConverter {
             dto.setTipo("provincia");
             params.put("provincia", c.getProvincia());
         }
-        else if (criterio instanceof CriterioEtiqueta c) { // Si tienes este
+        else if (criterio instanceof CriterioEtiqueta c) {
             dto.setTipo("etiqueta");
-            params.put("etiqueta", c.getEtiqueta().getId().toString()); // O como lo manejes
+            String etiquetasJson = c.getEtiquetas().stream()
+                    .map(Etiqueta::getNombre)
+                    .map(nombre -> "\"" + nombre.replace("\"", "\\\"") + "\"") // Escapar comillas
+                    .collect(Collectors.joining(",", "[", "]"));
+
+            params.put("etiquetas", etiquetasJson);
         }
-        else if (criterio instanceof CriterioContenidoMultimedia) {
+        else if (criterio instanceof CriterioContenidoMultimedia c) {
             dto.setTipo("contenidoMultimedia");
-            // este no tiene parámetros
+            params.put("tenerMultimedia", c.getTenerMultimedia().toString());
         }
         else {
             throw new IllegalArgumentException("Tipo de criterio no soportado: " + criterio.getClass().getSimpleName());
@@ -362,5 +375,26 @@ public class DTOConverter {
 
         dto.setParametros(params);
         return dto;
+    }
+
+    public static List<EquivalenteOutputDTO> categoriaEquivalenteOutput(List<EquivalenteCategoria> all) {
+        List<EquivalenteOutputDTO> dtos = new ArrayList<>();
+
+        all.forEach(equivalente -> {
+            EquivalenteOutputDTO dto = EquivalenteOutputDTO.builder()
+                    .nombre(equivalente.getNombreEquivalente())
+                    .codigoCategoria(equivalente.getCategoria().getNombre())
+                    .build();
+            dtos.add(dto);
+        });
+        return dtos;
+    }
+
+    public static List<String> convertirEtiquetas(List<Etiqueta> all) {
+        List<String> dtos = new ArrayList<>();
+
+        all.forEach(etiqueta -> {dtos.add(etiqueta.getNombre());});
+
+        return dtos;
     }
 }

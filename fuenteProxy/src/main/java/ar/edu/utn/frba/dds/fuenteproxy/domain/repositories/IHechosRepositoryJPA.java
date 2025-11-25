@@ -14,4 +14,7 @@ public interface IHechosRepositoryJPA extends JpaRepository<Hecho, Long> {
 
     List<String> findAllIdOriginalByFuente(Fuente fuente);
 
+    void deleteAllByFuenteId(Long fuenteId);
+
+
 }

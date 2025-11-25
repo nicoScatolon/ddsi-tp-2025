@@ -9,10 +9,7 @@ import ar.edu.utn.frba.dds.domain.entities.Hecho.Hecho;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -101,10 +98,8 @@ public class Coleccion {
     }
 
     public void eliminarFuente(Fuente fuente) {
-        FuenteAdapter adapter = fuente.getTipo().crearAdapter(fuente);
-        List<Hecho> hechosFuenteEliminada = adapter.obtenerHechos();
-        this.listaHechos.removeAll(hechosFuenteEliminada);
-        this.listaHechosCurados.removeAll(hechosFuenteEliminada);
+        this.listaHechos = this.listaHechos.stream().filter(h -> !Objects.equals( h.getFuente().getId(), fuente.getId() ) ).toList();
+        this.listaHechosCurados = this.listaHechosCurados.stream().filter(h -> !Objects.equals( h.getFuente().getId(), fuente.getId() ) ).toList();
         this.listaFuentes.remove(fuente);
         curarHechos = true;
     }
@@ -136,7 +131,7 @@ public class Coleccion {
 
     public List<Hecho> filtrarHechos(List<Hecho> hechosDisponibles) {
         if (this.listaCriterios.isEmpty() || hechosDisponibles.isEmpty()) {
-            return new ArrayList<>();
+            return hechosDisponibles;
         }
         return hechosDisponibles.stream()
                 .filter(h -> this.listaCriterios.stream().allMatch(c -> c.pertenece(h)))
@@ -146,15 +141,17 @@ public class Coleccion {
     public void actualizarHechos( List<Hecho> hechosFuentes ) {
         // filtramos estos hechos
         this.listaHechos = this.filtrarHechos(hechosFuentes);
+        this.setActualizarHechos(false);
         this.setCurarHechos(true);
     }
 
-    public void curarHechos( List< List<Hecho> > listaHechosFuentes) {
+    public void curarHechos(List<List<Hecho>> listaHechosFuentes) {
         if (algoritmoConsenso == null) {
-            this.listaHechosCurados = this.listaHechos;
+            this.listaHechosCurados = new ArrayList<>(this.listaHechos);
+        } else {
+            List<Hecho> resultado = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
+            this.listaHechosCurados = new ArrayList<>(resultado);
         }
-        else
-            this.listaHechosCurados = algoritmoConsenso.curar(listaHechos, listaHechosFuentes);
         setCurarHechos(false);
     }
 

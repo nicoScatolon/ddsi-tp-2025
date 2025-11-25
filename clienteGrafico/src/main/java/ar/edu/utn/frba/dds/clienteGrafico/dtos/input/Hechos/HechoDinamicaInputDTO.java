@@ -1,8 +1,6 @@
 package ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos;
 
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.CategoriaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.EtiquetaInputDTO;
-import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.FuenteInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.UbicacionInputDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,9 +24,4 @@ public class HechoDinamicaInputDTO {
     private EstadoHecho estado;
     private String sugerencia;
     private Boolean cargadoAnonimamente;
-
-    /*
-    private FuenteInputDTO fuente = null; // Siempre como null para que no rompa el html
-    private List<EtiquetaInputDTO> etiquetas = null; // igual
-    */
 }

@@ -7,7 +7,8 @@
 
     <groupId>ar.utn.ba.ddsi</groupId>
     <artifactId>clienteGrafico</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <name>clienteGrafico</name>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -29,6 +30,17 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!-- Actuator para health/metrics -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Registry para enviar métricas a Datadog -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-datadog</artifactId>
+        </dependency>
         <!-- Spring Web para controllers y server -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -72,6 +84,17 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

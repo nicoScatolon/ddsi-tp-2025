@@ -1,43 +1,130 @@
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" th:replace="~{layout/base :: html}">
 
 <th:block th:fragment="cssExtra">
     <link rel="stylesheet" th:href="@{/css/admin-panel/base.css}">
     <link rel="stylesheet" th:href="@{'/css/admin-panel/' + ${contentTemplate} + '.css'}">
-
 </th:block>
 
 <div th:fragment="contenido">
     <aside class="sidebar">
-        <div class="sidebar-brand"><h2>Panel Administración</h2></div>
+        <div class="sidebar-brand"><h2><strong>Panel Administración</strong></h2></div>
         <ul class="sidebar-menu">
-            <li th:classappend="${contentTemplate == 'actividad'} ? ' active'" class="menu-item">
-                <a href="/admin/actividad">Resumen Actividad</a>
+            <!-- Resumen Actividad -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'actividad'} ? 'active'">
+                <a th:if="${contentTemplate != 'actividad'}" href="/admin/actividad">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Resumen Actividad</span>
+                </a>
+                <span th:if="${contentTemplate == 'actividad'}" class="menu-link-disabled">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Resumen Actividad</span>
+                </span>
             </li>
-            <li th:classappend="${contentTemplate == 'importar-hechos'} ? ' active'" class="menu-item">
-                <a href="/admin/importar">Importar Hechos</a>
+
+            <!-- Importar Hechos -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'importar-hechos'} ? 'active'">
+                <a th:if="${contentTemplate != 'importar-hechos'}" href="/admin/importar">
+                    <i class="fas fa-file-import"></i>
+                    <span>Importar Hechos</span>
+                </a>
+                <span th:if="${contentTemplate == 'importar-hechos'}" class="menu-link-disabled">
+                    <i class="fas fa-file-import"></i>
+                    <span>Importar Hechos</span>
+                </span>
             </li>
-            <li th:classappend="${contentTemplate == 'gestion-hechos'} ? ' active'" class="menu-item">
-                <a href="/admin/hechos">Gestión de Hechos</a>
+
+            <!-- Fuentes Proxy -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'fuente-externa'} ? 'active'">
+                <a th:if="${contentTemplate != 'fuente-externa'}" href="/admin/fuente-externa">
+                    <i class="fas fa-globe"></i>
+                    <span>Gestión fuentes externas</span>
+                </a>
+                <span th:if="${contentTemplate == 'fuente-externa'}" class="menu-link-disabled">
+                    <i class="fas fa-globe"></i>
+                    <span>Gestión Fuentes Externas</span>
+                </span>
             </li>
-            <li th:classappend="${contentTemplate == 'gestion-colecciones'} ? ' active'" class="menu-item">
-                <a href="/admin/colecciones">Gestión de Colecciones</a>
+
+            <!-- Gestión de Hechos -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'gestion-hechos'} ? 'active'">
+                <a th:if="${contentTemplate != 'gestion-hechos'}" href="/admin/hechos">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Gestión de Hechos</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-hechos'}" class="menu-link-disabled">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Gestión de Hechos</span>
+                </span>
             </li>
-            <li th:classappend="${contentTemplate == 'solicitudes-eliminacion'} ? ' active'" class="menu-item">
-                <a href="/admin/solicitudes">Solicitudes de Eliminación</a>
+
+            <!-- Gestión de Colecciones -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'gestion-colecciones'} ? 'active'">
+                <a th:if="${contentTemplate != 'gestion-colecciones'}" href="/admin/colecciones">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Gestión de Colecciones</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-colecciones'}" class="menu-link-disabled">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Gestión de Colecciones</span>
+                </span>
             </li>
+
+            <!-- Solicitudes de Eliminación -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'solicitudes-eliminacion'} ? 'active'">
+                <a th:if="${contentTemplate != 'solicitudes-eliminacion'}" href="/admin/solicitudes">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Solicitudes de Eliminación</span>
+                </a>
+                <span th:if="${contentTemplate == 'solicitudes-eliminacion'}" class="menu-link-disabled">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Solicitudes de Eliminación</span>
+                </span>
+            </li>
+
+            <!-- Gestión de Categorías -->
+            <li class="menu-item" th:classappend="${contentTemplate == 'gestion-categorias'} ? 'active'">
+                <a th:if="${contentTemplate != 'gestion-categorias'}" href="/admin/categorias">
+                    <i class="fas fa-tags"></i>
+                    <span>Gestión de Categorías</span>
+                </a>
+                <span th:if="${contentTemplate == 'gestion-categorias'}" class="menu-link-disabled">
+                    <i class="fas fa-tags"></i>
+                    <span>Gestión de Categorías</span>
+                </span>
+            </li>
+
+            <!-- Gestión de Usuarios -->
+
+            <!-- Acciones de Administracion Superior -->
+            <li sec:authorize="hasRole('ADMINSUPERIOR')" class="menu-item" th:classappend="${contentTemplate == 'acciones-avanzadas'} ? 'active'">
+                <a th:if="${contentTemplate != 'acciones-avanzadas'}" href="/admin/adminsuperior">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Acciones Avanzadas</span>
+                </a>
+                <span th:if="${contentTemplate == 'acciones-avanzadas'}" class="menu-link-disabled">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Acciones Avanzadas</span>
+                    </span>
+            </li>
+
         </ul>
     </aside>
 
     <div class="panel-wrapper">
         <div class="panel-card">
-        <h1 th:text="${titulo}"></h1>
+            <h1 th:text="${titulo}"></h1>
             <div th:replace="~{'admin/' + ${contentTemplate} :: ${contentTemplate}}"></div>
         </div>
     </div>
 </div>
 
 <th:block th:fragment="jsExtra">
-    <script th:src="@{/js/importar-hechos.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:if="${contentTemplate == 'gestion-hechos'}" th:src="@{/js/admin/gestion-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'importar-hechos'}" th:src="@{/js/admin/importar-hechos.js}"></script>
+    <script th:if="${contentTemplate == 'gestion-categorias'}" th:src="@{/js/admin/gestion-categorias.js}"></script>
+    <script th:if="${contentTemplate == 'acciones-avanzadas'}" th:src="@{/js/admin/acciones-avanzadas.js}"></script>
+    <script th:if="${contentTemplate == 'fuente-externa'}" th:src="@{/js/admin/fuente-externa.js}"></script>
 </th:block>
 
 </html>

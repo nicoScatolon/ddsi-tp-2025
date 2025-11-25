@@ -4,15 +4,22 @@ import ar.edu.utn.frba.dds.clienteGrafico.dtos.DTOConverter;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.*;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.ColeccionPreviewInputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Colecciones.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.input.Hechos.HechoInputDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.ColeccionOutputDTO;
+import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.FiltroConsenso;
 import ar.edu.utn.frba.dds.clienteGrafico.dtos.output.Colecciones.dtoAuxiliares.ColeccionFormDTO;
 import ar.edu.utn.frba.dds.clienteGrafico.services.IAgregadorService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IFileSystemService;
+import ar.edu.utn.frba.dds.clienteGrafico.services.IGestionUsuariosService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +29,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ColeccionesController {
     private final IAgregadorService agregadorService;
+    private final IFileSystemService fileSystemService;
+    private final IGestionUsuariosService gestionUsuariosService;
 
     @Value("${app.colecciones.page.size}")
     private Integer pageSize;
 
     @GetMapping
-    public String listarColecciones(@RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model) {
-        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(paginaActual);
-        model.addAttribute("titulo", String.format("Colecciones - Pagina %d", paginaActual+1));
+    public String listarColecciones(
+            Model model,
+            HttpSession session,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false) FiltroConsenso consenso) {
+        if (page < 0) {
+            return "redirect:/error/400";
+        }
+
+        List<ColeccionPreviewInputDTO> colecciones = agregadorService.obtenerColeccionesPreview(page, consenso);
+
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
+        model.addAttribute("titulo", "Colecciones");
         model.addAttribute("colecciones", colecciones);
-        model.addAttribute("paginaActual", paginaActual);
-        model.addAttribute("pageSize", pageSize);
-        return "/colecciones/explore";
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("filtroActual", consenso);
+
+        return "colecciones/explore";
     }
 
     @GetMapping("/{handle}")
@@ -41,9 +63,16 @@ public class ColeccionesController {
                                     @RequestParam(value = "page", defaultValue = "0") int paginaActual,
                                     @RequestParam(value = "curado", defaultValue = "false") Boolean curado,
                                     @PathVariable String handle,
-                                    Model model) {
+                                    Model model, HttpSession session) {
+        if (paginaActual < 0) {
+            return "redirect:/error/400";
+        }
+
         ColeccionPreviewInputDTO coleccion = agregadorService.obtenerColeccionPreviewIndividual(handle);
         List<HechoInputDTO> hechosColeccion = agregadorService.obtenerHechosColeccion(handle, paginaActual, filtros, curado);
+
+
+        fileSystemService.procesarImagenPrincipalListaHechos(hechosColeccion);
 
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
@@ -52,6 +81,15 @@ public class ColeccionesController {
             hechosColeccion = new ArrayList<>();
         }
 
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> categorias = agregadorService.obtenerCategoriasShort(); //Todo podrian ser unicamente las categorias de la coleccion, ahora manda todas
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas
+        String userName = gestionUsuariosService.obtenerUsername(session);
+
+        model.addAttribute("userName", userName);
+        model.addAttribute("etiquetas", etiquetas);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("provincias", provincias);
         model.addAttribute("titulo", String.format("Coleccion - %s", coleccion.getHandle()));
         model.addAttribute("coleccion", coleccion);
         model.addAttribute("hechos", hechosColeccion);
@@ -59,16 +97,24 @@ public class ColeccionesController {
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("curado", curado);
         model.addAttribute("filtros", filtros);
-        return "/colecciones/details";
+        return "colecciones/details";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ADMINSUPERIOR')")
     @GetMapping("/create")
-    public String crearColeccion(Model model) {
+    public String crearColeccion(Model model, HttpSession session) {
         String actionUrl = "/colecciones/create";
         ColeccionFormDTO coleccionFormDTO = new ColeccionFormDTO(); // Usar el form DTO
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
+        model.addAttribute("etiquetas", etiquetas);
+        
+        model.addAttribute("provincias", provincias);
         model.addAttribute("titulo", "Crear Colección");
         model.addAttribute("coleccionDTO", coleccionFormDTO);
         model.addAttribute("fuentes", fuentes);
@@ -76,7 +122,7 @@ public class ColeccionesController {
         model.addAttribute("nueva", true);
         model.addAttribute("actionUrl", actionUrl);
 
-        return "/colecciones/create";
+        return "colecciones/create";
     }
 
     @PostMapping("/create")
@@ -94,18 +140,27 @@ public class ColeccionesController {
     }
 
     @PutMapping()
-    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) {
+    public String editarColeccion(@ModelAttribute ColeccionFormDTO coleccionFormDTO) { //todo Forbidden
         ColeccionOutputDTO coleccionDTO = DTOConverter.convertirFormToOutput(coleccionFormDTO);
         agregadorService.editarColeccion(coleccionDTO);
 
         return "redirect:/colecciones";
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public String handleTipoInvalido(MethodArgumentTypeMismatchException ex) {
+        return "redirect:/error/400";
+    }
+
     @GetMapping("/{handle}/editar")
-    public String modificarColeccion(Model model, @PathVariable String handle) {
+    public String modificarColeccion(Model model, @PathVariable String handle, HttpSession session) {
         String actionUrl = "/colecciones";
         List<FuenteInputDTO> fuentes = agregadorService.getFuentesPreview();
+
         List<String> categorias = agregadorService.obtenerCategoriasShort();
+        List<String> provincias = agregadorService.obtenerProvinciasShort();
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
+
         ColeccionInputDTO coleccionDTO = agregadorService.obtenerColeccion(handle);
 
         // Convertir ColeccionInputDTO a ColeccionFormDTO
@@ -115,7 +170,11 @@ public class ColeccionesController {
                 .stream()
                 .map(FuenteInputDTO::getFuenteId)
                 .toList();
+        String userName = gestionUsuariosService.obtenerUsername(session);
 
+        model.addAttribute("userName", userName);
+        model.addAttribute("provincias", provincias);
+        model.addAttribute("etiquetas", etiquetas);
         model.addAttribute("fuentesSeleccionadas", fuentesSeleccionadas);
         model.addAttribute("fuentes", fuentes);
         model.addAttribute("categorias", categorias);
@@ -123,7 +182,7 @@ public class ColeccionesController {
         model.addAttribute("coleccionDTO", formDTO);
         model.addAttribute("actionUrl", actionUrl);
         model.addAttribute("nueva", false);
-        return "/colecciones/create";
+        return "colecciones/create";
     }
 
     @PutMapping("/destacar/{handle}")

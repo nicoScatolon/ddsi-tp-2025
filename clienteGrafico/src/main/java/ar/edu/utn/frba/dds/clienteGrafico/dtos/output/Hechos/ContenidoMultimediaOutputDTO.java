@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ContenidoMultimediaOutputDTO {
-    private Long Id;
-    private TipoContenido tipoContenido;
+    private Long id;
     private String url;
     private String descripcion;
+    private TipoContenido tipoContenido;
 }

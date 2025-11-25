@@ -1,0 +1,472 @@
+:root {
+    --cards-gap: 1.25rem;
+    --card-min-height: 240px;
+}
+
+/* Contenedor principal */
+.estadisticas-actividad {
+    display: block;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* GRID SUPERIOR: 2 cards que ocupan más espacio */
+.estadisticas-actividad .cards-superiores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: var(--cards-gap);
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+}
+
+/* FILTRO DE COLECCIONES */
+.estadisticas-actividad .actividad-filtros {
+    background: linear-gradient(to right, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin: 0 0 1.5rem 0;
+}
+
+.estadisticas-actividad .filtro-colecciones {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.estadisticas-actividad .filtro-colecciones .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    flex: 1;
+    min-width: 300px;
+}
+
+.estadisticas-actividad .filtro-colecciones .filter-group label {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.estadisticas-actividad .filtro-colecciones .filter-group label i {
+    color: var(--color-primary);
+}
+
+.estadisticas-actividad .filtro-colecciones .filter-content {
+    flex: 1;
+}
+
+.estadisticas-actividad .filtro-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
+    background: var(--white);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.estadisticas-actividad .filtro-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.estadisticas-actividad .btn-ver-estadisticas {
+    padding: 0 1.25rem;
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: var(--color-primary);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+    transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.estadisticas-actividad .btn-ver-estadisticas:hover {
+    background: color-mix(in srgb, var(--color-primary) 85%, black 15%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* SECCIÓN DE COLECCIÓN */
+.estadisticas-actividad .cards-coleccion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Banner informativo de colección */
+.coleccion-banner {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #3d7eeb 100%);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(47, 96, 244, 0.2);
+}
+
+.banner-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.banner-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.banner-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.banner-nombre {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Card genérica */
+.estadisticas-actividad .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1.25rem 1.5rem;
+    min-height: var(--card-min-height);
+    border: 1px solid rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.estadisticas-actividad .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border-color: rgba(0,0,0,0.08);
+}
+
+/* Títulos de card */
+.estadisticas-actividad .card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+/* Header de card de colección */
+.card-header-coleccion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--bg);
+}
+
+.card-header-coleccion i {
+    color: var(--color-primary);
+    font-size: 1.25rem;
+}
+
+.card-header-coleccion h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+/* KPI categoría */
+.kpi-categoria {
+    margin-top: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-categoria .kpi-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-categoria .kpi-principal {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.kpi-categoria .kpi-detalle {
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.kpi-categoria .kpi-numero {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-right: 0.25rem;
+}
+
+/* KPI spam + gráfico */
+.kpi-spam {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.25rem;
+    flex: 1;
+}
+
+.kpi-chart-wrapper {
+    flex: 0 0 140px;
+    height: 140px;
+    position: relative;
+}
+
+.kpi-chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.kpi-spam-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.kpi-spam-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.kpi-spam-text .kpi-numero {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-right: 0.25rem;
+}
+
+/* KPI Provincia de Colección - UNA LÍNEA */
+.kpi-provincia-coleccion {
+    margin-top: 0.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.provincia-content-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.provincia-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.provincia-info .kpi-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+}
+
+.provincia-info .kpi-principal {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1.1;
+}
+
+/* Estadísticas en línea */
+.stats-inline {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg);
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.stat-inline {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.stat-inline .stat-numero {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.stat-inline .stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.stat-separator {
+    font-size: 1.25rem;
+    color: #d1d5db;
+    font-weight: 700;
+    user-select: none;
+}
+
+/* Placeholder */
+.kpi-placeholder {
+    font-size: 0.95rem;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 2rem 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.kpi-placeholder i {
+    opacity: 0.3;
+}
+
+.kpi-placeholder p {
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .estadisticas-actividad .cards-superiores {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .estadisticas-actividad {
+        padding: 0 0.5rem;
+    }
+
+    .kpi-categoria .kpi-principal {
+        font-size: 1.6rem;
+    }
+
+    .kpi-spam {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .kpi-chart-wrapper {
+        flex: 0 0 120px;
+        height: 120px;
+        align-self: center;
+    }
+
+    .estadisticas-actividad .filtro-colecciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .estadisticas-actividad .filtro-colecciones .filter-group {
+        min-width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .estadisticas-actividad .btn-ver-estadisticas {
+        width: 100%;
+    }
+
+    .coleccion-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .provincia-info .kpi-principal {
+        font-size: 1.6rem;
+    }
+
+    .stats-inline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .stat-separator {
+        display: none;
+    }
+
+    .stat-inline .stat-numero {
+        font-size: 1.3rem;
+    }
+
+    .stat-inline .stat-label {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .provincia-info .kpi-principal {
+        font-size: 1.4rem;
+    }
+
+    .stat-inline {
+        width: 100%;
+    }
+
+    .banner-nombre {
+        font-size: 1.1rem;
+    }
+
+    .kpi-categoria .kpi-principal {
+        font-size: 1.4rem;
+    }
+
+    .kpi-categoria .kpi-numero {
+        font-size: 1.2rem;
+    }
+}

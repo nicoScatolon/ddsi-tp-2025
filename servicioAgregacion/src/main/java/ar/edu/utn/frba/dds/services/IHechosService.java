@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IHechosService {
-    List<HechoOutputDTO> findAllOutput();
     List<Hecho> findAll();
     HechoOutputDTO findByID(Long id);
     Hecho findEntidadPorId(Long id);
@@ -24,12 +23,12 @@ public interface IHechosService {
 
     List<HechoOutputDTO> getHechos(HechosFilterDTO filterDTO, Boolean fueEliminado);
     List<HechoMapaOutputDTO> getHechosMapa();
+    List<HechoMapaOutputDTO> getHechosMapaPorProvincia(String provincia);
     List<HechoOutputDTO> getHechosDestacados();
 
     ResponseEntity<Void> setDestacadoHecho(Long idHecho, Boolean estaDestacado);
 
-    ResponseEntity<Void> agregarEtiquetaHecho(Long hechoId, String etiqueta);
-    ResponseEntity<Void> eliminarEtiquetaHecho(Long hechoId, String etiqueta);
-
-    List<Hecho> findAllSpec(Specification<Hecho> spec, Pageable pageable);
+    ResponseEntity<Void> agregarEtiquetasHecho(Long id, List<String> etiquetas);
+    ResponseEntity<Void> guardarHecho(Hecho hecho);
+    void eliminarHechos (List<Hecho> hechosAEliminar);
 }

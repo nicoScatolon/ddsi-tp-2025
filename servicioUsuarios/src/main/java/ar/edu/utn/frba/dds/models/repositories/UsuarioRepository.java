@@ -14,6 +14,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findById(Long id);
     boolean existsByEmail(String email);
     boolean existsByNombre(String username);
+    boolean existsByUsername(String username);
 
     @Query("""
        select u from Usuario u
@@ -29,4 +30,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
        where u.email = :email
        """)
     Optional<Usuario> findByEmailFetchAuth(@Param("email") String email);
+
 }

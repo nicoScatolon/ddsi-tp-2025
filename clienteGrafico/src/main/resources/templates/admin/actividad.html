@@ -1,7 +1,211 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <th:block th:fragment="actividad">
-    <section>
+    <section class="estadisticas-actividad">
+        <!-- CARDS FIJAS (NO DEPENDEN DE COLECCIÓN) -->
+        <div class="cards cards-superiores">
+            <!-- Card 1: Categoría con más hechos -->
+            <article class="card card-kpi">
+                <h2>Categoría con más hechos</h2>
+
+                <div class="kpi-categoria">
+                    <div class="kpi-label">CATEGORÍA</div>
+
+                    <div th:if="${resumen.categoriaTop != null}">
+                        <div class="kpi-principal" th:text="${resumen.categoriaTop}">
+                            Vendaval
+                        </div>
+                        <div class="kpi-detalle">
+                            <span class="kpi-numero"
+                                  th:text="${#numbers.formatInteger(resumen.hechosCategoriaTop, 0)}">614</span>
+                            <span>hechos registrados</span>
+                        </div>
+                    </div>
+
+                    <div th:if="${resumen.categoriaTop == null}">
+                        <div class="kpi-placeholder">
+                            No hay datos calculados todavía.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Card 2: Solicitudes de eliminación (spam) -->
+            <article class="card card-kpi">
+                <h2>Solicitudes de eliminación (spam)</h2>
+
+                <div class="kpi-spam"
+                     th:with="spam=${resumen.solicitudesSpam},
+                              total=${resumen.solicitudesTotales},
+                              pct=${total != null && total > 0 ? (spam * 100.0 / total) : 0}">
+
+                    <div class="kpi-chart-wrapper">
+                        <canvas id="spamChart"></canvas>
+                    </div>
+
+                    <div class="kpi-spam-text">
+                        <p>
+                            <span class="kpi-numero" th:text="${#numbers.formatInteger(spam, 0)}">0</span>
+                            <span>marcadas como spam</span>
+                        </p>
+                        <p>
+                            de
+                            <span th:text="${#numbers.formatInteger(total, 0)}">0</span>
+                            solicitudes totales
+                        </p>
+                        <p th:text="${#numbers.formatDecimal(pct, 1, 1)} + '% del total'">
+                            0.0% del total
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- FILTRO DE COLECCIONES -->
+        <div class="actividad-filtros">
+            <form th:action="@{/admin/actividad}" method="get" class="filtro-colecciones">
+
+                <div class="filter-group">
+                    <label>
+                        <i class="fas fa-layer-group"></i>
+                        Colección
+                    </label>
+
+                    <div class="filter-content">
+                        <input type="text"
+                               id="coleccion"
+                               name="coleccion"
+                               placeholder="Ej: Inundaciones, Accidentes..."
+                               th:value="${coleccion}"
+                               list="colecciones-list"
+                               autocomplete="off"
+                               class="filtro-select">
+
+                        <datalist id="colecciones-list">
+                            <option th:each="col : ${colecciones}"
+                                    th:value="${col.handle}"
+                                    th:text="${col.titulo}">
+                            </option>
+                        </datalist>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-filter btn-ver-estadisticas">
+                    <i class="fas fa-chart-bar"></i>
+                    Ver estadísticas
+                </button>
+            </form>
+        </div>
+
+        <!-- CARD INFERIOR: provincia por colección (solo si hay coleccion) -->
+        <div class="cards cards-coleccion"
+             th:if="${coleccion != null and coleccion != ''}">
+
+            <!-- Banner informativo -->
+            <div class="coleccion-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="banner-content">
+                    <span class="banner-label">Estadísticas de colección</span>
+                    <span class="banner-nombre" th:text="${coleccion}">incendios-forestales</span>
+                </div>
+            </div>
+
+            <!-- Card de provincia -->
+            <article class="card card-coleccion-provincia">
+                <div class="card-header-coleccion">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h2>Provincia con más hechos</h2>
+                </div>
+
+                <div class="kpi-provincia-coleccion">
+                    <div th:if="${resumen.provinciaTop != null}" class="provincia-content-inline">
+                        <div class="provincia-info">
+                            <span class="kpi-label">PROVINCIA</span>
+                            <span class="kpi-principal" th:text="${resumen.provinciaTop}">Buenos Aires</span>
+                        </div>
+
+                        <div class="stats-inline">
+                            <div class="stat-inline">
+                    <span class="stat-numero"
+                          th:text="${#numbers.formatInteger(resumen.hechosProvinciaTop, 0)}">32</span>
+                                <span class="stat-label">hechos en provincia</span>
+                            </div>
+                            <span class="stat-separator">·</span>
+                            <div class="stat-inline">
+                    <span class="stat-numero"
+                          th:text="${#numbers.formatInteger(resumen.hechosTotalesColeccion, 0)}">150</span>
+                                <span class="stat-label">total en colección</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${resumen.provinciaTop == null}" class="kpi-placeholder">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                        <p>No hay datos calculados todavía para esta colección.</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- Script del gráfico de spam -->
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function () {
+                const canvas = document.getElementById('spamChart');
+                if (!canvas) return;
+
+                const spam  = /*[[${resumen.solicitudesSpam}]]*/ 0;
+                const total = /*[[${resumen.solicitudesTotales}]]*/ 0;
+                const noSpam = Math.max(total - spam, 0);
+
+                if (total <= 0) {
+                    return;
+                }
+
+                new Chart(canvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['No spam', 'Spam'],
+                        datasets: [{
+                            data: [noSpam, spam],
+                            backgroundColor: ['#dbe4ff', '#2563ff'],
+                            hoverBackgroundColor: ['#c7d2ff', '#1d4ed8'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 14,
+                                    font: { size: 11 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const value = context.raw || 0;
+                                        const pct = total > 0 ? (value * 100 / total) : 0;
+                                        return `${context.label}: ${value} (${pct.toFixed(1)}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            /*]]>*/
+        </script>
 
     </section>
 </th:block>

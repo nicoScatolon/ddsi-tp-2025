@@ -35,27 +35,40 @@ public class FuentesController {
     // --- API PRIVADA --- //
 
     @GetMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public List<Fuente> getFuentes() {return this.fuenteService.buscarFuentes();}
 
     @PutMapping("/privada")
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<Void> agregarUnaFuente (@RequestBody FuenteInputDTO fuenteInputDTO) {
         return fuenteService.agregarFuente(fuenteInputDTO);
     }
 
     @DeleteMapping("/privada/{fuenteId}")
-    @PreAuthorize("hasRole('ADMIN') ")
-    public ResponseEntity<Void> eliminarUnaFuente (@PathVariable long fuenteId) {
-        return fuenteService.eliminarFuente(fuenteId);
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
+    public ResponseEntity<Void> eliminarUnaFuente(@PathVariable long fuenteId) {
+        fuenteService.eliminarFuenteAsync(fuenteId);
+        return ResponseEntity.accepted().build();  // 202 Accepted
     }
 
     // --- TEST --- //
-
-
     @GetMapping("/test/{fuenteId}")
     @PreAuthorize("permitAll()")
     public List<HechoOutputDTO> probarActualizarFuente (@PathVariable long fuenteId) {
         return fuenteService.testActualizarFuente(fuenteId);
+    }
+
+    @GetMapping("/privada/actualizar")
+    @PreAuthorize("hasRole('ADMINSUPERIOR')")
+    public void actualizarFuentesScheduler () {
+
+        fuenteService.actualizarHechosFuentesScheduler();
+    }
+
+
+    @PutMapping("/test/agregar")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Void> agregarUnaFuenteTest (@RequestBody FuenteInputDTO fuenteInputDTO) {
+        return fuenteService.agregarFuente(fuenteInputDTO);
     }
 }

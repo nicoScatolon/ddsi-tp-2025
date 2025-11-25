@@ -3,24 +3,16 @@ package ar.edu.utn.frba.dds.fuenteDinamica.controllers;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.HechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.input.RevisionHechoInputDTO;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.dtos.output.HechoOutputDTO;
-import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Contribuyente;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.EstadoHecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.entities.Hecho;
 import ar.edu.utn.frba.dds.fuenteDinamica.models.exceptions.ModificacionNoPermitidaException;
 import ar.edu.utn.frba.dds.fuenteDinamica.services.impl.HechosService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -54,20 +46,19 @@ public class HechosController {
         return hechosService.getHechos(fechaDeCarga, estado, page);
     }
 
+    @GetMapping("/privada")
+    @PreAuthorize("permitAll()")
+    public List<HechoOutputDTO> obtenerHechosPrivada(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDeGestion)
+    {
+        // se llama privada para diferenciarla de la otra, la diferencia esta en como filtra los hechos.
+        return hechosService.getHechosForAgregador(fechaDeGestion);
+    }
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public ResponseEntity<Void> crearHecho(@RequestBody HechoInputDTO dto) {
         log.info("Me llego la peticion de crear un hecho");
-        /*
-
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.isAuthenticated()) {
-            Long id = (Long) auth.getDetails();
-            dto.setContribuyenteId(id);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); //401
-        } */
 
         CompletableFuture.runAsync(() -> hechosService.cargarHecho(dto), executorHechos).whenComplete((ok, ex) -> {
                     if (ex != null) {
@@ -83,7 +74,7 @@ public class HechosController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public ResponseEntity<?> modificarHecho(@PathVariable Long id, @RequestBody HechoInputDTO hechoInputDTO ) {
         try {
             if (hechoInputDTO.getId() == null) {throw new IllegalArgumentException("El hecho no contiene id");}
@@ -103,7 +94,7 @@ public class HechosController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN')")
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE','ADMIN','ADMINSUPERIOR')")
     public List<HechoOutputDTO> obtenerHechosUsuario(
             @PathVariable Long userId,
             @RequestParam(required = false) EstadoHecho estado,
@@ -112,20 +103,10 @@ public class HechosController {
     }
 
     @PostMapping("/admin/{adminId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADMINSUPERIOR')")
     public ResponseEntity<HechoOutputDTO> revisarHechoAdmin(@PathVariable Long adminId, @RequestBody RevisionHechoInputDTO revisionHechoInputDTO) {
         return this.hechosService.revisarHecho(adminId, revisionHechoInputDTO);
     }
-
-    // --- Test --- //
-
-    /*
-    @PostMapping("/pruebas")
-    public ResponseEntity<Void> crearHechoPrueba(@RequestBody HechoInputDTO dto) {
-        hechosService.crearHechoTest(dto);
-        return ResponseEntity.ok().build();
-    }
-    */
 
 }
 

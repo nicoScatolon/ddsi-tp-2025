@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.dds.domain.dtos.output;
 import ar.edu.utn.frba.dds.domain.dtos.input.hechos.AlgoritmoConsensoDTO;
+import ar.edu.utn.frba.dds.domain.dtos.input.hechos.ContenidoMultimediaInputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class ColeccionPreviewOutputDTO {
     private AlgoritmoConsensoDTO algoritmoCurado;
     private List<FuentePreviewOutputDTO> fuentes;
     private Boolean destacada;
+    private ContenidoMultimediaOutputDTO contenidoMultimedia;
 }

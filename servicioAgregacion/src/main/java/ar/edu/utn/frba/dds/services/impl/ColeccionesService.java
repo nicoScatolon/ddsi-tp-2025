@@ -8,6 +8,8 @@ import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionEditOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.ColeccionPreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.IAlgoritmoConsenso;
+import ar.edu.utn.frba.dds.domain.entities.AlgoritmosConsenso.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.dds.domain.entities.Categoria.Categoria;
 import ar.edu.utn.frba.dds.domain.entities.Coleccion;
 import ar.edu.utn.frba.dds.domain.entities.Criterio.impl.Criterio;
@@ -45,7 +47,6 @@ public class ColeccionesService implements IColeccionesService {
     private final IHechosService hechosService;
     private final CriterioFactory criterioFactory;
     private final IFuentesRepository fuentesRepository;
-    private final ICategoriaService categoriaService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -58,13 +59,11 @@ public class ColeccionesService implements IColeccionesService {
     public ColeccionesService(IColeccionesRepository coleccionesRepository,
                               IHechosService hechosService,
                               CriterioFactory criterioFactory,
-                              IFuentesRepository fuentesRepository,
-                              ICategoriaService categoriaService) {
+                              IFuentesRepository fuentesRepository) {
         this.coleccionesRepository = coleccionesRepository;
         this.hechosService = hechosService;
         this.criterioFactory  = criterioFactory;
         this.fuentesRepository = fuentesRepository;
-        this.categoriaService = categoriaService;
     }
 
     @Override
@@ -79,14 +78,35 @@ public class ColeccionesService implements IColeccionesService {
                 .collect(Collectors.toList());
     }
 
-    public List<ColeccionPreviewOutputDTO> findAllPreview(Integer page) {
+    public List<ColeccionPreviewOutputDTO> findAllPreview(Integer page, TipoAlgoritmoConsenso consenso, Boolean filtrarSinConsenso) {
+
+        List<Coleccion> colecciones;
+
         if (page == null) {
-            return coleccionesRepository.findAll().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+            colecciones = coleccionesRepository.findAll();
         } else {
             Pageable pageable = PageRequest.of(page, pageSize);
-            Page<Coleccion> coleccionesPagina = coleccionesRepository.findAll(pageable);
-            return coleccionesPagina.getContent().stream().map(DTOConverter::coleccionPreviewOutputDTO).toList();
+            colecciones = coleccionesRepository.findAll(pageable).getContent();
         }
+
+        // Filtrar por "sin consenso"
+        if (filtrarSinConsenso != null && filtrarSinConsenso) {
+            colecciones = colecciones.stream()
+                    .filter(c -> c.getAlgoritmoConsenso() == null)
+                    .toList();
+        }
+        // Filtrar por tipo de consenso específico
+        else if (consenso != null) {
+            colecciones = colecciones.stream()
+                    .filter(c -> c.getAlgoritmoConsenso() != null &&
+                            c.getAlgoritmoConsenso().getTipo() == consenso)
+                    .toList();
+        }
+        // Si no hay filtro, devolver todos
+
+        return colecciones.stream()
+                .map(DTOConverter::coleccionPreviewOutputDTO)
+                .toList();
     }
 
     public ColeccionPreviewOutputDTO findByHandlePreview (String handle) {
@@ -412,7 +432,7 @@ public class ColeccionesService implements IColeccionesService {
 
             List< List<Hecho> > hechosFuentesColeccion = listaHechosXFuente.entrySet().stream()
                     .filter(entry -> coleccion.getListaFuentes().contains(entry.getKey()))
-                    .map(Map.Entry::getValue)
+                    .map(entry -> (List<Hecho>) new ArrayList<>(entry.getValue()))
                     .toList();
 
             coleccion.curarHechos( hechosFuentesColeccion );
@@ -432,9 +452,12 @@ public class ColeccionesService implements IColeccionesService {
     @Override
     @Transactional
     public void notificarFuenteEliminada(Fuente fuente){
-        List<Coleccion> colecciones =  coleccionesRepository.findAll().stream()
-                .filter(c -> c.getListaFuentes().contains(fuente)).toList();
-        colecciones.forEach(c -> c.eliminarFuente(fuente));
+        List<Fuente> fuentes = new ArrayList<>();
+        fuentes.add(fuente);
+
+        List<Coleccion> colecciones = coleccionesRepository.findAllByListaFuentesContaining(fuentes);
+        for (Coleccion c : colecciones) { c.eliminarFuente(fuente); }
+        coleccionesRepository.saveAll(colecciones);
     }
 
 
