@@ -377,7 +377,7 @@ public class HechosController {
             @RequestParam(value = "multimediaExistenteDescs", required = false) String multimediaExistenteDescs,
             @RequestParam(value = "multimediaEliminarIds", required = false) String multimediaEliminarIds,
             Model model,
-            HttpSession session) {
+            HttpSession session, RedirectAttributes redirectAttributes) {
 
         try {
             Long userId = null;
@@ -472,6 +472,7 @@ public class HechosController {
             // Guardar los cambios
             fuenteDinamicaService.editarHecho(hechoDTO);
 
+            redirectAttributes.addFlashAttribute("success", "Hecho editado correctamente.");
             return "redirect:/hechos/fuenteDinamica/" + hechoDTO.getId();
 
         } catch (Exception e) {
