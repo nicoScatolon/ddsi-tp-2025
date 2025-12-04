@@ -67,15 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cargar todas las provincias con confirmación
     cargarTodosBtn.addEventListener('click', () => {
-        const confirmacion = confirm(
-            '¿Estás seguro de que quieres cargar TODOS los hechos?\n\n' +
-            'Esto puede tardar varios segundos y consumir más datos.\n' +
-            'Se recomienda cargar por provincia.'
-        );
-
-        if (confirmacion) {
-            cargarTodosLosHechos();
-        }
+        confirmarAccion(
+            "Cargar TODOS los hechos",
+            "Esto puede tardar varios segundos y consumir más datos. Se recomienda cargar por provincia."
+        ).then((acepta) => {
+            if (acepta) {
+                cargarTodosLosHechos();
+            }
+        });
     });
 
     // Enter en el select para cargar

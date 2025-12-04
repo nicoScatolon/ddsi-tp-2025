@@ -75,7 +75,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/signup")
-    public String signup(@ModelAttribute("request") RegisterUsuarioRequestDTO request, Model model) {
+    public String signup(@ModelAttribute("request") RegisterUsuarioRequestDTO request, Model model, RedirectAttributes redirectAttributes) {
         // Validación de contraseñas
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             model.addAttribute("error", "Las contraseñas no coinciden");
@@ -86,6 +86,7 @@ public class UsuarioController {
 
         try {
             gestionUsuariosService.crearUsuario(request);
+            redirectAttributes.addFlashAttribute("success","usuario creado con exito");
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("request", request);

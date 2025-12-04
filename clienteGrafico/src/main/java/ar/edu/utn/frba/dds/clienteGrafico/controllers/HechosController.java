@@ -24,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -42,7 +43,14 @@ public class HechosController {
     private Integer pageSize;
 
     @GetMapping
-    public String listarHechos(@ModelAttribute HechosFilterInputDTO filtros, @RequestParam(value = "page", defaultValue = "0") int paginaActual, Model model, HttpSession session) {
+    public String listarHechos(
+            @ModelAttribute HechosFilterInputDTO filtros,
+            @RequestParam(value = "page", defaultValue = "0") int paginaActual,
+            Model model,
+            HttpSession session,
+            @ModelAttribute("success") String success,
+            @ModelAttribute("error") String error) {
+
         if (filtros == null) {
             filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
         }
@@ -71,6 +79,15 @@ public class HechosController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
+
+        // flash attributes
+        if (success != null && !success.isEmpty()) {
+            model.addAttribute("success", success);
+        }
+        if (error != null && !error.isEmpty()) {
+            model.addAttribute("error", error);
+        }
+
         return "hechos/explore";
     }
 
@@ -108,7 +125,8 @@ public class HechosController {
             @RequestParam(value = "tipoContenido", required = false) List<String> tiposContenido,
             @RequestParam(value = "descripcionMultimedia", required = false) List<String> descripcionesMultimedia,  // ← Cambio aquí
             Model model,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         try {
             Long contribuyenteId = null;
@@ -156,6 +174,9 @@ public class HechosController {
             }
 
             fuenteDinamicaService.crearHecho(hechoDTO);
+
+            redirectAttributes.addFlashAttribute("success", "Hecho guardado correctamente.");
+
             return "redirect:/hechos";
 
         } catch (Exception e) {
