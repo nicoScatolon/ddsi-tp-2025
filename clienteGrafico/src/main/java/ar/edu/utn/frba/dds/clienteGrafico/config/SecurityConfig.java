@@ -35,6 +35,7 @@ public class SecurityConfig {
                         // Rutas de COLECCIONES que deben ser públicas (solo GET)
                         .requestMatchers(HttpMethod.GET,"/colecciones/create").hasAnyRole("ADMIN", "ADMINSUPERIOR")
                         .requestMatchers(HttpMethod.GET, "/colecciones/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/solicitudesEliminacion").permitAll()
 
                         // Rutas Admin
                         .requestMatchers("/hechos/destacar/**").hasAnyRole("ADMIN", "ADMINSUPERIOR")

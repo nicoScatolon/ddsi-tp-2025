@@ -35,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -375,6 +376,20 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     //-------------------------------------------------------------------------------
+    @Async
+    @Override
+    @Transactional
+    public void actualizarColeccionAsync() {
+        this.actualizarColeccionesScheduler();
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void curarColeccionAsync() {
+        this.curarColeccionesScheduler();
+    }
+
 
     @Transactional
     public void actualizarColeccionesScheduler(){

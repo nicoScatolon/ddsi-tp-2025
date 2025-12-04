@@ -166,13 +166,13 @@ public class ColeccionesController {
     @GetMapping("/privada/actualizar")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
     public void actualizarColeccionScheduler() {
-        this.coleccionesService.actualizarColeccionesScheduler();
+        this.coleccionesService.actualizarColeccionAsync();
     }
 
     @GetMapping("/privada/curar")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
     public void curarColeccionScheduler() {
-        this.coleccionesService.curarColeccionesScheduler();
+        this.coleccionesService.curarColeccionAsync();
     }
 
 

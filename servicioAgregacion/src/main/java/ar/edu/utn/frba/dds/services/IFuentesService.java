@@ -19,6 +19,7 @@ public interface IFuentesService {
     IFuente buscarFuentePorId(Long id);
     void notificarEliminaciones (List<Hecho> hechosAEliminar);
     void actualizarHechosFuentesScheduler();
+    void actualizarFuentesAsync();
 
     List<FuentePreviewOutputDTO> getFuentesPreview();
 

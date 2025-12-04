@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -41,18 +43,15 @@ public class HechosController {
 
     @Value("${app.hechos.page.size}")
     private Integer pageSize;
-
     @GetMapping
     public String listarHechos(
             @ModelAttribute HechosFilterInputDTO filtros,
             @RequestParam(value = "page", defaultValue = "0") int paginaActual,
             Model model,
-            HttpSession session,
-            @ModelAttribute("success") String success,
-            @ModelAttribute("error") String error) {
+            HttpSession session) {
 
         if (filtros == null) {
-            filtros = new HechosFilterInputDTO(); // para que Thymeleaf no rompa
+            filtros = new HechosFilterInputDTO();
         }
         if (paginaActual < 0) {
             return "redirect:/error/400";
@@ -65,7 +64,7 @@ public class HechosController {
 
         List<String> categorias = agregadorService.obtenerCategoriasShort();
         List<String> provincias = agregadorService.obtenerProvinciasShort();
-        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();  //Todo podrian ser unicamente las etiquetas de la coleccion, ahora manda todas
+        List<String> etiquetas = agregadorService.obtenerEtiquetasShort();
 
         String userName = gestionUsuariosService.obtenerUsername(session);
 
@@ -79,13 +78,10 @@ public class HechosController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("filtros", filtros);
-
-        // flash attributes
-        if (success != null && !success.isEmpty()) {
-            model.addAttribute("success", success);
-        }
-        if (error != null && !error.isEmpty()) {
-            model.addAttribute("error", error);
+        String successMessage = (String) session.getAttribute("successMessage");
+        if (successMessage != null) {
+            model.addAttribute("success", successMessage);
+            session.removeAttribute("successMessage");
         }
 
         return "hechos/explore";
@@ -108,22 +104,13 @@ public class HechosController {
         return "hechos/create";
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public String handleTipoInvalido(MethodArgumentTypeMismatchException ex) {
-        return "redirect:/error/400";
-    }
-
-    @ExceptionHandler(DateTimeParseException.class)
-    public String handleFechaInvalida(DateTimeParseException ex) {
-        return "redirect:/error/400";
-    }
-
-    @PostMapping("/create") //Todo si no estas logeado da error
+    @PostMapping("/create")
     public String guardarHecho(
             @ModelAttribute("hechoDTO") HechoDinamicaOutputDTO hechoDTO,
             @RequestParam(value = "multimedia", required = false) List<MultipartFile> multimediaFiles,
             @RequestParam(value = "tipoContenido", required = false) List<String> tiposContenido,
-            @RequestParam(value = "descripcionMultimedia", required = false) List<String> descripcionesMultimedia,  // ← Cambio aquí
+            @RequestParam(value = "descripcionMultimedia", required = false) List<String> descripcionesMultimedia,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,  // <-- AGREGÁ
             Model model,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -134,6 +121,7 @@ public class HechosController {
                 contribuyenteId = (Long) session.getAttribute("userId");
             }
             hechoDTO.setContribuyenteId(contribuyenteId);
+
             // Procesar archivos multimedia
             if (multimediaFiles != null && !multimediaFiles.isEmpty()) {
                 // Filtrar archivos vacíos
@@ -162,7 +150,6 @@ public class HechosController {
                 }
 
                 if (!archivosValidos.isEmpty()) {
-                    System.out.println("Archivos válidos a procesar: " + archivosValidos.size());
                     List<ContenidoMultimediaOutputDTO> contenidoList =
                             fileSystemService.guardarContenidoMultimedia(
                                     archivosValidos,
@@ -173,10 +160,17 @@ public class HechosController {
                 }
             }
 
+
             fuenteDinamicaService.crearHecho(hechoDTO);
 
-            redirectAttributes.addFlashAttribute("success", "Hecho guardado correctamente.");
+            // Si es AJAX, guardar en sesión
+            if ("XMLHttpRequest".equals(requestedWith) || "fetch".equals(requestedWith)) {
+                session.setAttribute("successMessage", "Hecho guardado correctamente.");
+                return "redirect:/hechos";
+            }
 
+            // Si no es AJAX, usar flash attributes
+            redirectAttributes.addFlashAttribute("success", "Hecho guardado correctamente.");
             return "redirect:/hechos";
 
         } catch (Exception e) {
@@ -362,6 +356,16 @@ public class HechosController {
         model.addAttribute("titulo", "Editar Hecho");
 
         return "hechos/create";
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public String handleTipoInvalido(MethodArgumentTypeMismatchException ex) {
+        return "redirect:/error/400";
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public String handleFechaInvalida(DateTimeParseException ex) {
+        return "redirect:/error/400";
     }
 
     @PutMapping("/editar")

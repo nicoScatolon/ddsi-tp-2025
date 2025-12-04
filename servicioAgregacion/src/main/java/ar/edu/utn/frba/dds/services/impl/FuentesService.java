@@ -64,6 +64,11 @@ public class FuentesService implements IFuentesService {
         eliminarFuente(fuenteId);
     }
 
+    @Async
+    @Override
+    public void actualizarFuentesAsync() {
+        actualizarHechosFuentesScheduler();
+    }
 
     @Transactional
     @Override
