@@ -36,4 +36,4 @@ COPY --from=builder /app/target/fileSystem-0.0.1.jar app.jar
 
 EXPOSE 8091
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
