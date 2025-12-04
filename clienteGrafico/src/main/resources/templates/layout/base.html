@@ -142,42 +142,149 @@
     <div th:replace="~{${contenido} :: contenido}"></div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</body>
-
-<!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="errorModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Error
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p th:text="${error}" id="errorMessage">Ha ocurrido un error.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <footer>
     <p>© 2025 MetaMapa - Todos los derechos reservados</p>
     <a href="/legales">Información legal | Privacidad</a>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script th:src="@{/js/navbar.js}"></script>
 
+<!-- Modal de Éxito -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Éxito</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${success}" id="successMessage">Operación realizada correctamente.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Error</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${error}" id="errorMessage">Ha ocurrido un error.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content confirm-modal-style">
+            <div class="modal-header bg-warning text-dark rounded-top">
+                <h5 class="modal-title d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span id="confirmModalTitle">Confirmación</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p id="confirmModalMessage">¿Estás seguro?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="confirmCancelBtn">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAcceptBtn">Cargar todos</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener flash attributes
+        var successMsg = /*[[${success}]]*/ null;
+        var errorMsg = /*[[${error}]]*/ null;
+
+        // Debug rápido en consola
+        console.log("Flash success:", successMsg);
+        console.log("Flash error:", errorMsg);
+
+        // Mostrar modal de éxito solo si hay mensaje
+        if (successMsg != null && successMsg !== "") {
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        }
+
+        // Mostrar modal de error solo si hay mensaje
+        if (errorMsg != null && errorMsg !== "") {
+            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+    });
+    /*]]>*/
+</script>
+<!--
 <script th:if="${error != null}">
     document.addEventListener('DOMContentLoaded', function() {
         var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
         errorModal.show();
     });
 </script>
+-->
+<script>
+    function confirmarAccion(titulo, mensaje) {
+        return new Promise((resolve) => {
+            const modalEl = document.getElementById('confirmModal');
+            const modal = new bootstrap.Modal(modalEl);
+
+            document.getElementById('confirmModalTitle').textContent = titulo;
+            document.getElementById('confirmModalMessage').textContent = mensaje;
+
+            const btnAceptar = document.getElementById('confirmAcceptBtn');
+            const btnCancelar = document.getElementById('confirmCancelBtn');
+
+            const cerrar = () => modal.hide();
+
+            const onAceptar = () => {
+                cleanup();
+                modal.hide();
+                resolve(true);
+            };
+
+            const onCancelar = () => {
+                cleanup();
+                modal.hide();
+                resolve(false);
+            };
+
+
+            function cleanup() {
+                btnAceptar.removeEventListener('click', onAceptar);
+                btnCancelar.removeEventListener('click', onCancelar);
+                modalEl.removeEventListener('hidden.bs.modal', onCancelar);
+            }
+
+            btnAceptar.addEventListener('click', onAceptar);
+            btnCancelar.addEventListener('click', onCancelar);
+
+            // Si cierra con la X o clic afuera → cancelar
+            modalEl.addEventListener('hidden.bs.modal', onCancelar);
+
+            modal.show();
+        });
+    }
+
+</script>
 
 <th:block th:replace="~{::jsExtra}"></th:block>
+</body>
 </html>

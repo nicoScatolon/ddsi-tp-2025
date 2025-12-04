@@ -871,3 +871,19 @@ body.mobile-menu-open {
     overflow: hidden;
 }
 
+/* Modal de confirmación  */
+.confirm-modal-style {
+    border-radius: 14px !important;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.18) !important;
+}
+
+.confirm-modal-style .modal-header {
+    border-bottom: none;
+}
+
+.confirm-modal-style .modal-footer {
+    border-top: none;
+}
+
+
