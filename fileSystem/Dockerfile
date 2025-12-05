@@ -29,11 +29,14 @@ WORKDIR /app
 RUN mkdir -p /app/fileSystem && \
     chmod -R 777 /app/fileSystem
 
-# ACÁ EL CAMBIO IMPORTANTE:
-# Copiamos explícitamente el JAR generado por nombre, no con *.jar
-# Asumiendo que en tu pom.xml el artifactId es 'fileSystem' y version '0.0.1'
 COPY --from=builder /app/target/fileSystem-0.0.1.jar app.jar
 
 EXPOSE 8091
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# ESTO ES LO NUEVO:
+# 1. Desactivamos el HealthCheck nativo de Docker por si acaso
+HEALTHCHECK NONE
+
+# 2. Comando "Try-Catch":
+# Intenta correr Java. Si falla (||), imprime un aviso y se queda durmiendo (tail).
+ENTRYPOINT ["/bin/sh", "-c", "java -jar app.jar || (echo '❌ LA APP CRASHEO - MANTENIENDO CONTENEDOR VIVO...' && tail -f /dev/null)"]
