@@ -59,12 +59,14 @@ public class FuentesService implements IFuentesService {
     }
 
     @Async
+    @Transactional
     @Override
     public void eliminarFuenteAsync(long fuenteId) {
         eliminarFuente(fuenteId);
     }
 
     @Async
+    @Transactional
     @Override
     public void actualizarFuentesAsync() {
         actualizarHechosFuentesScheduler();
@@ -126,7 +128,7 @@ public class FuentesService implements IFuentesService {
         */
     }
 
-    //todo con @Transactional rompe
+    @Transactional
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");
