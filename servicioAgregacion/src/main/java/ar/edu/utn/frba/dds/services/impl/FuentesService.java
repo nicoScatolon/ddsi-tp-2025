@@ -45,6 +45,7 @@ public class FuentesService implements IFuentesService {
         return this.fuentesRepository.findAll().stream().map(DTOConverter::convertirFuentePreviewOutputDTO).toList();
     }
 
+
     @Override
     public List<Fuente> buscarFuentes() {
         return fuentesRepository.findAll();
@@ -157,6 +158,7 @@ public class FuentesService implements IFuentesService {
 
     }
 
+    @Override
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
         Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
         List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);
