@@ -161,7 +161,7 @@ public class ColeccionesService implements IColeccionesService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(coleccionRoot.get("handle"), handle));
-
+        predicates.add(cb.equal(hechosJoin.get("fueEliminado"), false));
         // aplicar filtros del Hecho
         if (hechosFilter.getCategoria() != null) {
             predicates.add(cb.equal(hechosJoin.get("categoria").get("nombre"), hechosFilter.getCategoria()));
@@ -188,6 +188,9 @@ public class ColeccionesService implements IColeccionesService {
             Join<Hecho, Etiqueta> joinEtiquetas = hechosJoin.join("etiquetas", JoinType.INNER);
             predicates.add(cb.equal(cb.lower(joinEtiquetas.get("nombre")), hechosFilter.getEtiqueta().toLowerCase()));
         }
+
+
+
 
         query.select(hechosJoin)
                 .where(predicates.toArray(new Predicate[0]))
