@@ -20,7 +20,7 @@ public class SolicitudesEliminacionController {
     public String solicitarEliminacion(
             @RequestParam String razonEliminacion,
             @RequestParam Long hechoId,
-            @RequestParam Long usuarioId) {
+            @RequestParam(required = false) Long usuarioId) {
         agregadorService.crearSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
         return "redirect:/hechos/" + hechoId;
     }
