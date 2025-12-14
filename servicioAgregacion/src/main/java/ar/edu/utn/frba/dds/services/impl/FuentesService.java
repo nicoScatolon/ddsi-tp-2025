@@ -11,7 +11,9 @@ import ar.edu.utn.frba.dds.services.IColeccionesService;
 import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.IHechosService;
 import ar.edu.utn.frba.dds.services.ISolicitudesEliminacionService;
-import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FuentesService implements IFuentesService {
@@ -30,6 +31,7 @@ public class FuentesService implements IFuentesService {
     private final IColeccionesService coleccionesService;
     private final ISolicitudesEliminacionService  solicitudesEliminacionService;
 
+    private IFuentesService self;
 
     private static final Logger logger = LoggerFactory.getLogger(FuentesService.class);
 
@@ -40,10 +42,17 @@ public class FuentesService implements IFuentesService {
         this.solicitudesEliminacionService = solicitudesEliminacionService;
     }
 
+    @Autowired
+    @Lazy  // Evita dependencia circular
+    public void setSelf(IFuentesService self) {
+        this.self = self;
+    }
+
     @Override
     public List<FuentePreviewOutputDTO> getFuentesPreview(){
         return this.fuentesRepository.findAll().stream().map(DTOConverter::convertirFuentePreviewOutputDTO).toList();
     }
+
 
     @Override
     public List<Fuente> buscarFuentes() {
@@ -61,12 +70,17 @@ public class FuentesService implements IFuentesService {
     @Async
     @Override
     public void eliminarFuenteAsync(long fuenteId) {
-        eliminarFuente(fuenteId);
+        self.eliminarFuente(fuenteId);
     }
 
-
-    @Transactional
+    @Async
     @Override
+    public void actualizarFuentesAsync() {
+        self.actualizarHechosFuentesScheduler();
+    }
+
+    @Override
+    @Transactional
     public ResponseEntity<String> eliminarFuente(Long id) {
         Fuente fuente = this.buscarFuentePorId(id);
         if (fuente == null) {
@@ -121,7 +135,7 @@ public class FuentesService implements IFuentesService {
         */
     }
 
-    //todo con @Transactional rompe
+    @Transactional
     @Override
     public void actualizarHechosFuentesScheduler() {
         logger.info("Actualizar fuentes Scheduler");
@@ -153,6 +167,7 @@ public class FuentesService implements IFuentesService {
 
     }
 
+    @Override
     public List<HechoOutputDTO> testActualizarFuente(Long idFuente){
         Fuente fuente = fuentesRepository.findById(idFuente).orElseThrow();
         List<Hecho> hechosPersistidosFuenteActual = this.hechosService.findByFuente(fuente);

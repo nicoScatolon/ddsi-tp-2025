@@ -21,7 +21,7 @@ public class FuenteProxyService implements IFuenteProxyService {
     private final String fuenteProxyUrl;
 
     public FuenteProxyService(WebApiCallerService webApiCallerService,
-                                 @Value("http://localhost:8083") String fuenteProxyUrl) {
+                                 @Value("${fuente.proxy.url}") String fuenteProxyUrl) {
         this.webApiCallerService = webApiCallerService;
         this.fuenteProxyUrl = fuenteProxyUrl;
     }

@@ -35,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -160,7 +161,7 @@ public class ColeccionesService implements IColeccionesService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(coleccionRoot.get("handle"), handle));
-
+        predicates.add(cb.equal(hechosJoin.get("fueEliminado"), false));
         // aplicar filtros del Hecho
         if (hechosFilter.getCategoria() != null) {
             predicates.add(cb.equal(hechosJoin.get("categoria").get("nombre"), hechosFilter.getCategoria()));
@@ -187,6 +188,9 @@ public class ColeccionesService implements IColeccionesService {
             Join<Hecho, Etiqueta> joinEtiquetas = hechosJoin.join("etiquetas", JoinType.INNER);
             predicates.add(cb.equal(cb.lower(joinEtiquetas.get("nombre")), hechosFilter.getEtiqueta().toLowerCase()));
         }
+
+
+
 
         query.select(hechosJoin)
                 .where(predicates.toArray(new Predicate[0]))
@@ -375,6 +379,20 @@ public class ColeccionesService implements IColeccionesService {
     }
 
     //-------------------------------------------------------------------------------
+    @Async
+    @Override
+    @Transactional
+    public void actualizarColeccionAsync() {
+        this.actualizarColeccionesScheduler();
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void curarColeccionAsync() {
+        this.curarColeccionesScheduler();
+    }
+
 
     @Transactional
     public void actualizarColeccionesScheduler(){

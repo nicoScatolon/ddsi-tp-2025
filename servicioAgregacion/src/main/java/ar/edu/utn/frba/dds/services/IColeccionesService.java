@@ -28,6 +28,9 @@ public interface IColeccionesService {
     ResponseEntity<Void> modificarCriteriosColeccion (String handle, List<CriterioInputDTO> listaCriterioInputDTO);
     ResponseEntity<Void> modificarConsensoColeccion (String handle, AlgoritmoConsensoDTO consensoDTO);
     List<Fuente> modificarFuenteColeccion(String handle, List<FuenteInputDTO> fuenteInputDTO);
+    void curarColeccionAsync();
+    void actualizarColeccionAsync();
+
 
     ColeccionEditOutputDTO findByHandleEditable(String handle);
     ResponseEntity<Void> modificarColeccion(ColeccionInputDTO coleccionInputDTO);

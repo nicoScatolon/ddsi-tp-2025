@@ -5,6 +5,7 @@ import ar.edu.utn.frba.dds.domain.dtos.output.FuentePreviewOutputDTO;
 import ar.edu.utn.frba.dds.domain.dtos.output.HechoOutputDTO;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.Fuente;
 import ar.edu.utn.frba.dds.domain.entities.Fuente.IFuente;
+import ar.edu.utn.frba.dds.services.IFuentesService;
 import ar.edu.utn.frba.dds.services.impl.FuentesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,9 @@ import java.util.Map;
 @RequestMapping("/api/fuente")
 @RestController
 public class FuentesController {
-    private final FuentesService fuenteService;
+    private final IFuentesService fuenteService;
 
-    public FuentesController(FuentesService fuenteService) {
+    public FuentesController(IFuentesService fuenteService) {
         this.fuenteService = fuenteService;
     }
 
@@ -61,10 +62,8 @@ public class FuentesController {
     @GetMapping("/privada/actualizar")
     @PreAuthorize("hasRole('ADMINSUPERIOR')")
     public void actualizarFuentesScheduler () {
-
-        fuenteService.actualizarHechosFuentesScheduler();
+        fuenteService.actualizarFuentesAsync();
     }
-
 
     @PutMapping("/test/agregar")
     @PreAuthorize("permitAll()")

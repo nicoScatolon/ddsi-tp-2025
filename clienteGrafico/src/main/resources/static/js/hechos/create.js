@@ -623,23 +623,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(actionUrl, {
                 method: 'POST',
                 body: fd,
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                redirect: 'manual',
+                headers: {
+                    'X-Requested-With': 'fetch'
+                }
             });
 
-            if (response.ok) {
-                // Liberar URLs de objetos antes de redireccionar
-                multimediaFiles.forEach(item => {
-                    if (item.file.type.startsWith('image/') || item.file.type.startsWith('video/')) {
-                        const itemDiv = document.querySelector(`.multimedia-item[data-file-id="${item.id}"]`);
-                        if (itemDiv) {
-                            const img = itemDiv.querySelector('img');
-                            const video = itemDiv.querySelector('video source');
-                            if (img) URL.revokeObjectURL(img.src);
-                            if (video) URL.revokeObjectURL(video.src);
-                        }
-                    }
-                });
-
+            // Si es redirect (302/303), seguirlo manualmente
+            if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 303) {
+                window.location.href = '/hechos';
+            } else if (response.ok) {
                 window.location.href = '/hechos';
             } else {
                 let text = '';

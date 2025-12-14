@@ -451,7 +451,7 @@ public class AgregadorService implements IAgregadorService {
                 DTOConverter.convertirSolicitudEliminacion(hechoId, usuarioId, razonEliminacion);
 
         try {
-            webApiCallerService.post(
+            webApiCallerService.postPublic(
                     agregadorUrl + "/api/solicitudes-eliminacion/publica",
                     request,
                     Void.class
