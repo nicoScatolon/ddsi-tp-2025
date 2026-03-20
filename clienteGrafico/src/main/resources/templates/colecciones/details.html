@@ -1,23 +1,22 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 
-<div th:fragment="contenido">
+<th:block th:fragment="cssExtra">
+    <link rel="stylesheet" th:href="@{/css/colecciones/colecciones-details.css}">
+</th:block>
 
-    <th:block th:fragment="cssExtra">
-        <link rel="stylesheet" th:href="@{/css/colecciones/colecciones-details.css}">
-    </th:block>
-
+<th:block th:fragment="contenido">
     <aside class="sidebar">
         <h2><strong>Filtros</strong></h2>
 
-        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get" >
+        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get">
 
             <!-- Visualización -->
             <div class="filter-group collapsible collapsed">
                 <label><i class="fas fa-eye" style="color: black; margin-right: 8px;"></i>Visualización</label>
                 <div class="filter-content">
                     <select id="curado" name="curado">
-                        <option value="false" th:selected="${curado == false}"> Irrestricta </option>
-                        <option value="true" th:selected="${curado == true}"> Curada </option>
+                        <option value="false" th:selected="${curado == false}">Irrestricta</option>
+                        <option value="true" th:selected="${curado == true}">Curada</option>
                     </select>
                 </div>
             </div>
@@ -117,6 +116,9 @@
     </aside>
 
     <div class="content-wrapper">
+
+        <div id="active-filters" class="active-filters-bar" style="display:none;"></div>
+
         <section id="collection-detail">
 
             <!-- Info de la colección -->
@@ -128,7 +130,6 @@
             <!-- Acciones de administrador -->
             <div sec:authorize="hasAnyRole('ADMIN','ADMINSUPERIOR')" class="card-actions">
 
-                <!-- DESTACAR  -->
                 <form th:if="${!coleccion.destacada}"
                       th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
                       method="post"
@@ -140,7 +141,6 @@
                     </button>
                 </form>
 
-                <!--  QUITAR DESTACADO  -->
                 <form th:if="${coleccion.destacada}"
                       th:action="@{/colecciones/destacar/{handle}(handle=${coleccion.handle})}"
                       method="post"
@@ -152,14 +152,12 @@
                     </button>
                 </form>
 
-                <!-- Editar -->
                 <a th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}"
                    class="btn-action btn-edit">
                     <i class="fas fa-edit"></i>
                     Editar
                 </a>
 
-                <!--  Eliminar -->
                 <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}"
                       method="post"
                       class="inline-form"
@@ -170,7 +168,6 @@
                         Eliminar
                     </button>
                 </form>
-
             </div>
 
             <!-- CARDS -->
@@ -181,13 +178,9 @@
 
                     <!-- Columna 1: Título y Descripción -->
                     <div class="card-content">
-                        <div class="card-title" th:text="${hecho.titulo}">
-                            Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones
-                        </div>
+                        <div class="card-title" th:text="${hecho.titulo}"></div>
                         <div class="card-description">
-                            <p th:text="${#strings.abbreviate(hecho.descripcion, 220)}">
-                                Descripción de ejemplo que puede ser bastante larga
-                            </p>
+                            <p th:text="${#strings.abbreviate(hecho.descripcion, 220)}"></p>
                         </div>
                     </div>
 
@@ -195,23 +188,23 @@
                     <div class="card-metadata">
                         <div class="card-meta-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : 'Sin ubicación'}">Buenos Aires</span>
+                            <span th:text="${hecho.ubicacion != null ? hecho.ubicacion.provincia : 'Sin ubicación'}"></span>
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-folder-open"></i>
-                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : 'Sin categoría'}">Categoría</span>
+                            <span th:text="${hecho.categoria != null ? hecho.categoria.nombre : 'Sin categoría'}"></span>
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-tag"></i>
-                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? 'Sin etiqueta' : hecho.etiquetas[0].nombre}">Etiqueta</span>
+                            <span th:text="${#lists.isEmpty(hecho.etiquetas) ? 'Sin etiqueta' : hecho.etiquetas[0].nombre}"></span>
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-calendar-day"></i>
-                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd/MM/yyyy')}">23/10/2025</span>
+                            <span th:text="${#temporals.format(hecho.fechaDeOcurrencia,'dd/MM/yyyy')}"></span>
                         </div>
                         <div class="card-meta-item">
                             <i class="fas fa-globe"></i>
-                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : 'Sin fuente'}">Fuente</span>
+                            <span th:text="${hecho.fuente.nombre != null ? hecho.fuente.nombre : 'Sin fuente'}"></span>
                         </div>
                     </div>
 
@@ -227,67 +220,65 @@
                             <i class="fas fa-image"></i>
                         </div>
                     </div>
-
                 </a>
 
+                <!-- PAGINACIÓN -->
                 <div id="pagination-controls">
-
-                    <!-- Botón Anterior -->
                     <a class="pagination-arrow"
                        th:classappend="${paginaActual == 0} ? ' disabled' : ''"
                        th:onclick="${paginaActual == 0} ? 'return false;' : ''"
                        th:href="@{/colecciones/{handle}(
-                        handle=${coleccion.handle},
-                        page=${paginaActual - 1},
-                        provincia=${filtros.provincia},
-                        categoria=${filtros.categoria},
-                        fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
-                        fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
-                        fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
-                        fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
-                        fuenteId=${filtros.fuenteId},
-                        etiqueta=${filtros.etiqueta},
-                        curado=${curado}
-                    )}">
+                            handle=${coleccion.handle},
+                            page=${paginaActual - 1},
+                            provincia=${filtros.provincia},
+                            categoria=${filtros.categoria},
+                            fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
+                            fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
+                            fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
+                            fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
+                            fuenteId=${filtros.fuenteId},
+                            etiqueta=${filtros.etiqueta},
+                            curado=${curado}
+                        )}">
                         <i class="fas fa-chevron-left"></i>
                     </a>
 
-                    <!-- Número de página actual -->
                     <div class="pagination-page-number">
                         <span>Página <strong th:text="${paginaActual+1}">1</strong></span>
                     </div>
 
-                    <!-- Botón Siguiente -->
                     <a class="pagination-arrow"
                        th:classappend="${hechos.size() < 20} ? ' disabled' : ''"
                        th:onclick="${hechos.size() < 20} ? 'return false;' : ''"
                        th:href="@{/colecciones/{handle}(
-                        handle=${coleccion.handle},
-                        page=${paginaActual + 1},
-                        provincia=${filtros.provincia},
-                        categoria=${filtros.categoria},
-                        fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
-                        fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
-                        fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
-                        fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
-                        fuenteId=${filtros.fuenteId},
-                        etiqueta=${filtros.etiqueta},
-                        curado=${curado}
-                    )}">
+                            handle=${coleccion.handle},
+                            page=${paginaActual + 1},
+                            provincia=${filtros.provincia},
+                            categoria=${filtros.categoria},
+                            fReporteDesde=${#temporals.format(filtros.fReporteDesde,'yyyy-MM-dd')},
+                            fReporteHasta=${#temporals.format(filtros.fReporteHasta,'yyyy-MM-dd')},
+                            fAconDesde=${#temporals.format(filtros.fAconDesde,'yyyy-MM-dd')},
+                            fAconHasta=${#temporals.format(filtros.fAconHasta,'yyyy-MM-dd')},
+                            fuenteId=${filtros.fuenteId},
+                            etiqueta=${filtros.etiqueta},
+                            curado=${curado}
+                        )}">
                         <i class="fas fa-chevron-right"></i>
                     </a>
-
                 </div>
-
             </div>
 
         </section>
     </div>
 
-</div>
+    <a th:href="@{/hechos/create}" class="fab-create" aria-label="Crear hecho">
+        <i class="fas fa-plus"></i>
+    </a>
+
+</th:block>
 
 <th:block th:fragment="jsExtra">
-    <script th:src="@{/js/hechos/explore.js}"></script>
+    <script th:src="@{/js/colecciones/details.js}"></script>
 </th:block>
 
 </html>

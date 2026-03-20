@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const inputs = collapsible.querySelectorAll('input, select');
 
         const hasValue = Array.from(inputs).some(function (input) {
-            return input.value && input.value.trim() !== '';
+            return input.value && input.value.trim() !== '' && input.value !== 'false';
         });
 
         if (hasValue) collapsible.classList.remove('collapsed');
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Burbujas: generadas desde los params de la URL ---
     const FILTER_LABELS = {
+        curado:        'Visualización',
         provincia:     'Provincia',
         categoria:     'Categoría',
         etiqueta:      'Etiqueta',
@@ -47,7 +48,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     Object.keys(FILTER_LABELS).forEach(function (param) {
         const valor = params.get(param);
+
+        // Ignorar vacíos, cero, y curado=false (es el valor por defecto)
         if (!valor || valor.trim() === '' || valor === '0') return;
+        if (param === 'curado' && valor === 'false') return;
 
         hayFiltros = true;
 
@@ -57,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (param === 'fuenteId' && fuenteSelect) {
             const opt = fuenteSelect.options[fuenteSelect.selectedIndex];
             valorMostrado = opt ? opt.text : valor;
+        } else if (param === 'curado') {
+            valorMostrado = valor === 'true' ? 'Curada' : 'Irrestricta';
         }
 
         const bubble = document.createElement('span');
@@ -69,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         bubble.querySelector('.bubble-remove').addEventListener('click', function () {
             const field = document.querySelector('[name="' + param + '"]');
-            if (field) field.value = '';
+            if (field) field.value = param === 'curado' ? 'false' : '';
 
             bubble.remove();
 
@@ -89,10 +95,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (hayFiltros) bar.style.display = 'flex';
-
-    // --- FAB ---
-    const fabButton = document.querySelector('.fab-create');
-    if (!fabButton) {
-        console.warn('Botón FAB no encontrado en el DOM');
-    }
 });

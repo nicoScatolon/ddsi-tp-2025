@@ -30,7 +30,7 @@
         <module>fuenteDinamica</module>
         <module>fuenteProxy</module>
         <module>servicioEstadisticas</module>
-        <module>ClienteGrafico</module>
+        <module>clienteGrafico</module>
         <module>servicioUsuarios</module>
         <module>fileSystem</module>
     </modules>
@@ -78,6 +78,11 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

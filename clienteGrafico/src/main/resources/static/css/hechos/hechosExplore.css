@@ -14,6 +14,60 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.active-filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0.5rem 2rem 1.5rem 2rem;  /* menos arriba, más abajo */
+    align-items: center;
+}
+.filter-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #2F60F4;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 14px 8px 16px;
+    border-radius: 999px;
+    border: none;
+    white-space: nowrap;
+}
+
+.bubble-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.bubble-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.bubble-label::after {
+    content: ':';
+}
+.bubble-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.bubble-remove:hover {
+    color: #ffffff;
+}
+
+
 /* --- SIDEBAR LATERAL FIJO --- */
 .sidebar {
     position: fixed;
@@ -153,7 +207,7 @@ html, body {
 }
 
 #explore {
-    padding: 2rem;
+    padding: 0 2rem 2rem 2rem;
 }
 
 /* --- ESTADO VACÍO - CUANDO NO HAY HECHOS --- */

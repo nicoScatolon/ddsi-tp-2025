@@ -1,69 +1,126 @@
 @startuml
+' === CONFIGURACIÓN DE TAMAÑO, ESPACIADO Y RESOLUCIÓN ===
+scale 1.2
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam padding 5
 
+' === ESTILOS DE COLORES ===
+skinparam package {
+    BackgroundColor #F8F9FA
+    BorderColor #5C6BC0
+    FontColor #283593
+    FontSize 16
+    FontStyle bold
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #3F51B5
+    FontColor #1A237E
+    ArrowColor #3F51B5
+}
+
+skinparam database {
+    BackgroundColor #FFF8E1
+    BorderColor #FF8F00
+    FontColor #E65100
+}
+
+skinparam cloud {
+    BackgroundColor #E0F2F1
+    BorderColor #00695C
+    FontColor #004D40
+}
+
+' === CAPA 1: CLIENTE ===
+node "Cliente Gráfico\n(Thymeleaf, HTML, JS)" as ClienteGrafico #E3F2FD
+
+' === CAPA 2: TRANSVERSALES ===
+package "Servicios Transversales" {
+    component "Servicio de Usuarios\n(Auth JWT)" as Auth
+    component "Servicio de Estadísticas" as Stats
+    component "File System\n(Multimedia)" as FS
+}
+
+' === CAPA 3: CORE ===
 package "Servicio Agregador" {
-  [API REST Agregador] as "API REST"
-  [UI Solicitudes]
-  [Modelo Agregador]
+  component "API REST Agregador" as Agregador_API
+  component "UI Solicitudes" as Agregador_UI
+  component "Modelo Agregador" as Agregador_Mod
 
-  [Gestor Colecciones]
-  [Gestor Consenso]
-  [Gestor Navegación]
-  [Gestor Solicitudes]
-  ' Relaciones API
-  [API REST Agregador] --> [Modelo Agregador]
+  ' Agrupamos los gestores para que no se desparramen
+  together {
+      component "Gestor Colecciones" as Agregador_Col
+      component "Gestor Consenso" as Agregador_Cons
+      component "Gestor Navegación" as Agregador_Nav
+      component "Gestor Solicitudes" as Agregador_Sol
+  }
 
-  ' Lógica interna
-  [Modelo Agregador] --> [Gestor Colecciones]
-  [Modelo Agregador] --> [Gestor Consenso]
-  [Modelo Agregador] --> [Gestor Navegación]
-  [Modelo Agregador] --> [Gestor Solicitudes]
-
-  ' Interfaces usuario
-  [API REST Agregador] --> [UI Solicitudes]
+  Agregador_API --> Agregador_Mod
+  Agregador_API --> Agregador_UI
+  Agregador_Mod --> Agregador_Col
+  Agregador_Mod --> Agregador_Cons
+  Agregador_Mod --> Agregador_Nav
+  Agregador_Mod --> Agregador_Sol
 }
 
-package "Fuente Estática" {
-  [API REST Estática] as "API REST"
-  [Modelo Estática]
-  [Fuentes Estática]
-  [Dataset]
+' Conexiones de arriba hacia abajo
+ClienteGrafico -down-> Agregador_API
+ClienteGrafico -down-> Auth
+ClienteGrafico -down-> FS
 
-  [API REST Estática] --> [Modelo Estática]
-  [Modelo Estática] --> [Fuentes Estática]
-  [Modelo Estática] --> [Dataset]
+' === CAPA 4: FUENTES DE DATOS ===
+package "Fuente Dinámica" as P_Din {
+  component "API REST Dinámica" as Din_API
+  component "UI Editor" as Din_UI_Editor
+  component "UI Solicitudes Dinámicas" as Din_UI_Sol
+
+  component "Modelo Dinámico" as Din_Mod
+  component "Fuentes Dinámicas" as Din_Fuentes
+  component "Solicitudes Dinámicas" as Din_Sol
+  database "Hechos y Sol." as Din_Hechos
+
+  Din_API --> Din_UI_Editor
+  Din_API --> Din_Mod
+  Din_UI_Editor --> Din_UI_Sol
+  Din_Mod --> Din_Fuentes
+  Din_Mod --> Din_Sol
+  Din_Mod --> Din_Hechos
 }
 
-package "Fuente Dinámica" {
-  [API REST Dinámica] as "API REST"
-  [UI Editor]
-  [Modelo Dinámico]
-  [Fuentes Dinámicas]
-  [Solicitudes Dinámicas]
-  [Hechos y Solicitudes]
-  [UI Solicitudes Dinámicas]
+package "Fuente Estática" as P_Est {
+  component "API REST Estática" as Est_API
+  component "Modelo Estática" as Est_Mod
+  component "Fuentes Estática" as Est_Fuentes
+  database "Dataset (CSV)" as Est_Dataset
 
-  [API REST Dinámica] --> [UI Editor]
-  [API REST Dinámica] --> [Modelo Dinámico]
-  [Modelo Dinámico] --> [Fuentes Dinámicas]
-  [Modelo Dinámico] --> [Solicitudes Dinámicas]
-  [Modelo Dinámico] --> [Hechos y Solicitudes]
-  [UI Editor] --> [UI Solicitudes Dinámicas]
+  Est_API --> Est_Mod
+  Est_Mod --> Est_Fuentes
+  Est_Mod --> Est_Dataset
 }
 
-package "Fuente Proxy" {
-  [API REST Proxy] as "API REST"
-  [Modelo Proxy]
-  [Fuentes Proxy]
-  [Servicio Externo]
+package "Fuente Proxy" as P_Proxy {
+  component "API REST Proxy" as Proxy_API
+  component "Modelo Proxy" as Proxy_Mod
+  component "Fuentes Proxy" as Proxy_Fuentes
+  cloud "Servicio Externo\n(Cátedra / GeoRef)" as Proxy_Ext
 
-  [API REST Proxy] --> [Modelo Proxy]
-  [Modelo Proxy] --> [Fuentes Proxy]
-  [Modelo Proxy] --> [Servicio Externo]
+  Proxy_API --> Proxy_Mod
+  Proxy_Mod --> Proxy_Fuentes
+  Proxy_Mod --> Proxy_Ext
 }
 
-' Relaciones entre servicios vía APIs
-[API REST Agregador] --> [API REST Estática]
-[API REST Agregador] --> [API REST Dinámica]
-[API REST Agregador] --> [API REST Proxy]
+' MAGIA: Forzar que las 3 fuentes queden en la misma línea horizontal
+P_Din -[hidden]right-> P_Est
+P_Est -[hidden]right-> P_Proxy
+
+' Conexiones del Agregador a las APIs de las Fuentes
+Agregador_API -down-> Din_API : Consume
+Agregador_API -down-> Est_API : Consume
+Agregador_API -down-> Proxy_API : Consume
 
 @enduml
