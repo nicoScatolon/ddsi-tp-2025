@@ -69,7 +69,7 @@ Para el desarrollo de la plataforma, nos apoyamos en un ecosistema robusto basad
 
 ## 4. Experiencia del Usuario
 
-![Landing Page y Mapa Principal](path/a/tu/imagen_landing_page.png)
+![Landing Page y Mapa Principal](archivos/readme/landing-page.png)
 
 ### 4.1. Navegación y Exploración
 * **Landing Page**: Muestra una selección curada de hechos y colecciones destacadas por la administración.
@@ -80,7 +80,9 @@ Para el desarrollo de la plataforma, nos apoyamos en un ecosistema robusto basad
     * *Curada*: Se aplica un algoritmo de consenso (ver sección 5), añadiendo una capa extra de veracidad.
 
 ### 4.2. Gestión de Hechos (Creación y Detalle)
-Solamente los **usuarios identificados** pueden aportar información al mapa.
+![Página explorar hechos](archivos/readme/explore.png)
+
+Solamente los **usuarios identificados** pueden aportar información al sistema.
 
 * **Creación**: Se requiere título, fecha de ocurrencia, descripción, y categoría (existente o nueva).
     * **Geolocalización**: Carga manual (Provincia, Localidad, Calle, Número) o mediante un widget de mapa interactivo (Latitud/Longitud). Se integra con la API de **GeoRef** para completar datos faltantes.
@@ -117,7 +119,7 @@ Cualquier usuario puede reportar hechos erróneos o falsos.
 
 ### 5.2. Algoritmos de Consenso
 
-![Flujo de Algoritmos de Consenso](path/a/tu/imagen_algoritmos_consenso.png)
+![Pagina de Colecciones](archivos/readme/colecciones.png)
 
 Utilizados en las "Colecciones Curadas" para cruzar información de distintas fuentes y determinar si un hecho es veraz. Actualmente se compara por *Título*, configurable desde las *properties* del sistema:
 * **Ninguno**: Pasan todos los hechos.
@@ -146,7 +148,6 @@ Acceso restringido a roles `ADMIN` y `SUPER_ADMIN`.
 
 Para ilustrar de forma práctica el funcionamiento y la puesta en producción de Metamapa, adjuntamos los siguientes videos demostrativos:
 
-* 🎥 [**Recorrido por la Plataforma (Walkthrough)**](LINK_AL_VIDEO_1): Muestra de toda la página interactuando con el mapa, la carga de hechos y el panel de administración.
 * 🛠️ [**Explicación del Despliegue (Deployment)**](https://youtu.be/HmwNubMAsCE?si=fM3cnXSJazv8fG5t): Detalle sobre la infraestructura, orquestación y cómo se llevó el sistema a producción. Video Presentado en la cursada.
 
 ---
